@@ -14,16 +14,398 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      approval_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          listing_id: string
+          request_id: string | null
+          token_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          listing_id: string
+          request_id?: string | null
+          token_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          listing_id?: string
+          request_id?: string | null
+          token_hash?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approval_tokens_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approval_tokens_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "listing_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          is_provisional: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_provisional?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_provisional?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      consents: {
+        Row: {
+          authorized_fields: Json | null
+          granted: boolean
+          granted_at: string
+          id: string
+          listing_id: string
+          method: string
+          purpose: string
+          request_id: string | null
+          text_version: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          authorized_fields?: Json | null
+          granted: boolean
+          granted_at?: string
+          id?: string
+          listing_id: string
+          method?: string
+          purpose: string
+          request_id?: string | null
+          text_version: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          authorized_fields?: Json | null
+          granted?: boolean
+          granted_at?: string
+          id?: string
+          listing_id?: string
+          method?: string
+          purpose?: string
+          request_id?: string | null
+          text_version?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consents_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consents_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "listing_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_contacts: {
+        Row: {
+          address: string | null
+          created_at: string
+          listing_id: string
+          owner_contact: string | null
+          owner_name: string | null
+          phone: string | null
+          show_address: boolean
+          show_phone: boolean
+          show_whatsapp: boolean
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          listing_id: string
+          owner_contact?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          show_address?: boolean
+          show_phone?: boolean
+          show_whatsapp?: boolean
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          listing_id?: string
+          owner_contact?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          show_address?: boolean
+          show_phone?: boolean
+          show_whatsapp?: boolean
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_contacts_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_hours: {
+        Row: {
+          closes: string
+          created_at: string
+          id: string
+          listing_id: string
+          opens: string
+          weekday: number
+        }
+        Insert: {
+          closes: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          opens: string
+          weekday: number
+        }
+        Update: {
+          closes?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          opens?: string
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_hours_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_photos: {
+        Row: {
+          alt: string
+          created_at: string
+          id: string
+          listing_id: string
+          sort_order: number
+          storage_path: string
+        }
+        Insert: {
+          alt?: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          sort_order?: number
+          storage_path: string
+        }
+        Update: {
+          alt?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          sort_order?: number
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_photos_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_requests: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          id: string
+          listing_id: string
+          notes: string | null
+          snapshot: Json | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          listing_id: string
+          notes?: string | null
+          snapshot?: Json | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          listing_id?: string
+          notes?: string | null
+          snapshot?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_requests_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string
+          featured: boolean
+          featured_until: string | null
+          id: string
+          name: string
+          public_address: string | null
+          public_phone: string | null
+          public_whatsapp: string | null
+          published_at: string | null
+          slug: string
+          status: Database["public"]["Enums"]["listing_status"]
+          tags: string[]
+          type: Database["public"]["Enums"]["listing_type"]
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          featured_until?: string | null
+          id?: string
+          name: string
+          public_address?: string | null
+          public_phone?: string | null
+          public_whatsapp?: string | null
+          published_at?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          tags?: string[]
+          type: Database["public"]["Enums"]["listing_type"]
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          featured_until?: string | null
+          id?: string
+          name?: string
+          public_address?: string | null
+          public_phone?: string | null
+          public_whatsapp?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["listing_status"]
+          tags?: string[]
+          type?: Database["public"]["Enums"]["listing_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
+      listing_status:
+        | "borrador"
+        | "pendiente"
+        | "publicada"
+        | "rechazada"
+        | "oculta"
+      listing_type: "comercio" | "profesional"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +532,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+      listing_status: [
+        "borrador",
+        "pendiente",
+        "publicada",
+        "rechazada",
+        "oculta",
+      ],
+      listing_type: ["comercio", "profesional"],
+    },
   },
 } as const
