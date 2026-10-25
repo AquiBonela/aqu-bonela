@@ -24,7 +24,7 @@ export function ListingCard({
   featured,
 }: {
   listing: Listing;
-  categoryName?: string;
+  categoryName?: string | undefined;
   featured: boolean;
 }) {
   return (
