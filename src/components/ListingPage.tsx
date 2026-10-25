@@ -88,7 +88,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
       >
         <div className="mx-auto flex max-w-3xl gap-2">
           {listing.public_phone && (
-            <a href={`tel:${listing.public_phone}`} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg border bg-card font-semibold hover:bg-secondary">
+            <a href={`tel:${listing.public_phone}`} className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg text-sm border bg-card font-semibold hover:bg-secondary">
               <Phone className="h-5 w-5" aria-hidden /> Llamar
             </a>
           )}
@@ -97,7 +97,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               href={whatsappUrl(listing.public_whatsapp, listing.name)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg text-sm bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
             >
               <MessageCircle className="h-5 w-5" aria-hidden /> WhatsApp
             </a>
@@ -107,7 +107,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               href={mapsUrl(listing.public_address)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg border bg-card font-semibold hover:bg-secondary"
+              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg text-sm border bg-card font-semibold hover:bg-secondary"
             >
               <Navigation className="h-5 w-5" aria-hidden /> Cómo llegar
             </a>
