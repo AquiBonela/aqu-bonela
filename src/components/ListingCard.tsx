@@ -1,4 +1,5 @@
 import { Briefcase, MessageCircle, Phone, Star, Store } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { whatsappUrl, type Listing } from "@/lib/directory";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +31,7 @@ export function ListingCard({
   return (
     <article
       className={cn(
-        "flex gap-3 rounded-[var(--radius)] border bg-card p-4 text-card-foreground",
+        "relative flex gap-3 rounded-[var(--radius)] border bg-card p-4 text-card-foreground",
         featured && "border-terracotta/50 shadow-sm",
       )}
     >
@@ -51,11 +52,21 @@ export function ListingCard({
             </span>
           )}
         </div>
-        <h3 className="mt-1.5 font-display text-lg font-bold leading-tight">{listing.name}</h3>
+        <h3 className="mt-1.5 font-display text-lg font-bold leading-tight">
+          {listing.type === "comercio" ? (
+            <Link to="/comercios/$slug" params={{ slug: listing.slug }} className="after:absolute after:inset-0 hover:underline">
+              {listing.name}
+            </Link>
+          ) : (
+            <Link to="/profesionales/$slug" params={{ slug: listing.slug }} className="after:absolute after:inset-0 hover:underline">
+              {listing.name}
+            </Link>
+          )}
+        </h3>
         {categoryName && <p className="text-sm text-muted-foreground">{categoryName}</p>}
         <p className="mt-1 line-clamp-2 text-sm">{listing.description}</p>
         {(listing.public_phone || listing.public_whatsapp) && (
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="relative z-10 mt-3 flex flex-wrap gap-2">
             {listing.public_phone && (
               <a
                 href={`tel:${listing.public_phone}`}
