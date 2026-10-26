@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SugerirRoute = SugerirRouteImport.update({
+  id: '/sugerir',
+  path: '/sugerir',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComerciosSlugRoute = ComerciosSlugRouteImport.update({
@@ -31,30 +37,35 @@ const ProfesionalesSlugRoute = ProfesionalesSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/comercios/$slug' | '/profesionales/$slug'
+  fullPaths: '/' | '/sugerir' | '/comercios/$slug' | '/profesionales/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/comercios/$slug' | '/profesionales/$slug'
-  id: '__root__' | '/' | '/comercios/$slug' | '/profesionales/$slug'
+  to: '/' | '/sugerir' | '/comercios/$slug' | '/profesionales/$slug'
+  id:
+    '__root__' | '/' | '/sugerir' | '/comercios/$slug' | '/profesionales/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SugerirRoute: typeof SugerirRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
 }
@@ -66,6 +77,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sugerir': {
+      id: '/sugerir'
+      path: '/sugerir'
+      fullPath: '/sugerir'
+      preLoaderRoute: typeof SugerirRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/comercios/$slug': {
@@ -87,6 +105,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SugerirRoute: SugerirRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
 }
