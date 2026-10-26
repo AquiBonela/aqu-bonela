@@ -263,6 +263,41 @@ export type Database = {
           },
         ]
       }
+      listing_reports: {
+        Row: {
+          contact: string | null
+          created_at: string
+          id: string
+          listing_id: string
+          message: string
+          resolved: boolean
+        }
+        Insert: {
+          contact?: string | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          message: string
+          resolved?: boolean
+        }
+        Update: {
+          contact?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          message?: string
+          resolved?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_reports_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listing_requests: {
         Row: {
           created_at: string
@@ -303,12 +338,16 @@ export type Database = {
       }
       listings: {
         Row: {
+          activity: string | null
           category_id: string | null
+          cover_url: string | null
           created_at: string
           description: string
           featured: boolean
           featured_until: string | null
+          gallery_urls: string[]
           id: string
+          labels: string[]
           name: string
           public_address: string | null
           public_phone: string | null
@@ -321,12 +360,16 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          activity?: string | null
           category_id?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string
           featured?: boolean
           featured_until?: string | null
+          gallery_urls?: string[]
           id?: string
+          labels?: string[]
           name: string
           public_address?: string | null
           public_phone?: string | null
@@ -339,12 +382,16 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          activity?: string | null
           category_id?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string
           featured?: boolean
           featured_until?: string | null
+          gallery_urls?: string[]
           id?: string
+          labels?: string[]
           name?: string
           public_address?: string | null
           public_phone?: string | null
