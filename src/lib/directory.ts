@@ -15,6 +15,10 @@ export type Listing = {
   public_phone: string | null;
   public_whatsapp: string | null;
   public_address: string | null;
+  activity: string | null;
+  labels: string[];
+  cover_url: string | null;
+  gallery_urls: string[];
 };
 
 export const directoryQuery = queryOptions({
@@ -25,7 +29,7 @@ export const directoryQuery = queryOptions({
       supabase
         .from("listings")
         .select(
-          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address",
+          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,gallery_urls",
         )
         .eq("status", "publicada")
         .order("name"),
@@ -56,15 +60,17 @@ export function filterListings(
   q: string,
   catSlug: string,
   now = new Date(),
+  activity = "",
 ) {
   const cat = categories.find((c) => c.slug === catSlug);
   const words = normalize(q).split(/\s+/).filter(Boolean);
   const catName = new Map(categories.map((c) => [c.id, c.name]));
   const result = listings.filter((l) => {
     if (cat && l.category_id !== cat.id) return false;
+    if (cat && activity && normalize(l.activity ?? "") !== normalize(activity)) return false;
     if (!words.length) return true;
     const hay = normalize(
-      [l.name, l.description, catName.get(l.category_id ?? "") ?? "", l.tags.join(" ")].join(" "),
+      [l.name, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" ")].join(" "),
     );
     return words.every((w) => hay.includes(w));
   });
@@ -76,4 +82,11 @@ export function filterListings(
 export function whatsappUrl(number: string, name?: string) {
   const text = name ? `?text=${encodeURIComponent(`Hola, os encuentro en Aquí Bonela (${name}).`)}` : "";
   return `https://wa.me/${number.replace(/\D/g, "")}${text}`;
+}
+
+/** Oficios disponibles dentro de una categoría (ordenados, sin duplicados). */
+export function activitiesFor(listings: Listing[], categoryId: string | undefined) {
+  if (!categoryId) return [];
+  const set = new Set(listings.filter((l) => l.category_id === categoryId && l.activity).map((l) => l.activity!));
+  return [...set].sort((a, b) => a.localeCompare(b, "es"));
 }
