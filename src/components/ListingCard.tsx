@@ -1,20 +1,31 @@
-import { Briefcase, MessageCircle, Phone, Star, Store } from "lucide-react";
+import { Briefcase, HeartHandshake, Store } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { whatsappUrl, type Listing } from "@/lib/directory";
+import type { Listing } from "@/lib/directory";
 import { cn } from "@/lib/utils";
 
-export function TypeBadge({ type }: { type: Listing["type"] }) {
+export const typeLabel = (t: Listing["type"]) => (t === "profesional" ? "Profesional" : "Comercio");
+
+export function TypeLabel({ type, className }: { type: Listing["type"]; className?: string }) {
   const pro = type === "profesional";
   const Icon = pro ? Briefcase : Store;
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold",
-        pro ? "bg-accent text-accent-foreground" : "bg-secondary text-primary",
+        "inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider",
+        pro ? "text-terracotta" : "text-primary",
+        className,
       )}
     >
       <Icon className="h-3.5 w-3.5" aria-hidden />
-      {pro ? "Profesional" : "Comercio"}
+      {typeLabel(type)}
+    </span>
+  );
+}
+
+export function CollaboratorBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
+      <HeartHandshake className="h-3.5 w-3.5" aria-hidden /> Colaborador
     </span>
   );
 }
@@ -22,72 +33,49 @@ export function TypeBadge({ type }: { type: Listing["type"] }) {
 export function ListingCard({
   listing,
   categoryName,
-  featured,
+  collaborator,
 }: {
   listing: Listing;
   categoryName?: string | undefined;
-  featured: boolean;
+  collaborator: boolean;
 }) {
+  const pro = listing.type === "profesional";
+  const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
   return (
-    <article
-      className={cn(
-        "relative flex gap-3 rounded-[var(--radius)] border bg-card p-4 text-card-foreground",
-        featured && "border-terracotta/50 shadow-sm",
+    <article className="relative flex border bg-card text-card-foreground">
+      <span aria-hidden className={cn("w-1.5 shrink-0", pro ? "bg-terracotta" : "bg-primary")} />
+      {collaborator && listing.cover_url && (
+        <img
+          src={listing.cover_url}
+          alt=""
+          loading="lazy"
+          className="w-28 shrink-0 self-stretch object-cover sm:w-36"
+        />
       )}
-    >
-      {featured && (
-        <div
-          aria-hidden
-          className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg bg-accent font-display text-2xl font-extrabold text-accent-foreground"
-        >
-          {listing.name.charAt(0)}
-        </div>
-      )}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 p-4">
         <div className="flex flex-wrap items-center gap-2">
-          <TypeBadge type={listing.type} />
-          {featured && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-terracotta px-2 py-0.5 text-xs font-semibold text-terracotta-foreground">
-              <Star className="h-3 w-3" aria-hidden /> Destacado
-            </span>
-          )}
+          <TypeLabel type={listing.type} />
+          {collaborator && <CollaboratorBadge />}
         </div>
-        <h3 className="mt-1.5 font-display text-lg font-bold leading-tight">
-          {listing.type === "comercio" ? (
-            <Link to="/comercios/$slug" params={{ slug: listing.slug }} className="after:absolute after:inset-0 hover:underline">
-              {listing.name}
-            </Link>
-          ) : (
-            <Link to="/profesionales/$slug" params={{ slug: listing.slug }} className="after:absolute after:inset-0 hover:underline">
-              {listing.name}
-            </Link>
-          )}
+        <h3 className="mt-1 font-display text-lg font-bold leading-tight">
+          <Link
+            to={pro ? "/profesionales/$slug" : "/comercios/$slug"}
+            params={{ slug: listing.slug }}
+            className="after:absolute after:inset-0 hover:underline"
+          >
+            {listing.name}
+          </Link>
         </h3>
-        {categoryName && <p className="text-sm text-muted-foreground">{categoryName}</p>}
+        {subtitle && <p className="text-sm font-medium text-muted-foreground">{subtitle}</p>}
         <p className="mt-1 line-clamp-2 text-sm">{listing.description}</p>
-        {(listing.public_phone || listing.public_whatsapp) && (
-          <div className="relative z-10 mt-3 flex flex-wrap gap-2">
-            {listing.public_phone && (
-              <a
-                href={`tel:${listing.public_phone}`}
-                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 text-sm font-semibold hover:bg-secondary"
-                aria-label={`Llamar a ${listing.name}`}
-              >
-                <Phone className="h-4 w-4" aria-hidden /> Llamar
-              </a>
-            )}
-            {listing.public_whatsapp && (
-              <a
-                href={whatsappUrl(listing.public_whatsapp, listing.name)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-                aria-label={`Escribir por WhatsApp a ${listing.name}`}
-              >
-                <MessageCircle className="h-4 w-4" aria-hidden /> WhatsApp
-              </a>
-            )}
-          </div>
+        {listing.labels.length > 0 && (
+          <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Etiquetas">
+            {listing.labels.slice(0, 3).map((t) => (
+              <li key={t} className="border px-2 py-0.5 text-xs text-muted-foreground">
+                {t}
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </article>
