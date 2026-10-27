@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { Search, X } from "lucide-react";
+import { Info, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { activitiesFor, directoryQuery, filterListings, isFeatured } from "@/lib/directory";
 import { ListingCard } from "@/components/ListingCard";
@@ -76,46 +76,58 @@ function Index() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      <section className="relative">
-        <img
-          src={heroImg}
-          alt="Vista de Casarabonela entre olivos"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
-        <div className="relative mx-auto flex min-h-[26rem] max-w-5xl flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[32rem]">
-          <p className="text-sm font-medium text-primary-foreground/90">Casarabonela · Málaga</p>
-          <h1 className="mt-2 max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
-            ¿Qué buscas en Casarabonela?
-          </h1>
-          <form onSubmit={submit} role="search" className="mt-6 flex max-w-xl items-center rounded-lg border bg-card p-1.5">
+      <section className="relative w-full overflow-hidden bg-secondary/40">
+        <div className="relative h-72 w-full sm:h-80">
+          <img
+            src={heroImg}
+            alt="Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves"
+            className="h-full w-full object-cover object-center"
+          />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/95 via-foreground/45 to-transparent" />
+          <div className="absolute inset-0 mx-auto flex max-w-xl flex-col justify-end p-4 pb-6 sm:p-6">
+            <span className="mb-1.5 font-display text-[11px] font-semibold uppercase tracking-widest text-accent">
+              Casarabonela · Málaga
+            </span>
+            <h1 className="mb-2 max-w-lg font-display text-[28px] font-extrabold leading-tight tracking-tight text-primary-foreground sm:text-[34px]">
+              ¿Qué buscas en Casarabonela?
+            </h1>
+            <p className="max-w-md text-[13px] leading-relaxed text-primary-foreground/85">
+              Directorio cívico de comercios, servicios y profesionales locales en la Sierra de las Nieves.
+            </p>
+          </div>
+        </div>
+        <div className="relative z-10 mx-auto -mt-4 w-full max-w-xl px-4 pb-2">
+          <form onSubmit={submit} role="search" className="flex items-center gap-2 rounded-xl border bg-card p-1.5">
             <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
-            <Search className="ml-3 h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+            <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
               id="buscar"
               type="search"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Panadería, fontanero, tapas..."
-              className="h-11 min-w-0 flex-1 bg-transparent px-3 text-base text-foreground outline-none"
+              placeholder="Busca por nombre, actividad o producto..."
+              className="min-w-0 flex-1 bg-transparent py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
             {text && (
               <button
                 type="button"
                 onClick={() => setText("")}
                 aria-label="Borrar búsqueda"
-                className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             )}
-            <button type="submit" className="h-11 rounded-md bg-terracotta px-5 text-sm font-semibold text-terracotta-foreground hover:opacity-90">
+            <button type="submit" className="rounded-lg bg-primary px-4 py-2.5 font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
               Buscar
             </button>
           </form>
+          <p className="flex items-center gap-1.5 px-2 pt-2 pb-1 text-[11px] text-muted-foreground">
+            <Info className="h-3.5 w-3.5" aria-hidden />
+            Escribe para filtrar en tiempo real o selecciona una categoría
+          </p>
         </div>
       </section>
-      <p className="mx-auto max-w-5xl px-4 pt-1 text-xs text-muted-foreground">Imagen provisional</p>
 
       <nav aria-label="Filtros" className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-5xl gap-2 overflow-x-auto px-4 py-3">
