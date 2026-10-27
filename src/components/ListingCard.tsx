@@ -24,7 +24,7 @@ export function TypeLabel({ type, className }: { type: Listing["type"]; classNam
 
 export function CollaboratorBadge() {
   return (
-    <span className="inline-flex items-center gap-1 bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
+    <span className="inline-flex items-center gap-1 rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
       <HeartHandshake className="h-3.5 w-3.5" aria-hidden /> Colaborador
     </span>
   );

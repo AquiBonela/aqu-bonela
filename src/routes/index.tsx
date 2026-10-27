@@ -41,7 +41,7 @@ export const Route = createFileRoute("/")({
 
 const pill = (active: boolean) =>
   cn(
-    "min-h-11 shrink-0 border px-4 text-sm font-semibold transition-colors",
+    "min-h-11 shrink-0 rounded-md border px-4 text-sm font-semibold transition-colors",
     active ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-secondary",
   );
 
@@ -54,7 +54,7 @@ function Index() {
   useEffect(() => setText(q), [q]);
   useEffect(() => {
     const t = setTimeout(() => {
-      if (text !== q) navigate({ search: (p) => ({ ...p, q: text }), replace: true });
+      if (text !== q) navigate({ search: (p) => ({ ...p, q: text, ...(text ? { cat: "", of: "" } : {}) }), replace: true });
     }, 250);
     return () => clearTimeout(t);
   }, [text, q, navigate]);
@@ -68,7 +68,7 @@ function Index() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ search: (p) => ({ ...p, q: text }) });
+    navigate({ search: (p) => ({ ...p, q: text, cat: "", of: "" }) });
     document.getElementById("resultados")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -88,7 +88,7 @@ function Index() {
           <h1 className="mt-2 max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
             ¿Qué buscas en Casarabonela?
           </h1>
-          <form onSubmit={submit} role="search" className="mt-6 flex max-w-xl items-center border bg-card p-1.5">
+          <form onSubmit={submit} role="search" className="mt-6 flex max-w-xl items-center rounded-lg border bg-card p-1.5">
             <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
             <Search className="ml-3 h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
             <input
@@ -104,12 +104,12 @@ function Index() {
                 type="button"
                 onClick={() => setText("")}
                 aria-label="Borrar búsqueda"
-                className="flex h-10 w-10 items-center justify-center text-muted-foreground hover:bg-secondary"
+                className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
               >
                 <X className="h-5 w-5" />
               </button>
             )}
-            <button type="submit" className="h-11 bg-terracotta px-5 text-sm font-semibold text-terracotta-foreground hover:opacity-90">
+            <button type="submit" className="h-11 rounded-md bg-terracotta px-5 text-sm font-semibold text-terracotta-foreground hover:opacity-90">
               Buscar
             </button>
           </form>
@@ -140,7 +140,7 @@ function Index() {
                 aria-pressed={of === a}
                 onClick={() => navigate({ search: (p) => ({ ...p, of: a }) })}
                 className={cn(
-                  "min-h-9 shrink-0 border px-3 text-xs font-semibold transition-colors",
+                  "min-h-9 shrink-0 rounded-md border px-3 text-xs font-semibold transition-colors",
                   of === a ? "border-terracotta bg-terracotta text-terracotta-foreground" : "bg-card hover:bg-secondary",
                 )}
               >
