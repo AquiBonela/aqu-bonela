@@ -1,57 +1,47 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, MapPin, MessageCircle, Navigation, Phone, Star } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
-import { TypeBadge } from "@/components/ListingCard";
+import { CollaboratorBadge, TypeLabel } from "@/components/ListingCard";
+import { ReportDialog } from "@/components/ReportDialog";
+import { cn } from "@/lib/utils";
 
 export function ListingPage({ listing }: { listing: ListingDetail }) {
-  const featured = isFeatured(listing);
+  const collaborator = isFeatured(listing);
   const hours = groupHours(listing.hours);
   const today = (new Date().getDay() + 6) % 7;
+  const pro = listing.type === "profesional";
+  const gallery = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
 
   return (
     <div className="min-h-screen bg-background pb-28">
-      <header className="bg-primary px-4 pb-6 pt-4 text-primary-foreground">
-        <div className="mx-auto max-w-3xl">
-          <Link to="/" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold opacity-90 hover:opacity-100">
-            <ArrowLeft className="h-4 w-4" aria-hidden /> Volver al directorio
-          </Link>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <TypeBadge type={listing.type} />
-            {featured && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-terracotta px-2 py-0.5 text-xs font-semibold text-terracotta-foreground">
-                <Star className="h-3 w-3" aria-hidden /> Destacado
-              </span>
-            )}
-          </div>
-          <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
+      <div className="mx-auto max-w-3xl px-4">
+        <Link to="/" search={{ q: "", cat: "", of: "" }} className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
+          <ArrowLeft className="h-4 w-4" aria-hidden /> Volver al directorio
+        </Link>
+      </div>
+      {listing.cover_url && (
+        <div className="mx-auto max-w-3xl sm:px-4">
+          <img src={listing.cover_url} alt={listing.name} className="aspect-[16/9] w-full object-cover" />
+        </div>
+      )}
+      <header className={cn("mx-auto mt-5 max-w-3xl border-l-4 px-4", pro ? "border-terracotta" : "border-primary")}>
+        <div className="flex flex-wrap items-center gap-2">
+          <TypeLabel type={listing.type} />
+          {collaborator && <CollaboratorBadge />}
+        </div>
+        <h1 className="mt-1 font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
+        <p className="mt-1 text-sm font-medium text-muted-foreground">
           {listing.categoryName && listing.categorySlug && (
-            <Link
-              to="/"
-              search={{ q: "", cat: listing.categorySlug }}
-              className="mt-1 inline-block text-sm font-medium underline-offset-4 opacity-90 hover:underline"
-            >
+            <Link to="/" search={{ q: "", cat: listing.categorySlug, of: "" }} className="hover:underline">
               {listing.categoryName}
             </Link>
           )}
-        </div>
+          {listing.activity && ` · ${listing.activity}`}
+        </p>
       </header>
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
-        {listing.photos.length > 0 && (
-          <section aria-label="Fotos" className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4">
-            {listing.photos.map((p) => (
-              <img
-                key={p.url}
-                src={p.url}
-                alt={p.alt}
-                loading="lazy"
-                className="h-56 w-[85%] shrink-0 snap-center rounded-[var(--radius)] object-cover sm:w-80"
-              />
-            ))}
-          </section>
-        )}
-
         {listing.description && <p className="text-base leading-relaxed">{listing.description}</p>}
 
         {listing.public_address && (
