@@ -358,6 +358,7 @@ export type Database = {
           tags: string[]
           type: Database["public"]["Enums"]["listing_type"]
           updated_at: string
+          urgent_24h: boolean
         }
         Insert: {
           activity?: string | null
@@ -380,6 +381,7 @@ export type Database = {
           tags?: string[]
           type: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
+          urgent_24h?: boolean
         }
         Update: {
           activity?: string | null
@@ -402,6 +404,7 @@ export type Database = {
           tags?: string[]
           type?: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
+          urgent_24h?: boolean
         }
         Relationships: [
           {

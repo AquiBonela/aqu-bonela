@@ -19,6 +19,7 @@ export type Listing = {
   labels: string[];
   cover_url: string | null;
   gallery_urls: string[];
+  urgent_24h: boolean;
 };
 
 export const directoryQuery = queryOptions({
@@ -29,7 +30,7 @@ export const directoryQuery = queryOptions({
       supabase
         .from("listings")
         .select(
-          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,gallery_urls",
+          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,gallery_urls,urgent_24h",
         )
         .eq("status", "publicada")
         .order("name"),

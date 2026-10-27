@@ -1,4 +1,4 @@
-import { Briefcase, HeartHandshake, Store } from "lucide-react";
+import { Briefcase, HeartHandshake, Siren, Store } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Listing } from "@/lib/directory";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ export function TypeLabel({ type, className }: { type: Listing["type"]; classNam
 
 export function CollaboratorBadge() {
   return (
-    <span className="inline-flex items-center gap-1 bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
+    <span className="inline-flex items-center gap-1 rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
       <HeartHandshake className="h-3.5 w-3.5" aria-hidden /> Colaborador
     </span>
   );
@@ -56,6 +56,7 @@ export function ListingCard({
         <div className="flex flex-wrap items-center gap-2">
           <TypeLabel type={listing.type} />
           {collaborator && <CollaboratorBadge />}
+          {listing.urgent_24h && <UrgentBadge />}
         </div>
         <h3 className="mt-1 font-display text-lg font-bold leading-tight">
           <Link
@@ -79,5 +80,13 @@ export function ListingCard({
         )}
       </div>
     </article>
+  );
+}
+
+export function UrgentBadge() {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-md border border-destructive px-2 py-0.5 text-xs font-semibold text-destructive">
+      <Siren className="h-3.5 w-3.5" aria-hidden /> Urgencias 24h
+    </span>
   );
 }

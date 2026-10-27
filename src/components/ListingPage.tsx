@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Clock, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
-import { CollaboratorBadge, TypeLabel } from "@/components/ListingCard";
+import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +29,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         <div className="flex flex-wrap items-center gap-2">
           <TypeLabel type={listing.type} />
           {collaborator && <CollaboratorBadge />}
+          {listing.urgent_24h && <UrgentBadge />}
         </div>
         <h1 className="mt-1 font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
         <p className="mt-1 text-sm font-medium text-muted-foreground">
