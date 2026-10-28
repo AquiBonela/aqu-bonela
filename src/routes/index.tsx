@@ -102,7 +102,7 @@ function Index() {
               type="search"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Panadería, fontanero, tapas..."
+              placeholder="Panadería, fontanero, tapas…"
               className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
             />
             {text && (
