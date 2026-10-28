@@ -10,13 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SugerirRoute = SugerirRouteImport.update({
@@ -34,37 +47,82 @@ const ProfesionalesSlugRoute = ProfesionalesSlugRouteImport.update({
   path: '/profesionales/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminFichasIdRoute =
+  AuthenticatedAdminFichasIdRouteImport.update({
+    id: '/admin/fichas/$id',
+    path: '/admin/fichas/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sugerir' | '/comercios/$slug' | '/profesionales/$slug'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/sugerir'
+    | '/comercios/$slug'
+    | '/profesionales/$slug'
+    | '/admin/'
+    | '/admin/fichas/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sugerir' | '/comercios/$slug' | '/profesionales/$slug'
+  to:
+    | '/'
+    | '/auth'
+    | '/sugerir'
+    | '/comercios/$slug'
+    | '/profesionales/$slug'
+    | '/admin'
+    | '/admin/fichas/$id'
   id:
-    '__root__' | '/' | '/sugerir' | '/comercios/$slug' | '/profesionales/$slug'
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/sugerir'
+    | '/comercios/$slug'
+    | '/profesionales/$slug'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/fichas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   SugerirRoute: typeof SugerirRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
@@ -77,6 +135,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sugerir': {
@@ -100,11 +172,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfesionalesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/fichas/$id': {
+      id: '/_authenticated/admin/fichas/$id'
+      path: '/admin/fichas/$id'
+      fullPath: '/admin/fichas/$id'
+      preLoaderRoute: typeof AuthenticatedAdminFichasIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminFichasIdRoute: typeof AuthenticatedAdminFichasIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminFichasIdRoute: AuthenticatedAdminFichasIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   SugerirRoute: SugerirRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
