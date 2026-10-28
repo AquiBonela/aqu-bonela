@@ -1,0 +1,68 @@
+import { queryOptions } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { normalize } from "@/lib/directory";
+
+export const STATUSES = [
+  { value: "borrador", label: "Borrador" },
+  { value: "pendiente", label: "Pendiente de aprobación" },
+  { value: "publicada", label: "Publicada" },
+  { value: "rechazada", label: "Rechazada" },
+  { value: "oculta", label: "Oculta" },
+] as const;
+export type Status = (typeof STATUSES)[number]["value"];
+
+export function slugify(text: string) {
+  return normalize(text).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+/** Colaborador dura 1 mes desde la activación. */
+export function collaboratorUntil(from = new Date()) {
+  const d = new Date(from);
+  d.setMonth(d.getMonth() + 1);
+  return d.toISOString();
+}
+
+export const isAdminQuery = queryOptions({
+  queryKey: ["admin", "is-admin"],
+  queryFn: async () => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return false;
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id).eq("role", "admin");
+    return !!data?.length;
+  },
+});
+
+export const adminListingsQuery = queryOptions({
+  queryKey: ["admin", "listings"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("listings")
+      .select("id,slug,type,name,status,featured,featured_until,urgent_24h,activity,updated_at,categories(name)")
+      .order("updated_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
+
+export const categoriesQuery = queryOptions({
+  queryKey: ["admin", "categories"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("categories").select("id,name").order("sort_order");
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
+
+export const adminListingQuery = (id: string) =>
+  queryOptions({
+    queryKey: ["admin", "listing", id],
+    queryFn: async () => {
+      const [l, c, h] = await Promise.all([
+        supabase.from("listings").select("*").eq("id", id).maybeSingle(),
+        supabase.from("listing_contacts").select("*").eq("listing_id", id).maybeSingle(),
+        supabase.from("listing_hours").select("weekday,opens,closes").eq("listing_id", id).order("weekday"),
+      ]);
+      if (l.error) throw new Error(l.error.message);
+      return { listing: l.data, contact: c.data, hours: h.data ?? [] };
+    },
+  });
