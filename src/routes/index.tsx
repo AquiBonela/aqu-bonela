@@ -94,7 +94,7 @@ function Index() {
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
-          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-2 rounded-xl border bg-card p-1.5">
+          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1.5 rounded-xl border bg-card p-1.5">
             <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
@@ -115,7 +115,7 @@ function Index() {
                 <X className="h-5 w-5" />
               </button>
             )}
-            <button type="submit" className="h-11 rounded-md bg-terracotta px-5 font-display text-sm font-semibold text-terracotta-foreground hover:opacity-90">
+            <button type="submit" className="h-11 rounded-md bg-terracotta px-4 font-display text-sm font-semibold text-terracotta-foreground hover:opacity-90">
               Buscar
             </button>
           </form>
