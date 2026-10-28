@@ -76,28 +76,25 @@ function Index() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      <section className="relative w-full overflow-hidden bg-secondary/40">
-        <div className="relative h-72 w-full sm:h-80">
+      <section className="relative w-full overflow-hidden">
+        <div className="relative h-[24rem] w-full sm:h-[30rem]">
           <img
             src={heroImg}
             alt="Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves"
-            className="h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-cover object-center"
           />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/95 via-foreground/45 to-transparent" />
-          <div className="absolute inset-0 mx-auto flex max-w-xl flex-col justify-end p-4 pb-6 sm:p-6">
-            <span className="mb-1.5 font-display text-[11px] font-semibold uppercase tracking-widest text-accent">
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
+          <div className="relative mx-auto flex h-full max-w-5xl flex-col justify-end px-4 pb-16">
+            <p className="font-display text-sm font-semibold uppercase tracking-widest text-accent">
               Casarabonela · Málaga
-            </span>
-            <h1 className="mb-2 max-w-lg font-display text-[28px] font-extrabold leading-tight tracking-tight text-primary-foreground sm:text-[34px]">
+            </p>
+            <h1 className="mt-2 max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl">
               ¿Qué buscas en Casarabonela?
             </h1>
-            <p className="max-w-md text-[13px] leading-relaxed text-primary-foreground/85">
-              Directorio cívico de comercios, servicios y profesionales locales en la Sierra de las Nieves.
-            </p>
           </div>
         </div>
-        <div className="relative z-10 mx-auto -mt-4 w-full max-w-xl px-4 pb-2">
-          <form onSubmit={submit} role="search" className="flex items-center gap-2 rounded-xl border bg-card p-1.5">
+        <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
+          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1 rounded-xl border bg-card p-1.5">
             <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
@@ -105,24 +102,24 @@ function Index() {
               type="search"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Busca por nombre, actividad o producto..."
-              className="min-w-0 flex-1 bg-transparent py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+              placeholder="Panadería, fontanero, tapas…"
+              className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
             />
             {text && (
               <button
                 type="button"
                 onClick={() => setText("")}
                 aria-label="Borrar búsqueda"
-                className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
             )}
-            <button type="submit" className="rounded-lg bg-primary px-4 py-2.5 font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
+            <button type="submit" className="h-11 rounded-md bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground hover:opacity-90">
               Buscar
             </button>
           </form>
-          <p className="flex items-center gap-1.5 px-2 pt-2 pb-1 text-[11px] text-muted-foreground">
+          <p className="flex max-w-xl items-center gap-1.5 px-2 pt-2 pb-1 text-[11px] text-muted-foreground">
             <Info className="h-3.5 w-3.5" aria-hidden />
             Escribe para filtrar en tiempo real o selecciona una categoría
           </p>
