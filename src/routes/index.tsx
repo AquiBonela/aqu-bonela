@@ -103,7 +103,7 @@ function Index() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Panadería, fontanero, tapas..."
-              className="h-11 min-w-0 flex-1 bg-transparent px-2 text-base text-foreground outline-none placeholder:text-muted-foreground"
+              className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
             />
             {text && (
               <button
