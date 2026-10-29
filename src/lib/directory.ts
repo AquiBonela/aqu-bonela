@@ -103,6 +103,17 @@ export function filterListings(
   );
 }
 
+/** Orden aleatorio estable durante un día (cambia a medianoche, hora local). */
+export function dailyShuffle<T extends { id: string }>(items: T[], now = new Date()) {
+  const day = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+  const hash = (s: string) => {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+    return h >>> 0;
+  };
+  return [...items].sort((a, b) => hash(day + a.id) - hash(day + b.id) || a.id.localeCompare(b.id));
+}
+
 export function whatsappUrl(number: string, name?: string) {
   const text = name ? `?text=${encodeURIComponent(`Hola, os encuentro en Aquí Bonela (${name}).`)}` : "";
   return `https://wa.me/${number.replace(/\D/g, "")}${text}`;

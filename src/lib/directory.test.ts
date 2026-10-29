@@ -46,3 +46,14 @@ describe("directorio", () => {
     expect(filterListings(items, cats, "", "alimentacion", now, "Panadería", "profesional")).toEqual([]);
   });
 });
+
+import { dailyShuffle as ds } from "./directory";
+describe("dailyShuffle", () => {
+  const items = Array.from({ length: 12 }, (_, i) => ({ id: `id${i}` }));
+  it("mismo orden durante el mismo día", () => {
+    expect(ds(items, new Date(2026, 9, 29, 8))).toEqual(ds(items, new Date(2026, 9, 29, 22)));
+  });
+  it("cambia de orden otro día", () => {
+    expect(ds(items, new Date(2026, 9, 29))).not.toEqual(ds(items, new Date(2026, 9, 30)));
+  });
+});

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Search, X, Zap, ArrowUp } from "lucide-react";
 import { isEmergencyService } from "@/lib/listing-availability";
 import { useEffect, useMemo, useState } from "react";
-import { activitiesFor, directoryQuery, filterListings, isFeatured } from "@/lib/directory";
+import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured } from "@/lib/directory";
 import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import heroImg from "@/assets/hero-casarabonela.jpg";
@@ -203,7 +203,7 @@ function Index() {
             </div>
           ) : (
             <div className={cn("grid gap-4", !browsingHome && "mt-3")}>
-              {(browsingHome ? results.filter((l) => !isFeatured(l)) : results).map((l) => (
+              {(browsingHome ? dailyShuffle(results.filter((l) => !isFeatured(l))) : results).map((l) => (
                 <ListingCard
                   key={l.id}
                   listing={l}
