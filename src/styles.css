@@ -28,6 +28,7 @@
   --color-hashtag: var(--hashtag);
   --color-hashtag-foreground: var(--hashtag-foreground);
   --color-terracotta-foreground: var(--terracotta-foreground);
+  --color-beige: var(--beige);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
