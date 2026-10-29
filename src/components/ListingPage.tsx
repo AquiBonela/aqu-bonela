@@ -5,6 +5,7 @@ import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
 import { cn } from "@/lib/utils";
+import { availabilityTags, hashtag } from "@/lib/listing-availability";
 
 export function ListingPage({ listing }: { listing: ListingDetail }) {
   const collaborator = isFeatured(listing);
@@ -30,6 +31,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           <TypeLabel type={listing.type} />
           {collaborator && <CollaboratorBadge />}
           {listing.urgent_24h && <UrgentBadge />}
+          {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
         </div>
         <h1 className="mt-1 font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
         <p className="mt-1 text-sm font-medium text-muted-foreground">
@@ -102,7 +104,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         {listing.labels.length > 0 && (
           <ul className="flex flex-wrap gap-2" aria-label="Etiquetas">
             {listing.labels.map((t) => (
-              <li key={t} className="border bg-card px-3 py-1 text-sm">{t}</li>
+              <li key={t} className="bg-hashtag px-3 py-1 text-sm font-semibold text-hashtag-foreground">{hashtag(t)}</li>
             ))}
           </ul>
         )}

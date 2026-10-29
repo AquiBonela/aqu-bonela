@@ -22,6 +22,11 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --color-terracotta: var(--terracotta);
+  --color-availability: var(--availability);
+  --color-availability-foreground: var(--availability-foreground);
+  --color-availability-border: var(--availability-border);
+  --color-hashtag: var(--hashtag);
+  --color-hashtag-foreground: var(--hashtag-foreground);
   --color-terracotta-foreground: var(--terracotta-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -69,6 +74,11 @@
 
 :root {
   --radius: 0rem;
+  --availability: oklch(0.973 0.068 96);
+  --availability-foreground: oklch(0.60 0.15 62);
+  --availability-border: oklch(0.89 0.13 94);
+  --hashtag: oklch(0.946 0.027 263);
+  --hashtag-foreground: oklch(0.37 0.07 254);
   --background: oklch(0.973 0.008 91.5);
   --foreground: oklch(0.289 0.008 137.8);
   --card: oklch(1 0 0);
@@ -106,6 +116,11 @@
 }
 
 .dark {
+  --availability: oklch(0.29 0.047 85);
+  --availability-foreground: oklch(0.86 0.13 86);
+  --availability-border: oklch(0.52 0.075 85);
+  --hashtag: oklch(0.29 0.045 260);
+  --hashtag-foreground: oklch(0.86 0.045 255);
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);

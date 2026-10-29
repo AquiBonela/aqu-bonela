@@ -2,18 +2,19 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { Info, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { activitiesFor, directoryQuery, filterListings, isFeatured } from "@/lib/directory";
 import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import heroImg from "@/assets/hero-casarabonela.jpg";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   cat: fallback(z.string(), "").default(""),
   of: fallback(z.string(), "").default(""),
+  tipo: fallback(z.enum(["", "comercio", "profesional"]), "").default(""),
 });
 
 export const Route = createFileRoute("/")({
@@ -39,14 +40,8 @@ export const Route = createFileRoute("/")({
   notFoundComponent: () => <div className="p-8 text-center">No encontrado.</div>,
 });
 
-const pill = (active: boolean) =>
-  cn(
-    "min-h-11 shrink-0 rounded-soft border px-4 text-sm font-semibold transition-colors",
-    active ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-secondary",
-  );
-
 function Index() {
-  const { q, cat, of } = Route.useSearch();
+  const { q, cat, of, tipo } = Route.useSearch();
   const navigate = useNavigate({ from: "/" });
   const { data } = useSuspenseQuery(directoryQuery);
   const [text, setText] = useState(q);
@@ -61,9 +56,9 @@ function Index() {
 
   const catName = useMemo(() => new Map(data.categories.map((c) => [c.id, c.name])), [data.categories]);
   const activeCat = data.categories.find((c) => c.slug === cat);
-  const activities = activitiesFor(data.listings, activeCat?.id);
-  const results = filterListings(data.listings, data.categories, q, cat, new Date(), of);
-  const browsingHome = !q && !cat;
+  const activities = activitiesFor(data.listings.filter((l) => !tipo || l.type === tipo), activeCat?.id);
+  const results = filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo);
+  const browsingHome = !q && !cat && !tipo;
   const collaborators = data.listings.filter((l) => isFeatured(l));
 
   const submit = (e: React.FormEvent) => {
@@ -114,58 +109,47 @@ function Index() {
               className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
             />
             {text && (
-              <button
+              <Button
+                variant="ghost" size="icon"
                 type="button"
                 onClick={() => setText("")}
                 aria-label="Borrar búsqueda"
                 className="flex h-10 w-10 items-center justify-center rounded-soft-inner text-muted-foreground hover:bg-secondary"
               >
                 <X className="h-5 w-5" />
-              </button>
+              </Button>
             )}
-            <button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground hover:opacity-90">
+            <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">
               Buscar
-            </button>
+            </Button>
           </form>
-          <p className="flex max-w-xl items-center gap-1.5 px-2 pt-2 pb-1 text-[11px] text-muted-foreground">
-            <Info className="h-3.5 w-3.5" aria-hidden />
-            Escribe para filtrar en tiempo real o selecciona una categoría
-          </p>
         </div>
       </section>
 
       <nav aria-label="Filtros" className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl gap-2 overflow-x-auto px-4 py-3">
-          {[{ slug: "", name: "Todo" }, ...data.categories].map((c) => (
-            <button
-              key={c.slug || "all"}
-              type="button"
-              aria-pressed={cat === c.slug}
-              onClick={() => navigate({ search: (p) => ({ ...p, cat: c.slug, of: "" }) })}
-              className={pill(cat === c.slug)}
-            >
-              {c.name}
-            </button>
-          ))}
+        <div className="mx-auto grid max-w-5xl gap-3 px-4 py-3 sm:grid-cols-3">
+          <label className="grid min-w-0 gap-1 text-xs font-semibold">Mostrar
+            <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
+              const value = e.target.value;
+              if (value !== "" && value !== "comercio" && value !== "profesional") return;
+              navigate({ search: (p) => ({ ...p, tipo: value, of: "" }) });
+            }} className="h-11 w-full min-w-0 rounded-soft border bg-card px-3 text-sm">
+              <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option>
+            </select>
+          </label>
+          <label className="grid min-w-0 gap-1 text-xs font-semibold">Categoría
+            <select aria-label="Categoría" value={cat} onChange={(e) => navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "" }) })} className="h-11 w-full min-w-0 rounded-soft border bg-card px-3 text-sm">
+              <option value="">Todas las categorías</option>
+              {data.categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+            </select>
+          </label>
+          {activeCat && <label className="grid min-w-0 gap-1 text-xs font-semibold">Oficio / actividad
+            <select aria-label="Oficio / actividad" value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }) })} className="h-11 w-full min-w-0 rounded-soft border bg-card px-3 text-sm">
+              <option value="">Todos los oficios</option>
+              {activities.map((a) => <option key={a} value={a}>{a}</option>)}
+            </select>
+          </label>}
         </div>
-        {activities.length > 0 && (
-          <div className="mx-auto flex max-w-5xl gap-2 overflow-x-auto px-4 pb-3" aria-label="Oficios">
-            {["", ...activities].map((a) => (
-              <button
-                key={a || "all"}
-                type="button"
-                aria-pressed={of === a}
-                onClick={() => navigate({ search: (p) => ({ ...p, of: a }) })}
-                className={cn(
-                  "min-h-9 shrink-0 rounded-soft border px-3 text-xs font-semibold transition-colors",
-                  of === a ? "border-terracotta bg-terracotta text-terracotta-foreground" : "bg-card hover:bg-secondary",
-                )}
-              >
-                {a || "Todos los oficios"}
-              </button>
-            ))}
-          </div>
-        )}
       </nav>
 
       <main className="mx-auto max-w-5xl px-4 py-6">

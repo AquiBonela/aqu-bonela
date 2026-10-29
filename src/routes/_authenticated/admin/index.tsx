@@ -6,6 +6,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { adminListingsQuery, STATUSES } from "@/lib/admin";
 import { isFeatured, normalize } from "@/lib/directory";
 import { Input } from "@/components/ui/input";
+import { CollaboratorBadge } from "@/components/ListingCard";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
@@ -70,10 +71,13 @@ function ListBody() {
             <Link to="/admin/fichas/$id" params={{ id: l.id }} className="flex items-center gap-3 p-3 hover:bg-secondary/50">
               <span className={`w-1 self-stretch ${l.type === "comercio" ? "bg-primary" : "bg-terracotta"}`} />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{l.name}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="min-w-0 break-words font-medium">{l.name}</p>
+                  {isFeatured(l) && <CollaboratorBadge />}
+                </div>
                 <p className="truncate text-xs text-muted-foreground">
                   {l.categories?.name ?? "Sin categoría"}{l.activity ? ` · ${l.activity}` : ""}
-                  {isFeatured(l) ? " · Colaborador" : ""}{l.urgent_24h ? " · Urgencias 24h" : ""}
+                    {l.urgent_24h ? " · Urgencias 24h" : ""}
                 </p>
               </div>
               <span className="shrink-0 border px-2 py-0.5 text-xs">{statusLabel[l.status]}</span>

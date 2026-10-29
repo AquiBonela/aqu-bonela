@@ -83,11 +83,13 @@ export function filterListings(
   catSlug: string,
   now = new Date(),
   activity = "",
+  type: Listing["type"] | "" = "",
 ) {
   const cat = categories.find((c) => c.slug === catSlug);
   const words = normalize(q).split(/\s+/).filter(Boolean);
   const catName = new Map(categories.map((c) => [c.id, c.name]));
   const result = listings.filter((l) => {
+    if (type && l.type !== type) return false;
     if (cat && l.category_id !== cat.id) return false;
     if (cat && activity && normalize(l.activity ?? "") !== normalize(activity)) return false;
     if (!words.length) return true;
