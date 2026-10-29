@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
+import { ArrowLeft, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2 } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
@@ -93,7 +93,14 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           </section>
         )}
 
+        {listing.public_email && (
+          <a href={`mailto:${listing.public_email}`} className="inline-flex min-h-12 items-center gap-2 text-base font-semibold hover:text-terracotta">
+            <Mail className="h-5 w-5 text-primary" aria-hidden /> {listing.public_email}
+          </a>
+        )}
+
         <footer className="space-y-3 border-t pt-5">
+          <ShareButton name={listing.name} />
           <ReportDialog listingId={listing.id} listingName={listing.name} />
           <p className="text-xs font-semibold text-muted-foreground">Directorio municipal participativo de Casarabonela</p>
         </footer>
@@ -116,15 +123,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               rel="noopener noreferrer"
               className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
             >
-              <MessageCircle className="h-5 w-5" aria-hidden /> WhatsApp
-            </a>
-          )}
-          {listing.public_email && (
-            <a
-              href={`mailto:${listing.public_email}`}
-              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary"
-            >
-              <Mail className="h-5 w-5" aria-hidden /> Email
+              <MessageCircle className="h-5 w-5" aria-hidden /> Mensaje
             </a>
           )}
           {listing.public_address && (
@@ -140,6 +139,23 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         </div>
       </nav>
     </div>
+  );
+}
+
+function ShareButton({ name }: { name: string }) {
+  const share = async () => {
+    const url = window.location.href;
+    const text = `${name} en Aquí Bonela`;
+    if (navigator.share) {
+      try { await navigator.share({ title: name, text, url }); } catch { /* cancelado */ }
+      return;
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${text}: ${url}`)}`, "_blank", "noopener,noreferrer");
+  };
+  return (
+    <button type="button" onClick={share} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-base font-semibold hover:bg-secondary">
+      <Share2 className="h-5 w-5" aria-hidden /> Compartir ficha
+    </button>
   );
 }
 

@@ -8,3 +8,4 @@
 - [x] Reordenar ficha: etiquetas, nombre, dirección, descripción, hashtags, horario, galería y pie.
 - [x] Galería en dos columnas con última imagen impar a todo el ancho.
 - [x] Alinear distinciones amarillas a la derecha en fichas y tarjetas; verificar presentación.
+- [ ] Favicon e icono para pantalla de inicio (pendiente, verlo más adelante con el usuario)
