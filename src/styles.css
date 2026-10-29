@@ -165,3 +165,19 @@
     color: var(--color-foreground);
   }
 }
+
+/* Menú móvil: aparece con un pequeño deslizamiento hacia abajo */
+@keyframes menu-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-menu-drop {
+  animation: menu-drop 0.18s ease-out;
+}
