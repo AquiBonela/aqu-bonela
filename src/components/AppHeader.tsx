@@ -25,8 +25,8 @@ type AppHeaderProps = {
   footnote?: ReactNode;
 };
 
-const SMALL_CLASS = "hover:text-terracotta";
-const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hover:text-terracotta";
+const SMALL_CLASS = "hover:text-beige";
+const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hover:text-beige";
 
 /**
  * Cabecera compartida: menú siempre visible en escritorio y,
