@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Flag, X, PencilLine, Store, ShieldCheck, Send, Contact } from "lucide-react";
+import { Flag, X, PencilLine, Store, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -76,50 +76,31 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
                 <button type="button" onClick={close} className="min-h-14 rounded-xl bg-primary text-lg font-semibold text-primary-foreground">Cerrar</button>
               </div>
             ) : (
-              <form onSubmit={send} className="grid flex-1 content-start gap-6 p-5">
-                <fieldset className="grid gap-3">
-                  <legend className="mb-3 text-lg font-semibold">Motivo principal de la corrección</legend>
-                  <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2">
-                    {REASONS.map((r) => {
-                      const active = reason === r;
-                      return (
-                        <label key={r} className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 text-base font-medium transition-colors ${active ? "border-primary bg-secondary text-foreground" : "border-border bg-background hover:border-primary/50"}`}>
-                          <input type="radio" name="reason" value={r} checked={active} onChange={() => setReason(r)} className="h-5 w-5 shrink-0 accent-[var(--primary)]" />
-                          {r}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </fieldset>
+              <form onSubmit={send} className="grid flex-1 content-start gap-5 p-5">
+                <label className="grid gap-2">
+                  <span className="text-lg font-semibold">Motivo</span>
+                  <select value={reason} onChange={(e) => setReason(e.target.value)}
+                    className="h-14 w-full rounded-xl border-2 bg-background px-3 text-lg focus:border-primary focus:outline-none">
+                    {REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </label>
 
                 <label className="grid gap-2">
-                  <span className="flex items-baseline justify-between gap-2 text-lg font-semibold">
-                    Detalle de la corrección
-                    <span className="text-sm font-medium text-muted-foreground">Obligatorio</span>
-                  </span>
-                  <textarea required minLength={5} maxLength={1000} rows={4} value={message} onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Indica con detalle la información corregida o actualizada para que podamos revisarla…"
+                  <span className="text-lg font-semibold">¿Qué hay que corregir?</span>
+                  <textarea required minLength={5} maxLength={1000} rows={3} value={message} onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Escribe el dato correcto…"
                     className="rounded-xl border-2 bg-background p-3 text-lg font-normal focus:border-primary focus:outline-none" />
                 </label>
 
                 <label className="grid gap-2">
-                  <span className="text-lg font-semibold">Teléfono o email de contacto <span className="text-base font-normal text-muted-foreground">(opcional)</span></span>
-                  <span className="relative">
-                    <Contact className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
-                    <input maxLength={120} value={contact} onChange={(e) => setContact(e.target.value)} placeholder="ej. vecino@bonela.es o 654 321 000"
-                      className="h-14 w-full rounded-xl border-2 bg-background pl-11 pr-3 text-lg font-normal focus:border-primary focus:outline-none" />
-                  </span>
-                  <span className="text-base text-muted-foreground">Solo por si necesitamos contrastar el dato.</span>
+                  <span className="text-lg font-semibold">Tu teléfono o email <span className="text-base font-normal text-muted-foreground">(opcional)</span></span>
+                  <input maxLength={120} value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Por si necesitamos consultarte"
+                    className="h-14 w-full rounded-xl border-2 bg-background px-3 text-lg font-normal focus:border-primary focus:outline-none" />
                 </label>
-
-                <div className="flex gap-3 rounded-xl bg-secondary p-4 text-base">
-                  <ShieldCheck className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden />
-                  <p>Tu aviso ayuda a mantener actualizado el directorio colaborativo de Casarabonela. Sin spam ni datos públicos.</p>
-                </div>
 
                 {state === "error" && <p className="text-base font-medium text-destructive">No se ha podido enviar. Inténtalo de nuevo.</p>}
 
-                <button type="submit" disabled={state === "sending"} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60">
+                <button type="submit" disabled={state === "sending"} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
                   <Send className="h-5 w-5" aria-hidden /> {state === "sending" ? "Enviando…" : "Enviar aviso"}
                 </button>
               </form>
