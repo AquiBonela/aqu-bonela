@@ -212,3 +212,6 @@
 @utility animate-menu-item {
   animation: menu-item-in 0.3s ease-out both;
 }
+
+/* Espacio para la barra fija de contacto en fichas */
+body:has(.listing-page) > footer, body:has(.listing-page) footer.mt-8 { padding-bottom: 8rem; }

@@ -13,7 +13,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
   const gallery = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
 
   return (
-    <div className="min-h-screen bg-background pb-28">
+    <div className="listing-page min-h-screen bg-background pb-8">
       <div className="mx-auto max-w-3xl px-4">
         <Link to="/" search={{ q: "", cat: "", of: "" }} className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
           <ArrowLeft className="h-4 w-4" aria-hidden /> Volver al directorio
