@@ -15,8 +15,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <Link to="/admin" className="font-display text-lg font-bold">
             Aquí Bonela · <span className="font-medium opacity-80">Administración</span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link to="/" search={{ q: "", cat: "", of: "" }} className="hover:underline">Ver web</Link>
+          <nav className="flex items-center gap-3 text-sm sm:gap-4">
+            <Link to="/admin" activeOptions={{ exact: true }} className="hover:underline data-[status=active]:underline">
+              Fichas
+            </Link>
+            <Link to="/admin/avisos" className="hover:underline data-[status=active]:underline">
+              Avisos
+            </Link>
+            <Link to="/admin/sugerencias" className="hover:underline data-[status=active]:underline">
+              Sugerencias
+            </Link>
+            <Link to="/" search={{ q: "", cat: "", of: "" }} className="hidden hover:underline sm:inline">Ver web</Link>
             <button
               onClick={async () => {
                 await supabase.auth.signOut();
