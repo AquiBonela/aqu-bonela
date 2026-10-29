@@ -340,6 +340,7 @@ export type Database = {
         Row: {
           activity: string | null
           category_id: string | null
+          cover_path: string | null
           cover_url: string | null
           created_at: string
           description: string
@@ -364,6 +365,7 @@ export type Database = {
         Insert: {
           activity?: string | null
           category_id?: string | null
+          cover_path?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string
@@ -388,6 +390,7 @@ export type Database = {
         Update: {
           activity?: string | null
           category_id?: string | null
+          cover_path?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string
