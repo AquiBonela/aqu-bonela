@@ -15,3 +15,4 @@
 - Photos bucket `listing-photos` is private; read access is granted by storage policies tied to published listings. Why: workspace blocks public buckets.
 - Listing images use `listings.cover_url` (every listing) and `listings.gallery_urls` (shown only while the listing is a collaborator/featured). Why: pilot uses external demo images; gallery is a collaborator benefit.
 - "¿Algo no es correcto?" reports go to `listing_reports` (anon insert for published listings only, admin-only read). Why: no private data exposed to visitors.
+- Visitor suggestions from /sugerir go to `suggestions` (anon insert, admin-only read/update/delete); admin manages them in the /admin/sugerencias tray. Why: same admin-only pattern as reports.
