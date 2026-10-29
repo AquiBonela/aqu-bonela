@@ -8,8 +8,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { adminListingQuery, categoriesQuery, collaboratorUntil, siteSettingsQuery, slugify, STATUSES, type Status } from "@/lib/admin";
 import { isFeatured } from "@/lib/directory";
 import { listingPath, WEEKDAYS } from "@/lib/listing-detail";
-import { useServerFn } from "@tanstack/react-start";
-import { createReviewToken } from "@/lib/review.functions";
+import { createReviewToken } from "@/lib/review-token";
 import { reviewMessage, whatsappShareUrl } from "@/lib/review";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,17 +83,21 @@ function EditPage() {
   const [f, setF] = useState<Form>(empty);
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [saving, setSaving] = useState(false);
-  const generateReviewLink = useServerFn(createReviewToken);
   const [reviewLink, setReviewLink] = useState<{ url: string; expiresAt: string } | null>(null);
   const [linkBusy, setLinkBusy] = useState(false);
 
   async function generarEnlace() {
     setLinkBusy(true);
     try {
-      const res = await generateReviewLink({ data: { listingId: id } });
+      const res = await createReviewToken(id);
       setReviewLink({ url: `${window.location.origin}/revision/${res.token}`, expiresAt: res.expiresAt });
-    } catch {
-      toast.error("No se pudo generar el enlace. Inténtalo de nuevo.");
+    } catch (error) {
+      const code = error && typeof error === "object" && "code" in error ? error.code : null;
+      toast.error(code === "42501"
+        ? "Tu sesión no tiene permisos de administrador. Vuelve a iniciar sesión."
+        : code === "23503"
+          ? "La ficha ya no existe. Vuelve al listado y ábrela de nuevo."
+          : "No se pudo guardar el enlace. Comprueba tu conexión e inténtalo de nuevo.");
     } finally {
       setLinkBusy(false);
     }
