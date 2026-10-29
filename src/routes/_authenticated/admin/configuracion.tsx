@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { adminCategoriesQuery, siteSettingsQuery, slugify, type SiteSettings } from "@/lib/admin";
+import { adminCategoriesQuery, siteSettingsQuery, slugify, withSettingsDefaults, type SiteSettings } from "@/lib/admin";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracion")({
   head: () => ({
@@ -35,7 +35,7 @@ function GeneralSettings() {
   const qc = useQueryClient();
   const { data } = useQuery(siteSettingsQuery);
   const [f, setF] = useState<SiteSettings | null>(null);
-  useEffect(() => { if (data) setF(data); }, [data]);
+  useEffect(() => { if (data) setF(withSettingsDefaults(data)); }, [data]);
   if (!f) return null;
   const set = <K extends keyof SiteSettings>(k: K, v: SiteSettings[K]) => setF({ ...f, [k]: v });
   async function save(e: React.FormEvent) {
