@@ -41,7 +41,7 @@ export function ListingCard({
   const pro = listing.type === "profesional";
   const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
   return (
-    <article className={cn("relative flex flex-col overflow-hidden rounded-soft border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta" : "border-l-primary")}>
+    <article className={cn("relative flex flex-col overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.015] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta" : "border-l-primary")}>
       {collaborator && listing.cover_url && (
         <img src={listing.cover_url} alt="" loading="lazy" className="h-40 w-full object-cover sm:h-48" />
       )}
@@ -60,7 +60,7 @@ export function ListingCard({
           <Link
             to={pro ? "/profesionales/$slug" : "/comercios/$slug"}
             params={{ slug: listing.slug }}
-            className="after:absolute after:inset-0 hover:underline"
+            className="after:absolute after:inset-0"
           >
             {listing.name}
           </Link>
