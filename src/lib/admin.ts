@@ -66,3 +66,34 @@ export const adminListingQuery = (id: string) =>
       return { listing: l.data, contact: c.data, hours: h.data ?? [] };
     },
   });
+
+export const adminReportsQuery = queryOptions({
+  queryKey: ["admin", "reports"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("listing_reports")
+      .select("id, message, contact, resolved, created_at, listings(name, slug)")
+      .order("resolved", { ascending: true })
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
+
+export const adminSuggestionsQuery = queryOptions({
+  queryKey: ["admin", "suggestions"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("suggestions")
+      .select("*")
+      .order("handled", { ascending: true })
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
+
+/** Fecha corta en español, p. ej. «12 mar 2026». */
+export function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+}
