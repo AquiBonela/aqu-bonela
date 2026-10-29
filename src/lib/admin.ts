@@ -117,6 +117,25 @@ export type SiteSettings = {
 const SETTINGS_COLS =
   "hero_title,hero_subtitle,contact_email,admin_whatsapp,collaborator_months,legal_name,legal_nif,legal_address,legal_email,whatsapp_template,banner_enabled,banner_text,common_labels";
 
+/** Completa campos ausentes (datos antiguos o en caché) para que el formulario nunca falle. */
+export function withSettingsDefaults(d: Partial<SiteSettings> | null | undefined): SiteSettings {
+  return {
+    hero_title: d?.hero_title ?? "",
+    hero_subtitle: d?.hero_subtitle ?? "",
+    contact_email: d?.contact_email ?? "",
+    admin_whatsapp: d?.admin_whatsapp ?? "",
+    collaborator_months: d?.collaborator_months ?? 1,
+    legal_name: d?.legal_name ?? "",
+    legal_nif: d?.legal_nif ?? "",
+    legal_address: d?.legal_address ?? "",
+    legal_email: d?.legal_email ?? "",
+    whatsapp_template: d?.whatsapp_template ?? "",
+    banner_enabled: d?.banner_enabled ?? false,
+    banner_text: d?.banner_text ?? "",
+    common_labels: Array.isArray(d?.common_labels) ? d.common_labels : [],
+  };
+}
+
 export const siteSettingsQuery = queryOptions({
   queryKey: ["admin", "settings"],
   queryFn: async (): Promise<SiteSettings> => {
@@ -125,8 +144,7 @@ export const siteSettingsQuery = queryOptions({
       .select(SETTINGS_COLS)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    if (!data) throw new Error("Sin configuración");
-    return data as SiteSettings;
+    return withSettingsDefaults(data as Partial<SiteSettings> | null);
   },
 });
 
