@@ -1,17 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Mail, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
+import { ArrowLeft, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
-import { cn } from "@/lib/utils";
 import { availabilityTags, hashtag } from "@/lib/listing-availability";
 
 export function ListingPage({ listing }: { listing: ListingDetail }) {
   const collaborator = isFeatured(listing);
   const hours = groupHours(listing.hours);
   const today = (new Date().getDay() + 6) % 7;
-  const pro = listing.type === "profesional";
   const gallery = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
 
   return (
@@ -26,38 +24,44 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           <img src={listing.cover_url} alt={listing.name} className="aspect-[16/9] w-full object-cover" />
         </div>
       )}
-      <header className={cn("mx-auto mt-5 max-w-3xl border-l-4 px-4", pro ? "border-terracotta" : "border-primary")}>
-        <div className="flex flex-wrap items-center gap-2">
-          <TypeLabel type={listing.type} />
-          {collaborator && <CollaboratorBadge />}
-          {listing.urgent_24h && <UrgentBadge />}
-          {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
+      <header className="mx-auto mt-5 max-w-3xl px-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <TypeLabel type={listing.type} />
+            {listing.categoryName && listing.categorySlug && (
+              <Link to="/" search={{ q: "", cat: listing.categorySlug, of: "" }} className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground hover:underline">
+                {listing.categoryName}
+              </Link>
+            )}
+            {listing.activity && <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{listing.activity}</span>}
+            {collaborator && <CollaboratorBadge />}
+          </div>
+          <div className="flex max-w-40 flex-col items-end gap-1.5 text-right">
+            {listing.urgent_24h && <UrgentBadge />}
+            {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
+          </div>
         </div>
-        <h1 className="mt-1 font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
-        <p className="mt-1 text-sm font-medium text-muted-foreground">
-          {listing.categoryName && listing.categorySlug && (
-            <Link to="/" search={{ q: "", cat: listing.categorySlug, of: "" }} className="hover:underline">
-              {listing.categoryName}
-            </Link>
-          )}
-          {listing.activity && ` · ${listing.activity}`}
-        </p>
+        <h1 className="mt-3 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
+        {listing.public_address && <p className="mt-3 flex items-start gap-2 text-sm">
+          <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
+          <span>{listing.public_address} · Casarabonela</span>
+        </p>}
       </header>
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
-        {listing.description && <p className="text-base leading-relaxed">{listing.description}</p>}
-
-        {listing.public_address && (
-          <section className="border bg-card p-4">
-            <h2 className="flex items-center gap-2 font-display font-bold">
-              <MapPin className="h-5 w-5 text-primary" aria-hidden /> Dirección
-            </h2>
-            <p className="mt-1">{listing.public_address}, Casarabonela</p>
-          </section>
-        )}
+        <div className="space-y-4">
+          {listing.description && <p className="whitespace-pre-line text-base leading-relaxed">{listing.description}</p>}
+          {listing.labels.length > 0 && (
+            <ul className="flex flex-wrap gap-2" aria-label="Etiquetas">
+              {listing.labels.map((t) => (
+                <li key={t} className="bg-hashtag px-2 py-0.5 text-xs font-semibold text-hashtag-foreground">{hashtag(t)}</li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {(listing.public_phone || listing.public_whatsapp || listing.public_email) && (
-          <section className="border bg-card p-4">
+          <section className="border-t pt-5">
             <h2 className="font-display font-bold">Contacto</h2>
             <ul className="mt-2 grid gap-2">
               {listing.public_phone && (
@@ -74,7 +78,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         )}
 
         {listing.hours.length > 0 && (
-          <section className="border bg-card p-4">
+          <section className="border-t pt-5">
             <h2 className="flex items-center gap-2 font-display font-bold">
               <Clock className="h-5 w-5 text-primary" aria-hidden /> Horario
             </h2>
@@ -92,24 +96,24 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         )}
         {gallery.length > 0 && (
           <section aria-labelledby="fotos">
-            <h2 id="fotos" className="font-display font-bold">Fotos</h2>
-            <div className="-mx-4 mt-2 flex snap-x gap-3 overflow-x-auto px-4">
-              {gallery.map((p) => (
-                <img key={p.url} src={p.url} alt={p.alt} loading="lazy" className="h-56 w-[85%] shrink-0 snap-center object-cover sm:w-80" />
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+              <h2 id="fotos" className="flex min-w-0 items-center gap-2 font-display font-bold"><Images className="h-5 w-5 shrink-0 text-primary" aria-hidden /> Galería</h2>
+              <span className="shrink-0 text-xs text-muted-foreground">{gallery.length} {gallery.length === 1 ? "fotografía" : "fotografías"}</span>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-1.5">
+              {gallery.map((p, i) => (
+                <figure key={`${p.url}-${i}`} className={`relative min-w-0 overflow-hidden ${i === gallery.length - 1 && gallery.length % 2 === 1 ? "col-span-2 aspect-[2/1]" : "aspect-square"}`}>
+                  <img src={p.url} alt={p.alt} loading="lazy" className="h-full w-full object-cover" />
+                </figure>
               ))}
             </div>
           </section>
         )}
 
-        {listing.labels.length > 0 && (
-          <ul className="flex flex-wrap gap-2" aria-label="Etiquetas">
-            {listing.labels.map((t) => (
-              <li key={t} className="bg-hashtag px-3 py-1 text-sm font-semibold text-hashtag-foreground">{hashtag(t)}</li>
-            ))}
-          </ul>
-        )}
-
-        <ReportDialog listingId={listing.id} listingName={listing.name} />
+        <footer className="space-y-3 border-t pt-5">
+          <ReportDialog listingId={listing.id} listingName={listing.name} />
+          <p className="text-xs font-semibold text-muted-foreground">Directorio municipal participativo de Casarabonela</p>
+        </footer>
       </main>
 
       <nav

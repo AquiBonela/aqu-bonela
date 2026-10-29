@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { Flag, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 export function ReportDialog({ listingId, listingName }: { listingId: string; listingName: string }) {
   const [open, setOpen] = useState(false);
@@ -29,12 +30,9 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
 
   return (
     <>
-      <p className="text-sm text-muted-foreground">
-        ¿Algo no es correcto?{" "}
-        <button type="button" onClick={() => setOpen(true)} className="font-semibold text-terracotta underline underline-offset-4">
-          Avísanos
-        </button>
-      </p>
+      <Button variant="ghost" type="button" onClick={() => setOpen(true)} className="h-auto justify-start whitespace-normal p-0 text-left text-sm font-medium text-foreground hover:bg-transparent hover:underline">
+        <Flag className="shrink-0" aria-hidden /> ¿Algo no es correcto en esta ficha? Avísanos
+      </Button>
       {open && (
         <div role="dialog" aria-modal="true" aria-labelledby="report-title" className="fixed inset-0 z-30 flex items-end justify-center bg-foreground/50 sm:items-center">
           <div className="w-full max-w-md border bg-card p-5">

@@ -5,3 +5,6 @@
 - [x] Desplegables de categoría/oficio y filtro por tipo.
 - [x] Ejecutar pruebas y verificar la navegación pública.
 - [ ] Verificar avisos, guardado de distinciones y eliminación en el panel con sesión: bloqueado por Supabase externo sin sesión de prueba disponible.
+- [ ] Reordenar ficha: etiquetas, nombre, dirección, descripción, hashtags, horario, galería y pie.
+- [ ] Galería en dos columnas con última imagen impar a todo el ancho.
+- [ ] Alinear distinciones amarillas a la derecha en fichas y tarjetas; verificar presentación.
