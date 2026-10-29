@@ -21,7 +21,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const { data, error } = await supabase
         .from("listings")
         .select(
-          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
+          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
         )
         .eq("status", "publicada")
         .eq("type", type)
@@ -40,8 +40,14 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
           .map((p, i) => ({ url: signed?.[i]?.signedUrl ?? "", alt: p.alt || rest.name }))
           .filter((p) => p.url);
       }
+      let cover_url = rest.cover_url;
+      if (rest.cover_path) {
+        const { data: c } = await supabase.storage.from("listing-photos").createSignedUrl(rest.cover_path, 3600);
+        if (c?.signedUrl) cover_url = c.signedUrl;
+      }
       return {
         ...(rest as Listing),
+        cover_url,
         categoryName: categories?.name ?? null,
         categorySlug: categories?.slug ?? null,
         hours: [...listing_hours].sort((a, b) => a.weekday - b.weekday || a.opens.localeCompare(b.opens)),
