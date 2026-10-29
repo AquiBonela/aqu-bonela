@@ -69,7 +69,7 @@ export function ListingCard({
           </Link>
         </h3>
         {subtitle && <p className={cn("mt-1 text-base font-bold", pro ? "text-terracotta" : "text-primary")}>{subtitle}</p>}
-        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-foreground">{listing.short_description || listing.description}</p>
+        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{listing.short_description || listing.description}</p>
         <p className={cn("mt-3 text-base font-bold", pro ? "text-terracotta" : "text-primary")} aria-hidden>
           {actionText(listing)}
         </p>
