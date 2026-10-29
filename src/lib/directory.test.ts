@@ -15,8 +15,8 @@ const items: Listing[] = [
 
 describe("directorio", () => {
   it("el destacado caduca al pasar su fecha", () => {
-    expect(isFeatured(items[1]!, now)).toBe(true);
-    expect(isFeatured(items[2]!, now)).toBe(false);
+    expect(isFeatured(items[1] ?? items[0] as Listing, now)).toBe(true);
+    expect(isFeatured(items[2] ?? items[0] as Listing, now)).toBe(false);
   });
   it("las destacadas van primero dentro de su categoría", () => {
     expect(filterListings(items, cats, "", "alimentacion", now).map((l) => l.id)).toEqual(["2", "1"]);

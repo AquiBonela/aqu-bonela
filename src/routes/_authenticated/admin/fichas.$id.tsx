@@ -15,6 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { AVAILABILITY_OPTIONS, availabilityTags, searchTags, withAvailability } from "@/lib/listing-availability";
+import { deleteListing } from "@/lib/delete-listing";
 
 export const Route = createFileRoute("/_authenticated/admin/fichas/$id")({
   head: () => ({
@@ -59,6 +62,7 @@ type Form = {
   collaborator: boolean;
   featured_until: string | null;
   urgent_24h: boolean;
+  availability: string[];
   status: Status;
   hours: Hour[];
 };
@@ -67,7 +71,7 @@ const empty: Form = {
   type: "comercio", category_id: "", activity: "", labels: "", name: "", slug: "", short_description: "", description: "", tags: "",
   phone: "", whatsapp: "", address: "", email: "", show_email: false, show_phone: false, show_whatsapp: false, show_address: false,
   owner_name: "", owner_contact: "", collaborator: false, featured_until: null,
-  urgent_24h: false, status: "borrador", hours: [],
+  urgent_24h: false, availability: [], status: "borrador", hours: [],
 };
 
 const list = (s: string, sep: RegExp) => s.split(sep).map((x) => x.trim()).filter(Boolean);
@@ -84,6 +88,7 @@ function EditPage() {
   const [f, setF] = useState<Form>(empty);
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [reviewLink, setReviewLink] = useState<{ url: string; expiresAt: string } | null>(null);
   const [linkBusy, setLinkBusy] = useState(false);
 
@@ -109,11 +114,12 @@ function EditPage() {
     const l = data.listing, c = data.contact;
     setF({
       type: l.type, category_id: l.category_id ?? "", activity: l.activity ?? "", labels: l.labels.join(", "),
-      name: l.name, slug: l.slug, short_description: l.short_description ?? "", description: l.description, tags: l.tags.join(", "),
+      name: l.name, slug: l.slug, short_description: l.short_description ?? "", description: l.description, tags: searchTags(l.tags).join(", "),
       phone: c?.phone ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "", email: c?.email ?? "", show_email: c?.show_email ?? false,
       show_phone: c?.show_phone ?? false, show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
       owner_name: c?.owner_name ?? "", owner_contact: c?.owner_contact ?? "",
       collaborator: isFeatured(l), featured_until: l.featured_until, urgent_24h: l.urgent_24h,
+      availability: [...availabilityTags(l.tags)],
       status: l.status, hours: data.hours.map((h) => ({ ...h, opens: h.opens.slice(0, 5), closes: h.closes.slice(0, 5) })),
     });
   }, [data]);
@@ -131,7 +137,7 @@ function EditPage() {
       : null;
     const row = {
       type: f.type, category_id: f.category_id, activity: f.activity || null, labels, name: f.name.trim(),
-      slug: f.slug || slugify(f.name), short_description: f.short_description.trim(), description: f.description, tags: list(f.tags, /,/),
+      slug: f.slug || slugify(f.name), short_description: f.short_description.trim(), description: f.description, tags: withAvailability(list(f.tags, /,/), f.availability),
       featured: f.collaborator, featured_until,
       urgent_24h: f.urgent_24h, status: f.status,
     };
@@ -166,6 +172,24 @@ function EditPage() {
       toast.error(msg.includes("duplicate") ? "Ya existe una ficha con esa dirección web (slug)." : `No se pudo guardar: ${msg}`);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function eliminar() {
+    if (!window.confirm(`¿Eliminar definitivamente «${f.name}»? Se borrarán también sus fotos, contactos, horarios, avisos y autorizaciones. Esta acción no se puede deshacer.`)) return;
+    setDeleting(true);
+    try {
+      const result = await deleteListing(id);
+      await qc.invalidateQueries({ queryKey: ["admin"] });
+      await qc.invalidateQueries({ queryKey: ["directory"] });
+      await qc.invalidateQueries({ queryKey: ["listing"] });
+      if (result.cleanupFailed) toast.warning("Ficha eliminada, pero no se pudieron borrar algunos archivos de fotos.");
+      else toast.success("Ficha eliminada");
+      navigate({ to: "/admin" });
+    } catch {
+      toast.error("No se pudo eliminar la ficha. Comprueba tu conexión y tus permisos.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -284,6 +308,9 @@ function EditPage() {
           hint={f.collaborator && f.featured_until && new Date(f.featured_until) > new Date() ? `Hasta el ${new Date(f.featured_until).toLocaleDateString("es-ES")}` : "Aparece en portada y con galería de fotos"} />
         {f.collaborator && !isNew && <GalleryPicker listingId={id} />}
         <Toggle label="Urgencias 24h" checked={f.urgent_24h} onChange={(v) => set("urgent_24h", v)} hint="Fontaneros, cerrajeros, electricistas…" />
+        {AVAILABILITY_OPTIONS.map((option) => <Toggle key={option} label={option}
+          checked={f.availability.includes(option)}
+          onChange={(on) => set("availability", on ? [...f.availability, option] : f.availability.filter((value) => value !== option))} />)}
       </Section>
 
       <Section title="6. Estado">
@@ -338,12 +365,18 @@ function EditPage() {
         </div>
       </Section>
 
+      {!isNew && <div className="border-t pt-4">
+        <Button type="button" variant="outline" disabled={deleting || saving} onClick={eliminar} className="border-destructive text-destructive shadow-none">
+          <Trash2 aria-hidden /> {deleting ? "Eliminando…" : "Eliminar ficha"}
+        </Button>
+      </div>}
+
       <div className="fixed inset-x-0 bottom-0 border-t bg-background">
         <div className="mx-auto flex max-w-5xl justify-end gap-2 px-4 py-3">
           <Link to="/admin" className="inline-flex h-11 items-center border px-4 text-sm">Cancelar</Link>
-          <button disabled={saving} className="h-11 bg-primary px-6 text-sm font-medium text-primary-foreground disabled:opacity-60">
+          <Button type="submit" disabled={saving || deleting} className="h-11 bg-primary px-6 text-sm font-medium text-primary-foreground shadow-none disabled:opacity-60">
             {saving ? "Guardando…" : "Guardar ficha"}
-          </button>
+          </Button>
         </div>
       </div>
     </form>
