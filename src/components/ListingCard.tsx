@@ -52,11 +52,15 @@ export function ListingCard({
         />
       )}
       <div className="min-w-0 flex-1 p-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <TypeLabel type={listing.type} />
-          {collaborator && <CollaboratorBadge />}
-          {listing.urgent_24h && <UrgentBadge />}
-          {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <TypeLabel type={listing.type} />
+            {collaborator && <CollaboratorBadge />}
+          </div>
+          <div className="flex max-w-40 flex-col items-end gap-1.5 text-right">
+            {listing.urgent_24h && <UrgentBadge />}
+            {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
+          </div>
         </div>
         <h3 className="mt-1 font-display text-lg font-bold leading-tight">
           <Link
