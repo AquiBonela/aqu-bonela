@@ -191,7 +191,16 @@ function Index() {
             {results.length} {results.length === 1 ? "resultado" : "resultados"}
           </p>
           {results.length === 0 ? (
-            <p className="mt-6 border bg-card p-6 text-center">No hay resultados. Prueba con otra palabra o elige "Todo".</p>
+            <div className="mt-6 rounded-soft border bg-card p-6 text-center">
+              <p className="font-display text-xl font-bold">Vaya, no encontramos nada con ese nombre</p>
+              <p className="mt-2 text-base text-muted-foreground">Es posible que aún no esté registrado o esté escrito de otra forma.</p>
+              <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
+                <Button type="button" variant="outline" className="h-12 rounded-soft text-base" onClick={() => { setText(""); navigate({ search: { q: "", cat: "", of: "", tipo: "", urg: false } }); }}>
+                  Ver todo el directorio
+                </Button>
+                <Button asChild className="h-12 rounded-soft text-base"><Link to="/sugerir">Sugerir este negocio</Link></Button>
+              </div>
+            </div>
           ) : (
             <div className={cn("grid gap-4", !browsingHome && "mt-3")}>
               {(browsingHome ? results.filter((l) => !isFeatured(l)) : results).map((l) => (
@@ -205,7 +214,13 @@ function Index() {
             </div>
           )}
         </section>
+
+        <aside className="mt-8 rounded-soft border bg-secondary/60 p-6 text-center">
+          <p className="text-lg font-semibold">¿Tienes un comercio o prestas un servicio en el pueblo y no apareces?</p>
+          <Button asChild className="mt-4 h-12 rounded-soft text-base"><Link to="/sugerir">Dar de alta mi negocio</Link></Button>
+        </aside>
       </main>
+      <BackToTop />
 
     </div>
   );
