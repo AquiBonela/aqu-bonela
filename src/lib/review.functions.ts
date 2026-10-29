@@ -137,5 +137,22 @@ export const submitReview = createServerFn({ method: "POST" })
     return { ok: true, url: listingPath(l.type, l.slug) };
   });
 
+/** El titular pide correcciones sin autorizar: llega a la bandeja de Avisos; la ficha sigue sin publicar. */
+export const sendCorrection = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ token: z.string().regex(TOKEN_RE), comment: z.string().trim().min(1).max(1000) }).parse(d),
+  )
+  .handler(async ({ data }): Promise<SubmitResult> => {
+    const found = await loadToken(data.token);
+    if (!found) return { ok: false, reason: "invalid" };
+    const { row, admin } = found;
+    if (new Date(row.expires_at) < new Date()) return { ok: false, reason: "expired" };
+    const { error } = await admin
+      .from("listing_reports")
+      .insert({ listing_id: row.listing_id, message: `[Corrección del titular] ${data.comment}`, contact: "Enlace de revisión" });
+    if (error) throw new Error("No se pudo enviar");
+    return { ok: true, url: null };
+  });
+
 export const reviewQuery = (token: string) =>
   queryOptions({ queryKey: ["review", token], queryFn: () => getReview({ data: { token } }) });
