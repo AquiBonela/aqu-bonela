@@ -5,9 +5,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, CircleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { reviewQuery, submitReview } from "@/lib/review.functions";
-import { groupHours, listingPath } from "@/lib/listing-detail";
+import { listingPath, type ListingDetail } from "@/lib/listing-detail";
+import { ListingPage } from "@/components/ListingPage";
+import { hoursHidden } from "@/lib/listing-availability";
 import type { Hour, ReviewContact, ReviewListing } from "@/lib/review";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/revision/$token")({
@@ -123,7 +124,16 @@ function ReviewForm({
     whatsapp: contact?.show_whatsapp ?? true,
     address: contact?.show_address ?? true,
     email: contact?.show_email ?? true,
+    hours: !hoursHidden(listing.tags),
   });
+  const preview: ListingDetail = {
+    ...listing,
+    public_phone: contact?.phone || null,
+    public_whatsapp: contact?.whatsapp || null,
+    public_address: contact?.address || null,
+    public_email: contact?.email || null,
+    hours,
+  };
   const [comment, setComment] = useState("");
   const [agree, setAgree] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -138,6 +148,7 @@ function ReviewForm({
           show_whatsapp: show.whatsapp,
           show_address: show.address,
           show_email: show.email,
+          show_hours: show.hours,
           comment: comment.trim() || undefined,
         },
       });
@@ -155,6 +166,7 @@ function ReviewForm({
   }
 
   return (
+    <>
     <div className="space-y-5">
       <div>
         <h1 className="font-display text-2xl font-bold">Revisa tu ficha</h1>
@@ -164,43 +176,16 @@ function ReviewForm({
         </p>
       </div>
 
-      <article className="border">
-        {listing.cover_url && <img src={listing.cover_url} alt={listing.name} className="h-44 w-full object-cover" />}
-        <div className="space-y-2 p-4">
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className={`border px-2 py-0.5 ${listing.type === "comercio" ? "border-primary text-primary" : "border-terracotta text-terracotta"}`}>
-              {listing.type === "comercio" ? "Comercio" : "Profesional"}
-            </span>
-            {listing.categoryName && <span className="text-muted-foreground">{listing.categoryName}</span>}
-            {listing.activity && <span className="text-muted-foreground">· {listing.activity}</span>}
-            {listing.urgent_24h && <span className="border border-destructive px-2 py-0.5 text-destructive">Urgencias 24h</span>}
-          </div>
-          <h2 className="font-display text-xl font-bold">{listing.name}</h2>
-          {listing.description && <p className="text-sm text-foreground/80">{listing.description}</p>}
-          {listing.labels.length > 0 && <p className="text-xs text-muted-foreground">{listing.labels.join(" · ")}</p>}
-          {hours.length > 0 && (
-            <div className="text-xs text-muted-foreground">
-              {groupHours(hours)
-                .filter((g) => g.slots.length > 0)
-                .map((g) => (
-                  <p key={g.day}>
-                    {g.day}: {g.slots.join(", ")}
-                  </p>
-                ))}
-            </div>
-          )}
-        </div>
-      </article>
+      <p className="rounded-xl bg-secondary px-4 py-3 text-base text-secondary-foreground">
+        Así se verá tu ficha. Usa los interruptores <strong>«Se ve / Oculto»</strong> para elegir qué datos aparecen.
+      </p>
+    </div>
 
-      <fieldset className="space-y-3 border p-4">
-        <legend className="px-1 text-sm font-medium">¿Qué datos autorizas publicar?</legend>
-        <DataRow label="Teléfono" value={contact?.phone ?? null} show={show.phone} onChange={(v) => setShow((p) => ({ ...p, phone: v }))} />
-        <DataRow label="WhatsApp" value={contact?.whatsapp ?? null} show={show.whatsapp} onChange={(v) => setShow((p) => ({ ...p, whatsapp: v }))} />
-        <DataRow label="Dirección" value={contact?.address ?? null} show={show.address} onChange={(v) => setShow((p) => ({ ...p, address: v }))} />
-        <DataRow label="Email" value={contact?.email ?? null} show={show.email} onChange={(v) => setShow((p) => ({ ...p, email: v }))} />
-        <p className="text-xs text-muted-foreground">Si desmarcas un dato, dejará de verse en la ficha pública.</p>
-      </fieldset>
+    <div className="-mx-4 border-y py-4">
+      <ListingPage review={{ show, onToggle: (f, v) => setShow((p) => ({ ...p, [f]: v })) }} listing={preview} />
+    </div>
 
+    <div className="space-y-5">
       <Textarea
         rows={3}
         value={comment}
@@ -225,21 +210,6 @@ function ReviewForm({
         Si algo no es correcto, no autorices: escribe un comentario en el cuadro de arriba y avisa al administrador.
       </p>
     </div>
-  );
-}
-
-function DataRow({ label, value, show, onChange }: { label: string; value: string | null; show: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-sm">
-        {label}:{" "}
-        {value ? <span className="font-medium">{value}</span> : <span className="text-muted-foreground">sin dato</span>}
-      </span>
-      {value && (
-        <label className="flex items-center gap-2 text-xs">
-          <Switch checked={show} onCheckedChange={onChange} /> Publicar
-        </label>
-      )}
-    </div>
+    </>
   );
 }
