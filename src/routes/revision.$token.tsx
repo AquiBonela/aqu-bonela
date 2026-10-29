@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, CircleAlert } from "lucide-react";
 import { toast } from "sonner";
-import { reviewQuery, submitReview } from "@/lib/review.functions";
+import { reviewQuery, sendCorrection, submitReview } from "@/lib/review.functions";
 import { listingPath, type ListingDetail } from "@/lib/listing-detail";
 import { ListingPage } from "@/components/ListingPage";
 import { hoursHidden } from "@/lib/listing-availability";
@@ -70,7 +70,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <header className="border-b px-4 py-3">
         <div className="mx-auto flex max-w-2xl items-baseline justify-between">
           <span className="font-display text-lg font-bold">Aquí Bonela</span>
-          <span className="text-xs uppercase tracking-widest text-accent">Revisión de ficha</span>
+          <span className="text-xs uppercase tracking-widest text-foreground">Revisión de ficha</span>
         </div>
       </header>
       <main className="mx-auto max-w-2xl px-4 py-6">{children}</main>
@@ -137,6 +137,21 @@ function ReviewForm({
   const [comment, setComment] = useState("");
   const [agree, setAgree] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  const correct = useServerFn(sendCorrection);
+
+  async function notify() {
+    setBusy(true);
+    try {
+      const res = await correct({ data: { token, comment: comment.trim() } });
+      if (res.ok) setSent(true);
+      else toast.error(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido.");
+    } catch {
+      toast.error("No se pudo enviar. Inténtalo de nuevo.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function approve() {
     setBusy(true);
@@ -149,7 +164,6 @@ function ReviewForm({
           show_address: show.address,
           show_email: show.email,
           show_hours: show.hours,
-          comment: comment.trim() || undefined,
         },
       });
       if (res.ok) {
@@ -186,29 +200,45 @@ function ReviewForm({
     </div>
 
     <div className="space-y-5">
-      <Textarea
-        rows={3}
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        placeholder="Comentario para el administrador (opcional)"
-        aria-label="Comentario para el administrador"
-      />
+      <section className="space-y-3 rounded-xl border p-4">
+        <h2 className="font-display text-lg font-bold">Si todo está correcto</h2>
+        <label className="flex items-start gap-2 text-base">
+          <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1 h-5 w-5" />
+          <span>Confirmo que soy el titular de este negocio y autorizo la publicación de los datos marcados en Aquí Bonela.</span>
+        </label>
+        <button
+          onClick={approve}
+          disabled={busy || !agree}
+          className="h-12 w-full rounded-xl bg-primary text-base font-semibold text-primary-foreground disabled:opacity-60"
+        >
+          {busy ? "Enviando…" : "Autorizo la publicación de estos datos"}
+        </button>
+      </section>
 
-      <label className="flex items-start gap-2 text-sm">
-        <input type="checkbox" required checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1 h-4 w-4" />
-        <span>Confirmo que soy el titular de este negocio y autorizo la publicación de los datos marcados en Aquí Bonela.</span>
-      </label>
-
-      <button
-        onClick={approve}
-        disabled={busy || !agree}
-        className="h-12 w-full bg-primary text-sm font-medium text-primary-foreground disabled:opacity-60"
-      >
-        {busy ? "Enviando…" : "Autorizo la publicación de estos datos"}
-      </button>
-      <p className="text-xs text-muted-foreground">
-        Si algo no es correcto, no autorices: escribe un comentario en el cuadro de arriba y avisa al administrador.
-      </p>
+      <section className="space-y-3 rounded-xl border p-4">
+        <h2 className="font-display text-lg font-bold">Si algo no es correcto</h2>
+        {sent ? (
+          <p className="text-base">Mensaje enviado. El administrador revisará los cambios y te avisará. Tu ficha sigue sin publicar.</p>
+        ) : (
+          <>
+            <Textarea
+              rows={3}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Escribe qué hay que corregir"
+              aria-label="Qué hay que corregir"
+              className="text-base"
+            />
+            <button
+              onClick={notify}
+              disabled={busy || !comment.trim()}
+              className="h-12 w-full rounded-xl border bg-card text-base font-semibold disabled:opacity-60"
+            >
+              Avisar al administrador
+            </button>
+          </>
+        )}
+      </section>
     </div>
     </div>
   );
