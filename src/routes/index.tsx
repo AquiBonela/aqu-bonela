@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { Search, X } from "lucide-react";
+import { Search, X, Zap } from "lucide-react";
+import { isEmergencyService } from "@/lib/listing-availability";
 import { useEffect, useMemo, useState } from "react";
 import { activitiesFor, directoryQuery, filterListings, isFeatured } from "@/lib/directory";
 import { ListingCard } from "@/components/ListingCard";
@@ -16,6 +17,7 @@ const searchSchema = z.object({
   cat: fallback(z.string(), "").default(""),
   of: fallback(z.string(), "").default(""),
   tipo: fallback(z.enum(["", "comercio", "profesional"]), "").default(""),
+  urg: fallback(z.boolean(), false).default(false),
 });
 
 export const Route = createFileRoute("/")({
@@ -42,7 +44,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { q, cat, of, tipo } = Route.useSearch();
+  const { q, cat, of, tipo, urg } = Route.useSearch();
   const navigate = useNavigate({ from: "/" });
   const { data } = useSuspenseQuery(directoryQuery);
   const [text, setText] = useState(q);
@@ -50,7 +52,7 @@ function Index() {
   useEffect(() => setText(q), [q]);
   useEffect(() => {
     const t = setTimeout(() => {
-      if (text !== q) navigate({ search: (p) => ({ ...p, q: text, ...(text ? { cat: "", of: "" } : {}) }), replace: true });
+      if (text !== q) navigate({ search: (p) => ({ ...p, q: text, ...(text ? { cat: "", of: "", urg: false } : {}) }), replace: true });
     }, 250);
     return () => clearTimeout(t);
   }, [text, q, navigate]);
@@ -58,13 +60,15 @@ function Index() {
   const catName = useMemo(() => new Map(data.categories.map((c) => [c.id, c.name])), [data.categories]);
   const activeCat = data.categories.find((c) => c.slug === cat);
   const activities = activitiesFor(data.listings.filter((l) => !tipo || l.type === tipo), activeCat?.id);
-  const results = filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo);
-  const browsingHome = !q && !cat && !tipo;
+  const results = urg
+    ? filterListings(data.listings, data.categories, "", "", new Date(), "", "").filter(isEmergencyService)
+    : filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo);
+  const browsingHome = !q && !cat && !tipo && !urg;
   const collaborators = data.listings.filter((l) => isFeatured(l));
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ search: (p) => ({ ...p, q: text, cat: "", of: "" }) });
+    navigate({ search: (p) => ({ ...p, q: text, cat: "", of: "", urg: false }) });
     document.getElementById("resultados")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -85,11 +89,8 @@ function Index() {
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
-          <div className="relative mx-auto flex h-full max-w-5xl flex-col justify-end px-4 pb-16">
-            <p className="font-display text-sm font-semibold uppercase tracking-widest text-accent">
-              Casarabonela · Málaga
-            </p>
-            <h1 className="mt-2 max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl">
+          <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
+            <h1 className="max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl">
               {data.heroTitle}
             </h1>
             {data.heroSubtitle && (
@@ -98,7 +99,7 @@ function Index() {
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
-          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5">
+          <form onSubmit={submit} role="search" className="mx-auto flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5">
             <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
@@ -128,18 +129,18 @@ function Index() {
       </section>
 
       <nav aria-label="Filtros" className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto grid max-w-5xl gap-3 px-4 py-3 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-3xl gap-3 px-4 py-3 sm:grid-cols-3">
           <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Mostrar
             <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
               const value = e.target.value;
               if (value !== "" && value !== "comercio" && value !== "profesional") return;
-              navigate({ search: (p) => ({ ...p, tipo: value, of: "" }) });
+              navigate({ search: (p) => ({ ...p, tipo: value, of: "", urg: false }) });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option>
             </select>
           </label>
           <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Categoría
-            <select aria-label="Categoría" value={cat} onChange={(e) => navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "" }) })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
+            <select aria-label="Categoría" value={cat} onChange={(e) => { setText(""); navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "", q: "", urg: false }) }); }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todas las categorías</option>
               {data.categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select>
@@ -150,6 +151,19 @@ function Index() {
               {activities.map((a) => <option key={a} value={a}>{a}</option>)}
             </select>
           </label>}
+        </div>
+        <div className="mx-auto flex max-w-5xl justify-center px-4 pb-3">
+          <button
+            type="button"
+            aria-pressed={urg}
+            onClick={() => { setText(""); navigate({ search: (p) => ({ ...p, urg: !urg, q: "", cat: "", of: "", tipo: "" }) }); }}
+            className={cn(
+              "inline-flex min-h-12 items-center gap-2 rounded-full border-2 border-availability-border px-5 font-display text-base font-bold",
+              urg ? "bg-availability-foreground text-card" : "bg-availability text-availability-foreground",
+            )}
+          >
+            <Zap className="h-5 w-5" aria-hidden /> Urgencias y guardias{urg ? " · quitar" : ""}
+          </button>
         </div>
       </nav>
 
@@ -166,11 +180,11 @@ function Index() {
 
         <section aria-label="Directorio">
           {!browsingHome && (
-            <h2 className="font-display text-2xl font-bold">
-              {activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : "Resultados"}
+            <h2 className="text-center font-display text-2xl font-bold">
+              {urg ? "Urgencias y guardias" : activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : "Resultados"}
             </h2>
           )}
-          <p className={browsingHome ? "sr-only" : "text-sm text-muted-foreground"} aria-live="polite">
+          <p className={browsingHome ? "sr-only" : "text-center text-sm text-muted-foreground"} aria-live="polite">
             {results.length} {results.length === 1 ? "resultado" : "resultados"}
           </p>
           {results.length === 0 ? (

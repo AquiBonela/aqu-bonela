@@ -15,3 +15,7 @@ export function withAvailability(tags: string[], selected: string[]) {
 export function hashtag(label: string) {
   return `#${label.replace(/^#+/, "").replace(/\s+/g, "")}`;
 }
+/** Urgencias y guardias: 24h o cualquier distinción de disponibilidad. */
+export function isEmergencyService(l: { urgent_24h: boolean; tags: string[] }) {
+  return l.urgent_24h || availabilityTags(l.tags).length > 0;
+}
