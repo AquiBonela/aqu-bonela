@@ -35,7 +35,9 @@ function GeneralSettings() {
   const qc = useQueryClient();
   const { data } = useQuery(siteSettingsQuery);
   const [f, setF] = useState<SiteSettings | null>(null);
-  useEffect(() => { if (data) setF(withSettingsDefaults(data)); }, [data]);
+  // Solo inicializa la primera vez: una recarga en segundo plano (cambio de pestaña, guardado)
+  // no debe borrar lo que aún no se ha guardado.
+  useEffect(() => { if (data && !f) setF(withSettingsDefaults(data)); }, [data, f]);
   if (!f) return null;
   const set = <K extends keyof SiteSettings>(k: K, v: SiteSettings[K]) => setF({ ...f, [k]: v });
   async function save(e: React.FormEvent) {
