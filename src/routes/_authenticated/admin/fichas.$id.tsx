@@ -8,6 +8,9 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { adminListingQuery, categoriesQuery, collaboratorUntil, slugify, STATUSES, type Status } from "@/lib/admin";
 import { isFeatured } from "@/lib/directory";
 import { listingPath, WEEKDAYS } from "@/lib/listing-detail";
+import { useServerFn } from "@tanstack/react-start";
+import { createReviewToken } from "@/lib/review.functions";
+import { reviewMessage, whatsappShareUrl } from "@/lib/review";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -78,6 +81,21 @@ function EditPage() {
   const [f, setF] = useState<Form>(empty);
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const generateReviewLink = useServerFn(createReviewToken);
+  const [reviewLink, setReviewLink] = useState<{ url: string; expiresAt: string } | null>(null);
+  const [linkBusy, setLinkBusy] = useState(false);
+
+  async function generarEnlace() {
+    setLinkBusy(true);
+    try {
+      const res = await generateReviewLink({ data: { listingId: id } });
+      setReviewLink({ url: `${window.location.origin}/revision/${res.token}`, expiresAt: res.expiresAt });
+    } catch {
+      toast.error("No se pudo generar el enlace. Inténtalo de nuevo.");
+    } finally {
+      setLinkBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (!data?.listing) return;
@@ -252,7 +270,52 @@ function EditPage() {
         <select value={f.status} onChange={(e) => set("status", e.target.value as Status)} className="h-10 w-full border bg-background px-3 text-sm sm:w-72">
           {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
         </select>
-        <p className="text-xs text-muted-foreground">El enlace de WhatsApp para que el titular revise y apruebe llegará en el siguiente paso.</p>
+        <div className="space-y-3 border-t pt-3">
+          <p className="text-xs text-muted-foreground">
+            Genera un enlace privado y envíaselo al titular por WhatsApp: podrá revisar su ficha, marcar qué datos se
+            publican y autorizarla. Válido 30 días.
+          </p>
+          {isNew ? (
+            <p className="text-xs text-muted-foreground">Guarda la ficha para poder generar el enlace.</p>
+          ) : !reviewLink ? (
+            <button
+              type="button"
+              onClick={generarEnlace}
+              disabled={linkBusy}
+              className="h-10 bg-terracotta px-4 text-sm text-terracotta-foreground disabled:opacity-60"
+            >
+              {linkBusy ? "Generando…" : "Generar enlace de revisión"}
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <p className="border bg-muted/40 break-all p-2 text-xs">{reviewLink.url}</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(reviewLink.url);
+                    toast.success("Enlace copiado");
+                  }}
+                  className="h-10 border px-4 text-sm"
+                >
+                  Copiar enlace
+                </button>
+                <a
+                  href={whatsappShareUrl(reviewMessage(f.owner_name || null, reviewLink.url), f.owner_contact)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-10 items-center bg-primary px-4 text-sm text-primary-foreground"
+                >
+                  Abrir WhatsApp
+                </a>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Caduca el {new Date(reviewLink.expiresAt).toLocaleDateString("es-ES")}. Puedes generar un enlace nuevo
+                cuando quieras.
+              </p>
+            </div>
+          )}
+        </div>
       </Section>
 
       <div className="fixed inset-x-0 bottom-0 border-t bg-background">

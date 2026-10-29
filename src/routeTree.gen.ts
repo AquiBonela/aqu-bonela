@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
+import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
 import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
@@ -49,6 +50,11 @@ const ProfesionalesSlugRoute = ProfesionalesSlugRouteImport.update({
   path: '/profesionales/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RevisionTokenRoute = RevisionTokenRouteImport.update({
+  id: '/revision/$token',
+  path: '/revision/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/revision/$token': typeof RevisionTokenRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/revision/$token': typeof RevisionTokenRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/revision/$token': typeof RevisionTokenRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/sugerir'
     | '/comercios/$slug'
     | '/profesionales/$slug'
+    | '/revision/$token'
     | '/admin/avisos'
     | '/admin/sugerencias'
     | '/admin/'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/sugerir'
     | '/comercios/$slug'
     | '/profesionales/$slug'
+    | '/revision/$token'
     | '/admin/avisos'
     | '/admin/sugerencias'
     | '/admin'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/sugerir'
     | '/comercios/$slug'
     | '/profesionales/$slug'
+    | '/revision/$token'
     | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/sugerencias'
     | '/_authenticated/admin/'
@@ -152,6 +164,7 @@ export interface RootRouteChildren {
   SugerirRoute: typeof SugerirRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
+  RevisionTokenRoute: typeof RevisionTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -196,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/profesionales/$slug'
       fullPath: '/profesionales/$slug'
       preLoaderRoute: typeof ProfesionalesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/revision/$token': {
+      id: '/revision/$token'
+      path: '/revision/$token'
+      fullPath: '/revision/$token'
+      preLoaderRoute: typeof RevisionTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
@@ -253,6 +273,7 @@ const rootRouteChildren: RootRouteChildren = {
   SugerirRoute: SugerirRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
+  RevisionTokenRoute: RevisionTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
