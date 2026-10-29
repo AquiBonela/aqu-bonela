@@ -2,7 +2,7 @@ import { HeartHandshake } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Listing } from "@/lib/directory";
 import { cn } from "@/lib/utils";
-import { availabilityTags, hashtag } from "@/lib/listing-availability";
+import { availabilityTags } from "@/lib/listing-availability";
 
 export const typeLabel = (t: Listing["type"]) => (t === "profesional" ? "Profesional" : "Comercio");
 
