@@ -416,6 +416,33 @@ export type Database = {
           },
         ]
       }
+      suggestions: {
+        Row: {
+          contact: string | null
+          created_at: string
+          handled: boolean
+          id: string
+          message: string
+          name: string
+        }
+        Insert: {
+          contact?: string | null
+          created_at?: string
+          handled?: boolean
+          id?: string
+          message: string
+          name: string
+        }
+        Update: {
+          contact?: string | null
+          created_at?: string
+          handled?: boolean
+          id?: string
+          message?: string
+          name?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
