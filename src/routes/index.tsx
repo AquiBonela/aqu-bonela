@@ -41,7 +41,7 @@ export const Route = createFileRoute("/")({
 
 const pill = (active: boolean) =>
   cn(
-    "min-h-11 shrink-0 rounded-md border px-4 text-sm font-semibold transition-colors",
+    "min-h-11 shrink-0 rounded-soft border px-4 text-sm font-semibold transition-colors",
     active ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-secondary",
   );
 
@@ -94,7 +94,7 @@ function Index() {
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
-          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1 rounded-xl border bg-card p-1.5">
+          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1 rounded-soft border bg-card p-1.5">
             <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
@@ -110,12 +110,12 @@ function Index() {
                 type="button"
                 onClick={() => setText("")}
                 aria-label="Borrar búsqueda"
-                className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                className="flex h-10 w-10 items-center justify-center rounded-soft-inner text-muted-foreground hover:bg-secondary"
               >
                 <X className="h-5 w-5" />
               </button>
             )}
-            <button type="submit" className="h-11 rounded-md bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground hover:opacity-90">
+            <button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground hover:opacity-90">
               Buscar
             </button>
           </form>
@@ -149,7 +149,7 @@ function Index() {
                 aria-pressed={of === a}
                 onClick={() => navigate({ search: (p) => ({ ...p, of: a }) })}
                 className={cn(
-                  "min-h-9 shrink-0 rounded-md border px-3 text-xs font-semibold transition-colors",
+                  "min-h-9 shrink-0 rounded-soft border px-3 text-xs font-semibold transition-colors",
                   of === a ? "border-terracotta bg-terracotta text-terracotta-foreground" : "bg-card hover:bg-secondary",
                 )}
               >
