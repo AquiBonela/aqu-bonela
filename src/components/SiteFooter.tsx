@@ -19,9 +19,13 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
   return (
     <footer className={inMenu ? "text-sm text-primary-foreground/85 [&_*]:!text-primary-foreground" : "mt-8 border-t bg-secondary/40 px-4 py-8 text-sm text-muted-foreground"}>
       <div className={inMenu ? "" : "mx-auto max-w-2xl"}>
-        <p className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground">
-          <Sprout className="h-5 w-5 text-primary" aria-hidden /> Aquí Bonela · Directorio local colaborativo
-        </p>
+        <div className="flex flex-col gap-1 font-display text-sm font-bold uppercase tracking-wide text-foreground sm:flex-row sm:items-center sm:gap-2">
+          <span className="flex items-center gap-2">
+            <Sprout className="h-5 w-5 shrink-0 text-primary" aria-hidden /> Aquí Bonela
+          </span>
+          <span aria-hidden className="hidden sm:inline">·</span>
+          <span>Directorio local colaborativo</span>
+        </div>
         <p className="mt-2 font-semibold">Casarabonela {new Date().getFullYear()}</p>
         <p className="mt-3 text-base leading-relaxed text-foreground">
           Directorio local abierto para el fomento económico, comercial y profesional de Casarabonela.
