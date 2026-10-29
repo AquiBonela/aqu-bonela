@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { CoverPicker, GalleryPicker } from "@/components/admin/ListingImages";
 import { adminListingQuery, categoriesQuery, collaboratorUntil, siteSettingsQuery, slugify, STATUSES, type Status } from "@/lib/admin";
 import { isFeatured } from "@/lib/directory";
 import { listingPath, WEEKDAYS } from "@/lib/listing-detail";
@@ -53,8 +54,6 @@ type Form = {
   show_address: boolean;
   owner_name: string;
   owner_contact: string;
-  cover_url: string;
-  gallery_urls: string;
   collaborator: boolean;
   featured_until: string | null;
   urgent_24h: boolean;
@@ -65,7 +64,7 @@ type Form = {
 const empty: Form = {
   type: "comercio", category_id: "", activity: "", labels: "", name: "", slug: "", short_description: "", description: "", tags: "",
   phone: "", whatsapp: "", address: "", show_phone: false, show_whatsapp: false, show_address: false,
-  owner_name: "", owner_contact: "", cover_url: "", gallery_urls: "", collaborator: false, featured_until: null,
+  owner_name: "", owner_contact: "", collaborator: false, featured_until: null,
   urgent_24h: false, status: "borrador", hours: [],
 };
 
@@ -112,7 +111,6 @@ function EditPage() {
       phone: c?.phone ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "",
       show_phone: c?.show_phone ?? false, show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
       owner_name: c?.owner_name ?? "", owner_contact: c?.owner_contact ?? "",
-      cover_url: l.cover_url ?? "", gallery_urls: l.gallery_urls.join("\n"),
       collaborator: isFeatured(l), featured_until: l.featured_until, urgent_24h: l.urgent_24h,
       status: l.status, hours: data.hours.map((h) => ({ ...h, opens: h.opens.slice(0, 5), closes: h.closes.slice(0, 5) })),
     });
@@ -123,9 +121,7 @@ function EditPage() {
   async function save(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     const labels = list(f.labels, /,/);
-    const gallery = list(f.gallery_urls, /\n/);
     if (labels.length > 3) { toast.error("Máximo 3 etiquetas destacadas."); return; }
-    if (gallery.length > 5) { toast.error("Máximo 5 fotos en la galería."); return; }
     if (!f.category_id) { toast.error("Elige una categoría."); return; }
     setSaving(true);
     const featured_until = f.collaborator
@@ -134,7 +130,7 @@ function EditPage() {
     const row = {
       type: f.type, category_id: f.category_id, activity: f.activity || null, labels, name: f.name.trim(),
       slug: f.slug || slugify(f.name), short_description: f.short_description.trim(), description: f.description, tags: list(f.tags, /,/),
-      cover_url: f.cover_url || null, gallery_urls: gallery, featured: f.collaborator, featured_until,
+      featured: f.collaborator, featured_until,
       urgent_24h: f.urgent_24h, status: f.status,
     };
     try {
@@ -280,17 +276,10 @@ function EditPage() {
       </Section>
 
       <Section title="5. Imágenes y distinciones">
-        <Field label="Imagen de cabecera (URL)">
-          <Input value={f.cover_url} onChange={(e) => set("cover_url", e.target.value)} placeholder="https://…" />
-        </Field>
-        {f.cover_url && <img src={f.cover_url} alt="" className="h-32 w-full object-cover sm:w-64" />}
+        {isNew ? <p className="text-sm text-muted-foreground">Guarda la ficha para poder subir imágenes.</p> : <CoverPicker listingId={id} />}
         <Toggle label="Colaborador (1 mes)" checked={f.collaborator} onChange={(v) => set("collaborator", v)}
           hint={f.collaborator && f.featured_until && new Date(f.featured_until) > new Date() ? `Hasta el ${new Date(f.featured_until).toLocaleDateString("es-ES")}` : "Aparece en portada y con galería de fotos"} />
-        {f.collaborator && (
-          <Field label="Galería (URLs, una por línea)" hint="Máximo 5">
-            <Textarea rows={4} value={f.gallery_urls} onChange={(e) => set("gallery_urls", e.target.value)} />
-          </Field>
-        )}
+        {f.collaborator && !isNew && <GalleryPicker listingId={id} />}
         <Toggle label="Urgencias 24h" checked={f.urgent_24h} onChange={(v) => set("urgent_24h", v)} hint="Fontaneros, cerrajeros, electricistas…" />
       </Section>
 

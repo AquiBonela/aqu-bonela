@@ -19,6 +19,7 @@ export type Listing = {
   activity: string | null;
   labels: string[];
   cover_url: string | null;
+  cover_path?: string | null;
   gallery_urls: string[];
   urgent_24h: boolean;
 };
@@ -32,16 +33,28 @@ export const directoryQuery = queryOptions({
       supabase
         .from("listings")
         .select(
-          "id,slug,type,name,description,short_description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,gallery_urls,urgent_24h",
+          "id,slug,type,name,description,short_description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
         )
         .eq("status", "publicada")
         .order("name"),
     ]);
     if (cats.error) throw new Error(cats.error.message);
     if (list.error) throw new Error(list.error.message);
+    const listings = list.data as Listing[];
+    // Firma en lote solo las cabeceras que se ven (fichas colaboradoras con imagen subida).
+    const toSign = listings.filter((l) => l.cover_path && isFeatured(l));
+    if (toSign.length) {
+      const { data: signed } = await supabase.storage
+        .from("listing-photos")
+        .createSignedUrls(toSign.map((l) => l.cover_path!), 3600);
+      toSign.forEach((l, i) => {
+        const url = signed?.[i]?.signedUrl;
+        if (url) l.cover_url = url;
+      });
+    }
     return {
       categories: cats.data as Category[],
-      listings: list.data as Listing[],
+      listings,
       heroTitle: settings.data?.hero_title || "¿Qué buscas en Casarabonela?",
       heroSubtitle: settings.data?.hero_subtitle ?? "",
       banner: settings.data?.banner_enabled && settings.data.banner_text.trim() ? settings.data.banner_text.trim() : null,
