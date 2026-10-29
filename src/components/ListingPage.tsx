@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
+import { ArrowLeft, Clock, Mail, MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
@@ -51,6 +51,23 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               <MapPin className="h-5 w-5 text-primary" aria-hidden /> Dirección
             </h2>
             <p className="mt-1">{listing.public_address}, Casarabonela</p>
+          </section>
+        )}
+
+        {(listing.public_phone || listing.public_whatsapp || listing.public_email) && (
+          <section className="border bg-card p-4">
+            <h2 className="font-display font-bold">Contacto</h2>
+            <ul className="mt-2 grid gap-2">
+              {listing.public_phone && (
+                <li><a href={`tel:${listing.public_phone}`} className="inline-flex items-center gap-2 hover:underline"><Phone className="h-4 w-4 text-primary" aria-hidden /> {listing.public_phone}</a></li>
+              )}
+              {listing.public_whatsapp && (
+                <li><a href={whatsappUrl(listing.public_whatsapp, listing.name)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:underline"><MessageCircle className="h-4 w-4 text-primary" aria-hidden /> {listing.public_whatsapp}</a></li>
+              )}
+              {listing.public_email && (
+                <li><a href={`mailto:${listing.public_email}`} className="inline-flex items-center gap-2 break-all hover:underline"><Mail className="h-4 w-4 text-primary" aria-hidden /> {listing.public_email}</a></li>
+              )}
+            </ul>
           </section>
         )}
 
