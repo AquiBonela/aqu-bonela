@@ -76,7 +76,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               {contact.map((c) => (
                 <li key={c.label} className="flex items-center gap-2 break-words">
                   <c.icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-                  <span><span className="font-semibold">{c.label}:</span> {c.value}</span>
+                  <CopyValue label={c.label} value={c.value} />
                 </li>
               ))}
             </ul>
@@ -236,6 +236,23 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
         )}
       </div>
     </div>
+  );
+}
+
+function CopyValue({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch { /* sin permiso */ }
+  };
+  return (
+    <button type="button" onClick={copy} title="Toca para copiar" className="select-text text-left hover:text-primary">
+      <span className="font-semibold">{label}:</span> {value}
+      <span aria-live="polite" className="ml-2 text-sm font-semibold text-primary">{copied ? "Copiado ✓" : ""}</span>
+    </button>
   );
 }
 
