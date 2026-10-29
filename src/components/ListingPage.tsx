@@ -194,6 +194,7 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
   }, [photos.length, onClose]);
 
   const photo = photos[index];
+  if (!photo) return null;
   const stop = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
