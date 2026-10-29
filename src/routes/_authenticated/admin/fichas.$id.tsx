@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { AVAILABILITY_OPTIONS, availabilityTags, searchTags, withAvailability } from "@/lib/listing-availability";
+import { AVAILABILITY_OPTIONS, reservedTags, searchTags, withAvailability } from "@/lib/listing-availability";
 import { deleteListing } from "@/lib/delete-listing";
 
 export const Route = createFileRoute("/_authenticated/admin/fichas/$id")({
@@ -119,7 +119,7 @@ function EditPage() {
       show_phone: c?.show_phone ?? false, show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
       owner_name: c?.owner_name ?? "", owner_contact: c?.owner_contact ?? "",
       collaborator: isFeatured(l), featured_until: l.featured_until, urgent_24h: l.urgent_24h,
-      availability: [...availabilityTags(l.tags)],
+      availability: reservedTags(l.tags),
       status: l.status, hours: data.hours.map((h) => ({ ...h, opens: h.opens.slice(0, 5), closes: h.closes.slice(0, 5) })),
     });
   }, [data]);
