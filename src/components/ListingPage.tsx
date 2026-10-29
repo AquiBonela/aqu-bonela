@@ -60,23 +60,6 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           )}
         </div>
 
-        {(listing.public_phone || listing.public_whatsapp || listing.public_email) && (
-          <section className="border-t pt-5">
-            <h2 className="font-display font-bold">Contacto</h2>
-            <ul className="mt-2 grid gap-2">
-              {listing.public_phone && (
-                <li><a href={`tel:${listing.public_phone}`} className="inline-flex items-center gap-2 hover:underline"><Phone className="h-4 w-4 text-primary" aria-hidden /> {listing.public_phone}</a></li>
-              )}
-              {listing.public_whatsapp && (
-                <li><a href={whatsappUrl(listing.public_whatsapp, listing.name)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:underline"><MessageCircle className="h-4 w-4 text-primary" aria-hidden /> {listing.public_whatsapp}</a></li>
-              )}
-              {listing.public_email && (
-                <li><a href={`mailto:${listing.public_email}`} className="inline-flex items-center gap-2 break-all hover:underline"><Mail className="h-4 w-4 text-primary" aria-hidden /> {listing.public_email}</a></li>
-              )}
-            </ul>
-          </section>
-        )}
-
         {listing.hours.length > 0 && (
           <section className="border-t pt-5">
             <h2 className="flex items-center gap-2 font-display font-bold">
@@ -134,6 +117,14 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
             >
               <MessageCircle className="h-5 w-5" aria-hidden /> WhatsApp
+            </a>
+          )}
+          {listing.public_email && (
+            <a
+              href={`mailto:${listing.public_email}`}
+              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary"
+            >
+              <Mail className="h-5 w-5" aria-hidden /> Email
             </a>
           )}
           {listing.public_address && (
