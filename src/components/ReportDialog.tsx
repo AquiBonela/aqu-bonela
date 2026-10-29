@@ -103,6 +103,9 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
                 <button type="submit" disabled={state === "sending"} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
                   <Send className="h-5 w-5" aria-hidden /> {state === "sending" ? "Enviando…" : "Enviar aviso"}
                 </button>
+                <p className="border-t pt-4 text-center text-base text-muted-foreground">
+                  Tu reporte ayuda a mantener actualizado el directorio municipal de Casarabonela. Sin spam ni datos públicos.
+                </p>
               </form>
             )}
           </div>
