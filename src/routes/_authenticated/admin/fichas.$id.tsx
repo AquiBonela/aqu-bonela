@@ -96,7 +96,7 @@ function EditPage() {
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
 
-  async function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     const labels = list(f.labels, /,/);
     const gallery = list(f.gallery_urls, /\n/);
