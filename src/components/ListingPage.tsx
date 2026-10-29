@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Contact, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
@@ -72,10 +72,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
 
         {contact.length > 0 && (
           <section className="border-t pt-5">
-            <h2 className="flex items-center gap-2 font-display font-bold">
-              <Contact className="h-5 w-5 text-primary" aria-hidden /> Contacto
-            </h2>
-            <ul className="mt-2 space-y-1.5 text-base">
+            <ul className="space-y-1.5 text-base">
               {contact.map((c) => (
                 <li key={c.label} className="flex items-center gap-2 break-words">
                   <c.icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
@@ -174,6 +171,15 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
 
 function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initial: number; onClose: () => void }) {
   const [index, setIndex] = useState(initial);
+  const [zoom, setZoom] = useState(false);
+  const [origin, setOrigin] = useState("50% 50%");
+  useEffect(() => setZoom(false), [index]);
+  const pointTo = (clientX: number, clientY: number, el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    const x = Math.min(100, Math.max(0, ((clientX - r.left) / r.width) * 100));
+    const y = Math.min(100, Math.max(0, ((clientY - r.top) / r.height) * 100));
+    setOrigin(`${x}% ${y}%`);
+  };
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -211,7 +217,18 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
             <ChevronLeft className="h-8 w-8" aria-hidden />
           </button>
         )}
-        <img src={photo.url} alt={photo.alt} className="max-h-[75vh] max-w-full object-contain" onClick={stop} />
+        <div className="relative flex max-h-[75vh] max-w-full items-center justify-center overflow-hidden" onClick={stop}>
+          <img
+            src={photo.url}
+            alt={photo.alt}
+            draggable={false}
+            className={`max-h-[75vh] max-w-full object-contain transition-transform duration-200 ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+            style={{ transform: zoom ? "scale(2.5)" : "scale(1)", transformOrigin: origin, touchAction: zoom ? "none" : "pan-y" }}
+            onClick={(e) => { pointTo(e.clientX, e.clientY, e.currentTarget); setZoom((z) => !z); }}
+            onMouseMove={(e) => { if (zoom) pointTo(e.clientX, e.clientY, e.currentTarget); }}
+            onTouchMove={(e) => { const t = e.touches[0]; if (zoom && t) pointTo(t.clientX, t.clientY, e.currentTarget); }}
+          />
+        </div>
         {photos.length > 1 && (
           <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i + 1) % photos.length); }} aria-label="Fotografía siguiente" className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
             <ChevronRight className="h-8 w-8" aria-hidden />
