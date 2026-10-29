@@ -5,7 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { listingPath } from "@/lib/listing-detail";
 import { TOKEN_RE, type Hour, type ReviewContact, type ReviewData, type SubmitResult } from "./review";
 
-const tokenInput = z.object({ token: z.string().regex(TOKEN_RE) });
+const tokenInput = z.object({ token: z.string().min(1).max(200) });
 
 async function sha256Hex(text: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -26,6 +26,7 @@ async function loadToken(token: string) {
 export const getReview = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => tokenInput.parse(d))
   .handler(async ({ data }): Promise<ReviewData> => {
+    if (!TOKEN_RE.test(data.token)) return { ok: false, reason: "invalid" };
     const found = await loadToken(data.token);
     if (!found) return { ok: false, reason: "invalid" };
     const { row, admin } = found;
