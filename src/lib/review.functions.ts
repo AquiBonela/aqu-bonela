@@ -37,7 +37,7 @@ export const getReview = createServerFn({ method: "GET" })
         .maybeSingle(),
       admin
         .from("listing_contacts")
-        .select("phone,whatsapp,address,show_phone,show_whatsapp,show_address,owner_name")
+        .select("phone,whatsapp,address,email,show_phone,show_whatsapp,show_address,show_email,owner_name")
         .eq("listing_id", row.listing_id)
         .maybeSingle(),
       admin.from("listing_hours").select("weekday,opens,closes").eq("listing_id", row.listing_id).order("weekday"),
@@ -73,6 +73,7 @@ export const submitReview = createServerFn({ method: "POST" })
         show_phone: z.boolean(),
         show_whatsapp: z.boolean(),
         show_address: z.boolean(),
+        show_email: z.boolean(),
         comment: z.string().max(1000).optional(),
       })
       .parse(d),
@@ -92,11 +93,13 @@ export const submitReview = createServerFn({ method: "POST" })
       show_phone: data.show_phone,
       show_whatsapp: data.show_whatsapp,
       show_address: data.show_address,
+      show_email: data.show_email,
     });
     const authorized = [
       data.show_phone ? "teléfono" : null,
       data.show_whatsapp ? "whatsapp" : null,
       data.show_address ? "dirección" : null,
+      data.show_email ? "email" : null,
     ].filter(Boolean);
     await admin.from("consents").insert({
       listing_id: l.id,

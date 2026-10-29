@@ -27,6 +27,8 @@ export type ReviewContact = {
   show_phone: boolean;
   show_whatsapp: boolean;
   show_address: boolean;
+  email: string | null;
+  show_email: boolean;
   owner_name: string | null;
 };
 
