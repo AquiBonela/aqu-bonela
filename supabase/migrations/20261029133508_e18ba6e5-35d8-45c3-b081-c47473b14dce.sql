@@ -1,0 +1,1 @@
+UPDATE public.site_settings SET hero_title = '¿Qué buscas en Casarabonela?' WHERE id;
