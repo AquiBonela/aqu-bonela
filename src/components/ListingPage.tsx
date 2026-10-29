@@ -5,30 +5,49 @@ import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
-import { availabilityTags, hashtag } from "@/lib/listing-availability";
+import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availability";
+import { Switch } from "@/components/ui/switch";
+
+export type ReviewField = "address" | "phone" | "whatsapp" | "email" | "hours";
+export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
+
+function Toggle({ review, field, label }: { review?: ReviewControls; field: ReviewField; label: string }) {
+  if (!review) return null;
+  const on = review.show[field];
+  return (
+    <label className="ml-auto flex shrink-0 items-center gap-2 rounded-full border-2 border-primary/40 bg-background px-3 py-1.5 text-sm font-semibold">
+      <Switch checked={on} onCheckedChange={(v) => review.onToggle(field, v)} aria-label={`Mostrar ${label}`} />
+      {on ? "Se ve" : "Oculto"}
+    </label>
+  );
+}
+
 
 type GalleryPhoto = { url: string; alt: string };
 
-export function ListingPage({ listing }: { listing: ListingDetail }) {
+export function ListingPage({ listing, review }: { listing: ListingDetail; review?: ReviewControls }) {
+  const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
+  const showHours = review ? listing.hours.length > 0 : listing.hours.length > 0 && !hoursHidden(listing.tags);
   const collaborator = isFeatured(listing);
   const hours = groupHours(listing.hours);
   const today = (new Date().getDay() + 6) % 7;
   const gallery: GalleryPhoto[] = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  const contact: { icon: typeof Phone; label: string; value: string }[] = [
-    listing.public_phone && { icon: Phone, label: "Teléfono", value: listing.public_phone },
-    listing.public_whatsapp && { icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp },
-    listing.public_email && { icon: Mail, label: "Email", value: listing.public_email },
-  ].filter((c): c is { icon: typeof Phone; label: string; value: string } => Boolean(c));
+  type C = { icon: typeof Phone; label: string; value: string; field: ReviewField };
+  const contact: C[] = [
+    listing.public_phone && { icon: Phone, label: "Teléfono", value: listing.public_phone, field: "phone" as const },
+    listing.public_whatsapp && { icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp, field: "whatsapp" as const },
+    listing.public_email && { icon: Mail, label: "Email", value: listing.public_email, field: "email" as const },
+  ].filter((c): c is C => Boolean(c));
 
   return (
     <div className="listing-page min-h-screen bg-background pb-8">
-      <div className="mx-auto max-w-3xl px-4">
+      {!review && <div className="mx-auto max-w-3xl px-4">
         <Link to="/" search={{ q: "", cat: "", of: "" }} className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
           <ArrowLeft className="h-4 w-4" aria-hidden /> Volver al directorio
         </Link>
-      </div>
+      </div>}
       {listing.cover_url && (
         <div className="mx-auto max-w-3xl sm:px-4">
           <img src={listing.cover_url} alt={listing.name} className="aspect-[16/9] w-full object-cover" />
@@ -52,10 +71,11 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           </div>
         </div>
         <h1 className="mt-3 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
-        {listing.public_address && <p className="mt-3 flex items-start gap-2 text-base font-medium">
+        {listing.public_address && <div className="mt-3 flex items-center gap-2 text-base font-medium">
           <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
-          <span>{listing.public_address}</span>
-        </p>}
+          <span className={dim("address")}>{listing.public_address}</span>
+          <Toggle review={review} field="address" label="dirección" />
+        </div>}
       </header>
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
@@ -76,19 +96,23 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               {contact.map((c) => (
                 <li key={c.label} className="flex items-center gap-2 break-words">
                   <c.icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-                  <CopyValue label={c.label} value={c.value} />
+                  {review ? <span className={dim(c.field)}>{c.value}</span> : <CopyValue label={c.label} value={c.value} />}
+                  <Toggle review={review} field={c.field} label={c.label} />
                 </li>
               ))}
             </ul>
           </section>
         )}
 
-        {listing.hours.length > 0 && (
+        {showHours && (
           <section className="border-t pt-5">
-            <h2 className="flex items-center gap-2 font-display font-bold">
-              <Clock className="h-5 w-5 text-primary" aria-hidden /> Horario
-            </h2>
-            <dl className="mt-2 divide-y">
+            <div className="flex items-center gap-2">
+              <h2 className="flex items-center gap-2 font-display font-bold">
+                <Clock className="h-5 w-5 text-primary" aria-hidden /> Horario
+              </h2>
+              <Toggle review={review} field="hours" label="horario" />
+            </div>
+            <dl className={`mt-2 divide-y ${review && !review.show.hours ? "opacity-40" : ""}`}>
               {hours.map((h, i) => (
                 <div key={h.day} className={`flex justify-between gap-4 py-2 ${i === today ? "font-semibold" : ""}`}>
                   <dt>{h.day}{i === today && <span className="sr-only"> (hoy)</span>}</dt>
@@ -123,25 +147,25 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           </section>
         )}
 
-        <footer className="space-y-3 border-t pt-5">
+        {!review && <footer className="space-y-3 border-t pt-5">
           {/* Botones de acción en web: apilados encima de «Compartir ficha» */}
           <div className="hidden flex-col gap-3 sm:flex">
             <ActionLinks listing={listing} vertical />
           </div>
           <ShareButton name={listing.name} />
           <ReportDialog listingId={listing.id} listingName={listing.name} />
-        </footer>
+        </footer>}
       </main>
 
       {/* Botonera fija inferior: solo en móvil */}
-      <nav
+      {!review && <nav
         aria-label="Contactar"
         className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 px-4 py-3 backdrop-blur sm:hidden"
       >
         <div className="mx-auto flex max-w-3xl gap-2">
           <ActionLinks listing={listing} />
         </div>
-      </nav>
+      </nav>}
 
       {lightbox !== null && gallery.length > 0 && (
         <Lightbox photos={gallery} initial={lightbox} onClose={() => setLightbox(null)} />
