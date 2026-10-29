@@ -124,6 +124,10 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         )}
 
         <footer className="space-y-3 border-t pt-5">
+          {/* Botones de acción en web: apilados encima de «Compartir ficha» */}
+          <div className="hidden flex-col gap-3 sm:flex">
+            <ActionLinks listing={listing} vertical />
+          </div>
           <ShareButton name={listing.name} />
           <ReportDialog listingId={listing.id} listingName={listing.name} />
         </footer>
