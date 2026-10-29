@@ -20,11 +20,11 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
     <footer className={inMenu ? "text-sm text-primary-foreground/85 [&_*]:!text-primary-foreground" : "mt-8 border-t bg-secondary/40 px-4 py-8 text-sm text-muted-foreground"}>
       <div className={inMenu ? "" : "mx-auto max-w-2xl"}>
         <p className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground">
-          <Sprout className="h-5 w-5 text-primary" aria-hidden /> Aquí Bonela · Iniciativa comunitaria
+          <Sprout className="h-5 w-5 text-primary" aria-hidden /> Aquí Bonela · Directorio local colaborativo
         </p>
         <p className="mt-2 font-semibold">Casarabonela {new Date().getFullYear()}</p>
         <p className="mt-3 text-base leading-relaxed text-foreground">
-          Registro digital informativo y abierto para el fomento económico, comercial y profesional de Casarabonela (Málaga).
+          Directorio local abierto para el fomento económico, comercial y profesional de Casarabonela.
         </p>
         {(email || wa) && (
           <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
