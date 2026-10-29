@@ -56,11 +56,13 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <TypeLabel type={listing.type} />
-            {listing.categoryName && listing.categorySlug && (
+            {listing.categoryName && listing.categorySlug && (review ? (
+              <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{listing.categoryName}</span>
+            ) : (
               <Link to="/" search={{ q: "", cat: listing.categorySlug, of: "" }} className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground hover:underline">
                 {listing.categoryName}
               </Link>
-            )}
+            ))}
             {listing.activity && <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{listing.activity}</span>}
             {collaborator && <CollaboratorBadge />}
           </div>
