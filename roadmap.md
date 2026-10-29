@@ -1,0 +1,6 @@
+- [ ] Etiquetas sin iconos; urgencias y hashtags como la referencia.
+- [ ] Guardia fin de semana y atención en festivos en el formulario y fichas.
+- [ ] Colaborador visible y eliminación con confirmación en administración.
+- [ ] Reparar enlaces de avisos.
+- [ ] Desplegables de categoría/oficio y filtro por tipo.
+- [ ] Ejecutar pruebas y verificar la navegación pública.
