@@ -147,11 +147,13 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
+          email: string | null
           listing_id: string
           owner_contact: string | null
           owner_name: string | null
           phone: string | null
           show_address: boolean
+          show_email: boolean
           show_phone: boolean
           show_whatsapp: boolean
           updated_at: string
@@ -160,11 +162,13 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string
+          email?: string | null
           listing_id: string
           owner_contact?: string | null
           owner_name?: string | null
           phone?: string | null
           show_address?: boolean
+          show_email?: boolean
           show_phone?: boolean
           show_whatsapp?: boolean
           updated_at?: string
@@ -173,11 +177,13 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string
+          email?: string | null
           listing_id?: string
           owner_contact?: string | null
           owner_name?: string | null
           phone?: string | null
           show_address?: boolean
+          show_email?: boolean
           show_phone?: boolean
           show_whatsapp?: boolean
           updated_at?: string
@@ -351,6 +357,7 @@ export type Database = {
           labels: string[]
           name: string
           public_address: string | null
+          public_email: string | null
           public_phone: string | null
           public_whatsapp: string | null
           published_at: string | null
@@ -376,6 +383,7 @@ export type Database = {
           labels?: string[]
           name: string
           public_address?: string | null
+          public_email?: string | null
           public_phone?: string | null
           public_whatsapp?: string | null
           published_at?: string | null
@@ -401,6 +409,7 @@ export type Database = {
           labels?: string[]
           name?: string
           public_address?: string | null
+          public_email?: string | null
           public_phone?: string | null
           public_whatsapp?: string | null
           published_at?: string | null
