@@ -43,6 +43,7 @@ type Form = {
   labels: string;
   name: string;
   slug: string;
+  short_description: string;
   description: string;
   tags: string;
   phone: string;
@@ -63,7 +64,7 @@ type Form = {
 };
 
 const empty: Form = {
-  type: "comercio", category_id: "", activity: "", labels: "", name: "", slug: "", description: "", tags: "",
+  type: "comercio", category_id: "", activity: "", labels: "", name: "", slug: "", short_description: "", description: "", tags: "",
   phone: "", whatsapp: "", address: "", show_phone: false, show_whatsapp: false, show_address: false,
   owner_name: "", owner_contact: "", cover_url: "", gallery_urls: "", collaborator: false, featured_until: null,
   urgent_24h: false, status: "borrador", hours: [],
@@ -102,7 +103,7 @@ function EditPage() {
     const l = data.listing, c = data.contact;
     setF({
       type: l.type, category_id: l.category_id ?? "", activity: l.activity ?? "", labels: l.labels.join(", "),
-      name: l.name, slug: l.slug, description: l.description, tags: l.tags.join(", "),
+      name: l.name, slug: l.slug, short_description: l.short_description ?? "", description: l.description, tags: l.tags.join(", "),
       phone: c?.phone ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "",
       show_phone: c?.show_phone ?? false, show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
       owner_name: c?.owner_name ?? "", owner_contact: c?.owner_contact ?? "",
@@ -123,11 +124,11 @@ function EditPage() {
     if (!f.category_id) { toast.error("Elige una categoría."); return; }
     setSaving(true);
     const featured_until = f.collaborator
-      ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil()
+      ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil(new Date(), months)
       : null;
     const row = {
       type: f.type, category_id: f.category_id, activity: f.activity || null, labels, name: f.name.trim(),
-      slug: f.slug || slugify(f.name), description: f.description, tags: list(f.tags, /,/),
+      slug: f.slug || slugify(f.name), short_description: f.short_description.trim(), description: f.description, tags: list(f.tags, /,/),
       cover_url: f.cover_url || null, gallery_urls: gallery, featured: f.collaborator, featured_until,
       urgent_24h: f.urgent_24h, status: f.status,
     };
@@ -214,8 +215,11 @@ function EditPage() {
         <Field label="Dirección web" hint={`aquibonela…${listingPath(f.type, f.slug || "…")}`}>
           <Input value={f.slug} onChange={(e) => { setSlugTouched(true); set("slug", slugify(e.target.value)); }} />
         </Field>
-        <Field label="Descripción">
-          <Textarea rows={4} value={f.description} onChange={(e) => set("description", e.target.value)} />
+        <Field label="Descripción corta" hint={`Se ve en la tarjeta del directorio. ${f.short_description.length}/140`}>
+          <Input maxLength={140} value={f.short_description} onChange={(e) => set("short_description", e.target.value)} />
+        </Field>
+        <Field label="Descripción extensa" hint="Se ve en la página de la ficha.">
+          <Textarea rows={7} value={f.description} onChange={(e) => set("description", e.target.value)} />
         </Field>
         <Field label="Palabras de búsqueda (no visibles)" hint="Separadas por comas. Ej.: bollería, tartas, pan integral">
           <Input value={f.tags} onChange={(e) => set("tags", e.target.value)} />

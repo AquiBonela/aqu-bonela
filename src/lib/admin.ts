@@ -16,9 +16,9 @@ export function slugify(text: string) {
 }
 
 /** Colaborador dura 1 mes desde la activación. */
-export function collaboratorUntil(from = new Date()) {
+export function collaboratorUntil(from = new Date(), months = 1) {
   const d = new Date(from);
-  d.setMonth(d.getMonth() + 1);
+  d.setMonth(d.getMonth() + months);
   return d.toISOString();
 }
 
@@ -97,3 +97,34 @@ export const adminSuggestionsQuery = queryOptions({
 export function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
 }
+
+export type SiteSettings = {
+  hero_title: string;
+  contact_email: string;
+  admin_whatsapp: string;
+  collaborator_months: number;
+};
+
+export const siteSettingsQuery = queryOptions({
+  queryKey: ["admin", "settings"],
+  queryFn: async (): Promise<SiteSettings> => {
+    const { data, error } = await supabase
+      .from("site_settings")
+      .select("hero_title,contact_email,admin_whatsapp,collaborator_months")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ?? { hero_title: "", contact_email: "", admin_whatsapp: "", collaborator_months: 1 };
+  },
+});
+
+export const adminCategoriesQuery = queryOptions({
+  queryKey: ["admin", "categories-full"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id,name,slug,sort_order,is_provisional")
+      .order("sort_order");
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
