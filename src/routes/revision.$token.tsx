@@ -122,6 +122,7 @@ function ReviewForm({
     phone: contact?.show_phone ?? true,
     whatsapp: contact?.show_whatsapp ?? true,
     address: contact?.show_address ?? true,
+    email: contact?.show_email ?? true,
   });
   const [comment, setComment] = useState("");
   const [agree, setAgree] = useState(false);
@@ -136,6 +137,7 @@ function ReviewForm({
           show_phone: show.phone,
           show_whatsapp: show.whatsapp,
           show_address: show.address,
+          show_email: show.email,
           comment: comment.trim() || undefined,
         },
       });
@@ -195,6 +197,7 @@ function ReviewForm({
         <DataRow label="Teléfono" value={contact?.phone ?? null} show={show.phone} onChange={(v) => setShow((p) => ({ ...p, phone: v }))} />
         <DataRow label="WhatsApp" value={contact?.whatsapp ?? null} show={show.whatsapp} onChange={(v) => setShow((p) => ({ ...p, whatsapp: v }))} />
         <DataRow label="Dirección" value={contact?.address ?? null} show={show.address} onChange={(v) => setShow((p) => ({ ...p, address: v }))} />
+        <DataRow label="Email" value={contact?.email ?? null} show={show.email} onChange={(v) => setShow((p) => ({ ...p, email: v }))} />
         <p className="text-xs text-muted-foreground">Si desmarcas un dato, dejará de verse en la ficha pública.</p>
       </fieldset>
 
