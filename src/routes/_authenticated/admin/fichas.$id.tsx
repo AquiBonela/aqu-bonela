@@ -49,6 +49,8 @@ type Form = {
   phone: string;
   whatsapp: string;
   address: string;
+  email: string;
+  show_email: boolean;
   show_phone: boolean;
   show_whatsapp: boolean;
   show_address: boolean;
@@ -63,7 +65,7 @@ type Form = {
 
 const empty: Form = {
   type: "comercio", category_id: "", activity: "", labels: "", name: "", slug: "", short_description: "", description: "", tags: "",
-  phone: "", whatsapp: "", address: "", show_phone: false, show_whatsapp: false, show_address: false,
+  phone: "", whatsapp: "", address: "", email: "", show_email: false, show_phone: false, show_whatsapp: false, show_address: false,
   owner_name: "", owner_contact: "", collaborator: false, featured_until: null,
   urgent_24h: false, status: "borrador", hours: [],
 };
@@ -108,7 +110,7 @@ function EditPage() {
     setF({
       type: l.type, category_id: l.category_id ?? "", activity: l.activity ?? "", labels: l.labels.join(", "),
       name: l.name, slug: l.slug, short_description: l.short_description ?? "", description: l.description, tags: l.tags.join(", "),
-      phone: c?.phone ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "",
+      phone: c?.phone ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "", email: c?.email ?? "", show_email: c?.show_email ?? false,
       show_phone: c?.show_phone ?? false, show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
       owner_name: c?.owner_name ?? "", owner_contact: c?.owner_contact ?? "",
       collaborator: isFeatured(l), featured_until: l.featured_until, urgent_24h: l.urgent_24h,
@@ -144,7 +146,7 @@ function EditPage() {
         if (error) throw error;
       }
       const { error: cErr } = await supabase.from("listing_contacts").upsert({
-        listing_id: listingId, phone: f.phone || null, whatsapp: f.whatsapp || null, address: f.address || null,
+        listing_id: listingId, phone: f.phone || null, whatsapp: f.whatsapp || null, address: f.address || null, email: f.email || null, show_email: f.show_email,
         show_phone: f.show_phone, show_whatsapp: f.show_whatsapp, show_address: f.show_address,
         owner_name: f.owner_name || null, owner_contact: f.owner_contact || null,
       });
@@ -250,6 +252,7 @@ function EditPage() {
         <ContactRow label="Teléfono" value={f.phone} onValue={(v) => set("phone", v)} show={f.show_phone} onShow={(v) => set("show_phone", v)} />
         <ContactRow label="WhatsApp" value={f.whatsapp} onValue={(v) => set("whatsapp", v)} show={f.show_whatsapp} onShow={(v) => set("show_whatsapp", v)} />
         <ContactRow label="Dirección" value={f.address} onValue={(v) => set("address", v)} show={f.show_address} onShow={(v) => set("show_address", v)} />
+        <ContactRow label="Email" value={f.email} onValue={(v) => set("email", v)} show={f.show_email} onShow={(v) => set("show_email", v)} />
         <div className="grid gap-3 border-t pt-3 sm:grid-cols-2">
           <Field label="Titular (privado)"><Input value={f.owner_name} onChange={(e) => set("owner_name", e.target.value)} /></Field>
           <Field label="Contacto del titular (privado)" hint="Para enviarle el enlace de revisión"><Input value={f.owner_contact} onChange={(e) => set("owner_contact", e.target.value)} /></Field>
