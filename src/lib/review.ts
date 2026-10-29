@@ -18,6 +18,12 @@ export type ReviewListing = {
   featured: boolean;
   urgent_24h: boolean;
   categoryName: string | null;
+  categorySlug: string | null;
+  short_description: string;
+  featured_until: string | null;
+  tags: string[];
+  category_id: string | null;
+  photos: { url: string; alt: string }[];
 };
 
 export type ReviewContact = {
