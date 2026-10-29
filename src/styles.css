@@ -28,6 +28,7 @@
   --color-hashtag: var(--hashtag);
   --color-hashtag-foreground: var(--hashtag-foreground);
   --color-terracotta-foreground: var(--terracotta-foreground);
+  --color-beige: var(--beige);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -95,6 +96,7 @@
   --accent-foreground: oklch(0.564 0.106 42.4);
   --terracotta: oklch(0.564 0.106 42.4);
   --terracotta-foreground: oklch(1 0 0);
+  --beige: oklch(0.93 0.03 84);
   --destructive: oklch(0.505 0.141 30.3);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.898 0.02 87.5);

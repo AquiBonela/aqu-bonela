@@ -25,8 +25,8 @@ type AppHeaderProps = {
   footnote?: ReactNode;
 };
 
-const SMALL_CLASS = "hover:text-terracotta";
-const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hover:text-terracotta";
+const SMALL_CLASS = "hover:text-beige";
+const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hover:text-beige";
 
 /**
  * Cabecera compartida: menú siempre visible en escritorio y,
@@ -76,7 +76,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
             onClick={() => setOpen(true)}
             aria-expanded={open}
             aria-label="Abrir menú"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-terracotta"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
           >
             <Menu className="h-6 w-6" aria-hidden />
           </button>
@@ -90,7 +90,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Cerrar menú"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-terracotta"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
             >
               <X className="h-6 w-6" aria-hidden />
             </button>
