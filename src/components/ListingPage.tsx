@@ -1,16 +1,26 @@
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Contact, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
 import { availabilityTags, hashtag } from "@/lib/listing-availability";
 
+type GalleryPhoto = { url: string; alt: string };
+
 export function ListingPage({ listing }: { listing: ListingDetail }) {
   const collaborator = isFeatured(listing);
   const hours = groupHours(listing.hours);
   const today = (new Date().getDay() + 6) % 7;
-  const gallery = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
+  const gallery: GalleryPhoto[] = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
+  const [lightbox, setLightbox] = useState<number | null>(null);
+
+  const contact: { icon: typeof Phone; label: string; value: string }[] = [
+    listing.public_phone && { icon: Phone, label: "Teléfono", value: listing.public_phone },
+    listing.public_whatsapp && { icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp },
+    listing.public_email && { icon: Mail, label: "Email", value: listing.public_email },
+  ].filter((c): c is { icon: typeof Phone; label: string; value: string } => Boolean(c));
 
   return (
     <div className="listing-page min-h-screen bg-background pb-8">
@@ -42,9 +52,9 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           </div>
         </div>
         <h1 className="mt-3 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
-        {listing.public_address && <p className="mt-3 flex items-start gap-2 text-sm">
+        {listing.public_address && <p className="mt-3 flex items-start gap-2 text-base font-medium">
           <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
-          <span>{listing.public_address} · Casarabonela</span>
+          <span>{listing.public_address}</span>
         </p>}
       </header>
 
@@ -59,6 +69,22 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
             </ul>
           )}
         </div>
+
+        {contact.length > 0 && (
+          <section className="border-t pt-5">
+            <h2 className="flex items-center gap-2 font-display font-bold">
+              <Contact className="h-5 w-5 text-primary" aria-hidden /> Contacto
+            </h2>
+            <ul className="mt-2 space-y-1.5 text-base">
+              {contact.map((c) => (
+                <li key={c.label} className="flex items-center gap-2 break-words">
+                  <c.icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <span><span className="font-semibold">{c.label}:</span> {c.value}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {listing.hours.length > 0 && (
           <section className="border-t pt-5">
@@ -77,6 +103,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
             </dl>
           </section>
         )}
+
         {gallery.length > 0 && (
           <section aria-labelledby="fotos">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
@@ -85,24 +112,23 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
             </div>
             <div className="mt-3 grid grid-cols-2 gap-1.5">
               {gallery.map((p, i) => (
-                <figure key={`${p.url}-${i}`} className={`relative min-w-0 overflow-hidden ${i === gallery.length - 1 && gallery.length % 2 === 1 ? "col-span-2 aspect-[2/1]" : "aspect-square"}`}>
+                <button
+                  key={`${p.url}-${i}`}
+                  type="button"
+                  onClick={() => setLightbox(i)}
+                  aria-label={`Ampliar fotografía ${i + 1} de ${listing.name}`}
+                  className={`relative min-w-0 cursor-zoom-in overflow-hidden ${i === gallery.length - 1 && gallery.length % 2 === 1 ? "col-span-2 aspect-[2/1]" : "aspect-square"}`}
+                >
                   <img src={p.url} alt={p.alt} loading="lazy" className="h-full w-full object-cover" />
-                </figure>
+                </button>
               ))}
             </div>
           </section>
         )}
 
-        {listing.public_email && (
-          <a href={`mailto:${listing.public_email}`} className="inline-flex min-h-12 items-center gap-2 text-base font-semibold hover:text-terracotta">
-            <Mail className="h-5 w-5 text-primary" aria-hidden /> {listing.public_email}
-          </a>
-        )}
-
         <footer className="space-y-3 border-t pt-5">
           <ShareButton name={listing.name} />
           <ReportDialog listingId={listing.id} listingName={listing.name} />
-          <p className="text-xs font-semibold text-muted-foreground">Directorio municipal participativo de Casarabonela</p>
         </footer>
       </main>
 
@@ -138,6 +164,60 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           )}
         </div>
       </nav>
+
+      {lightbox !== null && gallery.length > 0 && (
+        <Lightbox photos={gallery} initial={lightbox} onClose={() => setLightbox(null)} />
+      )}
+    </div>
+  );
+}
+
+function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initial: number; onClose: () => void }) {
+  const [index, setIndex] = useState(initial);
+
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") setIndex((i) => (i + 1) % photos.length);
+      if (e.key === "ArrowLeft") setIndex((i) => (i - 1 + photos.length) % photos.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [photos.length, onClose]);
+
+  const photo = photos[index];
+  if (!photo) return null;
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
+
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Fotografía ampliada" className="fixed inset-0 z-50 flex flex-col bg-foreground/95" onClick={onClose}>
+      <div className="flex items-center justify-between p-3" onClick={stop}>
+        <span className="text-sm font-semibold text-background">{index + 1} / {photos.length}</span>
+        <button type="button" onClick={onClose} aria-label="Cerrar" className="flex h-11 w-11 items-center justify-center text-background">
+          <X className="h-6 w-6" aria-hidden />
+        </button>
+      </div>
+      <div className="flex flex-1 items-center justify-center gap-1 px-2 pb-6">
+        {photos.length > 1 && (
+          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i - 1 + photos.length) % photos.length); }} aria-label="Fotografía anterior" className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
+            <ChevronLeft className="h-8 w-8" aria-hidden />
+          </button>
+        )}
+        <img src={photo.url} alt={photo.alt} className="max-h-[75vh] max-w-full object-contain" onClick={stop} />
+        {photos.length > 1 && (
+          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i + 1) % photos.length); }} aria-label="Fotografía siguiente" className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
+            <ChevronRight className="h-8 w-8" aria-hidden />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
