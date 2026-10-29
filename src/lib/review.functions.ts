@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { listingPath, TOKEN_RE, type Hour, type ReviewContact, type ReviewData, type SubmitResult } from "./review";
+import { listingPath } from "@/lib/listing-detail";
+import { TOKEN_RE, type Hour, type ReviewContact, type ReviewData, type SubmitResult } from "./review";
 
 const tokenInput = z.object({ token: z.string().regex(TOKEN_RE) });
 
