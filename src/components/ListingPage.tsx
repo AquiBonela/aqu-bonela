@@ -119,6 +119,14 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
               <MessageCircle className="h-5 w-5" aria-hidden /> WhatsApp
             </a>
           )}
+          {listing.public_email && (
+            <a
+              href={`mailto:${listing.public_email}`}
+              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary"
+            >
+              <Mail className="h-5 w-5" aria-hidden /> Email
+            </a>
+          )}
           {listing.public_address && (
             <a
               href={mapsUrl(listing.public_address)}
