@@ -100,20 +100,33 @@ export function fmtDate(iso: string) {
 
 export type SiteSettings = {
   hero_title: string;
+  hero_subtitle: string;
   contact_email: string;
   admin_whatsapp: string;
   collaborator_months: number;
+  legal_name: string;
+  legal_nif: string;
+  legal_address: string;
+  legal_email: string;
+  whatsapp_template: string;
+  banner_enabled: boolean;
+  banner_text: string;
+  common_labels: string[];
 };
+
+const SETTINGS_COLS =
+  "hero_title,hero_subtitle,contact_email,admin_whatsapp,collaborator_months,legal_name,legal_nif,legal_address,legal_email,whatsapp_template,banner_enabled,banner_text,common_labels";
 
 export const siteSettingsQuery = queryOptions({
   queryKey: ["admin", "settings"],
   queryFn: async (): Promise<SiteSettings> => {
     const { data, error } = await supabase
       .from("site_settings")
-      .select("hero_title,contact_email,admin_whatsapp,collaborator_months")
+      .select(SETTINGS_COLS)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    return data ?? { hero_title: "", contact_email: "", admin_whatsapp: "", collaborator_months: 1 };
+    if (!data) throw new Error("Sin configuración");
+    return data as SiteSettings;
   },
 });
 

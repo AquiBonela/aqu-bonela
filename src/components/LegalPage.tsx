@@ -1,12 +1,33 @@
 import type { ReactNode } from "react";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 
-export const OWNER = {
+const PLACEHOLDER = {
   name: "[Nombre o razón social del titular]",
   nif: "[NIF/CIF]",
   address: "[Dirección postal], 29566 Casarabonela (Málaga)",
   email: "[email de contacto]",
 };
+
+const ownerQuery = queryOptions({
+  queryKey: ["legal-owner"],
+  queryFn: async () => {
+    const { data } = await supabase.from("site_settings").select("legal_name,legal_nif,legal_address,legal_email").maybeSingle();
+    return data;
+  },
+});
+
+/** Datos del titular configurados en el panel; huecos entre corchetes si faltan. */
+export function useOwner() {
+  const { data } = useQuery(ownerQuery);
+  return {
+    name: data?.legal_name?.trim() || PLACEHOLDER.name,
+    nif: data?.legal_nif?.trim() || PLACEHOLDER.nif,
+    address: data?.legal_address?.trim() || PLACEHOLDER.address,
+    email: data?.legal_email?.trim() || PLACEHOLDER.email,
+  };
+}
 
 export const UPDATED = "29 de octubre de 2026";
 

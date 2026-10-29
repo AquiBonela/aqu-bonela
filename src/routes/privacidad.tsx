@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPage, OWNER, legalHead } from "@/components/LegalPage";
+import { LegalPage, useOwner, legalHead } from "@/components/LegalPage";
 
 export const Route = createFileRoute("/privacidad")({
   head: () => legalHead("Política de privacidad", "Cómo trata Aquí Bonela los datos de los negocios y de quienes envían avisos o sugerencias."),
@@ -7,6 +7,7 @@ export const Route = createFileRoute("/privacidad")({
 });
 
 function Privacidad() {
+  const OWNER = useOwner();
   return (
     <LegalPage title="Política de privacidad">
       <h2>Responsable del tratamiento</h2>
