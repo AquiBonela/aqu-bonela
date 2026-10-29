@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 export type ReviewField = "address" | "phone" | "whatsapp" | "email" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
 
-function Toggle({ review, field, label }: { review?: ReviewControls; field: ReviewField; label: string }) {
+function Toggle({ review, field, label }: { review: ReviewControls | undefined; field: ReviewField; label: string }) {
   if (!review) return null;
   const on = review.show[field];
   return (
@@ -25,7 +25,7 @@ function Toggle({ review, field, label }: { review?: ReviewControls; field: Revi
 
 type GalleryPhoto = { url: string; alt: string };
 
-export function ListingPage({ listing, review }: { listing: ListingDetail; review?: ReviewControls }) {
+export function ListingPage({ listing, review }: { listing: ListingDetail; review?: ReviewControls | undefined }) {
   const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
   const showHours = review ? listing.hours.length > 0 : listing.hours.length > 0 && !hoursHidden(listing.tags);
   const collaborator = isFeatured(listing);
