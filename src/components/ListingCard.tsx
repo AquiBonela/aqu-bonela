@@ -42,7 +42,7 @@ export function ListingCard({
   const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
   const marks = [...(listing.urgent_24h ? ["Urgencias 24h"] : []), ...availabilityTags(listing.tags)];
   return (
-    <article className={cn("relative flex overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.015] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta" : "border-l-primary")}>
+    <article className={cn("relative flex overflow-hidden rounded-soft transition-[transform,background-color] duration-200 hover:scale-[1.015] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta hover:bg-accent/60" : "border-l-primary hover:bg-secondary/70")}>
       <div className="flex min-w-0 flex-1 flex-col">
       {collaborator && listing.cover_url && (
         <img src={listing.cover_url} alt="" loading="lazy" className="h-40 w-full object-cover sm:h-48" />
