@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { whatsappUrl } from "@/lib/directory";
 
-export function SiteFooter() {
+export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
   const { data } = useQuery({
     queryKey: ["footer-contact"],
     queryFn: async () => {
@@ -17,8 +17,8 @@ export function SiteFooter() {
   const wa = data?.admin_whatsapp?.trim();
 
   return (
-    <footer className="mt-8 border-t bg-secondary/40 px-4 py-8 text-sm text-muted-foreground">
-      <div className="mx-auto max-w-2xl">
+    <footer className={inMenu ? "text-sm text-primary-foreground/85 [&_*]:!text-primary-foreground" : "mt-8 border-t bg-secondary/40 px-4 py-8 text-sm text-muted-foreground"}>
+      <div className={inMenu ? "" : "mx-auto max-w-2xl"}>
         <p className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground">
           <Sprout className="h-5 w-5 text-primary" aria-hidden /> Aquí Bonela · Iniciativa comunitaria
         </p>

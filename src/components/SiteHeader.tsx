@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { SiteFooter } from "@/components/SiteFooter";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 
 const MENU_ITEMS: HeaderItem[] = [
@@ -11,7 +12,7 @@ export function SiteHeader() {
   return (
     <AppHeader
       navLabel="Menú principal"
-      footnote="Comercios y profesionales de Casarabonela"
+      footnote={<SiteFooter inMenu />}
       brand={
         <Link to="/" search={{ q: "", cat: "", of: "" }} className="font-display text-xl font-bold tracking-tight">
           Aquí <span className="text-terracotta">Bonela</span>

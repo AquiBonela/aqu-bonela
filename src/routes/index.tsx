@@ -90,7 +90,7 @@ function Index() {
           />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
           <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
-            <h1 className="max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl">
+            <h1 className="max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
               {data.heroTitle}
             </h1>
             {data.heroSubtitle && (
@@ -130,8 +130,8 @@ function Index() {
       </section>
 
       <nav aria-label="Filtros" className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto grid max-w-3xl gap-3 px-4 py-3 sm:grid-cols-3">
-          <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Mostrar
+        <div className="mx-auto flex max-w-4xl flex-col gap-3 px-4 py-3 sm:flex-row sm:flex-wrap sm:justify-center">
+          <label className="min-w-0 sm:w-56">
             <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
               const value = e.target.value;
               if (value !== "" && value !== "comercio" && value !== "profesional") return;
@@ -142,13 +142,13 @@ function Index() {
               <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option>
             </select>
           </label>
-          <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Categoría
+          <label className="min-w-0 sm:w-64">
             <select aria-label="Categoría" value={cat} onChange={(e) => { setText(""); navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "", q: "", urg: false }) }); }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todas las categorías</option>
               {data.categories.filter((c) => !tipo || data.listings.some((l) => l.type === tipo && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select>
           </label>
-          {activeCat && <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Oficio / actividad
+          {activeCat && <label className="min-w-0 sm:w-64">
             <select aria-label="Oficio / actividad" value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }) })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos los oficios</option>
               {activities.map((a) => <option key={a} value={a}>{a}</option>)}

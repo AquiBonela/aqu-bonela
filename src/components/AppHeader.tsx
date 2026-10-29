@@ -22,7 +22,7 @@ type AppHeaderProps = {
   brand: ReactNode;
   items: HeaderItem[];
   navLabel?: string;
-  footnote?: string;
+  footnote?: ReactNode;
 };
 
 const SMALL_CLASS = "hover:text-terracotta";
@@ -53,12 +53,13 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         to={item.to}
         {...(item.search ? { search: item.search } : {})}
         {...(item.activeOptions ? { activeOptions: item.activeOptions } : {})}
+        onClick={() => setOpen(false)}
         className={big ? BIG_CLASS : SMALL_CLASS}
       >
         {item.label}
       </Link>
     ) : (
-      <button key={item.label} type="button" onClick={item.onClick} className={big ? BIG_CLASS : SMALL_CLASS}>
+      <button key={item.label} type="button" onClick={() => { setOpen(false); void item.onClick?.(); }} className={big ? BIG_CLASS : SMALL_CLASS}>
         {item.label}
       </button>
     );
@@ -84,7 +85,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
       {open && (
         <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
           <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-between px-4 py-2">
-            {brand}
+            <span onClick={() => setOpen(false)} className="text-primary-foreground [&_*]:!text-primary-foreground">{brand}</span>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -103,7 +104,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               ))}
             </ul>
             {footnote && (
-              <p className="mt-10 text-xs font-semibold uppercase tracking-wide opacity-80">{footnote}</p>
+              <div className="mt-10">{footnote}</div>
             )}
           </nav>
         </div>
