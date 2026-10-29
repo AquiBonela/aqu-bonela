@@ -114,7 +114,7 @@ function Index() {
                 type="button"
                 onClick={() => setText("")}
                 aria-label="Borrar búsqueda"
-                className="flex h-10 w-10 items-center justify-center rounded-soft-inner text-muted-foreground hover:bg-secondary"
+                className="flex h-12 w-12 items-center justify-center rounded-soft-inner text-muted-foreground hover:bg-secondary"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -128,23 +128,23 @@ function Index() {
 
       <nav aria-label="Filtros" className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto grid max-w-5xl gap-3 px-4 py-3 sm:grid-cols-3">
-          <label className="grid min-w-0 gap-1 text-xs font-semibold">Mostrar
+          <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Mostrar
             <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
               const value = e.target.value;
               if (value !== "" && value !== "comercio" && value !== "profesional") return;
               navigate({ search: (p) => ({ ...p, tipo: value, of: "" }) });
-            }} className="h-11 w-full min-w-0 rounded-soft border bg-card px-3 text-sm">
+            }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option>
             </select>
           </label>
-          <label className="grid min-w-0 gap-1 text-xs font-semibold">Categoría
-            <select aria-label="Categoría" value={cat} onChange={(e) => navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "" }) })} className="h-11 w-full min-w-0 rounded-soft border bg-card px-3 text-sm">
+          <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Categoría
+            <select aria-label="Categoría" value={cat} onChange={(e) => navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "" }) })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todas las categorías</option>
               {data.categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select>
           </label>
-          {activeCat && <label className="grid min-w-0 gap-1 text-xs font-semibold">Oficio / actividad
-            <select aria-label="Oficio / actividad" value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }) })} className="h-11 w-full min-w-0 rounded-soft border bg-card px-3 text-sm">
+          {activeCat && <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Oficio / actividad
+            <select aria-label="Oficio / actividad" value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }) })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos los oficios</option>
               {activities.map((a) => <option key={a} value={a}>{a}</option>)}
             </select>
