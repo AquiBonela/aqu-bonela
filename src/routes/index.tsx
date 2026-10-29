@@ -9,6 +9,7 @@ import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import heroImg from "@/assets/hero-casarabonela.jpg";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
