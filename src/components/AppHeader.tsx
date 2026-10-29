@@ -69,24 +69,21 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         <div className="mx-auto flex min-h-14 max-w-5xl items-center justify-between gap-x-4 px-4 py-2">
           {brand}
           {/* Escritorio: menú siempre visible */}
-          <nav aria-label={navLabel} className="hidden items-center gap-4 text-sm font-medium sm:flex sm:gap-5">
-            {items.map((item) => renderItem(item, false))}
-          </nav>
           {/* Móvil: menú a pantalla completa */}
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-expanded={open}
             aria-label="Abrir menú"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center sm:hidden hover:text-terracotta"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-terracotta"
           >
             <Menu className="h-6 w-6" aria-hidden />
           </button>
         </div>
       </header>
       {open && (
-        <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground sm:hidden">
-          <div className="flex min-h-14 items-center justify-between px-4 py-2">
+        <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
+          <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-between px-4 py-2">
             {brand}
             <button
               type="button"
@@ -97,7 +94,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               <X className="h-6 w-6" aria-hidden />
             </button>
           </div>
-          <nav aria-label="Menú móvil" className="flex flex-1 flex-col justify-center px-6 pb-16">
+          <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-6 pb-16">
             <ul className="flex flex-col gap-6">
               {items.map((item, i) => (
                 <li key={item.label} className="animate-menu-item" style={{ animationDelay: `${0.06 * i}s` }}>
