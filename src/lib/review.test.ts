@@ -27,3 +27,12 @@ describe("enlace de revisión", () => {
     expect(TOKEN_RE.test("a+b".repeat(20))).toBe(false);
   });
 });
+
+describe("plantilla configurable", () => {
+  it("rellena {nombre} y {enlace}", () => {
+    expect(reviewMessage("Paco", "https://x/r/1", "Hola {nombre}, revisa: {enlace}")).toBe("Hola Paco, revisa: https://x/r/1");
+  });
+  it("sin nombre quita el hueco y añade el enlace si falta", () => {
+    expect(reviewMessage(null, "https://x/r/1", "Hola {nombre}, revisa tu ficha")).toBe("Hola, revisa tu ficha https://x/r/1");
+  });
+});
