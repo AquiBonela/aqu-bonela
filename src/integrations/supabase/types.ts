@@ -353,6 +353,7 @@ export type Database = {
           public_phone: string | null
           public_whatsapp: string | null
           published_at: string | null
+          short_description: string
           slug: string
           status: Database["public"]["Enums"]["listing_status"]
           tags: string[]
@@ -376,6 +377,7 @@ export type Database = {
           public_phone?: string | null
           public_whatsapp?: string | null
           published_at?: string | null
+          short_description?: string
           slug: string
           status?: Database["public"]["Enums"]["listing_status"]
           tags?: string[]
@@ -399,6 +401,7 @@ export type Database = {
           public_phone?: string | null
           public_whatsapp?: string | null
           published_at?: string | null
+          short_description?: string
           slug?: string
           status?: Database["public"]["Enums"]["listing_status"]
           tags?: string[]
@@ -415,6 +418,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_settings: {
+        Row: {
+          admin_whatsapp: string
+          collaborator_months: number
+          contact_email: string
+          hero_subtitle: string
+          hero_title: string
+          id: boolean
+          updated_at: string
+        }
+        Insert: {
+          admin_whatsapp?: string
+          collaborator_months?: number
+          contact_email?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: boolean
+          updated_at?: string
+        }
+        Update: {
+          admin_whatsapp?: string
+          collaborator_months?: number
+          contact_email?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: boolean
+          updated_at?: string
+        }
+        Relationships: []
       }
       suggestions: {
         Row: {
