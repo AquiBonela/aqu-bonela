@@ -97,7 +97,7 @@ function Index() {
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
-          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1 rounded-soft border bg-card p-1.5">
+          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5">
             <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
@@ -106,7 +106,7 @@ function Index() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Panadería, fontanero, tapas…"
-              className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+              className="h-12 min-w-0 flex-1 bg-transparent text-lg text-foreground outline-none placeholder:text-muted-foreground"
             />
             {text && (
               <Button
