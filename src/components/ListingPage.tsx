@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Contact, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";

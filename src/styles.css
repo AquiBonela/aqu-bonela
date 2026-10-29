@@ -215,3 +215,8 @@
 
 /* Espacio para la barra fija de contacto en fichas */
 body:has(.listing-page) > footer, body:has(.listing-page) footer.mt-8 { padding-bottom: 8rem; }
+
+/* Evita la selección de texto y el resaltado azul al tocar, salvo en campos de escritura */
+html { -webkit-tap-highlight-color: transparent; }
+body { -webkit-user-select: none; user-select: none; }
+input, textarea, select, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
