@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Flag, X, PencilLine, Store, Send } from "lucide-react";
+import { Flag, X, PencilLine, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -62,7 +62,7 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
               <div className="min-w-0 flex-1">
                 <h2 id="report-title" className="font-display text-xl font-bold leading-tight sm:text-2xl">Avisar sobre un dato incorrecto</h2>
                 <p className="mt-1 flex items-center gap-1.5 text-base text-muted-foreground">
-                  <Store className="h-4 w-4 shrink-0" aria-hidden /> Ficha: <span className="font-semibold text-foreground">{listingName}</span>
+                  <span className="font-semibold text-foreground">{listingName}</span>
                 </p>
               </div>
               <button type="button" onClick={close} aria-label="Cerrar" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-secondary">
