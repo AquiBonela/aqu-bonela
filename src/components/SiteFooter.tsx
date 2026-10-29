@@ -28,7 +28,7 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
         </div>
         <p className="mt-2 font-semibold">Casarabonela {new Date().getFullYear()}</p>
         <p className="mt-3 text-base leading-relaxed text-foreground">
-          Directorio local abierto para el fomento económico, comercial y profesional de Casarabonela.
+          Registro digital informativo y abierto para el fomento económico, comercial y profesional de Casarabonela (Málaga).
         </p>
         {(email || wa) && (
           <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
