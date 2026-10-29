@@ -203,7 +203,7 @@ function Index() {
             </div>
           ) : (
             <div className={cn("grid gap-4", !browsingHome && "mt-3")}>
-              {(browsingHome ? results.filter((l) => !isFeatured(l)) : results).map((l) => (
+              {(browsingHome ? dailyShuffle(results.filter((l) => !isFeatured(l))) : results).map((l) => (
                 <ListingCard
                   key={l.id}
                   listing={l}
