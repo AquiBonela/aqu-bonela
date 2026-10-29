@@ -22,7 +22,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const { data, error } = await supabase
         .from("listings")
         .select(
-          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,public_email,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
+          "id,slug,type,name,short_description,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,public_email,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
         )
         .eq("status", "publicada")
         .eq("type", type)
@@ -47,7 +47,8 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
         if (c?.signedUrl) cover_url = c.signedUrl;
       }
       return {
-        ...(rest as Listing),
+        ...(rest as unknown as Listing),
+        public_email: (rest as { public_email?: string | null }).public_email ?? null,
         cover_url,
         categoryName: categories?.name ?? null,
         categorySlug: categories?.slug ?? null,
