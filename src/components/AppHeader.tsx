@@ -85,7 +85,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
       {open && (
         <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
           <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-between px-4 py-2">
-            <span className="text-primary-foreground [&_*]:!text-primary-foreground">{brand}</span>
+            <span onClick={() => setOpen(false)} className="text-primary-foreground [&_*]:!text-primary-foreground">{brand}</span>
             <button
               type="button"
               onClick={() => setOpen(false)}
