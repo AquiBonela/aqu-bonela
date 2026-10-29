@@ -15,8 +15,10 @@ const items: Listing[] = [
 
 describe("directorio", () => {
   it("el destacado caduca al pasar su fecha", () => {
-    expect(isFeatured(items[1]!, now)).toBe(true);
-    expect(isFeatured(items[2]!, now)).toBe(false);
+    const active = items[1], expired = items[2];
+    if (!active || !expired) throw new Error("Missing fixture");
+    expect(isFeatured(active, now)).toBe(true);
+    expect(isFeatured(expired, now)).toBe(false);
   });
   it("las destacadas van primero dentro de su categoría", () => {
     expect(filterListings(items, cats, "", "alimentacion", now).map((l) => l.id)).toEqual(["2", "1"]);
@@ -33,5 +35,14 @@ describe("directorio", () => {
   it("el filtro de oficio deja solo ese oficio dentro de la categoría", () => {
     const r = filterListings(items, cats, "", "alimentacion", now, "Panadería");
     expect(r.map((l) => l.id)).toEqual(["1"]);
+  });
+  it("permite mostrar solo comercios", () => {
+    expect(filterListings(items, cats, "", "", now, "", "comercio").map((l) => l.id)).toEqual(["2", "1"]);
+  });
+  it("permite mostrar solo profesionales", () => {
+    expect(filterListings(items, cats, "", "", now, "", "profesional").map((l) => l.id)).toEqual(["3"]);
+  });
+  it("combina tipo, categoría y oficio", () => {
+    expect(filterListings(items, cats, "", "alimentacion", now, "Panadería", "profesional")).toEqual([]);
   });
 });

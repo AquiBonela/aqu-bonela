@@ -72,7 +72,7 @@ function ReportsBody() {
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="font-medium">
                 Ficha:{" "}
-                <Link to="/admin/fichas/$id" params={{ id: r.listings?.slug ?? "" }} className="underline underline-offset-4">
+                <Link to="/admin/fichas/$id" params={{ id: r.listing_id }} className="underline underline-offset-4">
                   {r.listings?.name ?? "Ficha eliminada"}
                 </Link>
               </p>

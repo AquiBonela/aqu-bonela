@@ -72,7 +72,7 @@ export const adminReportsQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await supabase
       .from("listing_reports")
-      .select("id, message, contact, resolved, created_at, listings(name, slug)")
+      .select("id, listing_id, message, contact, resolved, created_at, listings(name, slug)")
       .order("resolved", { ascending: true })
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
