@@ -1,6 +1,7 @@
-- [ ] Etiquetas sin iconos; urgencias y hashtags como la referencia.
-- [ ] Guardia fin de semana y atención en festivos en el formulario y fichas.
-- [ ] Colaborador visible y eliminación con confirmación en administración.
-- [ ] Reparar enlaces de avisos.
-- [ ] Desplegables de categoría/oficio y filtro por tipo.
-- [ ] Ejecutar pruebas y verificar la navegación pública.
+- [x] Etiquetas sin iconos; urgencias y hashtags como la referencia.
+- [x] Guardia fin de semana y atención en festivos en el formulario y fichas.
+- [x] Colaborador visible y eliminación con confirmación en administración.
+- [x] Reparar enlaces de avisos usando el identificador de la ficha.
+- [x] Desplegables de categoría/oficio y filtro por tipo.
+- [x] Ejecutar pruebas y verificar la navegación pública.
+- [ ] Verificar avisos, guardado de distinciones y eliminación en el panel con sesión: bloqueado por Supabase externo sin sesión de prueba disponible.
