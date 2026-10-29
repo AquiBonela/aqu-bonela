@@ -5,7 +5,7 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { adminListingQuery, categoriesQuery, collaboratorUntil, slugify, STATUSES, type Status } from "@/lib/admin";
+import { adminListingQuery, categoriesQuery, collaboratorUntil, siteSettingsQuery, slugify, STATUSES, type Status } from "@/lib/admin";
 import { isFeatured } from "@/lib/directory";
 import { listingPath, WEEKDAYS } from "@/lib/listing-detail";
 import { useServerFn } from "@tanstack/react-start";
@@ -78,6 +78,8 @@ function EditPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: cats = [] } = useQuery(categoriesQuery);
+  const { data: settings } = useQuery(siteSettingsQuery);
+  const months = settings?.collaborator_months ?? 1;
   const { data, isLoading } = useQuery({ ...adminListingQuery(id), enabled: !isNew });
   const [f, setF] = useState<Form>(empty);
   const [slugTouched, setSlugTouched] = useState(!isNew);
