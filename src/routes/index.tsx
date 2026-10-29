@@ -152,12 +152,10 @@ function Index() {
         </div>
       </nav>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-2xl px-4 py-6">
         {browsingHome && collaborators.length > 0 && (
-          <section aria-labelledby="colaboradores" className="mb-8">
-            <h2 id="colaboradores" className="font-display text-2xl font-bold">Colaboradores</h2>
-            <p className="text-sm text-muted-foreground">Comercios y profesionales que apoyan el mantenimiento de Aquí Bonela.</p>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <section aria-label="Colaboradores" className="mb-6 border-b pb-6">
+            <div className="grid gap-4">
               {collaborators.map((l) => (
                 <ListingCard key={l.id} listing={l} collaborator categoryName={catName.get(l.category_id ?? "")} />
               ))}
@@ -165,17 +163,19 @@ function Index() {
           </section>
         )}
 
-        <section aria-labelledby="resultados">
-          <h2 id="resultados" className="font-display text-2xl font-bold">
-            {activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : browsingHome ? "Todo el directorio" : "Resultados"}
-          </h2>
-          <p className="text-sm text-muted-foreground" aria-live="polite">
+        <section aria-label="Directorio">
+          {!browsingHome && (
+            <h2 className="font-display text-2xl font-bold">
+              {activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : "Resultados"}
+            </h2>
+          )}
+          <p className={browsingHome ? "sr-only" : "text-sm text-muted-foreground"} aria-live="polite">
             {results.length} {results.length === 1 ? "resultado" : "resultados"}
           </p>
           {results.length === 0 ? (
             <p className="mt-6 border bg-card p-6 text-center">No hay resultados. Prueba con otra palabra o elige "Todo".</p>
           ) : (
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className={cn("grid gap-4", !browsingHome && "mt-3")}>
               {(browsingHome ? results.filter((l) => !isFeatured(l)) : results).map((l) => (
                 <ListingCard
                   key={l.id}
