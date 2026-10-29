@@ -8,6 +8,7 @@ export type Listing = {
   type: "comercio" | "profesional";
   name: string;
   description: string;
+  short_description: string;
   category_id: string | null;
   featured: boolean;
   featured_until: string | null;
@@ -25,19 +26,24 @@ export type Listing = {
 export const directoryQuery = queryOptions({
   queryKey: ["directory"],
   queryFn: async () => {
-    const [cats, list] = await Promise.all([
+    const [cats, settings, list] = await Promise.all([
       supabase.from("categories").select("id,name,slug,sort_order").order("sort_order"),
+      supabase.from("site_settings").select("hero_title").maybeSingle(),
       supabase
         .from("listings")
         .select(
-          "id,slug,type,name,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,gallery_urls,urgent_24h",
+          "id,slug,type,name,description,short_description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,gallery_urls,urgent_24h",
         )
         .eq("status", "publicada")
         .order("name"),
     ]);
     if (cats.error) throw new Error(cats.error.message);
     if (list.error) throw new Error(list.error.message);
-    return { categories: cats.data as Category[], listings: list.data as Listing[] };
+    return {
+      categories: cats.data as Category[],
+      listings: list.data as Listing[],
+      heroTitle: settings.data?.hero_title || "¿Qué buscas en Casarabonela?",
+    };
   },
 });
 
@@ -71,7 +77,7 @@ export function filterListings(
     if (cat && activity && normalize(l.activity ?? "") !== normalize(activity)) return false;
     if (!words.length) return true;
     const hay = normalize(
-      [l.name, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" ")].join(" "),
+      [l.name, l.short_description, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" ")].join(" "),
     );
     return words.every((w) => hay.includes(w));
   });

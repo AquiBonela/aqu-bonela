@@ -18,6 +18,7 @@ import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$s
 import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
+import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_authenticated/admin/configuracion'
 import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
 import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
 
@@ -66,6 +67,12 @@ const AuthenticatedAdminAvisosRoute =
     path: '/admin/avisos',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminConfiguracionRoute =
+  AuthenticatedAdminConfiguracionRouteImport.update({
+    id: '/admin/configuracion',
+    path: '/admin/configuracion',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminSugerenciasRoute =
   AuthenticatedAdminSugerenciasRouteImport.update({
     id: '/admin/sugerencias',
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
+  '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
@@ -99,6 +107,7 @@ export interface FileRoutesByTo {
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
+  '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
@@ -113,6 +122,7 @@ export interface FileRoutesById {
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
+  '/_authenticated/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/_authenticated/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/admin/avisos'
+    | '/admin/configuracion'
     | '/admin/sugerencias'
     | '/admin/'
     | '/admin/fichas/$id'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/admin/avisos'
+    | '/admin/configuracion'
     | '/admin/sugerencias'
     | '/admin'
     | '/admin/fichas/$id'
@@ -152,6 +164,7 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/_authenticated/admin/avisos'
+    | '/_authenticated/admin/configuracion'
     | '/_authenticated/admin/sugerencias'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/fichas/$id'
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAvisosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/configuracion': {
+      id: '/_authenticated/admin/configuracion'
+      path: '/admin/configuracion'
+      fullPath: '/admin/configuracion'
+      preLoaderRoute: typeof AuthenticatedAdminConfiguracionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/sugerencias': {
       id: '/_authenticated/admin/sugerencias'
       path: '/admin/sugerencias'
@@ -251,6 +271,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAvisosRoute: typeof AuthenticatedAdminAvisosRoute
+  AuthenticatedAdminConfiguracionRoute: typeof AuthenticatedAdminConfiguracionRoute
   AuthenticatedAdminSugerenciasRoute: typeof AuthenticatedAdminSugerenciasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminFichasIdRoute: typeof AuthenticatedAdminFichasIdRoute
@@ -258,6 +279,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAvisosRoute: AuthenticatedAdminAvisosRoute,
+  AuthenticatedAdminConfiguracionRoute: AuthenticatedAdminConfiguracionRoute,
   AuthenticatedAdminSugerenciasRoute: AuthenticatedAdminSugerenciasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminFichasIdRoute: AuthenticatedAdminFichasIdRoute,

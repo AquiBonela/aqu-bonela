@@ -25,6 +25,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <Link to="/admin/sugerencias" className="hover:underline data-[status=active]:underline">
               Sugerencias
             </Link>
+            <Link to="/admin/configuracion" className="hover:underline data-[status=active]:underline">
+              Configuración
+            </Link>
             <Link to="/" search={{ q: "", cat: "", of: "" }} className="hidden hover:underline sm:inline">Ver web</Link>
             <button
               onClick={async () => {

@@ -68,7 +68,7 @@ export function ListingCard({
           </Link>
         </h3>
         {subtitle && <p className="text-sm font-medium text-muted-foreground">{subtitle}</p>}
-        <p className="mt-1 line-clamp-2 text-sm">{listing.description}</p>
+        <p className="mt-1 line-clamp-2 text-sm">{listing.short_description || listing.description}</p>
         {listing.labels.length > 0 && (
           <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Etiquetas">
             {listing.labels.slice(0, 3).map((t) => (

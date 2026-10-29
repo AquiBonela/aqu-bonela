@@ -89,7 +89,7 @@ function Index() {
               Casarabonela · Málaga
             </p>
             <h1 className="mt-2 max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl">
-              ¿Qué buscas en Casarabonela?
+              {data.heroTitle}
             </h1>
           </div>
         </div>
