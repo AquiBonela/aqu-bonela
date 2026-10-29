@@ -50,7 +50,7 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
         <div className="space-y-4">
-          {listing.description && <p className="whitespace-pre-line text-base leading-relaxed">{listing.description}</p>}
+          {listing.description && <p className="whitespace-pre-line text-base text-pretty leading-relaxed">{listing.description}</p>}
           {listing.labels.length > 0 && (
             <ul className="flex flex-wrap gap-2" aria-label="Etiquetas">
               {listing.labels.map((t) => (
