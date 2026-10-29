@@ -4,43 +4,43 @@ import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { isAdminQuery } from "@/lib/admin";
 import { Toaster } from "@/components/ui/sonner";
+import { AppHeader, type HeaderItem } from "@/components/AppHeader";
+
+const ADMIN_ITEMS: HeaderItem[] = [
+  { to: "/admin", label: "Fichas", activeOptions: { exact: true } },
+  { to: "/admin/avisos", label: "Avisos" },
+  { to: "/admin/sugerencias", label: "Sugerencias" },
+  { to: "/admin/configuracion", label: "Configuración" },
+  { to: "/", search: { q: "", cat: "", of: "" }, label: "Ver web" },
+];
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { data: isAdmin, isLoading } = useQuery(isAdminQuery);
+
+  const items: HeaderItem[] = [
+    ...ADMIN_ITEMS,
+    {
+      label: "Salir",
+      onClick: async () => {
+        await supabase.auth.signOut();
+        navigate({ to: "/auth" });
+      },
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-primary text-primary-foreground">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link to="/admin" className="font-display text-lg font-bold">
-            Aquí Bonela · <span className="font-medium opacity-80">Administración</span>
+      <AppHeader
+        navLabel="Menú de administración"
+        footnote="Administración del directorio Aquí Bonela"
+        brand={
+          <Link to="/admin" className="font-display text-xl font-bold tracking-tight">
+            Aquí <span className="text-terracotta">Bonela</span> · <span className="font-medium">Administración</span>
           </Link>
-          <nav className="flex items-center gap-3 text-sm sm:gap-4">
-            <Link to="/admin" activeOptions={{ exact: true }} className="hover:underline data-[status=active]:underline">
-              Fichas
-            </Link>
-            <Link to="/admin/avisos" className="hover:underline data-[status=active]:underline">
-              Avisos
-            </Link>
-            <Link to="/admin/sugerencias" className="hover:underline data-[status=active]:underline">
-              Sugerencias
-            </Link>
-            <Link to="/admin/configuracion" className="hover:underline data-[status=active]:underline">
-              Configuración
-            </Link>
-            <Link to="/" search={{ q: "", cat: "", of: "" }} className="hidden hover:underline sm:inline">Ver web</Link>
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut();
-                navigate({ to: "/auth" });
-              }}
-              className="hover:underline"
-            >
-              Salir
-            </button>
-          </nav>
-        </div>
-      </header>
+        }
+        items={items}
+      />
       <main className="mx-auto max-w-5xl px-4 py-6">
         {isLoading ? null : isAdmin ? (
           children
