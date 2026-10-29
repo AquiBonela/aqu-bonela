@@ -65,7 +65,7 @@ export function CoverPicker({ listingId }: { listingId: string }) {
   );
 }
 
-type Photo = { id: string; storage_path: string; alt: string; sort_order: number; url?: string };
+type Photo = { id: string; storage_path: string; alt: string; sort_order: number; url: string | null };
 
 export function GalleryPicker({ listingId }: { listingId: string }) {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -77,7 +77,7 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
     const rows = data ?? [];
     if (!rows.length) { setPhotos([]); return; }
     const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrls(rows.map((r) => r.storage_path), 3600);
-    setPhotos(rows.map((r, i) => ({ ...r, url: signed?.[i]?.signedUrl ?? undefined })));
+    setPhotos(rows.map((r, i) => ({ ...r, url: signed?.[i]?.signedUrl ?? null })));
   }
   useEffect(() => { load(); }, [listingId]);
 
