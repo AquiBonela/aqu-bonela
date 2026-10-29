@@ -35,11 +35,10 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
   const [lightbox, setLightbox] = useState<number | null>(null);
 
   type C = { icon: typeof Phone; label: string; value: string; field: ReviewField };
-  const contact: C[] = [
-    listing.public_phone && { icon: Phone, label: "Teléfono", value: listing.public_phone, field: "phone" as const },
-    listing.public_whatsapp && { icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp, field: "whatsapp" as const },
-    listing.public_email && { icon: Mail, label: "Email", value: listing.public_email, field: "email" as const },
-  ].filter((c): c is C => Boolean(c));
+  const contact: C[] = [];
+  if (listing.public_phone) contact.push({ icon: Phone, label: "Teléfono", value: listing.public_phone, field: "phone" });
+  if (listing.public_whatsapp) contact.push({ icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp, field: "whatsapp" });
+  if (listing.public_email) contact.push({ icon: Mail, label: "Email", value: listing.public_email, field: "email" });
 
   return (
     <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
