@@ -2,7 +2,7 @@ import { HeartHandshake } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Listing } from "@/lib/directory";
 import { cn } from "@/lib/utils";
-import { availabilityTags, hashtag } from "@/lib/listing-availability";
+import { availabilityTags } from "@/lib/listing-availability";
 
 export const typeLabel = (t: Listing["type"]) => (t === "profesional" ? "Profesional" : "Comercio");
 
@@ -11,7 +11,7 @@ export function TypeLabel({ type, className }: { type: Listing["type"]; classNam
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-1 text-sm font-semibold uppercase",
+        "inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold uppercase",
         pro ? "bg-accent text-terracotta" : "bg-secondary text-primary",
         className,
       )}
@@ -41,28 +41,22 @@ export function ListingCard({
   const pro = listing.type === "profesional";
   const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
   return (
-    <article className="relative flex border bg-card text-card-foreground">
-      <span aria-hidden className={cn("w-1.5 shrink-0", pro ? "bg-terracotta" : "bg-primary")} />
+    <article className={cn("relative flex flex-col overflow-hidden rounded-soft border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta" : "border-l-primary")}>
       {collaborator && listing.cover_url && (
-        <img
-          src={listing.cover_url}
-          alt=""
-          loading="lazy"
-          className="w-28 shrink-0 self-stretch object-cover sm:w-36"
-        />
+        <img src={listing.cover_url} alt="" loading="lazy" className="h-40 w-full object-cover sm:h-48" />
       )}
-      <div className="min-w-0 flex-1 p-4 sm:p-5">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+      <div className="min-w-0 p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <TypeLabel type={listing.type} />
             {collaborator && <CollaboratorBadge />}
           </div>
-          <div className="flex max-w-40 flex-col items-end gap-1.5 text-right">
+          <div className="flex flex-wrap justify-end gap-1.5">
             {listing.urgent_24h && <UrgentBadge />}
             {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
           </div>
         </div>
-        <h3 className="mt-1 font-display text-xl font-bold leading-tight">
+        <h3 className="mt-2 font-display text-2xl font-bold leading-tight text-foreground">
           <Link
             to={pro ? "/profesionales/$slug" : "/comercios/$slug"}
             params={{ slug: listing.slug }}
@@ -71,17 +65,8 @@ export function ListingCard({
             {listing.name}
           </Link>
         </h3>
-        {subtitle && <p className="text-base font-medium text-foreground/80">{subtitle}</p>}
-        <p className="mt-1.5 line-clamp-3 text-base leading-relaxed">{listing.short_description || listing.description}</p>
-        {listing.labels.length > 0 && (
-          <ul className="mt-3 flex flex-wrap gap-1.5 border-t pt-3" aria-label="Etiquetas">
-            {listing.labels.slice(0, 3).map((t) => (
-              <li key={t} className="bg-hashtag px-2.5 py-1 text-sm font-semibold text-hashtag-foreground">
-                {hashtag(t)}
-              </li>
-            ))}
-          </ul>
-        )}
+        {subtitle && <p className={cn("mt-1 text-base font-bold", pro ? "text-terracotta" : "text-primary")}>{subtitle}</p>}
+        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-foreground">{listing.short_description || listing.description}</p>
       </div>
     </article>
   );
