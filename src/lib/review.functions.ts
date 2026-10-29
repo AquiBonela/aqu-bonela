@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { listingPath } from "@/lib/listing-detail";
 import { TOKEN_RE, type Hour, type ReviewContact, type ReviewData, type SubmitResult } from "./review";
 
@@ -116,25 +115,6 @@ export const submitReview = createServerFn({ method: "POST" })
     await admin.from("listings").update({ status: "publicada" }).eq("id", l.id);
     await admin.from("approval_tokens").update({ used_at: new Date().toISOString() }).eq("id", row.id);
     return { ok: true, url: listingPath(l.type, l.slug) };
-  });
-
-export const createReviewToken = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ listingId: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
-    if (!isAdmin) throw new Error("Forbidden");
-    const bytes = crypto.getRandomValues(new Uint8Array(32));
-    const token = btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("approval_tokens").insert({
-      listing_id: data.listingId,
-      token_hash: await sha256Hex(token),
-      expires_at: expiresAt,
-    });
-    if (error) throw new Error(error.message);
-    return { token, expiresAt };
   });
 
 export const reviewQuery = (token: string) =>
