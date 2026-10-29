@@ -40,21 +40,17 @@ export function ListingCard({
 }) {
   const pro = listing.type === "profesional";
   const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
+  const marks = [...(listing.urgent_24h ? ["Urgencias 24h"] : []), ...availabilityTags(listing.tags)];
   return (
-    <article className={cn("relative flex flex-col overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.015] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta" : "border-l-primary")}>
+    <article className={cn("relative flex overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.015] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta" : "border-l-primary")}>
+      <div className="flex min-w-0 flex-1 flex-col">
       {collaborator && listing.cover_url && (
         <img src={listing.cover_url} alt="" loading="lazy" className="h-40 w-full object-cover sm:h-48" />
       )}
       <div className="min-w-0 p-4 sm:p-5">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <TypeLabel type={listing.type} />
-            {collaborator && <CollaboratorBadge />}
-          </div>
-          <div className="flex flex-wrap justify-end gap-1.5">
-            {listing.urgent_24h && <UrgentBadge />}
-            {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
-          </div>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <TypeLabel type={listing.type} />
+          {collaborator && <CollaboratorBadge />}
         </div>
         <h3 className="mt-2 font-display text-2xl font-bold leading-tight text-foreground">
           <Link
@@ -68,6 +64,18 @@ export function ListingCard({
         {subtitle && <p className={cn("mt-1 text-base font-bold", pro ? "text-terracotta" : "text-primary")}>{subtitle}</p>}
         <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-foreground">{listing.short_description || listing.description}</p>
       </div>
+      </div>
+      {marks.length > 0 && (
+        <div className="flex shrink-0 divide-x divide-availability-border border-l border-availability-border bg-availability text-availability-foreground" aria-label={marks.join(", ")}>
+          {marks.map((m) => (
+            <span key={m} className="flex w-9 items-center justify-center py-3" aria-hidden>
+              <span className="whitespace-nowrap text-sm font-bold uppercase tracking-wide [writing-mode:vertical-rl] rotate-180">
+                {m.toLowerCase().startsWith("urgencias") ? "⚡ " : ""}{m}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
