@@ -166,7 +166,7 @@ function ReviewForm({
   }
 
   return (
-    <>
+    <div className="space-y-5">
     <div className="space-y-5">
       <div>
         <h1 className="font-display text-2xl font-bold">Revisa tu ficha</h1>
@@ -210,6 +210,6 @@ function ReviewForm({
         Si algo no es correcto, no autorices: escribe un comentario en el cuadro de arriba y avisa al administrador.
       </p>
     </div>
-    </>
+    </div>
   );
 }

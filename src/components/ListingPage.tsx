@@ -42,7 +42,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
   ].filter((c): c is C => Boolean(c));
 
   return (
-    <div className="listing-page min-h-screen bg-background pb-8">
+    <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
       {!review && <div className="mx-auto max-w-3xl px-4">
         <Link to="/" search={{ q: "", cat: "", of: "" }} className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
           <ArrowLeft className="h-4 w-4" aria-hidden /> Volver al directorio
