@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { adminCategoriesQuery, siteSettingsQuery, slugify, type SiteSettings } from "@/lib/admin";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracion")({
@@ -38,28 +40,84 @@ function GeneralSettings() {
   const set = <K extends keyof SiteSettings>(k: K, v: SiteSettings[K]) => setF({ ...f, [k]: v });
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    const { error } = await supabase.from("site_settings").update({ ...f!, collaborator_months: Number(f!.collaborator_months) || 1 }).eq("id", true);
+    const labels = Array.from(new Set(f!.common_labels.map((t) => t.trim()).filter(Boolean)));
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ ...f!, common_labels: labels, collaborator_months: Number(f!.collaborator_months) || 1 })
+      .eq("id", true);
     if (error) { toast.error("No se pudo guardar."); return; }
     toast.success("Configuración guardada");
     qc.invalidateQueries({ queryKey: ["admin", "settings"] });
     qc.invalidateQueries({ queryKey: ["directory"] });
+    qc.invalidateQueries({ queryKey: ["legal-owner"] });
   }
+  const block = "grid gap-4 border bg-card p-4";
+  const lbl = "grid gap-1 text-sm font-medium";
   return (
-    <form onSubmit={save} className="mt-6 grid gap-4 border bg-card p-4">
-      <h2 className="font-display text-lg font-bold">Datos generales</h2>
-      <label className="grid gap-1 text-sm font-medium">Título de la portada
-        <Input value={f.hero_title} onChange={(e) => set("hero_title", e.target.value)} />
-      </label>
-      <label className="grid gap-1 text-sm font-medium">Email de contacto de administración
-        <Input type="email" value={f.contact_email} onChange={(e) => set("contact_email", e.target.value)} />
-      </label>
-      <label className="grid gap-1 text-sm font-medium">WhatsApp de administración
-        <Input value={f.admin_whatsapp} onChange={(e) => set("admin_whatsapp", e.target.value)} placeholder="+34 600 000 000" />
-      </label>
-      <label className="grid gap-1 text-sm font-medium">Duración de «Colaborador» (meses)
-        <Input type="number" min={1} max={24} value={f.collaborator_months} onChange={(e) => set("collaborator_months", Number(e.target.value))} />
-      </label>
-      <Button type="submit" className="justify-self-start">Guardar</Button>
+    <form onSubmit={save} className="mt-6 grid gap-6">
+      <section className={block}>
+        <h2 className="font-display text-lg font-bold">Portada</h2>
+        <label className={lbl}>Título de la portada
+          <Input value={f.hero_title} onChange={(e) => set("hero_title", e.target.value)} />
+        </label>
+        <label className={lbl}>Subtítulo o lema
+          <Input value={f.hero_subtitle} onChange={(e) => set("hero_subtitle", e.target.value)} placeholder="Apoya al comercio local de Casarabonela" />
+        </label>
+        <label className="flex items-center gap-3 text-sm font-medium">
+          <Switch checked={f.banner_enabled} onCheckedChange={(v) => set("banner_enabled", v)} />
+          Mostrar aviso temporal arriba de la portada
+        </label>
+        <label className={lbl}>Texto del aviso
+          <Input value={f.banner_text} onChange={(e) => set("banner_text", e.target.value)} placeholder="Horarios especiales por la feria" />
+        </label>
+      </section>
+
+      <section className={block}>
+        <h2 className="font-display text-lg font-bold">Datos legales del titular</h2>
+        <p className="text-sm text-muted-foreground">Aparecen en Aviso legal y Privacidad.</p>
+        <label className={lbl}>Nombre o razón social
+          <Input value={f.legal_name} onChange={(e) => set("legal_name", e.target.value)} />
+        </label>
+        <label className={lbl}>NIF / CIF
+          <Input value={f.legal_nif} onChange={(e) => set("legal_nif", e.target.value)} />
+        </label>
+        <label className={lbl}>Dirección postal
+          <Input value={f.legal_address} onChange={(e) => set("legal_address", e.target.value)} />
+        </label>
+        <label className={lbl}>Email público de contacto
+          <Input type="email" value={f.legal_email} onChange={(e) => set("legal_email", e.target.value)} />
+        </label>
+      </section>
+
+      <section className={block}>
+        <h2 className="font-display text-lg font-bold">Administración</h2>
+        <label className={lbl}>Email de contacto de administración
+          <Input type="email" value={f.contact_email} onChange={(e) => set("contact_email", e.target.value)} />
+        </label>
+        <label className={lbl}>WhatsApp de administración
+          <Input value={f.admin_whatsapp} onChange={(e) => set("admin_whatsapp", e.target.value)} placeholder="+34 600 000 000" />
+        </label>
+        <label className={lbl}>Duración de «Colaborador» (meses)
+          <Input type="number" min={1} max={24} value={f.collaborator_months} onChange={(e) => set("collaborator_months", Number(e.target.value))} />
+        </label>
+        <label className={lbl}>Mensaje de WhatsApp del enlace de revisión
+          <Textarea rows={4} value={f.whatsapp_template} onChange={(e) => set("whatsapp_template", e.target.value)} />
+          <span className="text-xs font-normal text-muted-foreground">Usa {"{nombre}"} para el nombre del titular y {"{enlace}"} para el enlace.</span>
+        </label>
+      </section>
+
+      <section className={block}>
+        <h2 className="font-display text-lg font-bold">Etiquetas frecuentes</h2>
+        <p className="text-sm text-muted-foreground">Se ofrecen con un clic al editar una ficha. Una por línea.</p>
+        <Textarea
+          rows={6}
+          value={f.common_labels.join("\n")}
+          onChange={(e) => set("common_labels", e.target.value.split("\n"))}
+          aria-label="Etiquetas frecuentes"
+        />
+      </section>
+
+      <Button type="submit" className="justify-self-start">Guardar configuración</Button>
     </form>
   );
 }
