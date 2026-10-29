@@ -16,6 +16,8 @@ import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
+import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
 import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -52,6 +54,18 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminAvisosRoute =
+  AuthenticatedAdminAvisosRouteImport.update({
+    id: '/admin/avisos',
+    path: '/admin/avisos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminSugerenciasRoute =
+  AuthenticatedAdminSugerenciasRouteImport.update({
+    id: '/admin/sugerencias',
+    path: '/admin/sugerencias',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminFichasIdRoute =
   AuthenticatedAdminFichasIdRouteImport.update({
     id: '/admin/fichas/$id',
@@ -65,6 +79,8 @@ export interface FileRoutesByFullPath {
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
+  '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
@@ -74,6 +90,8 @@ export interface FileRoutesByTo {
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
+  '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
@@ -85,6 +103,8 @@ export interface FileRoutesById {
   '/sugerir': typeof SugerirRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
+  '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
+  '/_authenticated/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
@@ -96,6 +116,8 @@ export interface FileRouteTypes {
     | '/sugerir'
     | '/comercios/$slug'
     | '/profesionales/$slug'
+    | '/admin/avisos'
+    | '/admin/sugerencias'
     | '/admin/'
     | '/admin/fichas/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -105,6 +127,8 @@ export interface FileRouteTypes {
     | '/sugerir'
     | '/comercios/$slug'
     | '/profesionales/$slug'
+    | '/admin/avisos'
+    | '/admin/sugerencias'
     | '/admin'
     | '/admin/fichas/$id'
   id:
@@ -115,6 +139,8 @@ export interface FileRouteTypes {
     | '/sugerir'
     | '/comercios/$slug'
     | '/profesionales/$slug'
+    | '/_authenticated/admin/avisos'
+    | '/_authenticated/admin/sugerencias'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/fichas/$id'
   fileRoutesById: FileRoutesById
@@ -179,6 +205,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/avisos': {
+      id: '/_authenticated/admin/avisos'
+      path: '/admin/avisos'
+      fullPath: '/admin/avisos'
+      preLoaderRoute: typeof AuthenticatedAdminAvisosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/sugerencias': {
+      id: '/_authenticated/admin/sugerencias'
+      path: '/admin/sugerencias'
+      fullPath: '/admin/sugerencias'
+      preLoaderRoute: typeof AuthenticatedAdminSugerenciasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/fichas/$id': {
       id: '/_authenticated/admin/fichas/$id'
       path: '/admin/fichas/$id'
@@ -190,11 +230,15 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminAvisosRoute: typeof AuthenticatedAdminAvisosRoute
+  AuthenticatedAdminSugerenciasRoute: typeof AuthenticatedAdminSugerenciasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminFichasIdRoute: typeof AuthenticatedAdminFichasIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminAvisosRoute: AuthenticatedAdminAvisosRoute,
+  AuthenticatedAdminSugerenciasRoute: AuthenticatedAdminSugerenciasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminFichasIdRoute: AuthenticatedAdminFichasIdRoute,
 }
