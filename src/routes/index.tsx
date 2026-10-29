@@ -75,6 +75,11 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+      {data.banner && (
+        <div role="status" className="border-b bg-accent/15 px-4 py-2.5 text-center text-sm font-medium text-foreground">
+          {data.banner}
+        </div>
+      )}
 
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[24rem] w-full sm:h-[30rem]">
@@ -91,6 +96,9 @@ function Index() {
             <h1 className="mt-2 max-w-xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl">
               {data.heroTitle}
             </h1>
+            {data.heroSubtitle && (
+              <p className="mt-3 max-w-xl text-base text-primary-foreground/85 sm:text-lg">{data.heroSubtitle}</p>
+            )}
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">

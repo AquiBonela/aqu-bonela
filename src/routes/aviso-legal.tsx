@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPage, OWNER, legalHead } from "@/components/LegalPage";
+import { LegalPage, useOwner, legalHead } from "@/components/LegalPage";
 
 export const Route = createFileRoute("/aviso-legal")({
   head: () => legalHead("Aviso legal", "Datos del titular y condiciones de uso del directorio Aquí Bonela de Casarabonela."),
@@ -7,6 +7,7 @@ export const Route = createFileRoute("/aviso-legal")({
 });
 
 function AvisoLegal() {
+  const OWNER = useOwner();
   return (
     <LegalPage title="Aviso legal">
       <h2>Titular del sitio</h2>

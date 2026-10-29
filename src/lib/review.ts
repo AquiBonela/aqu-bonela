@@ -36,7 +36,12 @@ export type ReviewData =
 
 export type SubmitResult = { ok: true; url: string | null } | { ok: false; reason: "invalid" | "expired" };
 
-export function reviewMessage(ownerName: string | null, url: string) {
+/** Rellena {nombre} y {enlace} en la plantilla configurada; sin plantilla usa el texto por defecto. */
+export function reviewMessage(ownerName: string | null, url: string, template?: string | null) {
+  if (template && template.trim()) {
+    const t = template.includes("{enlace}") ? template : `${template} {enlace}`;
+    return t.replace(/\s*\{nombre\}/g, ownerName ? ` ${ownerName}` : "").replace(/\{enlace\}/g, url);
+  }
   return `Hola${ownerName ? ` ${ownerName}` : ""}: este es tu enlace privado para revisar y autorizar la publicación de tu ficha en Aquí Bonela (válido 30 días): ${url}`;
 }
 

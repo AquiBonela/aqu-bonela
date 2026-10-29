@@ -210,6 +210,25 @@ function EditPage() {
         </Field>
         <Field label="Etiquetas destacadas" hint="Hasta 3, separadas por comas. Ej.: Pan de leña, Encargos">
           <Input value={f.labels} onChange={(e) => set("labels", e.target.value)} />
+          {!!settings?.common_labels.length && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {settings.common_labels.map((t) => {
+                const cur = f.labels.split(",").map((x) => x.trim()).filter(Boolean);
+                const on = cur.includes(t);
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => set("labels", (on ? cur.filter((x) => x !== t) : [...cur, t]).join(", "))}
+                    className={`rounded-soft border px-2.5 py-1 text-xs ${on ? "bg-primary text-primary-foreground" : "bg-card hover:bg-secondary"}`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </Field>
       </Section>
 
@@ -310,7 +329,7 @@ function EditPage() {
                   Copiar enlace
                 </button>
                 <a
-                  href={whatsappShareUrl(reviewMessage(f.owner_name || null, reviewLink.url), f.owner_contact)}
+                  href={whatsappShareUrl(reviewMessage(f.owner_name || null, reviewLink.url, settings?.whatsapp_template), f.owner_contact)}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex h-10 items-center bg-primary px-4 text-sm text-primary-foreground"

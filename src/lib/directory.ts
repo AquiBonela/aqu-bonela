@@ -28,7 +28,7 @@ export const directoryQuery = queryOptions({
   queryFn: async () => {
     const [cats, settings, list] = await Promise.all([
       supabase.from("categories").select("id,name,slug,sort_order").order("sort_order"),
-      supabase.from("site_settings").select("hero_title").maybeSingle(),
+      supabase.from("site_settings").select("hero_title,hero_subtitle,banner_enabled,banner_text").maybeSingle(),
       supabase
         .from("listings")
         .select(
@@ -43,6 +43,8 @@ export const directoryQuery = queryOptions({
       categories: cats.data as Category[],
       listings: list.data as Listing[],
       heroTitle: settings.data?.hero_title || "¿Qué buscas en Casarabonela?",
+      heroSubtitle: settings.data?.hero_subtitle ?? "",
+      banner: settings.data?.banner_enabled && settings.data.banner_text.trim() ? settings.data.banner_text.trim() : null,
     };
   },
 });

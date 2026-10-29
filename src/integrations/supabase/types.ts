@@ -422,30 +422,54 @@ export type Database = {
       site_settings: {
         Row: {
           admin_whatsapp: string
+          banner_enabled: boolean
+          banner_text: string
           collaborator_months: number
+          common_labels: string[]
           contact_email: string
           hero_subtitle: string
           hero_title: string
           id: boolean
+          legal_address: string
+          legal_email: string
+          legal_name: string
+          legal_nif: string
           updated_at: string
+          whatsapp_template: string
         }
         Insert: {
           admin_whatsapp?: string
+          banner_enabled?: boolean
+          banner_text?: string
           collaborator_months?: number
+          common_labels?: string[]
           contact_email?: string
           hero_subtitle?: string
           hero_title?: string
           id?: boolean
+          legal_address?: string
+          legal_email?: string
+          legal_name?: string
+          legal_nif?: string
           updated_at?: string
+          whatsapp_template?: string
         }
         Update: {
           admin_whatsapp?: string
+          banner_enabled?: boolean
+          banner_text?: string
           collaborator_months?: number
+          common_labels?: string[]
           contact_email?: string
           hero_subtitle?: string
           hero_title?: string
           id?: boolean
+          legal_address?: string
+          legal_email?: string
+          legal_name?: string
+          legal_nif?: string
           updated_at?: string
+          whatsapp_template?: string
         }
         Relationships: []
       }
