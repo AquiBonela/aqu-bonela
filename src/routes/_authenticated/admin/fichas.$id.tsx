@@ -100,9 +100,9 @@ function EditPage() {
     e.preventDefault();
     const labels = list(f.labels, /,/);
     const gallery = list(f.gallery_urls, /\n/);
-    if (labels.length > 3) return toast.error("Máximo 3 etiquetas destacadas.");
-    if (gallery.length > 5) return toast.error("Máximo 5 fotos en la galería.");
-    if (!f.category_id) return toast.error("Elige una categoría.");
+    if (labels.length > 3) { toast.error("Máximo 3 etiquetas destacadas."); return; }
+    if (gallery.length > 5) { toast.error("Máximo 5 fotos en la galería."); return; }
+    if (!f.category_id) { toast.error("Elige una categoría."); return; }
     setSaving(true);
     const featured_until = f.collaborator
       ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil()
