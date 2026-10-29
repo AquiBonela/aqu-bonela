@@ -104,7 +104,8 @@ function Index() {
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
               id="buscar"
-              type="search"
+              type="text"
+              enterKeyHint="search"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Panadería, fontanero, tapas…"
@@ -134,7 +135,9 @@ function Index() {
             <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
               const value = e.target.value;
               if (value !== "" && value !== "comercio" && value !== "profesional") return;
-              navigate({ search: (p) => ({ ...p, tipo: value, of: "", urg: false }) });
+              setText("");
+              const keepCat = !value || data.listings.some((l) => l.type === value && l.category_id === activeCat?.id);
+              navigate({ search: (p) => ({ ...p, tipo: value, of: "", q: "", urg: false, ...(keepCat ? {} : { cat: "" }) }) });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option>
             </select>
@@ -142,7 +145,7 @@ function Index() {
           <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Categoría
             <select aria-label="Categoría" value={cat} onChange={(e) => { setText(""); navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "", q: "", urg: false }) }); }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todas las categorías</option>
-              {data.categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+              {data.categories.filter((c) => !tipo || data.listings.some((l) => l.type === tipo && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select>
           </label>
           {activeCat && <label className="grid min-w-0 gap-1.5 text-sm font-semibold">Oficio / actividad
@@ -158,8 +161,8 @@ function Index() {
             aria-pressed={urg}
             onClick={() => { setText(""); navigate({ search: (p) => ({ ...p, urg: !urg, q: "", cat: "", of: "", tipo: "" }) }); }}
             className={cn(
-              "inline-flex min-h-12 items-center gap-2 rounded-full border-2 border-availability-border px-5 font-display text-base font-bold",
-              urg ? "bg-availability-foreground text-card" : "bg-availability text-availability-foreground",
+              "inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-5 font-display text-base font-bold",
+              urg ? "border-availability-border bg-availability text-availability-foreground" : "border-foreground/70 bg-card text-foreground",
             )}
           >
             <Zap className="h-5 w-5" aria-hidden /> Urgencias y guardias{urg ? " · quitar" : ""}
