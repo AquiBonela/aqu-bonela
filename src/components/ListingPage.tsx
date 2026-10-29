@@ -56,10 +56,6 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
           <span>{listing.public_address}</span>
         </p>}
-        {/* Botones de acción en web: arriba, junto a los datos principales */}
-        <div className="mt-4 hidden max-w-md sm:flex">
-          <ActionLinks listing={listing} />
-        </div>
       </header>
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
