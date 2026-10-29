@@ -95,16 +95,18 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               <X className="h-6 w-6" aria-hidden />
             </button>
           </div>
-          <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-6 pb-16">
-            <ul className="flex flex-col gap-6">
-              {items.map((item, i) => (
-                <li key={item.label} className="animate-menu-item" style={{ animationDelay: `${0.06 * i}s` }}>
-                  {renderItem(item, true)}
-                </li>
-              ))}
-            </ul>
+          <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6">
+            <div className="flex flex-1 flex-col justify-center pb-16">
+              <ul className="flex flex-col gap-6">
+                {items.map((item, i) => (
+                  <li key={item.label} className="animate-menu-item" style={{ animationDelay: `${0.06 * i}s` }}>
+                    {renderItem(item, true)}
+                  </li>
+                ))}
+              </ul>
+            </div>
             {footnote && (
-              <div className="mt-10">{footnote}</div>
+              <div className="mt-auto border-t border-primary-foreground/15 pb-6 pt-6">{footnote}</div>
             )}
           </nav>
         </div>
