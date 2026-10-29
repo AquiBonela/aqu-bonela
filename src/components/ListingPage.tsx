@@ -56,6 +56,10 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
           <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
           <span>{listing.public_address}</span>
         </p>}
+        {/* Botones de acción en web: arriba, junto a los datos principales */}
+        <div className="mt-4 hidden max-w-md sm:flex">
+          <ActionLinks listing={listing} />
+        </div>
       </header>
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
@@ -129,36 +133,13 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         </footer>
       </main>
 
+      {/* Botonera fija inferior: solo en móvil */}
       <nav
         aria-label="Contactar"
-        className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 px-4 py-3 backdrop-blur"
+        className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 px-4 py-3 backdrop-blur sm:hidden"
       >
         <div className="mx-auto flex max-w-3xl gap-2">
-          {listing.public_phone && (
-            <a href={`tel:${listing.public_phone}`} className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary">
-              <Phone className="h-5 w-5" aria-hidden /> Llamar
-            </a>
-          )}
-          {listing.public_whatsapp && (
-            <a
-              href={whatsappUrl(listing.public_whatsapp, listing.name)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
-            >
-              <MessageCircle className="h-5 w-5" aria-hidden /> Mensaje
-            </a>
-          )}
-          {listing.public_address && (
-            <a
-              href={mapsUrl(listing.public_address)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary"
-            >
-              <Navigation className="h-5 w-5" aria-hidden /> Cómo llegar
-            </a>
-          )}
+          <ActionLinks listing={listing} />
         </div>
       </nav>
 
@@ -166,6 +147,38 @@ export function ListingPage({ listing }: { listing: ListingDetail }) {
         <Lightbox photos={gallery} initial={lightbox} onClose={() => setLightbox(null)} />
       )}
     </div>
+  );
+}
+
+function ActionLinks({ listing }: { listing: ListingDetail }) {
+  return (
+    <>
+      {listing.public_phone && (
+        <a href={`tel:${listing.public_phone}`} className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary">
+          <Phone className="h-5 w-5" aria-hidden /> Llamar
+        </a>
+      )}
+      {listing.public_whatsapp && (
+        <a
+          href={whatsappUrl(listing.public_whatsapp, listing.name)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+        >
+          <MessageCircle className="h-5 w-5" aria-hidden /> Mensaje
+        </a>
+      )}
+      {listing.public_address && (
+        <a
+          href={mapsUrl(listing.public_address)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex min-h-12 flex-1 items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary"
+        >
+          <Navigation className="h-5 w-5" aria-hidden /> Cómo llegar
+        </a>
+      )}
+    </>
   );
 }
 
