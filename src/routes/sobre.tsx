@@ -36,7 +36,7 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
     paragraphs: [
       "Aquí Bonela reúne diferentes contenidos del municipio para que puedas encontrar lo que necesitas de forma sencilla.",
       "El objetivo es que no tengas que buscar en diferentes páginas, redes sociales o grupos para encontrar información sobre Casarabonela: Aquí Bonela trabaja para reunirla y organizarla en un espacio común.",
-      "Puedes consultar comercios y profesionales, localizar servicios públicos, descubrir lugares de interés, conocer actividades y eventos o consultar clasificados.",
+      "Estamos empezando por el directorio de comercios, profesionales y servicios públicos. Poco a poco, en los próximos meses, se irán sumando lugares de interés, actividades y eventos, noticias y clasificados.",
       "La información se organiza para facilitar las búsquedas y permitir que cualquier persona acceda sin registros ni complicaciones.",
       "Los contenidos se revisan antes de su publicación para procurar que la información sea útil, clara y fiable.",
     ],
@@ -66,7 +66,7 @@ function Sobre() {
             información útil del municipio.
           </p>
           <p>
-            Un espacio donde encontrar comercios, profesionales, servicios públicos, asociaciones, lugares de interés,
+            Un espacio que reunirá comercios, profesionales, servicios públicos, asociaciones, lugares de interés,
             actividades, noticias y mucho más.
           </p>
           <p>

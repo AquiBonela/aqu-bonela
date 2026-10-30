@@ -27,7 +27,6 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
           <span aria-hidden>·</span>
           <Link to="/cookies" className="underline-offset-4 hover:underline">Cookies</Link>
           <span aria-hidden>·</span>
-          <Link to="/admin" className="text-xs font-normal opacity-60 hover:opacity-100">Acceso privado</Link>
         </nav>
       </div>
     </footer>
