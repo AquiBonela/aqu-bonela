@@ -9,12 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as DescubreRouteImport } from './routes/descubre'
+import { Route as DirectorioRouteImport } from './routes/directorio'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SugerirRouteImport } from './routes/sugerir'
@@ -29,11 +29,6 @@ import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_a
 import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
 import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -56,6 +51,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const DescubreRoute = DescubreRouteImport.update({
   id: '/descubre',
   path: '/descubre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DirectorioRoute = DirectorioRouteImport.update({
+  id: '/directorio',
+  path: '/directorio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacidadRoute = PrivacidadRouteImport.update({
@@ -129,11 +129,12 @@ const AuthenticatedAdminFichasIdRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
   '/descubre': typeof DescubreRoute
+  '/directorio': typeof DirectorioRoute
   '/privacidad': typeof PrivacidadRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
@@ -149,11 +150,12 @@ export interface FileRoutesByFullPath {
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
   '/descubre': typeof DescubreRoute
+  '/directorio': typeof DirectorioRoute
   '/privacidad': typeof PrivacidadRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
@@ -170,12 +172,12 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
   '/descubre': typeof DescubreRoute
+  '/directorio': typeof DirectorioRoute
   '/privacidad': typeof PrivacidadRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
@@ -198,6 +200,7 @@ export interface FileRouteTypes {
     | '/aviso-legal'
     | '/cookies'
     | '/descubre'
+    | '/directorio'
     | '/privacidad'
     | '/sobre'
     | '/sugerir'
@@ -218,6 +221,7 @@ export interface FileRouteTypes {
     | '/aviso-legal'
     | '/cookies'
     | '/descubre'
+    | '/directorio'
     | '/privacidad'
     | '/sobre'
     | '/sugerir'
@@ -233,12 +237,12 @@ export interface FileRouteTypes {
     | '/admin/fichas/$id'
   id:
     | '__root__'
-    | '/'
     | '/_authenticated'
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
     | '/descubre'
+    | '/directorio'
     | '/privacidad'
     | '/sobre'
     | '/sugerir'
@@ -255,12 +259,12 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   AvisoLegalRoute: typeof AvisoLegalRoute
   CookiesRoute: typeof CookiesRoute
   DescubreRoute: typeof DescubreRoute
+  DirectorioRoute: typeof DirectorioRoute
   PrivacidadRoute: typeof PrivacidadRoute
   SobreRoute: typeof SobreRoute
   SugerirRoute: typeof SugerirRoute
@@ -273,13 +277,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -313,6 +310,13 @@ declare module '@tanstack/react-router' {
       path: '/descubre'
       fullPath: '/descubre'
       preLoaderRoute: typeof DescubreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/directorio': {
+      id: '/directorio'
+      path: '/directorio'
+      fullPath: '/directorio'
+      preLoaderRoute: typeof DirectorioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacidad': {
@@ -429,12 +433,12 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   AvisoLegalRoute: AvisoLegalRoute,
   CookiesRoute: CookiesRoute,
   DescubreRoute: DescubreRoute,
+  DirectorioRoute: DirectorioRoute,
   PrivacidadRoute: PrivacidadRoute,
   SobreRoute: SobreRoute,
   SugerirRoute: SugerirRoute,

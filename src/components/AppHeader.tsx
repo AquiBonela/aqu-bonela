@@ -5,6 +5,7 @@ import logoMenu from "@/assets/logo-menu.webp";
 
 export type HeaderRoute =
   | "/"
+  | "/directorio"
   | "/sobre"
   | "/descubre"
   | "/sugerir"
