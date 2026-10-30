@@ -51,85 +51,46 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
   },
 ];
 
-const AREAS = [
-  "Comercios",
-  "Profesionales",
-  "Servicios públicos",
-  "Asociaciones",
-  "Lugares de interés",
-  "Actividades",
-  "Noticias",
-  "Clasificados",
-];
 
 function Sobre() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main>
-        {/* Cabecera */}
-        <section className="border-b">
-          <div className="mx-auto max-w-3xl px-5 pb-12 pt-14 sm:pt-20">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Casarabonela</p>
-            <h1 className="mt-3 font-display text-4xl font-extrabold leading-tight text-pretty sm:text-5xl">
-              Sobre Aquí Bonela
-            </h1>
-            <div className="mt-6 h-1 w-16 bg-primary" />
-            <div className="mt-8 grid gap-5 text-lg leading-relaxed text-foreground/90 sm:text-xl">
-              <p>
-                Aquí Bonela es una plataforma digital dedicada a Casarabonela, creada para reunir en un mismo lugar la
-                información útil del municipio.
-              </p>
-              <p className="text-muted-foreground">
-                Un espacio donde encontrar comercios, profesionales, servicios públicos, asociaciones, lugares de
-                interés, actividades, noticias y mucho más.
-              </p>
-            </div>
-            <ul className="mt-8 flex flex-wrap gap-2">
-              {AREAS.map((a) => (
-                <li key={a} className="rounded-sm border bg-secondary/40 px-3 py-1.5 text-sm font-medium">
-                  {a}
-                </li>
-              ))}
-            </ul>
-          </div>
+      <main className="mx-auto max-w-2xl px-4 py-10">
+        <h1 className="font-display text-3xl font-extrabold text-pretty">Sobre Aquí Bonela</h1>
+
+        <section className="mt-6 grid gap-2 text-base leading-relaxed">
+          <h2 className="font-display text-xl font-bold">¿Qué es Aquí Bonela?</h2>
+          <p className="font-medium">
+            Aquí Bonela es una plataforma digital dedicada a Casarabonela, creada para reunir en un mismo lugar la
+            información útil del municipio.
+          </p>
+          <p>
+            Un espacio donde encontrar comercios, profesionales, servicios públicos, asociaciones, lugares de interés,
+            actividades, noticias y mucho más.
+          </p>
+          <p>
+            Nace de una idea sencilla: hacer que la información de nuestro pueblo sea más accesible, esté mejor
+            organizada y resulte fácil de encontrar desde cualquier dispositivo.
+          </p>
         </section>
 
-        {/* Cita */}
-        <section className="bg-secondary/40">
-          <div className="mx-auto max-w-3xl px-5 py-12">
-            <blockquote className="border-l-4 border-primary pl-5 font-display text-xl font-semibold leading-snug text-pretty sm:text-2xl">
-              Nace de una idea sencilla: hacer que la información de nuestro pueblo sea más accesible, esté mejor
-              organizada y resulte fácil de encontrar desde cualquier dispositivo.
-            </blockquote>
-          </div>
-        </section>
+        {SECTIONS.map((s) => (
+          <section key={s.title} className="mt-8 grid gap-2 border-t pt-8 text-base leading-relaxed">
+            <h2 className="font-display text-xl font-bold">{s.title}</h2>
+            {s.paragraphs.map((p, i) => (
+              <p key={p} className={i === 0 ? "font-medium" : undefined}>
+                {p}
+              </p>
+            ))}
+          </section>
+        ))}
 
-        {/* Secciones numeradas */}
-        <div className="mx-auto max-w-3xl px-5 py-12">
-          {SECTIONS.map((s, i) => (
-            <section key={s.title} className="grid gap-4 border-t py-10 first:border-t-0 first:pt-0 sm:grid-cols-[5rem_1fr]">
-              <span className="font-display text-3xl font-extrabold text-primary/70" aria-hidden>
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <h2 className="font-display text-2xl font-bold">{s.title}</h2>
-                <div className="mt-4 grid gap-3 text-base leading-relaxed text-foreground/85 sm:text-lg">
-                  {s.paragraphs.map((p) => (
-                    <p key={p}>{p}</p>
-                  ))}
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {/* Llamada a participar */}
-        <section className="bg-primary text-primary-foreground">
-          <div className="mx-auto max-w-3xl px-5 py-14">
-            <h2 className="font-display text-3xl font-extrabold">¿Nos ayudas a crecer?</h2>
-            <div className="mt-5 grid gap-3 text-lg leading-relaxed opacity-95">
-              <p>
+        <section className="mt-8 border-t pt-8">
+          <div className="border bg-secondary/40 p-5">
+            <h2 className="font-display text-xl font-bold">¿Nos ayudas a crecer?</h2>
+            <div className="mt-2 grid gap-2 text-base leading-relaxed">
+              <p className="font-medium">
                 Aquí Bonela es un proyecto que se construye y mejora con el conocimiento y la participación de quienes
                 viven, trabajan o tienen relación con Casarabonela.
               </p>
@@ -141,27 +102,20 @@ function Sobre() {
             </div>
             <Link
               to="/sugerir"
-              className="mt-8 inline-flex min-h-12 items-center rounded-sm bg-background px-6 font-semibold text-foreground hover:bg-background/90"
+              className="mt-4 inline-flex min-h-12 items-center bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary/90"
             >
               Enviar información
             </Link>
           </div>
         </section>
 
-        {/* Independencia */}
-        <section className="mx-auto max-w-3xl px-5 py-12">
-          <div className="rounded-sm border p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Una iniciativa independiente
-            </p>
-            <p className="mt-3 leading-relaxed">
-              Aquí Bonela es una iniciativa privada e independiente, creada para reunir y facilitar el acceso a
-              información de interés sobre Casarabonela.
-            </p>
-            <p className="mt-2 leading-relaxed text-muted-foreground">
-              No es una web oficial del Ayuntamiento ni representa a ninguna administración pública.
-            </p>
-          </div>
+        <section className="mt-8 grid gap-2 border-t pt-8 text-base leading-relaxed">
+          <h2 className="font-display text-xl font-bold">Una iniciativa independiente</h2>
+          <p className="font-medium">
+            Aquí Bonela es una iniciativa privada e independiente, creada para reunir y facilitar el acceso a
+            información de interés sobre Casarabonela.
+          </p>
+          <p>No es una web oficial del Ayuntamiento ni representa a ninguna administración pública.</p>
         </section>
       </main>
     </div>
