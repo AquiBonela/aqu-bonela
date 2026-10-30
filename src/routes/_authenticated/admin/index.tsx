@@ -69,7 +69,7 @@ function ListBody() {
         {rows.map((l) => (
           <li key={l.id}>
             <Link to="/admin/fichas/$id" params={{ id: l.id }} className="flex items-center gap-3 p-3 hover:bg-secondary/50">
-              <span className={`w-1 self-stretch ${l.type === "comercio" ? "bg-primary" : "bg-terracotta"}`} />
+              <span className={`w-1 self-stretch ${l.type === "comercio" ? "bg-primary" : l.type === "publico" ? "bg-civic" : "bg-terracotta"}`} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="min-w-0 break-words font-medium">{l.name}</p>
