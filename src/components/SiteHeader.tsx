@@ -20,18 +20,18 @@ const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
   },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ hideBrand = false }: { hideBrand?: boolean } = {}) {
   const { t } = useI18n();
   return (
     <AppHeader
       navLabel={t("menu.label")}
       footnote={<SiteFooter inMenu />}
       left={<WeatherNow />}
-      brand={
+      brand={hideBrand ? null : (
         <Link to="/" className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
           <img src={logo} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
         </Link>
-      }
+      )}
       items={menuItems(t)}
     />
   );
