@@ -68,7 +68,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
       >
         <span className="block">{item.label}</span>
         {item.description && (
-          <span className="mt-2 block font-sans text-xs font-medium tracking-wide opacity-80">{item.description}</span>
+          <span className="mt-2 block whitespace-pre-line font-sans text-xs font-medium tracking-wide opacity-80">{item.description}</span>
         )}
       </Link>
     ) : (
