@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Globe, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
-import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
+import { groupHours, mapsUrl, websiteUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
 import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availability";
@@ -34,11 +34,12 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
   const gallery: GalleryPhoto[] = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  type C = { icon: typeof Phone; label: string; value: string; field: ReviewField };
+  type C = { icon: typeof Phone; label: string; value: string; field?: ReviewField; href?: string };
   const contact: C[] = [];
   if (listing.public_phone) contact.push({ icon: Phone, label: "Teléfono", value: listing.public_phone, field: "phone" });
   if (listing.public_whatsapp) contact.push({ icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp, field: "whatsapp" });
   if (listing.public_email) contact.push({ icon: Mail, label: "Email", value: listing.public_email, field: "email" });
+  if (listing.public_website) contact.push({ icon: Globe, label: "Web", value: listing.public_website, href: websiteUrl(listing.public_website) });
 
   return (
     <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
@@ -97,8 +98,21 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
               {contact.map((c) => (
                 <li key={c.label} className="flex items-center gap-2 break-words">
                   <c.icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-                  {review ? <span className={dim(c.field)}>{c.value}</span> : <CopyValue label={c.label} value={c.value} />}
-                  <Toggle review={review} field={c.field} label={c.label} />
+                  {c.href ? (
+                    <a
+                      href={c.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="break-all font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary"
+                    >
+                      {c.value}
+                    </a>
+                  ) : review ? (
+                    <span className={dim(c.field!)}>{c.value}</span>
+                  ) : (
+                    <CopyValue label={c.label} value={c.value} />
+                  )}
+                  {c.field && <Toggle review={review} field={c.field} label={c.label} />}
                 </li>
               ))}
             </ul>

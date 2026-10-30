@@ -13,6 +13,7 @@ export type ListingDetail = Listing & {
   hours: Hour[];
   photos: { url: string; alt: string }[];
   public_email: string | null;
+  public_website: string | null;
 };
 
 export const listingDetailQuery = (type: Listing["type"], slug: string) =>
@@ -22,7 +23,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const { data, error } = await supabase
         .from("listings")
         .select(
-          "id,slug,type,name,short_description,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,public_email,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
+          "id,slug,type,name,short_description,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,public_email,public_website,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
         )
         .eq("status", "publicada")
         .eq("type", type)
@@ -49,6 +50,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       return {
         ...(rest as unknown as Listing),
         public_email: (rest as { public_email?: string | null }).public_email ?? null,
+        public_website: (rest as { public_website?: string | null }).public_website ?? null,
         cover_url,
         categoryName: categories?.name ?? null,
         categorySlug: categories?.slug ?? null,
@@ -67,6 +69,11 @@ export function groupHours(hours: Hour[]) {
 
 export function mapsUrl(address: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address}, Casarabonela, Málaga`)}`;
+}
+
+/** Enlace clicable de la web de la ficha: añade https:// si el valor no lo trae. */
+export function websiteUrl(value: string) {
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
 export function listingPath(type: Listing["type"], slug: string) {

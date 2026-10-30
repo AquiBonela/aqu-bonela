@@ -33,7 +33,7 @@ export const getReview = createServerFn({ method: "GET" })
     const [l, c, h] = await Promise.all([
       admin
         .from("listings")
-        .select("id,slug,type,name,status,activity,labels,description,short_description,cover_url,cover_path,gallery_urls,featured,featured_until,tags,category_id,urgent_24h,categories(name,slug),listing_photos(storage_path,alt,sort_order)")
+        .select("id,slug,type,name,status,activity,labels,description,short_description,cover_url,cover_path,gallery_urls,featured,featured_until,tags,public_website,category_id,urgent_24h,categories(name,slug),listing_photos(storage_path,alt,sort_order)")
         .eq("id", row.listing_id)
         .maybeSingle(),
       admin
@@ -48,6 +48,7 @@ export const getReview = createServerFn({ method: "GET" })
       id: string; slug: string; type: "comercio" | "profesional" | "publico" | "asociacion"; name: string; status: string;
       activity: string | null; labels: string[] | null; description: string | null;
       cover_url: string | null; gallery_urls: string[] | null; featured: boolean | null; urgent_24h: boolean | null;
+      public_website: string | null;
       categories: { name?: string; slug?: string } | null;
       short_description: string | null; cover_path: string | null; featured_until: string | null;
       tags: string[] | null; category_id: string | null;
@@ -67,7 +68,7 @@ export const getReview = createServerFn({ method: "GET" })
       cover_url: coverSigned || raw.cover_url || null, gallery_urls: raw.gallery_urls ?? [],
       featured: !!raw.featured, urgent_24h: !!raw.urgent_24h, categoryName: raw.categories?.name ?? null,
       categorySlug: raw.categories?.slug ?? null, short_description: raw.short_description ?? "",
-      featured_until: raw.featured_until ?? null, tags: raw.tags ?? [], category_id: raw.category_id ?? null,
+      featured_until: raw.featured_until ?? null, tags: raw.tags ?? [], public_website: raw.public_website ?? null, category_id: raw.category_id ?? null,
       photos: sorted.map((p, i) => ({ url: photoUrls[i] ?? "", alt: p.alt || raw.name })).filter((p) => p.url),
     };
     return {
