@@ -4,7 +4,6 @@ import { Search, Store, Compass, Landmark, Phone, Zap, ArrowRight, MessageSquare
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import logoMenu from "@/assets/logo-menu.webp";
 import heroImg from "@/assets/hero-casarabonela.jpg";
 import directorioImg from "@/assets/descubre/calles.jpg";
 import descubreImg from "@/assets/descubre/castillo.jpg";
@@ -44,7 +43,8 @@ function Home() {
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/35 to-foreground/10" />
           <div className="relative mx-auto flex h-full max-w-5xl flex-col justify-end px-4 pb-16">
             <p className="font-display text-sm font-bold uppercase tracking-[0.25em] text-accent">{t("home.kicker")}</p>
-            <h1 className="mt-3"><img src={logoMenu} alt="Aquí Bonela" className="h-auto w-56 sm:w-72" /></h1>
+            <h1 className="mt-3 font-display text-6xl font-extrabold uppercase leading-[0.95] tracking-tight text-primary-foreground sm:text-8xl">Aquí<br />Bonela</h1>
+            <p className="mt-4 max-w-lg text-lg text-primary-foreground/90 sm:text-xl">{t("home.lema")}</p>
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
