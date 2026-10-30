@@ -20,17 +20,17 @@ const searchSchema = z.object({
   urg: fallback(z.boolean(), false).default(false),
 });
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/directorio")({
   validateSearch: zodValidator(searchSchema),
   loader: ({ context }) => context.queryClient.ensureQueryData(directoryQuery),
   head: () => ({
     meta: [
-      { title: "Aquí Bonela — Comercios y profesionales de Casarabonela" },
+      { title: "Directorio local — Aquí Bonela, Casarabonela" },
       {
         name: "description",
         content: "Encuentra y contacta con comercios y profesionales de Casarabonela: llama o escribe por WhatsApp en un toque.",
       },
-      { property: "og:title", content: "Aquí Bonela — Comercios y profesionales de Casarabonela" },
+      { property: "og:title", content: "Directorio local — Aquí Bonela, Casarabonela" },
       { property: "og:description", content: "El directorio local de Casarabonela, pensado para el móvil." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { q, cat, of, tipo, urg } = Route.useSearch();
-  const navigate = useNavigate({ from: "/" });
+  const navigate = useNavigate({ from: "/directorio" });
   const { data } = useSuspenseQuery(directoryQuery);
   const [text, setText] = useState(q);
 
