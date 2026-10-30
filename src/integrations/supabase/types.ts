@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          name: string
+          sort_order: number
+          synonyms: string[]
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          name: string
+          sort_order?: number
+          synonyms?: string[]
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          synonyms?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       approval_tokens: {
         Row: {
           created_at: string
@@ -67,6 +105,7 @@ export type Database = {
           name: string
           slug: string
           sort_order: number
+          type: Database["public"]["Enums"]["listing_type"]
           updated_at: string
         }
         Insert: {
@@ -76,6 +115,7 @@ export type Database = {
           name: string
           slug: string
           sort_order?: number
+          type?: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
         }
         Update: {
@@ -85,6 +125,7 @@ export type Database = {
           name?: string
           slug?: string
           sort_order?: number
+          type?: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
         }
         Relationships: []
