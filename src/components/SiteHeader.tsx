@@ -14,8 +14,7 @@ const MENU_ITEMS: HeaderItem[] = [
   {
     to: "/sugerir",
     label: "Enviar información",
-    description:
-      "Ayúdanos a mantener Casarabonela conectado y actualizado. Puedes enviarnos negocios, lugares, eventos, noticias, correcciones o cualquier información que consideres útil.",
+    description: "Ayúdanos a mantener Casarabonela conectado y actualizado.",
   },
 ];
 
