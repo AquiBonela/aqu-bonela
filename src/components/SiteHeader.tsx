@@ -9,7 +9,8 @@ const MENU_ITEMS: HeaderItem[] = [
   { label: "Descubre Bonela", soon: true },
   { label: "Actualidad", soon: true },
   { label: "Clasificados", soon: true },
-  { label: "Sobre Aquí Bonela", soon: true },
+  { to: "/sobre", label: "Sobre Aquí Bonela" },
+
   {
     to: "/sugerir",
     label: "Enviar información",
