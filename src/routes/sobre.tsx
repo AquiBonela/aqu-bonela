@@ -35,18 +35,18 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
     title: "¿Cómo funciona?",
     paragraphs: [
       "Aquí Bonela reúne diferentes contenidos del municipio para que puedas encontrar lo que necesitas de forma sencilla.",
-      "Puedes consultar el directorio de comercios y profesionales, localizar servicios públicos, descubrir lugares de interés, conocer actividades y eventos o consultar anuncios de compraventa, alquiler y empleo.",
-      "La información se organiza para facilitar las búsquedas y permitir que cualquier persona pueda acceder a ella sin registros ni complicaciones.",
-      "Los contenidos son revisados antes de su publicación para procurar que la información sea útil, clara y fiable.",
+      "El objetivo es que no tengas que buscar en diferentes páginas, redes sociales o grupos para encontrar información sobre Casarabonela: Aquí Bonela trabaja para reunirla y organizarla en un espacio común.",
+      "Puedes consultar comercios y profesionales, localizar servicios públicos, descubrir lugares de interés, conocer actividades y eventos o consultar clasificados.",
+      "La información se organiza para facilitar las búsquedas y permitir que cualquier persona acceda sin registros ni complicaciones.",
+      "Los contenidos se revisan antes de su publicación para procurar que la información sea útil, clara y fiable.",
     ],
   },
   {
     title: "¿Cómo aparecer en Aquí Bonela?",
     paragraphs: [
-      "Si tienes un comercio, eres profesional o formas parte de una asociación o colectivo, puedes solicitar que tu información aparezca en la plataforma.",
-      "También puedes enviarnos información sobre lugares de interés, actividades, eventos, noticias o cualquier otro contenido que pueda resultar útil para Casarabonela.",
-      "Las propuestas se revisan antes de publicarse y, cuando corresponde, solicitamos la autorización necesaria a sus responsables.",
-      "La inclusión básica en el directorio es gratuita.",
+      "Cualquier persona puede participar. Si conoces un lugar de interés, organizas una actividad, quieres compartir un evento, una noticia o tienes un anuncio que pueda resultar útil para el pueblo, puedes enviárnoslo.",
+      "Si además tienes un comercio, eres profesional o formas parte de una asociación o colectivo, puedes solicitar tu ficha en la plataforma.",
+      "Las propuestas se revisan antes de publicarse y la inclusión básica en el directorio es siempre gratuita.",
     ],
   },
 ];
