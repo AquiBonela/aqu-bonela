@@ -22,6 +22,7 @@ export type ReviewListing = {
   short_description: string;
   featured_until: string | null;
   tags: string[];
+  public_website: string | null;
   category_id: string | null;
   photos: { url: string; alt: string }[];
 };

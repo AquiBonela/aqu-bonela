@@ -50,6 +50,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       return {
         ...(rest as unknown as Listing),
         public_email: (rest as { public_email?: string | null }).public_email ?? null,
+        public_website: (rest as { public_website?: string | null }).public_website ?? null,
         cover_url,
         categoryName: categories?.name ?? null,
         categorySlug: categories?.slug ?? null,
