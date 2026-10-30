@@ -4,10 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 
 const PLACEHOLDER = {
-  name: "[Nombre o razón social del titular]",
-  nif: "[NIF/CIF]",
-  address: "[Dirección postal], 29566 Casarabonela (Málaga)",
-  email: "[email de contacto]",
+  name: "Daniel Alberto Flagel",
+  nif: "Z0717100B",
+  address: "Av. Fernando Diaz Herrero 12, Bloque 2 Piso 1A",
+  email: "daflagel@gmail.com",
 };
 
 const ownerQuery = queryOptions({
@@ -29,7 +29,7 @@ export function useOwner() {
   };
 }
 
-export const UPDATED = "29 de octubre de 2026";
+export const UPDATED = "30 de octubre de 2026";
 
 export function LegalPage({ title, children }: { title: string; children: ReactNode }) {
   return (
