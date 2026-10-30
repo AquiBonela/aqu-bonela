@@ -24,7 +24,9 @@ export const Route = createFileRoute("/descubre")({
   component: Descubre,
 });
 
-const RINCONES = [
+type Rincon = { img: string; kicker: string; title: string; name: string; text: string };
+
+const RINCONES: [Rincon, ...Rincon[]] = [
   {
     img: castillo,
     kicker: "Siglo IX · Mirador",
