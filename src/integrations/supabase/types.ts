@@ -551,7 +551,7 @@ export type Database = {
         | "publicada"
         | "rechazada"
         | "oculta"
-      listing_type: "comercio" | "profesional"
+      listing_type: "comercio" | "profesional" | "publico"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -687,7 +687,7 @@ export const Constants = {
         "rechazada",
         "oculta",
       ],
-      listing_type: ["comercio", "profesional"],
+      listing_type: ["comercio", "profesional", "publico"],
     },
   },
 } as const
