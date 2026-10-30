@@ -45,7 +45,7 @@ export const getReview = createServerFn({ method: "GET" })
     ]);
     if (!l.data) return { ok: false, reason: "invalid" };
     const raw = l.data as {
-      id: string; slug: string; type: "comercio" | "profesional" | "publico"; name: string; status: string;
+      id: string; slug: string; type: "comercio" | "profesional" | "publico" | "asociacion"; name: string; status: string;
       activity: string | null; labels: string[] | null; description: string | null;
       cover_url: string | null; gallery_urls: string[] | null; featured: boolean | null; urgent_24h: boolean | null;
       categories: { name?: string; slug?: string } | null;

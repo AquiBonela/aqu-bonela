@@ -31,6 +31,8 @@
   --color-beige: var(--beige);
   --color-civic: var(--civic);
   --color-civic-soft: var(--civic-soft);
+  --color-community: var(--community);
+  --color-community-soft: var(--community-soft);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -101,6 +103,8 @@
   --beige: oklch(0.93 0.03 84);
   --civic: oklch(0.48 0.09 240);
   --civic-soft: oklch(0.94 0.025 240);
+  --community: oklch(0.47 0.11 350);
+  --community-soft: oklch(0.95 0.025 350);
   --destructive: oklch(0.505 0.141 30.3);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.898 0.02 87.5);

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Search, X, Zap, ArrowUp } from "lucide-react";
 import { isEmergencyService } from "@/lib/listing-availability";
 import { useEffect, useMemo, useState } from "react";
-import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured } from "@/lib/directory";
+import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
 import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import heroImg from "@/assets/hero-casarabonela.jpg";
@@ -16,7 +16,7 @@ const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   cat: fallback(z.string(), "").default(""),
   of: fallback(z.string(), "").default(""),
-  tipo: fallback(z.enum(["", "comercio", "profesional", "publico"]), "").default(""),
+  tipo: fallback(z.enum(["", "comercio", "profesional", "publico", "asociacion"]), "").default(""),
   urg: fallback(z.boolean(), false).default(false),
 });
 
@@ -62,7 +62,7 @@ function Index() {
   const activities = activitiesFor(data.listings.filter((l) => !tipo || l.type === tipo), activeCat?.id);
   const results = urg
     ? filterListings(data.listings, data.categories, "", "", new Date(), "", "").filter(isEmergencyService)
-    : filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo);
+    : filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo, data.activities);
   const browsingHome = !q && !cat && !tipo && !urg;
   const collaborators = data.listings.filter((l) => isFeatured(l));
 
@@ -134,18 +134,19 @@ function Index() {
           <label className="min-w-0 sm:w-56">
             <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
               const value = e.target.value;
-              if (value !== "" && value !== "comercio" && value !== "profesional" && value !== "publico") return;
+              if (value !== "" && !isListingType(value)) return;
               setText("");
               const keepCat = !value || data.listings.some((l) => l.type === value && l.category_id === activeCat?.id);
               navigate({ search: (p) => ({ ...p, tipo: value, of: "", q: "", urg: false, ...(keepCat ? {} : { cat: "" }) }) });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option><option value="publico">Servicios públicos</option>
+              <option value="">Todos</option>
+              {LISTING_TYPES.filter((t) => data.listings.some((l) => l.type === t.value)).map((t) => <option key={t.value} value={t.value}>{t.plural}</option>)}
             </select>
           </label>
           <label className="min-w-0 sm:w-64">
             <select aria-label="Categoría" value={cat} onChange={(e) => { setText(""); navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "", q: "", urg: false }) }); }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todas las categorías</option>
-              {data.categories.filter((c) => !tipo || data.listings.some((l) => l.type === tipo && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+              {data.categories.filter((c) => data.listings.some((l) => (!tipo || l.type === tipo) && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select>
           </label>
           {activeCat && <label className="min-w-0 sm:w-64">

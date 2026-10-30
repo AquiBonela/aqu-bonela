@@ -3,8 +3,8 @@ import { activitiesFor, filterListings, isFeatured, type Category, type Listing 
 
 const now = new Date("2026-10-24T00:00:00Z");
 const cats: Category[] = [
-  { id: "c1", name: "Alimentación", slug: "alimentacion", sort_order: 1 },
-  { id: "c2", name: "Salud", slug: "salud", sort_order: 2 },
+  { id: "c1", name: "Alimentación", slug: "alimentacion", sort_order: 1, type: "comercio" },
+  { id: "c2", name: "Salud", slug: "salud", sort_order: 2, type: "comercio" },
 ];
 const base = { public_phone: null, public_whatsapp: null, public_address: null, description: "", short_description: "", labels: [], cover_url: null, gallery_urls: [], urgent_24h: false };
 const items: Listing[] = [
@@ -55,5 +55,16 @@ describe("dailyShuffle", () => {
   });
   it("cambia de orden otro día", () => {
     expect(ds(items, new Date(2026, 9, 29))).not.toEqual(ds(items, new Date(2026, 9, 30)));
+  });
+});
+
+describe("búsqueda por palabras parecidas", () => {
+  it("encuentra al fontanero al buscar «tubería»", async () => {
+    const { filterListings } = await import("@/lib/directory");
+    const l = { id: "1", slug: "paco", type: "profesional", name: "Paco Gil", description: "", short_description: "", category_id: "c1", featured: false, featured_until: null, tags: [], public_phone: null, public_whatsapp: null, public_address: null, activity: "Fontanero", labels: [], cover_url: null, gallery_urls: [], urgent_24h: false } as const;
+    const cats = [{ id: "c1", name: "Hogar y reformas", slug: "hogar-reformas", sort_order: 1, type: "profesional" as const }];
+    const acts = [{ id: "a1", category_id: "c1", name: "Fontanero", synonyms: ["tubería"], sort_order: 0 }];
+    expect(filterListings([{ ...l, tags: [], labels: [], gallery_urls: [] }], cats, "tuberia", "", new Date(), "", "", acts)).toHaveLength(1);
+    expect(filterListings([{ ...l, tags: [], labels: [], gallery_urls: [] }], cats, "tuberia", "", new Date(), "", "", [])).toHaveLength(0);
   });
 });

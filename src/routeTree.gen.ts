@@ -16,6 +16,7 @@ import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as SugerirRouteImport } from './routes/sugerir'
+import { Route as AsociacionesSlugRouteImport } from './routes/asociaciones.$slug'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
 import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
@@ -58,6 +59,11 @@ const PrivacidadRoute = PrivacidadRouteImport.update({
 const SugerirRoute = SugerirRouteImport.update({
   id: '/sugerir',
   path: '/sugerir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AsociacionesSlugRoute = AsociacionesSlugRouteImport.update({
+  id: '/asociaciones/$slug',
+  path: '/asociaciones/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComerciosSlugRoute = ComerciosSlugRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/privacidad': typeof PrivacidadRoute
   '/sugerir': typeof SugerirRoute
+  '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/privacidad': typeof PrivacidadRoute
   '/sugerir': typeof SugerirRoute
+  '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/privacidad': typeof PrivacidadRoute
   '/sugerir': typeof SugerirRoute
+  '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/privacidad'
     | '/sugerir'
+    | '/asociaciones/$slug'
     | '/comercios/$slug'
     | '/profesionales/$slug'
     | '/revision/$token'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/privacidad'
     | '/sugerir'
+    | '/asociaciones/$slug'
     | '/comercios/$slug'
     | '/profesionales/$slug'
     | '/revision/$token'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/privacidad'
     | '/sugerir'
+    | '/asociaciones/$slug'
     | '/comercios/$slug'
     | '/profesionales/$slug'
     | '/revision/$token'
@@ -226,6 +238,7 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   PrivacidadRoute: typeof PrivacidadRoute
   SugerirRoute: typeof SugerirRoute
+  AsociacionesSlugRoute: typeof AsociacionesSlugRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
   RevisionTokenRoute: typeof RevisionTokenRoute
@@ -281,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/sugerir'
       fullPath: '/sugerir'
       preLoaderRoute: typeof SugerirRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/asociaciones/$slug': {
+      id: '/asociaciones/$slug'
+      path: '/asociaciones/$slug'
+      fullPath: '/asociaciones/$slug'
+      preLoaderRoute: typeof AsociacionesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/comercios/$slug': {
@@ -376,6 +396,7 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   PrivacidadRoute: PrivacidadRoute,
   SugerirRoute: SugerirRoute,
+  AsociacionesSlugRoute: AsociacionesSlugRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
   RevisionTokenRoute: RevisionTokenRoute,
