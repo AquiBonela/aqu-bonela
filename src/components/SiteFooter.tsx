@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logoTexto from "@/assets/logo-texto.png.asset.json";
+import logoTexto from "@/assets/logo-texto.webp";
 
 export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
 
@@ -9,7 +9,7 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
       <div className="mx-auto max-w-2xl [&_nav]:justify-center [&_p]:justify-center">
         <div className="flex flex-col items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground sm:flex-row sm:justify-center sm:gap-3">
           <img
-            src={logoTexto.url}
+            src={logoTexto}
             alt="Aquí Bonela"
             className={`h-6 w-auto ${inMenu ? "brightness-0 invert" : ""}`}
           />

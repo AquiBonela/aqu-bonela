@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
-import logoMenu from "@/assets/logo-menu.png.asset.json";
+import logoMenu from "@/assets/logo-menu.webp";
 
 export type HeaderRoute =
   | "/"
@@ -107,7 +107,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
             </button>
           </div>
           <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
-            <img src={logoMenu.url} alt="Aquí Bonela" className="animate-menu-item mx-auto h-auto w-40 shrink-0 sm:w-48" />
+            <img src={logoMenu} alt="Aquí Bonela" className="animate-menu-item mx-auto h-auto w-40 shrink-0 sm:w-48" />
             <div className="flex flex-1 flex-col items-center justify-center py-8">
               <ul className="flex flex-col items-center gap-6">
                 {items.map((item, i) => (
