@@ -47,7 +47,7 @@ export const adminListingsQuery = queryOptions({
 export const categoriesQuery = queryOptions({
   queryKey: ["admin", "categories"],
   queryFn: async () => {
-    const { data, error } = await supabase.from("categories").select("id,name").order("sort_order");
+    const { data, error } = await supabase.from("categories").select("id,name,type").order("sort_order");
     if (error) throw new Error(error.message);
     return data;
   },
@@ -153,7 +153,20 @@ export const adminCategoriesQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await supabase
       .from("categories")
-      .select("id,name,slug,sort_order,is_provisional")
+      .select("id,name,slug,sort_order,is_provisional,type")
+      .order("sort_order");
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});
+
+/** Actividades de todas las categorías (se gestionan en Configuración). */
+export const activitiesQuery = queryOptions({
+  queryKey: ["admin", "activities"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("activities")
+      .select("id,category_id,name,synonyms,sort_order")
       .order("sort_order");
     if (error) throw new Error(error.message);
     return data;
