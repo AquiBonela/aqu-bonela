@@ -35,7 +35,7 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
+      <SiteHeader hideBrand />
 
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[34rem] w-full sm:h-[40rem]">
