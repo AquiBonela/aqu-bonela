@@ -1,12 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
+import { WeatherNow } from "@/components/WeatherNow";
 import logo from "@/assets/logo-2.webp";
 
 const MENU_ITEMS: HeaderItem[] = [
   { to: "/", search: { q: "", cat: "", of: "" }, label: "Directorio" },
   { label: "Servicios públicos", soon: true },
-  { label: "Descubre Bonela", soon: true },
+  { to: "/descubre", label: "Descubre Bonela" },
   { label: "Actualidad", soon: true },
   { label: "Clasificados", soon: true },
   { to: "/sobre", label: "Sobre Aquí Bonela" },
@@ -23,6 +24,7 @@ export function SiteHeader() {
     <AppHeader
       navLabel="Menú principal"
       footnote={<SiteFooter inMenu />}
+      left={<WeatherNow />}
       brand={
         <Link to="/" search={{ q: "", cat: "", of: "" }} className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
           <img src={logo} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
