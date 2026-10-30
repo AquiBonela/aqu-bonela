@@ -212,7 +212,7 @@ function EditPage() {
       </div>
 
       <Section title="1. Tipo y categoría">
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {LISTING_TYPES.map(({ value: t, label }) => (
             <button
               type="button" key={t}
