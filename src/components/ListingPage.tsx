@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, type ListingDetail } from "@/lib/listing-detail";
@@ -43,9 +43,9 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
   return (
     <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
       {!review && <div className="mx-auto max-w-3xl px-4">
-        <Link to="/" search={{ q: "", cat: "", of: "" }} className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
+        <BackLink className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
           <ArrowLeft className="h-4 w-4" aria-hidden /> Volver al directorio
-        </Link>
+        </BackLink>
       </div>}
       {listing.cover_url && (
         <div className="mx-auto max-w-3xl sm:px-4">
@@ -321,5 +321,24 @@ export function ListingNotFound() {
         Ver el directorio
       </Link>
     </div>
+  );
+}
+
+/** Vuelve atrás conservando búsqueda y filtros; si se entró directo, va a la portada. */
+function BackLink({ className, children }: { className?: string; children: React.ReactNode }) {
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
+  return (
+    <Link
+      to="/"
+      className={className}
+      onClick={(e) => {
+        if (!canGoBack) return;
+        e.preventDefault();
+        router.history.back();
+      }}
+    >
+      {children}
+    </Link>
   );
 }
