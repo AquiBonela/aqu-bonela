@@ -57,13 +57,14 @@ export const adminListingQuery = (id: string) =>
   queryOptions({
     queryKey: ["admin", "listing", id],
     queryFn: async () => {
-      const [l, c, h] = await Promise.all([
+      const [l, c, h, a] = await Promise.all([
         supabase.from("listings").select("*").eq("id", id).maybeSingle(),
         supabase.from("listing_contacts").select("*").eq("listing_id", id).maybeSingle(),
         supabase.from("listing_hours").select("weekday,opens,closes").eq("listing_id", id).order("weekday"),
+        supabase.from("listing_activities").select("activity_id").eq("listing_id", id).order("sort_order"),
       ]);
       if (l.error) throw new Error(l.error.message);
-      return { listing: l.data, contact: c.data, hours: h.data ?? [] };
+      return { listing: l.data, contact: c.data, hours: h.data ?? [], activityIds: (a.data ?? []).map((x) => x.activity_id) };
     },
   });
 
