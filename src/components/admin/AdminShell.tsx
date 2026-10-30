@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { isAdminQuery } from "@/lib/admin";
 import { Toaster } from "@/components/ui/sonner";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
-import logo from "@/assets/logo-2.png.asset.json";
+import logo from "@/assets/logo-2.webp";
 
 const ADMIN_ITEMS: HeaderItem[] = [
   { to: "/admin", label: "Fichas", activeOptions: { exact: true } },
@@ -37,7 +37,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         footnote="Administración del directorio Aquí Bonela"
         brand={
           <Link to="/admin" className="inline-flex items-center gap-3 font-display text-lg font-medium">
-            <img src={logo.url} alt="Aquí Bonela" className="h-9 w-auto" />
+            <img src={logo} alt="Aquí Bonela" className="h-9 w-auto" />
             <span className="hidden sm:inline">Administración</span>
           </Link>
         }
