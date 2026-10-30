@@ -5,6 +5,7 @@ import logoMenu from "@/assets/logo-menu.png.asset.json";
 
 export type HeaderRoute =
   | "/"
+  | "/sobre"
   | "/sugerir"
   | "/admin"
   | "/admin/avisos"
