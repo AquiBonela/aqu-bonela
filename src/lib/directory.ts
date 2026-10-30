@@ -1,7 +1,18 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export type Category = { id: string; name: string; slug: string; sort_order: number };
+export type ListingType = "comercio" | "profesional" | "publico" | "asociacion";
+/** Los cuatro tipos de ficha, en el orden en que se muestran. */
+export const LISTING_TYPES: { value: ListingType; label: string; plural: string }[] = [
+  { value: "comercio", label: "Comercio", plural: "Comercios" },
+  { value: "profesional", label: "Profesional", plural: "Profesionales" },
+  { value: "publico", label: "Servicio público", plural: "Servicios públicos" },
+  { value: "asociacion", label: "Asociación y colectivo", plural: "Asociaciones y colectivos" },
+];
+export const isListingType = (v: string): v is ListingType => LISTING_TYPES.some((t) => t.value === v);
+
+export type Category = { id: string; name: string; slug: string; sort_order: number; type: ListingType };
+export type Activity = { id: string; category_id: string; name: string; synonyms: string[]; sort_order: number };
 export type Listing = {
   id: string;
   slug: string;
@@ -27,8 +38,9 @@ export type Listing = {
 export const directoryQuery = queryOptions({
   queryKey: ["directory"],
   queryFn: async () => {
-    const [cats, settings, list] = await Promise.all([
-      supabase.from("categories").select("id,name,slug,sort_order").order("sort_order"),
+    const [cats, acts, settings, list] = await Promise.all([
+      supabase.from("categories").select("id,name,slug,sort_order,type").order("sort_order"),
+      supabase.from("activities").select("id,category_id,name,synonyms,sort_order").order("sort_order"),
       supabase.from("site_settings").select("hero_title,hero_subtitle,banner_enabled,banner_text").maybeSingle(),
       supabase
         .from("listings")
@@ -54,6 +66,7 @@ export const directoryQuery = queryOptions({
     }
     return {
       categories: cats.data as Category[],
+      activities: (acts.data ?? []) as Activity[],
       listings,
       heroTitle: settings.data?.hero_title || "¿Qué buscas en Casarabonela?",
       heroSubtitle: settings.data?.hero_subtitle ?? "",
@@ -84,17 +97,21 @@ export function filterListings(
   now = new Date(),
   activity = "",
   type: Listing["type"] | "" = "",
+  activities: Activity[] = [],
 ) {
   const cat = categories.find((c) => c.slug === catSlug);
   const words = normalize(q).split(/\s+/).filter(Boolean);
   const catName = new Map(categories.map((c) => [c.id, c.name]));
+  // Sinónimos de cada actividad («tubería» → Fontanero), por categoría + nombre.
+  const synonyms = new Map(activities.map((a) => [`${a.category_id}|${normalize(a.name)}`, a.synonyms.join(" ")]));
   const result = listings.filter((l) => {
     if (type && l.type !== type) return false;
     if (cat && l.category_id !== cat.id) return false;
     if (cat && activity && normalize(l.activity ?? "") !== normalize(activity)) return false;
     if (!words.length) return true;
     const hay = normalize(
-      [l.name, l.short_description, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" ")].join(" "),
+      [l.name, l.short_description, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" "),
+        synonyms.get(`${l.category_id}|${normalize(l.activity ?? "")}`) ?? ""].join(" "),
     );
     return words.every((w) => hay.includes(w));
   });
