@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Search, Store, Compass, Landmark, Phone, Zap, ArrowRight, MessageSquarePlus } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import heroImg from "@/assets/hero-casarabonela.jpg";
 import directorioImg from "@/assets/descubre/calles.jpg";
 import descubreImg from "@/assets/descubre/castillo.jpg";
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [text, setText] = useState("");
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,50 +38,50 @@ function Home() {
 
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[26rem] w-full sm:h-[32rem]">
-          <img src={heroImg} alt="Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
           <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
             <h1 className="max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">Aquí Bonela</h1>
-            <p className="mt-3 max-w-xl text-lg text-primary-foreground/90 sm:text-xl">Todo lo que necesitas para descubrir, conocer y vivir Casarabonela.</p>
+            <p className="mt-3 max-w-xl text-lg text-primary-foreground/90 sm:text-xl">{t("home.lema")}</p>
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
           <form onSubmit={submit} role="search" className="mx-auto flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5">
-            <label htmlFor="buscar-portada" className="sr-only">¿Qué necesitas hoy?</label>
+            <label htmlFor="buscar-portada" className="sr-only">{t("home.searchLabel")}</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
-            <input id="buscar-portada" type="text" enterKeyHint="search" value={text} onChange={(e) => setText(e.target.value)} placeholder="¿Qué necesitas? Farmacia, fontanero…" className="h-12 min-w-0 flex-1 bg-transparent text-lg text-foreground outline-none placeholder:text-muted-foreground" />
-            <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">Buscar</Button>
+            <input id="buscar-portada" type="text" enterKeyHint="search" value={text} onChange={(e) => setText(e.target.value)} placeholder={t("home.searchPh")} className="h-12 min-w-0 flex-1 bg-transparent text-lg text-foreground outline-none placeholder:text-muted-foreground" />
+            <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">{t("home.searchBtn")}</Button>
           </form>
         </div>
       </section>
 
       <main className="mx-auto max-w-5xl px-4 pb-16">
         <section aria-labelledby="puertas" className="pt-12">
-          <h2 id="puertas" className="font-display text-3xl font-extrabold text-foreground">¿Por dónde empezamos?</h2>
+          <h2 id="puertas" className="font-display text-3xl font-extrabold text-foreground">{t("home.start")}</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            <Door to="/directorio" img={directorioImg} Icon={Store} title="Directorio local" text="Comercios, oficios, profesionales y asociaciones del municipio." />
-            <Door to="/descubre" img={descubreImg} Icon={Compass} title="Descubre Bonela" text="Patrimonio, rincones con encanto, naturaleza y consejos de vecino." />
-            <Door img={serviciosImg} Icon={Landmark} title="Servicios públicos" text="Ayuntamiento, salud, dependencias y teléfonos útiles." soon />
+            <Door to="/directorio" img={directorioImg} Icon={Store} title={t("home.dirTitle")} text={t("home.dirText")} />
+            <Door to="/descubre" img={descubreImg} Icon={Compass} title={t("home.descTitle")} text={t("home.descText")} />
+            <Door img={serviciosImg} Icon={Landmark} title={t("home.servTitle")} text={t("home.servText")} soon />
           </div>
         </section>
 
         <section aria-labelledby="urgencias" className="mt-12 rounded-soft border-2 bg-card p-5 sm:p-6">
-          <h2 id="urgencias" className="font-display text-2xl font-extrabold text-foreground">¿Una urgencia?</h2>
+          <h2 id="urgencias" className="font-display text-2xl font-extrabold text-foreground">{t("home.urgTitle")}</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <a href="tel:112" className="flex min-h-14 items-center gap-3 rounded-soft bg-destructive px-4 font-bold text-destructive-foreground hover:opacity-90">
-              <Phone className="h-5 w-5" aria-hidden /> Emergencias · 112
+              <Phone className="h-5 w-5" aria-hidden /> {t("home.urg112")}
             </a>
             <Link to="/directorio" search={{ q: "", cat: "", of: "", tipo: "", urg: true }} className="flex min-h-14 items-center gap-3 rounded-soft border-2 px-4 font-bold text-foreground hover:bg-secondary">
-              <Zap className="h-5 w-5 text-terracotta" aria-hidden /> Servicios de urgencia del pueblo
+              <Zap className="h-5 w-5 text-terracotta" aria-hidden /> {t("home.urgLocal")}
             </Link>
           </div>
         </section>
 
         <section className="mt-12 bg-primary px-5 py-8 text-primary-foreground sm:px-8">
-          <h2 className="font-display text-2xl font-extrabold">¿Tienes un negocio, una asociación o algo que compartir?</h2>
-          <p className="mt-2 max-w-2xl opacity-90">Ayúdanos a que Casarabonela esté completa y al día. Revisamos cada aportación.</p>
+          <h2 className="font-display text-2xl font-extrabold">{t("home.shareTitle")}</h2>
+          <p className="mt-2 max-w-2xl opacity-90">{t("home.shareText")}</p>
           <Link to="/sugerir" className="mt-5 inline-flex min-h-12 items-center gap-3 bg-background px-5 font-bold text-foreground hover:bg-beige">
-            <MessageSquarePlus className="h-5 w-5" aria-hidden /> Enviar información
+            <MessageSquarePlus className="h-5 w-5" aria-hidden /> {t("home.shareBtn")}
           </Link>
         </section>
       </main>
@@ -88,16 +90,17 @@ function Home() {
 }
 
 function Door({ to, img, Icon, title, text, soon }: { to?: "/directorio" | "/descubre"; img: string; Icon: typeof Store; title: string; text: string; soon?: boolean }) {
+  const { t } = useI18n();
   const body = (
     <>
       <div className="relative h-40 overflow-hidden">
         <img src={img} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        {soon && <span className="absolute right-2 top-2 bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground">Próximamente</span>}
+        {soon && <span className="absolute right-2 top-2 bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground">{t("home.soon")}</span>}
       </div>
       <div className="flex flex-1 flex-col p-4">
         <p className="flex items-center gap-2 font-display text-xl font-extrabold text-foreground"><Icon className="h-5 w-5 text-primary" aria-hidden />{title}</p>
         <p className="mt-1 flex-1 text-base text-muted-foreground">{text}</p>
-        {!soon && <span className="mt-3 inline-flex items-center gap-1 font-semibold text-primary">Entrar <ArrowRight className="h-4 w-4" aria-hidden /></span>}
+        {!soon && <span className="mt-3 inline-flex items-center gap-1 font-semibold text-primary">{t("home.enter")} <ArrowRight className="h-4 w-4" aria-hidden /></span>}
       </div>
     </>
   );

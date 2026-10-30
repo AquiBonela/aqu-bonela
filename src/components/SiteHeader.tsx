@@ -3,26 +3,28 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import { WeatherNow } from "@/components/WeatherNow";
 import logo from "@/assets/logo-2.webp";
+import { useI18n } from "@/lib/i18n";
 
-const MENU_ITEMS: HeaderItem[] = [
-  { to: "/directorio", search: { q: "", cat: "", of: "" }, label: "Directorio" },
-  { label: "Servicios públicos", soon: true },
-  { to: "/descubre", label: "Descubre Bonela" },
-  { label: "Actualidad", soon: true },
-  { label: "Clasificados", soon: true },
-  { to: "/sobre", label: "Sobre Aquí Bonela" },
+const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
+  { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
+  { label: t("menu.servicios"), soon: true },
+  { to: "/descubre", label: t("menu.descubre") },
+  { label: t("menu.actualidad"), soon: true },
+  { label: t("menu.clasificados"), soon: true },
+  { to: "/sobre", label: t("menu.sobre") },
 
   {
     to: "/sugerir",
-    label: "Enviar información",
-    description: "Ayúdanos a mantener Casarabonela\nconectado y actualizado.",
+    label: t("menu.enviar"),
+    description: t("menu.enviarDesc"),
   },
 ];
 
 export function SiteHeader() {
+  const { t } = useI18n();
   return (
     <AppHeader
-      navLabel="Menú principal"
+      navLabel={t("menu.label")}
       footnote={<SiteFooter inMenu />}
       left={<WeatherNow />}
       brand={
@@ -30,7 +32,7 @@ export function SiteHeader() {
           <img src={logo} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
         </Link>
       }
-      items={MENU_ITEMS}
+      items={menuItems(t)}
     />
   );
 }
