@@ -47,6 +47,19 @@ const es = {
   "home.shareTitle": "¿Tienes un negocio, una asociación o algo que compartir?",
   "home.shareText": "Ayúdanos a que Casarabonela esté completa y al día. Revisamos cada aportación.",
   "home.shareBtn": "Enviar información",
+  "home.kicker": "El lugar donde empieza Casarabonela",
+  "home.exploreTitle": "Explora Casarabonela",
+  "home.rinconesKicker": "Hay mucho por descubrir",
+  "home.rinconesTitle": "Rincones con historia",
+  "home.rinconesAll": "Ver todo Descubre Bonela",
+  "home.r1t": "El barrio del Arrabal",
+  "home.r1d": "Calles estrechas, empinadas y encaladas de traza morisca.",
+  "home.r2t": "Jardín de Cactus Mora i Bravard",
+  "home.r2d": "Más de 2.500 especies, uno de los mayores de Europa.",
+  "home.r3t": "Fuentes y caños",
+  "home.r3d": "El agua de la sierra corre por el pueblo todo el año.",
+  "home.r4t": "Castillo Qasr Bunayra",
+  "home.r4d": "Vigía árabe del valle desde el siglo IX.",
 };
 
 export type TKey = keyof typeof es;
@@ -90,6 +103,19 @@ const en: Partial<Record<TKey, string>> = {
   "home.shareTitle": "Do you have a business, an association or something to share?",
   "home.shareText": "Help us keep Casarabonela complete and up to date. We review every contribution.",
   "home.shareBtn": "Send information",
+  "home.kicker": "Where Casarabonela begins",
+  "home.exploreTitle": "Explore Casarabonela",
+  "home.rinconesKicker": "There is a lot to discover",
+  "home.rinconesTitle": "Corners with a story",
+  "home.rinconesAll": "See all of Discover Bonela",
+  "home.r1t": "The Arrabal quarter",
+  "home.r1d": "Steep, narrow, whitewashed streets with a Moorish layout.",
+  "home.r2t": "Mora i Bravard Cactus Garden",
+  "home.r2d": "Over 2,500 species, one of the largest in Europe.",
+  "home.r3t": "Springs and fountains",
+  "home.r3d": "Mountain water running through the village all year.",
+  "home.r4t": "Qasr Bunayra castle",
+  "home.r4d": "A 9th-century Arab watchtower over the valley.",
 };
 
 const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en };
