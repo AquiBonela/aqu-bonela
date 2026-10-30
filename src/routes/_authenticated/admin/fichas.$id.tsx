@@ -213,23 +213,30 @@ function EditPage() {
 
       <Section title="1. Tipo y categoría">
         <div className="flex gap-2">
-          {(["comercio", "profesional", "publico", "asociacion"] as const).map((t) => (
+          {LISTING_TYPES.map(({ value: t, label }) => (
             <button
-              type="button" key={t} onClick={() => set("type", t)}
-              className={`h-10 flex-1 border text-sm font-medium ${f.type === t ? (t === "comercio" ? "border-primary bg-primary text-primary-foreground" : t === "publico" ? "border-civic bg-civic text-primary-foreground" : "border-terracotta bg-terracotta text-terracotta-foreground") : ""}`}
+              type="button" key={t}
+              onClick={() => setF((p) => p.type === t ? p : { ...p, type: t, category_id: "", activity: "" })}
+              className={`min-h-10 flex-1 border px-2 py-1 text-sm font-medium ${f.type === t ? TYPE_BUTTON[t] : ""}`}
             >
-              {t === "comercio" ? "Comercio" : t === "publico" ? "Servicio público" : "Profesional"}
+              {label}
             </button>
           ))}
         </div>
-        <Field label="Categoría general">
-          <select required value={f.category_id} onChange={(e) => set("category_id", e.target.value)} className="h-10 w-full border bg-background px-3 text-sm">
+        <Field label="Categoría general" hint="Las categorías y actividades se crean en Configuración.">
+          <select required value={f.category_id} onChange={(e) => setF((p) => ({ ...p, category_id: e.target.value, activity: "" }))} className="h-10 w-full border bg-background px-3 text-sm">
             <option value="">Elige una categoría</option>
-            {cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            {cats.filter((c) => c.type === f.type || c.id === f.category_id).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </Field>
-        <Field label="Actividad / oficio principal" hint="Ej.: Panadería, Fontanero, Pintor">
-          <Input value={f.activity} onChange={(e) => set("activity", e.target.value)} />
+        <Field label="Actividad">
+          <select value={f.activity} onChange={(e) => set("activity", e.target.value)} disabled={!f.category_id} className="h-10 w-full border bg-background px-3 text-sm disabled:opacity-60">
+            <option value="">{f.category_id ? "Elige una actividad" : "Elige antes una categoría"}</option>
+            {f.activity && !acts.some((a) => a.category_id === f.category_id && a.name === f.activity) && (
+              <option value={f.activity}>{f.activity} (no está en la lista)</option>
+            )}
+            {acts.filter((a) => a.category_id === f.category_id).map((a) => <option key={a.id} value={a.name}>{a.name}</option>)}
+          </select>
         </Field>
         <Field label="Etiquetas destacadas" hint="Hasta 3, separadas por comas. Ej.: Pan de leña, Encargos">
           <Input value={f.labels} onChange={(e) => set("labels", e.target.value)} />
@@ -383,6 +390,13 @@ function EditPage() {
     </form>
   );
 }
+
+const TYPE_BUTTON: Record<ListingType, string> = {
+  comercio: "border-primary bg-primary text-primary-foreground",
+  profesional: "border-terracotta bg-terracotta text-terracotta-foreground",
+  publico: "border-civic bg-civic text-primary-foreground",
+  asociacion: "border-community bg-community text-primary-foreground",
+};
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
