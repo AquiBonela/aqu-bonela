@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { isAdminQuery } from "@/lib/admin";
 import { Toaster } from "@/components/ui/sonner";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
-import logo from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo-2.png.asset.json";
 
 const ADMIN_ITEMS: HeaderItem[] = [
   { to: "/admin", label: "Fichas", activeOptions: { exact: true } },

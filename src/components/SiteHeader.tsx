@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
-import logo from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo-2.png.asset.json";
 
 const MENU_ITEMS: HeaderItem[] = [
   { to: "/", search: { q: "", cat: "", of: "" }, label: "Directorio" },
