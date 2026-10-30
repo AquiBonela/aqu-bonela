@@ -3,8 +3,8 @@ import { activitiesFor, filterListings, isFeatured, type Category, type Listing 
 
 const now = new Date("2026-10-24T00:00:00Z");
 const cats: Category[] = [
-  { id: "c1", name: "Alimentación", slug: "alimentacion", sort_order: 1 },
-  { id: "c2", name: "Salud", slug: "salud", sort_order: 2 },
+  { id: "c1", name: "Alimentación", slug: "alimentacion", sort_order: 1, type: "comercio" },
+  { id: "c2", name: "Salud", slug: "salud", sort_order: 2, type: "comercio" },
 ];
 const base = { public_phone: null, public_whatsapp: null, public_address: null, description: "", short_description: "", labels: [], cover_url: null, gallery_urls: [], urgent_24h: false };
 const items: Listing[] = [
