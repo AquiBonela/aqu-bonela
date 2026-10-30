@@ -137,20 +137,20 @@ function Index() {
               if (value !== "" && !isListingType(value)) return;
               setText("");
               const keepCat = !value || data.listings.some((l) => l.type === value && l.category_id === activeCat?.id);
-              navigate({ search: (p) => ({ ...p, tipo: value, of: "", q: "", urg: false, ...(keepCat ? {} : { cat: "" }) }) });
+              navigate({ search: (p) => ({ ...p, tipo: value, of: "", q: "", urg: false, ...(keepCat ? {} : { cat: "" }) }), resetScroll: false });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos</option>
               {LISTING_TYPES.filter((t) => data.listings.some((l) => l.type === t.value)).map((t) => <option key={t.value} value={t.value}>{t.plural}</option>)}
             </select>
           </label>
           <label className="min-w-0 sm:w-64">
-            <select aria-label="Categoría" value={cat} onChange={(e) => { setText(""); navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "", q: "", urg: false }) }); }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
+            <select aria-label="Categoría" value={cat} onChange={(e) => { setText(""); navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "", q: "", urg: false }), resetScroll: false }); }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todas las categorías</option>
               {data.categories.filter((c) => data.listings.some((l) => (!tipo || l.type === tipo) && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select>
           </label>
           {activeCat && <label className="min-w-0 sm:w-64">
-            <select aria-label="Oficio / actividad" value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }) })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
+            <select aria-label="Oficio / actividad" value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }), resetScroll: false })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos los oficios</option>
               {activities.map((a) => <option key={a} value={a}>{a}</option>)}
             </select>
@@ -160,7 +160,7 @@ function Index() {
           <button
             type="button"
             aria-pressed={urg}
-            onClick={() => { setText(""); navigate({ search: (p) => ({ ...p, urg: !urg, q: "", cat: "", of: "", tipo: "" }) }); }}
+            onClick={() => { setText(""); navigate({ search: (p) => ({ ...p, urg: !urg, q: "", cat: "", of: "", tipo: "" }), resetScroll: false }); }}
             className={cn(
               "inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-5 font-display text-base font-bold",
               urg ? "border-availability-border bg-availability text-availability-foreground" : "border-foreground/70 bg-card text-foreground",
