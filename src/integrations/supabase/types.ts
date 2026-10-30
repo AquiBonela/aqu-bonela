@@ -184,6 +184,42 @@ export type Database = {
           },
         ]
       }
+      listing_activities: {
+        Row: {
+          activity_id: string
+          created_at: string
+          listing_id: string
+          sort_order: number
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          listing_id: string
+          sort_order?: number
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          listing_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_activities_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_activities_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listing_contacts: {
         Row: {
           address: string | null
@@ -394,14 +430,17 @@ export type Database = {
           featured: boolean
           featured_until: string | null
           gallery_urls: string[]
+          home_service: boolean
           id: string
           labels: string[]
           name: string
           public_address: string | null
           public_email: string | null
           public_phone: string | null
+          public_website: string | null
           public_whatsapp: string | null
           published_at: string | null
+          service_area: string
           short_description: string
           slug: string
           status: Database["public"]["Enums"]["listing_status"]
@@ -420,14 +459,17 @@ export type Database = {
           featured?: boolean
           featured_until?: string | null
           gallery_urls?: string[]
+          home_service?: boolean
           id?: string
           labels?: string[]
           name: string
           public_address?: string | null
           public_email?: string | null
           public_phone?: string | null
+          public_website?: string | null
           public_whatsapp?: string | null
           published_at?: string | null
+          service_area?: string
           short_description?: string
           slug: string
           status?: Database["public"]["Enums"]["listing_status"]
@@ -446,14 +488,17 @@ export type Database = {
           featured?: boolean
           featured_until?: string | null
           gallery_urls?: string[]
+          home_service?: boolean
           id?: string
           labels?: string[]
           name?: string
           public_address?: string | null
           public_email?: string | null
           public_phone?: string | null
+          public_website?: string | null
           public_whatsapp?: string | null
           published_at?: string | null
+          service_area?: string
           short_description?: string
           slug?: string
           status?: Database["public"]["Enums"]["listing_status"]
