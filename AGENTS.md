@@ -22,3 +22,4 @@
 - Admin listing deletion captures image paths, deletes the row under existing RLS, then removes storage files and reports cleanup failures. Why: cascades remove related rows but not storage objects, and failed row deletion must preserve images.
 - Classification is Type (listing_type enum) → Category (`categories.type`) → Activity (`activities` table, with search synonyms); listings store the activity name as text, and renaming an activity in admin config also updates matching listings. Why: admin manages the tree without code changes while existing listing reads stay simple.
 - The public directory only offers types and categories that have published listings. Why: a large prepared tree must not make the directory look empty.
+- Home `/` is a neutral portal (no featured businesses); the searchable directory lives at `/directorio`. Why: Aquí Bonela is a local-life platform, not only a commercial guide.
