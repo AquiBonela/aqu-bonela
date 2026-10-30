@@ -213,7 +213,7 @@ function EditPage() {
 
       <Section title="1. Tipo y categoría">
         <div className="flex gap-2">
-          {(["comercio", "profesional", "publico"] as const).map((t) => (
+          {(["comercio", "profesional", "publico", "asociacion"] as const).map((t) => (
             <button
               type="button" key={t} onClick={() => set("type", t)}
               className={`h-10 flex-1 border text-sm font-medium ${f.type === t ? (t === "comercio" ? "border-primary bg-primary text-primary-foreground" : t === "publico" ? "border-civic bg-civic text-primary-foreground" : "border-terracotta bg-terracotta text-terracotta-foreground") : ""}`}
