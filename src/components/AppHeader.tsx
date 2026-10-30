@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
+import logoMenu from "@/assets/logo-menu.png.asset.json";
 
 export type HeaderRoute =
   | "/"
@@ -84,8 +85,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
       </header>
       {open && (
         <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
-          <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-between px-4 py-2">
-            <span onClick={() => setOpen(false)} className="text-primary-foreground [&_*]:!text-primary-foreground">{brand}</span>
+          <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-end px-4 py-2">
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -95,11 +95,12 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               <X className="h-6 w-6" aria-hidden />
             </button>
           </div>
-          <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6">
-            <div className="flex flex-1 flex-col justify-center pb-16">
-              <ul className="flex flex-col gap-6">
+          <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center gap-10 pb-10">
+              <img src={logoMenu.url} alt="Aquí Bonela" className="animate-menu-item h-auto w-40 sm:w-48" />
+              <ul className="flex flex-col items-center gap-6">
                 {items.map((item, i) => (
-                  <li key={item.label} className="animate-menu-item" style={{ animationDelay: `${0.06 * i}s` }}>
+                  <li key={item.label} className="animate-menu-item" style={{ animationDelay: `${0.06 * (i + 1)}s` }}>
                     {renderItem(item, true)}
                   </li>
                 ))}
