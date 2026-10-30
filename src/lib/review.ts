@@ -7,7 +7,7 @@ export type Hour = { weekday: number; opens: string; closes: string };
 export type ReviewListing = {
   id: string;
   slug: string;
-  type: "comercio" | "profesional" | "publico";
+  type: "comercio" | "profesional" | "publico" | "asociacion";
   name: string;
   status: string;
   activity: string | null;

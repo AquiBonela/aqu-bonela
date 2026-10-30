@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_authenticated/admin/fichas/$id")({
 
 type Hour = { weekday: number; opens: string; closes: string };
 type Form = {
-  type: "comercio" | "profesional" | "publico";
+  type: "comercio" | "profesional" | "publico" | "asociacion";
   category_id: string;
   activity: string;
   labels: string;

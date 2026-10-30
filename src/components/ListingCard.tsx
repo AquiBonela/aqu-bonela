@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { availabilityTags } from "@/lib/listing-availability";
 
 export const typeLabel = (t: Listing["type"]) =>
-  t === "profesional" ? "Profesional" : t === "publico" ? "Servicio público" : "Comercio";
+  t === "profesional" ? "Profesional" : t === "publico" ? "Servicio público" : t === "asociacion" ? "Asociación" : "Comercio";
 
 /** Clases de color por tipo: franja, texto y etiqueta. */
 export const typeTheme = (t: Listing["type"]) =>
@@ -13,7 +13,9 @@ export const typeTheme = (t: Listing["type"]) =>
     ? { border: "border-l-terracotta", text: "text-terracotta", chip: "bg-accent text-terracotta" }
     : t === "publico"
       ? { border: "border-l-civic", text: "text-civic", chip: "bg-civic-soft text-civic" }
-      : { border: "border-l-primary", text: "text-primary", chip: "bg-secondary text-primary" };
+      : t === "asociacion"
+        ? { border: "border-l-community", text: "text-community", chip: "bg-community-soft text-community" }
+        : { border: "border-l-primary", text: "text-primary", chip: "bg-secondary text-primary" };
 
 export function TypeLabel({ type, className }: { type: Listing["type"]; className?: string }) {
   return (
@@ -69,7 +71,7 @@ export function ListingCard({
         </div>
         <h3 className="mt-2 font-display text-2xl font-bold leading-tight text-foreground">
           <Link
-            to={listing.type === "profesional" ? "/profesionales/$slug" : listing.type === "publico" ? "/servicios/$slug" : "/comercios/$slug"}
+            to={listing.type === "profesional" ? "/profesionales/$slug" : listing.type === "publico" ? "/servicios/$slug" : listing.type === "asociacion" ? "/asociaciones/$slug" : "/comercios/$slug"}
             params={{ slug: listing.slug }}
             className="after:absolute after:inset-0"
           >
