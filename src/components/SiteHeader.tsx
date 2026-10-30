@@ -8,9 +8,14 @@ const MENU_ITEMS: HeaderItem[] = [
   { label: "Servicios públicos", soon: true },
   { label: "Descubre Bonela", soon: true },
   { label: "Actualidad", soon: true },
-  { label: "Anuncios", soon: true },
+  { label: "Clasificados", soon: true },
   { label: "Sobre Aquí Bonela", soon: true },
-  { to: "/sugerir", label: "Sugerir" },
+  {
+    to: "/sugerir",
+    label: "Enviar información",
+    description:
+      "Ayúdanos a mantener Casarabonela conectado y actualizado. Puedes enviarnos negocios, lugares, eventos, noticias, correcciones o cualquier información que consideres útil.",
+  },
 ];
 
 export function SiteHeader() {
