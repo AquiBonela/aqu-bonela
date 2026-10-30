@@ -18,7 +18,7 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
         </div>
         <p className="mt-2 font-semibold">Casarabonela {new Date().getFullYear()}</p>
         <p className="mt-3 text-base leading-relaxed text-foreground">
-          Registro digital informativo y abierto para el fomento económico, comercial y profesional de Casarabonela (Málaga).
+          Una plataforma digital independiente para descubrir, conocer y compartir todo lo que ocurre en Casarabonela.
         </p>
         <nav aria-label="Información legal" className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-semibold">
           <Link to="/aviso-legal" className="underline-offset-4 hover:underline">Aviso legal</Link>
