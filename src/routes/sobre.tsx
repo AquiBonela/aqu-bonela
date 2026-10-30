@@ -60,7 +60,7 @@ function Sobre() {
         <h1 className="font-display text-3xl font-extrabold text-pretty">Sobre Aquí Bonela</h1>
 
         <section className="mt-6 grid gap-2 text-base leading-relaxed">
-          <h2 className="font-display text-xl font-bold">¿Qué es Aquí Bonela?</h2>
+          <h2 className="font-display text-xl font-bold">¿Qué es?</h2>
           <p className="font-medium">
             Aquí Bonela es una plataforma digital dedicada a Casarabonela, creada para reunir en un mismo lugar la
             información útil del municipio.
