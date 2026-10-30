@@ -17,6 +17,8 @@ export type HeaderItem = {
   search?: { q: string; cat: string; of: string };
   activeOptions?: { exact?: boolean };
   onClick?: () => void | Promise<void>;
+  /** Sección prevista pero aún no disponible: se muestra atenuada y sin enlace. */
+  soon?: boolean;
 };
 
 type AppHeaderProps = {
@@ -48,7 +50,12 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   }, [open]);
 
   const renderItem = (item: HeaderItem, big: boolean) =>
-    item.to ? (
+    item.soon ? (
+      <span aria-disabled="true" className="block cursor-default font-display text-3xl font-extrabold tracking-tight opacity-40">
+        {item.label}
+        <span className="mt-1 block font-sans text-xs font-semibold uppercase tracking-widest">Próximamente</span>
+      </span>
+    ) : item.to ? (
       <Link
         key={item.label}
         to={item.to}

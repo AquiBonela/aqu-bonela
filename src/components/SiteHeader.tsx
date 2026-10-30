@@ -5,6 +5,11 @@ import logo from "@/assets/logo-2.png.asset.json";
 
 const MENU_ITEMS: HeaderItem[] = [
   { to: "/", search: { q: "", cat: "", of: "" }, label: "Directorio" },
+  { label: "Servicios públicos", soon: true },
+  { label: "Descubre Bonela", soon: true },
+  { label: "Actualidad", soon: true },
+  { label: "Anuncios", soon: true },
+  { label: "Sobre Aquí Bonela", soon: true },
   { to: "/sugerir", label: "Sugerir" },
   { to: "/admin", label: "Administración" },
 ];
