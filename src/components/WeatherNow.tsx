@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudRain, CloudSnow, CloudSun, Sun, type LucideIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type Weather = { temp: number; code: number };
 
