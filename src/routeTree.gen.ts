@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as DescubreRouteImport } from './routes/descubre'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SugerirRouteImport } from './routes/sugerir'
@@ -50,6 +51,11 @@ const AvisoLegalRoute = AvisoLegalRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DescubreRoute = DescubreRouteImport.update({
+  id: '/descubre',
+  path: '/descubre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacidadRoute = PrivacidadRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
+  '/descubre': typeof DescubreRoute
   '/privacidad': typeof PrivacidadRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
+  '/descubre': typeof DescubreRoute
   '/privacidad': typeof PrivacidadRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
+  '/descubre': typeof DescubreRoute
   '/privacidad': typeof PrivacidadRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
+    | '/descubre'
     | '/privacidad'
     | '/sobre'
     | '/sugerir'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
+    | '/descubre'
     | '/privacidad'
     | '/sobre'
     | '/sugerir'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
+    | '/descubre'
     | '/privacidad'
     | '/sobre'
     | '/sugerir'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   AvisoLegalRoute: typeof AvisoLegalRoute
   CookiesRoute: typeof CookiesRoute
+  DescubreRoute: typeof DescubreRoute
   PrivacidadRoute: typeof PrivacidadRoute
   SobreRoute: typeof SobreRoute
   SugerirRoute: typeof SugerirRoute
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/descubre': {
+      id: '/descubre'
+      path: '/descubre'
+      fullPath: '/descubre'
+      preLoaderRoute: typeof DescubreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacidad': {
@@ -414,6 +434,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   AvisoLegalRoute: AvisoLegalRoute,
   CookiesRoute: CookiesRoute,
+  DescubreRoute: DescubreRoute,
   PrivacidadRoute: PrivacidadRoute,
   SobreRoute: SobreRoute,
   SugerirRoute: SugerirRoute,
