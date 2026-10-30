@@ -9,4 +9,5 @@
 - [x] Galería en dos columnas con última imagen impar a todo el ancho.
 - [x] Alinear distinciones amarillas a la derecha en fichas y tarjetas; verificar presentación.
 - [x] Página «Sobre Aquí Bonela» con enlace activo en el menú.
-- [ ] Favicon e icono para pantalla de inicio (pendiente, verlo más adelante con el usuario)
+- [x] Favicon e icono para pantalla de inicio (manifiesto + iconos 192/512).
+- [ ] Horarios y webs oficiales de servicios públicos: pendiente de datos reales del usuario.
