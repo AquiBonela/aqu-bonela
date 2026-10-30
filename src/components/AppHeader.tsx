@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import logoMenu from "@/assets/logo-menu.webp";
+import { LangSwitch, useI18n } from "@/lib/i18n";
 
 export type HeaderRoute =
   | "/"
@@ -44,6 +45,7 @@ const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hov
  */
 export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left }: AppHeaderProps) {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => setOpen(false), [pathname]);
@@ -84,27 +86,31 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   return (
     <>
       <header className="border-b bg-background">
-        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[3.5rem_1fr_3.5rem] items-center gap-x-2 px-4 py-2">
+        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center gap-x-2 px-4 py-2">
           <div className="flex justify-start">{left}</div>
           <div className="flex justify-center">{brand}</div>
+          <div className="flex items-center justify-end">
+          <LangSwitch className="hidden sm:flex" />
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-expanded={open}
-            aria-label="Abrir menú"
+            aria-label={t("menu.open")}
             className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
           >
             <Menu className="h-6 w-6" aria-hidden />
           </button>
+          </div>
         </div>
       </header>
       {open && (
         <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
-          <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-end px-4 py-2">
+          <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-between px-4 py-2">
+            <LangSwitch className="[&_button]:!text-primary-foreground" />
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="Cerrar menú"
+              aria-label={t("menu.close")}
               className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
             >
               <X className="h-6 w-6" aria-hidden />
