@@ -5,7 +5,7 @@ export type Category = { id: string; name: string; slug: string; sort_order: num
 export type Listing = {
   id: string;
   slug: string;
-  type: "comercio" | "profesional";
+  type: "comercio" | "profesional" | "publico";
   name: string;
   description: string;
   short_description: string;

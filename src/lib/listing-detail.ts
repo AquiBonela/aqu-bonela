@@ -70,5 +70,5 @@ export function mapsUrl(address: string) {
 }
 
 export function listingPath(type: Listing["type"], slug: string) {
-  return `/${type === "comercio" ? "comercios" : "profesionales"}/${slug}`;
+  return `/${type === "comercio" ? "comercios" : type === "publico" ? "servicios" : "profesionales"}/${slug}`;
 }

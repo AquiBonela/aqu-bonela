@@ -16,7 +16,7 @@ const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   cat: fallback(z.string(), "").default(""),
   of: fallback(z.string(), "").default(""),
-  tipo: fallback(z.enum(["", "comercio", "profesional"]), "").default(""),
+  tipo: fallback(z.enum(["", "comercio", "profesional", "publico"]), "").default(""),
   urg: fallback(z.boolean(), false).default(false),
 });
 
@@ -134,12 +134,12 @@ function Index() {
           <label className="min-w-0 sm:w-56">
             <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
               const value = e.target.value;
-              if (value !== "" && value !== "comercio" && value !== "profesional") return;
+              if (value !== "" && value !== "comercio" && value !== "profesional" && value !== "publico") return;
               setText("");
               const keepCat = !value || data.listings.some((l) => l.type === value && l.category_id === activeCat?.id);
               navigate({ search: (p) => ({ ...p, tipo: value, of: "", q: "", urg: false, ...(keepCat ? {} : { cat: "" }) }) });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option>
+              <option value="">Todos</option><option value="comercio">Comercios</option><option value="profesional">Profesionales</option><option value="publico">Servicios públicos</option>
             </select>
           </label>
           <label className="min-w-0 sm:w-64">
