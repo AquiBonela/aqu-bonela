@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Sprout } from "lucide-react";
+import logoTexto from "@/assets/logo-texto.png.asset.json";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { whatsappUrl } from "@/lib/directory";
@@ -17,12 +17,14 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
   const wa = data?.admin_whatsapp?.trim();
 
   return (
-    <footer className={inMenu ? "text-center text-sm text-primary-foreground/85 [&_*]:!text-primary-foreground" : "mt-8 border-t bg-secondary/40 px-4 py-8 text-sm text-muted-foreground"}>
-      <div className={inMenu ? "mx-auto max-w-2xl [&_nav]:justify-center [&_p]:justify-center" : "mx-auto max-w-2xl"}>
-        <div className={`flex flex-col gap-1 font-display text-sm font-bold uppercase tracking-wide text-foreground sm:flex-row sm:items-center sm:gap-2 ${inMenu ? "items-center sm:justify-center" : ""}`}>
-          <span className="flex items-center gap-2">
-            <Sprout className="h-5 w-5 shrink-0 text-primary" aria-hidden /> Aquí Bonela
-          </span>
+    <footer className={inMenu ? "text-center text-sm text-primary-foreground/85 [&_*]:!text-primary-foreground" : "mt-8 border-t bg-secondary/40 px-4 py-8 text-center text-sm text-muted-foreground"}>
+      <div className="mx-auto max-w-2xl [&_nav]:justify-center [&_p]:justify-center">
+        <div className="flex flex-col items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground sm:flex-row sm:justify-center sm:gap-3">
+          <img
+            src={logoTexto.url}
+            alt="Aquí Bonela"
+            className={`h-6 w-auto ${inMenu ? "brightness-0 invert" : ""}`}
+          />
           <span aria-hidden className="hidden sm:inline">·</span>
           <span>Directorio local colaborativo</span>
         </div>
