@@ -11,7 +11,6 @@ const MENU_ITEMS: HeaderItem[] = [
   { label: "Anuncios", soon: true },
   { label: "Sobre Aquí Bonela", soon: true },
   { to: "/sugerir", label: "Sugerir" },
-  { to: "/admin", label: "Administración" },
 ];
 
 export function SiteHeader() {
