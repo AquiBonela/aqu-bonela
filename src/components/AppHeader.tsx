@@ -19,6 +19,8 @@ export type HeaderItem = {
   onClick?: () => void | Promise<void>;
   /** Sección prevista pero aún no disponible: se muestra atenuada y sin enlace. */
   soon?: boolean;
+  /** Texto breve que acompaña al enlace, debajo del rótulo. */
+  description?: string;
 };
 
 type AppHeaderProps = {
@@ -53,7 +55,6 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
     item.soon ? (
       <span aria-disabled="true" className="block cursor-default font-display text-3xl font-extrabold tracking-tight opacity-40">
         {item.label}
-        <span className="mt-1 block font-sans text-xs font-semibold uppercase tracking-widest">Próximamente</span>
       </span>
     ) : item.to ? (
       <Link
@@ -64,7 +65,10 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         onClick={() => setOpen(false)}
         className={big ? BIG_CLASS : SMALL_CLASS}
       >
-        {item.label}
+        <span className="block">{item.label}</span>
+        {item.description && (
+          <span className="mt-2 block font-sans text-xs font-medium tracking-wide opacity-80">{item.description}</span>
+        )}
       </Link>
     ) : (
       <button key={item.label} type="button" onClick={() => { setOpen(false); void item.onClick?.(); }} className={big ? BIG_CLASS : SMALL_CLASS}>
