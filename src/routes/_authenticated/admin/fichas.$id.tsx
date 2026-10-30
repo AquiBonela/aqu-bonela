@@ -43,6 +43,10 @@ type Form = {
   type: "comercio" | "profesional" | "publico" | "asociacion";
   category_id: string;
   activity: string;
+  extra_activities: string[];
+  website: string;
+  home_service: boolean;
+  service_area: string;
   labels: string;
   name: string;
   slug: string;
@@ -68,10 +72,16 @@ type Form = {
 };
 
 const empty: Form = {
-  type: "comercio", category_id: "", activity: "", labels: "", name: "", slug: "", short_description: "", description: "", tags: "",
+  type: "comercio", category_id: "",  activity: "", extra_activities: [], website: "", home_service: false, service_area: "", labels: "", name: "", slug: "", short_description: "", description: "", tags: "",
   phone: "", whatsapp: "", address: "", email: "", show_email: false, show_phone: false, show_whatsapp: false, show_address: false,
   owner_name: "", owner_contact: "", collaborator: false, featured_until: null,
   urgent_24h: false, availability: [], status: "borrador", hours: [],
+};
+
+const normalizeUrl = (u: string) => {
+  const t = u.trim();
+  if (!t) return null;
+  return /^https?:\/\//i.test(t) ? t : `https://${t}`;
 };
 
 const list = (s: string, sep: RegExp) => s.split(sep).map((x) => x.trim()).filter(Boolean);
@@ -114,7 +124,8 @@ function EditPage() {
     if (!data?.listing) return;
     const l = data.listing, c = data.contact;
     setF({
-      type: l.type, category_id: l.category_id ?? "", activity: l.activity ?? "", labels: l.labels.join(", "),
+      type: l.type, category_id: l.category_id ?? "", activity: l.activity ?? "", website: l.public_website ?? "", home_service: l.home_service, service_area: l.service_area ?? "",
+      extra_activities: data.activityIds.filter((aid) => acts.find((a) => a.id === aid)?.name !== l.activity), labels: l.labels.join(", "),
       name: l.name, slug: l.slug, short_description: l.short_description ?? "", description: l.description, tags: searchTags(l.tags).join(", "),
       phone: c?.phone ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "", email: c?.email ?? "", show_email: c?.show_email ?? false,
       show_phone: c?.show_phone ?? false, show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
@@ -123,7 +134,7 @@ function EditPage() {
       availability: reservedTags(l.tags),
       status: l.status, hours: data.hours.map((h) => ({ ...h, opens: h.opens.slice(0, 5), closes: h.closes.slice(0, 5) })),
     });
-  }, [data]);
+  }, [data, acts]);
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
 
@@ -141,6 +152,7 @@ function EditPage() {
       slug: f.slug || slugify(f.name), short_description: f.short_description.trim(), description: f.description, tags: withAvailability(list(f.tags, /,/), f.availability),
       featured: f.collaborator, featured_until,
       urgent_24h: f.urgent_24h, status: f.status,
+      public_website: normalizeUrl(f.website), home_service: f.home_service, service_area: f.service_area.trim(),
     };
     try {
       let listingId = id;
@@ -163,6 +175,14 @@ function EditPage() {
       if (hours.length) {
         const { error: hErr } = await supabase.from("listing_hours").insert(hours);
         if (hErr) throw hErr;
+      }
+      const mainId = acts.find((a) => a.category_id === f.category_id && a.name === f.activity)?.id;
+      const actIds = [...new Set([mainId, ...f.extra_activities].filter((x): x is string => !!x))];
+      const { error: dErr } = await supabase.from("listing_activities").delete().eq("listing_id", listingId);
+      if (dErr) throw dErr;
+      if (actIds.length) {
+        const { error: aErr } = await supabase.from("listing_activities").insert(actIds.map((activity_id, i) => ({ listing_id: listingId, activity_id, sort_order: i })));
+        if (aErr) throw aErr;
       }
       await qc.invalidateQueries({ queryKey: ["admin"] });
       qc.invalidateQueries({ queryKey: ["directory"] });
@@ -237,6 +257,33 @@ function EditPage() {
             )}
             {acts.filter((a) => a.category_id === f.category_id).map((a) => <option key={a.id} value={a.name}>{a.name}</option>)}
           </select>
+        </Field>
+        {f.category_id && (
+          <Field label="Otras actividades" hint="Opcional. Marca otros servicios que también ofrece; ayudan a encontrar la ficha.">
+            <div className="flex flex-wrap gap-1.5">
+              {acts
+                .filter((a) => a.name !== f.activity && (a.category_id === f.category_id || f.extra_activities.includes(a.id)))
+                .map((a) => {
+                  const on = f.extra_activities.includes(a.id);
+                  return (
+                    <button
+                      type="button" key={a.id} aria-pressed={on}
+                      onClick={() => set("extra_activities", on ? f.extra_activities.filter((x) => x !== a.id) : [...f.extra_activities, a.id])}
+                      className={`rounded-md border px-2.5 py-1 text-sm ${on ? "border-primary bg-primary text-primary-foreground" : "bg-background"}`}
+                    >
+                      {a.name}
+                    </button>
+                  );
+                })}
+            </div>
+          </Field>
+        )}
+        <Field label="Página web" hint="Opcional. Se mostrará en la ficha más adelante.">
+          <Input type="url" inputMode="url" placeholder="https://…" value={f.website} onChange={(e) => set("website", e.target.value)} />
+        </Field>
+        <Toggle label="Servicio a domicilio" checked={f.home_service} onChange={(v) => set("home_service", v)} hint="Se desplaza a casa del cliente." />
+        <Field label="Zona de servicio" hint="Opcional. Ej.: Casarabonela y alrededores">
+          <Input value={f.service_area} onChange={(e) => set("service_area", e.target.value)} />
         </Field>
         <Field label="Etiquetas destacadas" hint="Hasta 3, separadas por comas. Ej.: Pan de leña, Encargos">
           <Input value={f.labels} onChange={(e) => set("labels", e.target.value)} />
