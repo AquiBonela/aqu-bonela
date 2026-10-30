@@ -5,7 +5,7 @@ import { WeatherNow } from "@/components/WeatherNow";
 import logo from "@/assets/logo-2.webp";
 
 const MENU_ITEMS: HeaderItem[] = [
-  { to: "/", search: { q: "", cat: "", of: "" }, label: "Directorio" },
+  { to: "/directorio", search: { q: "", cat: "", of: "" }, label: "Directorio" },
   { label: "Servicios públicos", soon: true },
   { to: "/descubre", label: "Descubre Bonela" },
   { label: "Actualidad", soon: true },
@@ -26,7 +26,7 @@ export function SiteHeader() {
       footnote={<SiteFooter inMenu />}
       left={<WeatherNow />}
       brand={
-        <Link to="/" search={{ q: "", cat: "", of: "" }} className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
+        <Link to="/" className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
           <img src={logo} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
         </Link>
       }

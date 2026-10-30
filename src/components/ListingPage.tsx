@@ -60,7 +60,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
             {listing.categoryName && listing.categorySlug && (review ? (
               <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{listing.categoryName}</span>
             ) : (
-              <Link to="/" search={{ q: "", cat: listing.categorySlug, of: "" }} className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground hover:underline">
+              <Link to="/directorio" search={{ q: "", cat: listing.categorySlug, of: "" }} className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground hover:underline">
                 {listing.categoryName}
               </Link>
             ))}
@@ -331,7 +331,7 @@ export function ListingNotFound() {
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
       <h1 className="font-display text-2xl font-bold">Esta ficha no está disponible</h1>
       <p className="text-muted-foreground">Puede que se haya retirado o que el enlace no sea correcto.</p>
-      <Link to="/" className="inline-flex min-h-11 items-center bg-primary px-4 font-semibold text-primary-foreground">
+      <Link to="/directorio" className="inline-flex min-h-11 items-center bg-primary px-4 font-semibold text-primary-foreground">
         Ver el directorio
       </Link>
     </div>
@@ -344,7 +344,7 @@ function BackLink({ className, children }: { className?: string; children: React
   const canGoBack = useCanGoBack();
   return (
     <Link
-      to="/"
+      to="/directorio"
       className={className}
       onClick={(e) => {
         if (!canGoBack) return;

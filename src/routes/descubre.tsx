@@ -128,7 +128,7 @@ function Descubre() {
               ))}
             </ul>
             <Link
-              to="/"
+              to="/directorio"
               search={{ q: "", cat: "", of: "" }}
               className="mt-10 inline-flex min-h-12 items-center gap-3 bg-background px-5 font-bold text-foreground hover:bg-beige"
             >
