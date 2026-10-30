@@ -23,3 +23,5 @@
 - Classification is Type (listing_type enum) → Category (`categories.type`) → Activity (`activities` table, with search synonyms); listings store the activity name as text, and renaming an activity in admin config also updates matching listings. Why: admin manages the tree without code changes while existing listing reads stay simple.
 - The public directory only offers types and categories that have published listings. Why: a large prepared tree must not make the directory look empty.
 - Home `/` is a neutral portal (no featured businesses); the searchable directory lives at `/directorio`. Why: Aquí Bonela is a local-life platform, not only a commercial guide.
+
+- UI text is translated via the dictionary in `src/lib/i18n.tsx` (`useI18n().t`), language saved in the browser, Spanish fallback for missing keys; URLs are not language-prefixed. Why: adding languages or translating pages later needs no route rebuild.
