@@ -136,15 +136,20 @@ function Index() {
               const value = e.target.value;
               if (value !== "" && !isListingType(value)) return;
               setText("");
-              const keepCat = !value || data.listings.some((l) => l.type === value && l.category_id === activeCat?.id);
-              navigate({ search: (p) => ({ ...p, tipo: value, of: "", q: "", urg: false, ...(keepCat ? {} : { cat: "" }) }), resetScroll: false });
+              navigate({ search: (p) => ({ ...p, tipo: value, cat: "", of: "", q: "", urg: false }), resetScroll: false });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todos</option>
               {LISTING_TYPES.filter((t) => data.listings.some((l) => l.type === t.value)).map((t) => <option key={t.value} value={t.value}>{t.plural}</option>)}
             </select>
           </label>
           <label className="min-w-0 sm:w-64">
-            <select aria-label="Categoría" value={cat} onChange={(e) => { setText(""); navigate({ search: (p) => ({ ...p, cat: e.target.value, of: "", q: "", urg: false }), resetScroll: false }); }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
+            <select aria-label="Categoría" value={cat} onChange={(e) => {
+              const value = e.target.value;
+              setText("");
+              const c = data.categories.find((x) => x.slug === value);
+              const t = c ? (c.type ?? data.listings.find((l) => l.category_id === c.id)?.type ?? tipo) : tipo;
+              navigate({ search: (p) => ({ ...p, cat: value, tipo: t, of: "", q: "", urg: false }), resetScroll: false });
+            }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
               <option value="">Todas las categorías</option>
               {data.categories.filter((c) => data.listings.some((l) => (!tipo || l.type === tipo) && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
             </select>
