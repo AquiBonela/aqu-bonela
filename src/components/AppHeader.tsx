@@ -68,16 +68,15 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   return (
     <>
       <header className="border-b bg-background">
-        <div className="mx-auto flex min-h-14 max-w-5xl items-center justify-between gap-x-4 px-4 py-2">
-          {brand}
-          {/* Escritorio: menú siempre visible */}
-          {/* Móvil: menú a pantalla completa */}
+        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_1fr_2.75rem] items-center gap-x-4 px-4 py-2">
+          <span aria-hidden />
+          <div className="flex justify-center">{brand}</div>
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-expanded={open}
             aria-label="Abrir menú"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
           >
             <Menu className="h-6 w-6" aria-hidden />
           </button>
