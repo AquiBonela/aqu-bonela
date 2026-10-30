@@ -1,20 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import logoTexto from "@/assets/logo-texto.png.asset.json";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { whatsappUrl } from "@/lib/directory";
 
 export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
-  const { data } = useQuery({
-    queryKey: ["footer-contact"],
-    queryFn: async () => {
-      const { data } = await supabase.from("site_settings").select("contact_email,admin_whatsapp").eq("id", true).maybeSingle();
-      return data;
-    },
-    staleTime: 5 * 60_000,
-  });
-  const email = data?.contact_email?.trim();
-  const wa = data?.admin_whatsapp?.trim();
+
 
   return (
     <footer className={inMenu ? "text-center text-sm text-primary-foreground/85 [&_*]:!text-primary-foreground" : "mt-8 border-t bg-secondary/40 px-4 py-8 text-center text-sm text-muted-foreground"}>
@@ -32,17 +20,6 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
         <p className="mt-3 text-base leading-relaxed text-foreground">
           Registro digital informativo y abierto para el fomento económico, comercial y profesional de Casarabonela (Málaga).
         </p>
-        {(email || wa) && (
-          <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
-            <span className="font-semibold">Contacto:</span>
-            {email && <a href={`mailto:${email}`} className="underline-offset-4 hover:underline">{email}</a>}
-            {wa && (
-              <a href={whatsappUrl(wa, "Aquí Bonela")} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:underline">
-                WhatsApp {wa}
-              </a>
-            )}
-          </p>
-        )}
         <nav aria-label="Información legal" className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-semibold">
           <Link to="/aviso-legal" className="underline-offset-4 hover:underline">Aviso legal</Link>
           <span aria-hidden>·</span>
