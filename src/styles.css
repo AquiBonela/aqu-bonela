@@ -29,6 +29,8 @@
   --color-hashtag-foreground: var(--hashtag-foreground);
   --color-terracotta-foreground: var(--terracotta-foreground);
   --color-beige: var(--beige);
+  --color-civic: var(--civic);
+  --color-civic-soft: var(--civic-soft);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -97,6 +99,8 @@
   --terracotta: oklch(0.564 0.106 42.4);
   --terracotta-foreground: oklch(1 0 0);
   --beige: oklch(0.93 0.03 84);
+  --civic: oklch(0.48 0.09 240);
+  --civic-soft: oklch(0.94 0.025 240);
   --destructive: oklch(0.505 0.141 30.3);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.898 0.02 87.5);

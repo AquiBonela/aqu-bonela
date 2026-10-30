@@ -4,15 +4,23 @@ import type { Listing } from "@/lib/directory";
 import { cn } from "@/lib/utils";
 import { availabilityTags } from "@/lib/listing-availability";
 
-export const typeLabel = (t: Listing["type"]) => (t === "profesional" ? "Profesional" : "Comercio");
+export const typeLabel = (t: Listing["type"]) =>
+  t === "profesional" ? "Profesional" : t === "publico" ? "Servicio público" : "Comercio";
+
+/** Clases de color por tipo: franja, texto y etiqueta. */
+export const typeTheme = (t: Listing["type"]) =>
+  t === "profesional"
+    ? { border: "border-l-terracotta", text: "text-terracotta", chip: "bg-accent text-terracotta" }
+    : t === "publico"
+      ? { border: "border-l-civic", text: "text-civic", chip: "bg-civic-soft text-civic" }
+      : { border: "border-l-primary", text: "text-primary", chip: "bg-secondary text-primary" };
 
 export function TypeLabel({ type, className }: { type: Listing["type"]; className?: string }) {
-  const pro = type === "profesional";
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold uppercase",
-        pro ? "bg-accent text-terracotta" : "bg-secondary text-primary",
+        typeTheme(type).chip,
         className,
       )}
     >
@@ -45,11 +53,11 @@ export function ListingCard({
   categoryName?: string | undefined;
   collaborator: boolean;
 }) {
-  const pro = listing.type === "profesional";
+  const theme = typeTheme(listing.type);
   const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
   const marks = [...(listing.urgent_24h ? ["Urgencias 24h"] : []), ...availabilityTags(listing.tags)];
   return (
-    <article className={cn("relative flex overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.03] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", pro ? "border-l-terracotta" : "border-l-primary")}>
+    <article className={cn("relative flex overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.03] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", theme.border)}>
       <div className="flex min-w-0 flex-1 flex-col">
       {collaborator && listing.cover_url && (
         <img src={listing.cover_url} alt="" loading="lazy" className="h-40 w-full object-cover sm:h-48" />
@@ -61,16 +69,16 @@ export function ListingCard({
         </div>
         <h3 className="mt-2 font-display text-2xl font-bold leading-tight text-foreground">
           <Link
-            to={pro ? "/profesionales/$slug" : "/comercios/$slug"}
+            to={listing.type === "profesional" ? "/profesionales/$slug" : listing.type === "publico" ? "/servicios/$slug" : "/comercios/$slug"}
             params={{ slug: listing.slug }}
             className="after:absolute after:inset-0"
           >
             {listing.name}
           </Link>
         </h3>
-        {subtitle && <p className={cn("mt-1 text-base font-bold", pro ? "text-terracotta" : "text-primary")}>{subtitle}</p>}
+        {subtitle && <p className={cn("mt-1 text-base font-bold", theme.text)}>{subtitle}</p>}
         <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{listing.short_description || listing.description}</p>
-        <p className={cn("mt-3 text-base font-bold", pro ? "text-terracotta" : "text-primary")} aria-hidden>
+        <p className={cn("mt-3 text-base font-bold", theme.text)} aria-hidden>
           {actionText(listing)}
         </p>
       </div>

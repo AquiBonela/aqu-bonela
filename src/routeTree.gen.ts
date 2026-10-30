@@ -19,6 +19,7 @@ import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
 import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
+import { Route as ServiciosSlugRouteImport } from './routes/servicios.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
 import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_authenticated/admin/configuracion'
@@ -74,6 +75,11 @@ const RevisionTokenRoute = RevisionTokenRouteImport.update({
   path: '/revision/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServiciosSlugRoute = ServiciosSlugRouteImport.update({
+  id: '/servicios/$slug',
+  path: '/servicios/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
+  '/servicios/$slug': typeof ServiciosSlugRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
+  '/servicios/$slug': typeof ServiciosSlugRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
+  '/servicios/$slug': typeof ServiciosSlugRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/_authenticated/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/comercios/$slug'
     | '/profesionales/$slug'
     | '/revision/$token'
+    | '/servicios/$slug'
     | '/admin/avisos'
     | '/admin/configuracion'
     | '/admin/sugerencias'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/comercios/$slug'
     | '/profesionales/$slug'
     | '/revision/$token'
+    | '/servicios/$slug'
     | '/admin/avisos'
     | '/admin/configuracion'
     | '/admin/sugerencias'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/comercios/$slug'
     | '/profesionales/$slug'
     | '/revision/$token'
+    | '/servicios/$slug'
     | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/configuracion'
     | '/_authenticated/admin/sugerencias'
@@ -217,6 +229,7 @@ export interface RootRouteChildren {
   ComerciosSlugRoute: typeof ComerciosSlugRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
   RevisionTokenRoute: typeof RevisionTokenRoute
+  ServiciosSlugRoute: typeof ServiciosSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RevisionTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/servicios/$slug': {
+      id: '/servicios/$slug'
+      path: '/servicios/$slug'
+      fullPath: '/servicios/$slug'
+      preLoaderRoute: typeof ServiciosSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/admin'
@@ -359,6 +379,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComerciosSlugRoute: ComerciosSlugRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
   RevisionTokenRoute: RevisionTokenRoute,
+  ServiciosSlugRoute: ServiciosSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
