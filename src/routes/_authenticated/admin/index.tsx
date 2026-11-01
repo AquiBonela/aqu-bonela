@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { adminListingsQuery, STATUSES } from "@/lib/admin";
-import { isFeatured, normalize } from "@/lib/directory";
+import { adminListingsQuery, categoriesQuery, STATUSES } from "@/lib/admin";
+import { isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
+import { changeAdminCategory, changeAdminType, emptyAdminFilters, filterAdminListings } from "@/lib/admin-listing-filters";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CollaboratorBadge } from "@/components/ListingCard";
 
@@ -35,11 +37,12 @@ function AdminList() {
 
 function ListBody() {
   const { data = [], isLoading } = useQuery(adminListingsQuery);
-  const [q, setQ] = useState("");
-  const [status, setStatus] = useState("");
-  const rows = data.filter(
-    (l) => (!status || l.status === status) && (!q || normalize(`${l.name} ${l.activity ?? ""}`).includes(normalize(q))),
-  );
+  const { data: categories = [] } = useQuery(categoriesQuery);
+  const [filters, setFilters] = useState(emptyAdminFilters);
+  const rows = filterAdminListings(data, filters);
+  const availableCategories = categories.filter((c) => data.some((l) => l.category_id === c.id && (!filters.type || l.type === filters.type)));
+  const activities = [...new Set(data.filter((l) => l.category_id === filters.category && (!filters.type || l.type === filters.type)).flatMap((l) => l.activity ? [l.activity] : []))].sort((a, b) => a.localeCompare(b, "es"));
+  const hasFilters = Object.values(filters).some(Boolean);
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -55,16 +58,41 @@ function ListBody() {
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar ficha…" value={q} onChange={(e) => setQ(e.target.value)} className="h-10 pl-9" />
+          <Input aria-label="Buscar ficha" placeholder="Buscar ficha…" value={filters.q} onChange={(e) => setFilters((p) => ({ ...p, q: e.target.value }))} className="h-10 pl-9" />
         </div>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="h-10 border bg-background px-3 text-sm">
+        <select aria-label="Estado de ficha" value={filters.status} onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))} className="h-10 min-w-0 border bg-background px-3 text-sm">
           <option value="">Todos los estados</option>
           {STATUSES.map((s) => (
             <option key={s.value} value={s.value}>{s.label}</option>
           ))}
         </select>
       </div>
-      <p className="mt-3 text-sm text-muted-foreground">{isLoading ? "Cargando…" : `${rows.length} fichas`}</p>
+      <div className="mt-2 grid gap-2 sm:grid-cols-3">
+        <select aria-label="Tipo de ficha" value={filters.type} onChange={(e) => {
+          const value = e.target.value;
+          if (value === "" || isListingType(value)) setFilters((p) => changeAdminType(p, value));
+        }} className="h-10 w-full min-w-0 border bg-background px-3 text-sm">
+          <option value="">Todos los tipos</option>
+          {LISTING_TYPES.map((t) => <option key={t.value} value={t.value}>{t.plural}</option>)}
+        </select>
+        <select aria-label="Categoría" value={filters.category} onChange={(e) => {
+          const value = e.target.value;
+          const category = categories.find((c) => c.id === value);
+          setFilters((p) => changeAdminCategory(p, value, category?.type));
+        }} className="h-10 w-full min-w-0 border bg-background px-3 text-sm">
+          <option value="">Todas las categorías</option>
+          {availableCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        {filters.category && <select aria-label="Oficio / actividad" value={filters.activity} onChange={(e) => setFilters((p) => ({ ...p, activity: e.target.value }))} className="h-10 w-full min-w-0 border bg-background px-3 text-sm">
+          <option value="">Todos los oficios</option>
+          {activities.map((activity) => <option key={activity} value={activity}>{activity}</option>)}
+        </select>}
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <p aria-live="polite" className="text-sm text-muted-foreground">{isLoading ? "Cargando…" : `${rows.length} fichas`}</p>
+        {hasFilters && <Button variant="ghost" size="sm" onClick={() => setFilters(emptyAdminFilters)}><X aria-hidden /> Limpiar filtros</Button>}
+      </div>
+      {!isLoading && rows.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">No hay fichas con estos filtros.</p>}
       <ul className="mt-2 divide-y border">
         {rows.map((l) => (
           <li key={l.id}>

@@ -37,7 +37,7 @@ export const adminListingsQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await supabase
       .from("listings")
-      .select("id,slug,type,name,status,featured,featured_until,urgent_24h,activity,updated_at,categories(name)")
+      .select("id,slug,type,name,status,featured,featured_until,urgent_24h,category_id,activity,updated_at,categories(name)")
       .order("updated_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data;
