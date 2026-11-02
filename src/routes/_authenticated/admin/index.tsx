@@ -25,6 +25,14 @@ export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminList,
 });
 
+const STATUS_PILLS = [
+  { value: "publicada", label: "Publicadas" },
+  { value: "pendiente", label: "Pendientes" },
+  { value: "borrador", label: "Borradores" },
+  { value: "oculta", label: "Ocultas" },
+  { value: "rechazada", label: "Rechazadas" },
+];
+
 const statusLabel = Object.fromEntries(STATUSES.map((s) => [s.value, s.label]));
 
 function AdminList() {
@@ -60,12 +68,19 @@ function ListBody() {
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input aria-label="Buscar ficha" placeholder="Buscar ficha…" value={filters.q} onChange={(e) => setFilters((p) => ({ ...p, q: e.target.value }))} className="h-10 pl-9" />
         </div>
-        <select aria-label="Estado de ficha" value={filters.status} onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))} className="h-10 min-w-0 border bg-background px-3 text-sm">
-          <option value="">Todos los estados</option>
-          {STATUSES.map((s) => (
-            <option key={s.value} value={s.value}>{s.label}</option>
-          ))}
-        </select>
+      </div>
+      <div role="group" aria-label="Estado de ficha" className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        {[{ value: "", label: "Todas" }, ...STATUS_PILLS].map((s) => {
+          const count = s.value ? data.filter((l) => l.status === s.value).length : data.length;
+          const active = filters.status === s.value;
+          return (
+            <button key={s.value || "all"} type="button" aria-pressed={active} onClick={() => setFilters((p) => ({ ...p, status: s.value }))}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium ${active ? "border-primary bg-primary text-primary-foreground" : "bg-background text-foreground"}`}>
+              {s.label}
+              <span className={`rounded-full px-1.5 text-xs ${active ? "bg-background/20" : "bg-secondary"}`}>{count}</span>
+            </button>
+          );
+        })}
       </div>
       <div className="mt-2 grid gap-2 sm:grid-cols-3">
         <select aria-label="Tipo de ficha" value={filters.type} onChange={(e) => {
