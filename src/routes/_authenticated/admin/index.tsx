@@ -29,6 +29,8 @@ const STATUS_PILLS = [
   { value: "publicada", label: "Publicadas" },
   { value: "pendiente", label: "Pendientes" },
   { value: "borrador", label: "Borradores" },
+  { value: "oculta", label: "Ocultas" },
+  { value: "rechazada", label: "Rechazadas" },
 ];
 
 const statusLabel = Object.fromEntries(STATUSES.map((s) => [s.value, s.label]));
