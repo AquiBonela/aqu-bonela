@@ -60,6 +60,20 @@ const es = {
   "home.r3d": "El agua de la sierra corre por el pueblo todo el año.",
   "home.r4t": "Castillo Qasr Bunayra",
   "home.r4d": "Vigía árabe del valle desde el siglo IX.",
+  "home2.searchKicker": "Encuentra lo que necesitas en Casarabonela",
+  "home2.introKicker": "El pueblo",
+  "home2.introTitle": "Un pueblo blanco a las puertas de la Sierra de las Nieves",
+  "home2.intro1": "Casarabonela se asoma a unos 500 metros de altura en la ladera sur de la Sierra Prieta, mirando al valle del Guadalhorce, a unos 40 km de Málaga. Aquí viven cerca de 2.500 vecinos, entre calles empinadas y encaladas, macetas y fuentes.",
+  "home2.intro2": "Su nombre viene del árabe Qasr Bunayra, «el castillo de Bunayra». El barrio del Arrabal conserva la traza morisca de calles estrechas y quebradas, y los restos del castillo vigilan el valle desde lo alto del pueblo.",
+  "home2.intro3": "El agua es su seña de identidad: fuentes y caños que bajan de la sierra todo el año. También guarda uno de los mayores jardines de cactus de Europa y una tradición de pan, dulces, aceite y cocina de sierra.",
+  "home2.f1": "metros de altitud",
+  "home2.f2": "habitantes",
+  "home2.f3": "km de Málaga",
+  "home2.sectionsTitle": "Todo en Aquí Bonela",
+  "home2.actText": "Noticias, eventos y avisos del pueblo.",
+  "home2.clasText": "Compra, venta y anuncios entre vecinos.",
+  "home2.sobreText": "Quiénes somos y por qué existe esta plataforma.",
+  "home2.enviarText": "Cuéntanos de un negocio, un error o algo nuevo.",
 };
 
 export type TKey = keyof typeof es;
@@ -116,6 +130,20 @@ const en: Partial<Record<TKey, string>> = {
   "home.r3d": "Mountain water running through the village all year.",
   "home.r4t": "Qasr Bunayra castle",
   "home.r4d": "A 9th-century Arab watchtower over the valley.",
+  "home2.searchKicker": "Find what you need in Casarabonela",
+  "home2.introKicker": "The village",
+  "home2.introTitle": "A white village on the doorstep of the Sierra de las Nieves",
+  "home2.intro1": "Casarabonela sits at about 500 metres on the southern slope of the Sierra Prieta, overlooking the Guadalhorce valley, some 40 km from Málaga. Around 2,500 people live here, among steep whitewashed lanes, flower pots and fountains.",
+  "home2.intro2": "Its name comes from the Arabic Qasr Bunayra, 'the castle of Bunayra'. The Moorish Arrabal quarter still keeps the layout of those narrow, winding streets, and the remains of the castle watch over the valley from the top of the village.",
+  "home2.intro3": "Water is its signature: springs and fountains run from the sierra all year round. It is also home to one of Europe's largest cactus gardens, and to a tradition of bread, sweets, oil and mountain cooking.",
+  "home2.f1": "metres high",
+  "home2.f2": "inhabitants",
+  "home2.f3": "km from Málaga",
+  "home2.sectionsTitle": "Everything in Aquí Bonela",
+  "home2.actText": "News, events and announcements from the village.",
+  "home2.clasText": "Buy, sell and local notices between neighbours.",
+  "home2.sobreText": "Who we are and why this platform exists.",
+  "home2.enviarText": "Tell us about a business, a mistake or something new.",
 };
 
 const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en };
