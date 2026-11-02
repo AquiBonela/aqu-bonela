@@ -8,6 +8,7 @@ import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import logo from "@/assets/logo-2.webp";
 
 const ADMIN_ITEMS: HeaderItem[] = [
+  { to: "/admin", label: "Panel de fichas" },
   { to: "/admin/configuracion", label: "Configuración" },
   { to: "/", search: { q: "", cat: "", of: "" }, label: "Ver web" },
 ];
