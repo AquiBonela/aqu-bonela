@@ -76,18 +76,18 @@ function Home() {
 
       <main>
         <section aria-labelledby="pueblo" className="mx-auto max-w-3xl px-4 py-14">
-          <p className="font-display text-sm font-bold uppercase tracking-[0.2em] text-terracotta">{t("home2.introKicker")}</p>
-          <h2 id="pueblo" className="mt-2 font-display text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">{t("home2.introTitle")}</h2>
+          <h2 id="pueblo" className="font-display text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">{t("home2.introTitle")}</h2>
           <div className="mt-5 space-y-4 text-base leading-relaxed text-foreground/85 sm:text-lg">
             <p>{t("home2.intro1")}</p>
             <p>{t("home2.intro2")}</p>
             <p>{t("home2.intro3")}</p>
+            <p>{t("home2.intro4")}</p>
+            <p className="font-semibold text-foreground">{t("home2.intro5")}</p>
           </div>
         </section>
 
-        <section aria-labelledby="secciones" className="mx-auto max-w-5xl px-4 pb-16">
-          <h2 id="secciones" className="font-display text-3xl font-extrabold text-foreground sm:text-4xl">{t("home2.sectionsTitle")}</h2>
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+        <section aria-label={t("home2.sectionsTitle")} className="mx-auto max-w-5xl px-4 pb-16">
+          <ul className="grid gap-4 sm:grid-cols-2">
             {SECTIONS.map(({ key, text, img, to }, i) => {
               const inner = (
                 <>
