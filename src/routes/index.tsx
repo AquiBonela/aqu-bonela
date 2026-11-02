@@ -1,20 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, Store, Compass, Landmark, Phone, Zap, ArrowRight, MessageSquarePlus } from "lucide-react";
+import { Search, Store, Compass, Landmark, Newspaper, Tag, Info, MessageSquarePlus, Phone, ArrowUpRight } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, type TKey } from "@/lib/i18n";
+import logo from "@/assets/logo-2.webp";
 import heroImg from "@/assets/hero-casarabonela.jpg";
-import directorioImg from "@/assets/descubre/calles.jpg";
-import descubreImg from "@/assets/descubre/castillo.jpg";
-import serviciosImg from "@/assets/descubre/fuentes.jpg";
-import cactusImg from "@/assets/descubre/cactus.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Aquí Bonela — Descubre, conoce y vive Casarabonela" },
-      { name: "description", content: "La plataforma de vida local de Casarabonela: directorio de comercios y profesionales, rincones para descubrir y servicios útiles." },
+      { name: "description", content: "Busca comercios, profesionales y servicios de Casarabonela, y conoce la historia del pueblo blanco de la Sierra de las Nieves." },
       { property: "og:title", content: "Aquí Bonela — Descubre, conoce y vive Casarabonela" },
       { property: "og:description", content: "Todo lo que necesitas para descubrir, conocer y vivir Casarabonela." },
       { property: "og:type", content: "website" },
@@ -23,6 +20,17 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
+
+type Section = { key: TKey; text: TKey; Icon: typeof Store; to?: "/directorio" | "/descubre" | "/sobre" | "/sugerir" };
+const SECTIONS: Section[] = [
+  { key: "menu.directorio", text: "home.dirText", Icon: Store, to: "/directorio" },
+  { key: "menu.servicios", text: "home.servText", Icon: Landmark },
+  { key: "menu.descubre", text: "home.descText", Icon: Compass, to: "/descubre" },
+  { key: "menu.actualidad", text: "home2.actText", Icon: Newspaper },
+  { key: "menu.clasificados", text: "home2.clasText", Icon: Tag },
+  { key: "menu.sobre", text: "home2.sobreText", Icon: Info, to: "/sobre" },
+  { key: "menu.enviar", text: "home2.enviarText", Icon: MessageSquarePlus, to: "/sugerir" },
+];
 
 function Home() {
   const navigate = useNavigate();
@@ -37,106 +45,89 @@ function Home() {
     <div className="min-h-screen bg-background">
       <SiteHeader hideBrand />
 
-      <section className="relative w-full overflow-hidden">
-        <div className="relative h-[34rem] w-full sm:h-[40rem]">
-          <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/35 to-foreground/10" />
-          <div className="relative mx-auto flex h-full max-w-5xl flex-col justify-end px-4 pb-16">
-            <p className="font-display text-sm font-bold uppercase tracking-[0.25em] text-accent">{t("home.kicker")}</p>
-            <h1 className="mt-3 font-display text-6xl font-extrabold uppercase leading-[0.95] tracking-tight text-primary-foreground sm:text-8xl">Aquí<br />Bonela</h1>
-            <p className="mt-4 max-w-lg text-lg text-primary-foreground/90 sm:text-xl">{t("home.lema")}</p>
-          </div>
-        </div>
-        <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
-          <form onSubmit={submit} role="search" className="flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5">
+      {/* Portada: logo + buscador */}
+      <section className="bg-beige">
+        <div className="mx-auto flex max-w-3xl flex-col items-center px-4 pb-14 pt-10 text-center sm:pt-16">
+          <img src={logo} alt="Aquí Bonela" className="h-20 w-auto sm:h-24" />
+          <p className="mt-6 font-display text-xs font-bold uppercase tracking-[0.25em] text-terracotta">{t("home.kicker")}</p>
+          <h1 className="mt-3 font-display text-3xl font-extrabold leading-tight text-foreground sm:text-5xl">{t("home2.searchKicker")}</h1>
+          <form onSubmit={submit} role="search" className="mt-8 flex w-full items-center gap-1 rounded-soft border-2 border-foreground bg-card p-1.5">
             <label htmlFor="buscar-portada" className="sr-only">{t("home.searchLabel")}</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input id="buscar-portada" type="text" enterKeyHint="search" value={text} onChange={(e) => setText(e.target.value)} placeholder={t("home.searchPh")} className="h-12 min-w-0 flex-1 bg-transparent text-lg text-foreground outline-none placeholder:text-muted-foreground" />
-            <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">{t("home.searchBtn")}</Button>
+            <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-4 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">{t("home.searchBtn")}</Button>
           </form>
+          <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
+            <a href="tel:112" className="inline-flex items-center gap-1.5 rounded-full bg-destructive px-3 py-1.5 font-bold text-destructive-foreground hover:opacity-90">
+              <Phone className="h-4 w-4" aria-hidden /> {t("home.urg112")}
+            </a>
+            <Link to="/directorio" search={{ q: "", cat: "", of: "", tipo: "", urg: true }} className="inline-flex items-center rounded-full border-2 border-foreground/20 bg-card px-3 py-1.5 font-semibold text-foreground hover:bg-secondary">
+              {t("home.urgLocal")}
+            </Link>
+          </div>
         </div>
       </section>
 
-      <main className="mx-auto max-w-5xl px-4 pb-16">
-        <section aria-labelledby="puertas" className="pt-14">
-          <h2 id="puertas" className="font-display text-3xl font-extrabold text-foreground sm:text-4xl">{t("home.exploreTitle")}</h2>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3 sm:grid-rows-2">
-            <Link to="/descubre" className="group relative block min-h-[22rem] overflow-hidden rounded-soft sm:col-span-2 sm:row-span-2">
-              <img src={descubreImg} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-6">
-                <p className="flex items-center gap-2 font-display text-3xl font-extrabold text-primary-foreground sm:text-4xl"><Compass className="h-7 w-7 text-accent" aria-hidden />{t("home.descTitle")}</p>
-                <p className="mt-2 max-w-md text-primary-foreground/90">{t("home.descText")}</p>
-                <span className="mt-3 inline-flex items-center gap-1 font-semibold text-accent">{t("home.enter")} <ArrowRight className="h-4 w-4" aria-hidden /></span>
-              </div>
-            </Link>
-            <SmallDoor to="/directorio" img={directorioImg} Icon={Store} title={t("home.dirTitle")} text={t("home.dirText")} />
-            <SmallDoor img={serviciosImg} Icon={Landmark} title={t("home.servTitle")} text={t("home.servText")} soon />
-          </div>
-        </section>
-
-        <section aria-labelledby="rincones" className="pt-16">
-          <p className="font-display text-sm font-bold uppercase tracking-[0.2em] text-terracotta">{t("home.rinconesKicker")}</p>
-          <h2 id="rincones" className="mt-1 font-display text-3xl font-extrabold text-foreground sm:text-4xl">{t("home.rinconesTitle")}</h2>
-          <div className="mt-6 grid gap-x-6 gap-y-10 sm:grid-cols-2">
-            {RINCONES.map((r, i) => (
-              <Link key={r.t} to="/descubre" className={`group block ${i % 2 === 1 ? "sm:mt-16" : ""}`}>
-                <div className="relative aspect-[4/5] overflow-hidden rounded-soft">
-                  <img src={r.img} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <span className="absolute left-3 top-3 bg-background px-2 py-0.5 font-display text-sm font-extrabold text-foreground">0{i + 1}</span>
+      <main>
+        {/* Introducción del pueblo */}
+        <section aria-labelledby="pueblo" className="mx-auto grid max-w-5xl gap-8 px-4 py-14 md:grid-cols-[1fr_1.1fr] md:items-center">
+          <div className="relative">
+            <img src={heroImg} alt={t("home.heroAlt")} loading="lazy" className="aspect-[4/5] w-full rounded-soft object-cover" />
+            <div className="absolute -bottom-5 left-4 right-4 grid grid-cols-3 divide-x divide-border rounded-soft border-2 bg-card py-3 text-center">
+              {([["500", "home2.f1"], ["2.500", "home2.f2"], ["40", "home2.f3"]] as const).map(([n, k]) => (
+                <div key={k} className="px-1">
+                  <p className="font-display text-2xl font-extrabold text-primary">{n}</p>
+                  <p className="text-xs text-muted-foreground">{t(k)}</p>
                 </div>
-                <h3 className="mt-3 font-display text-2xl font-extrabold text-foreground group-hover:text-primary">{t(r.t)}</h3>
-                <p className="mt-1 text-muted-foreground">{t(r.d)}</p>
-              </Link>
-            ))}
+              ))}
+            </div>
           </div>
-          <Link to="/descubre" className="mt-10 inline-flex items-center gap-2 font-display text-lg font-bold text-primary hover:underline">{t("home.rinconesAll")} <ArrowRight className="h-5 w-5" aria-hidden /></Link>
-        </section>
-
-        <section aria-labelledby="urgencias" className="mt-16 rounded-soft border-2 bg-card p-5 sm:p-6">
-          <h2 id="urgencias" className="font-display text-2xl font-extrabold text-foreground">{t("home.urgTitle")}</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <a href="tel:112" className="flex min-h-14 items-center gap-3 rounded-soft bg-destructive px-4 font-bold text-destructive-foreground hover:opacity-90">
-              <Phone className="h-5 w-5" aria-hidden /> {t("home.urg112")}
-            </a>
-            <Link to="/directorio" search={{ q: "", cat: "", of: "", tipo: "", urg: true }} className="flex min-h-14 items-center gap-3 rounded-soft border-2 px-4 font-bold text-foreground hover:bg-secondary">
-              <Zap className="h-5 w-5 text-terracotta" aria-hidden /> {t("home.urgLocal")}
-            </Link>
+          <div className="pt-6 md:pt-0">
+            <p className="font-display text-sm font-bold uppercase tracking-[0.2em] text-terracotta">{t("home2.introKicker")}</p>
+            <h2 id="pueblo" className="mt-2 font-display text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">{t("home2.introTitle")}</h2>
+            <div className="mt-5 space-y-4 text-base leading-relaxed text-foreground/85">
+              <p>{t("home2.intro1")}</p>
+              <p>{t("home2.intro2")}</p>
+              <p>{t("home2.intro3")}</p>
+            </div>
           </div>
         </section>
 
-        <section className="mt-12 bg-primary px-5 py-8 text-primary-foreground sm:px-8">
-          <h2 className="font-display text-2xl font-extrabold">{t("home.shareTitle")}</h2>
-          <p className="mt-2 max-w-2xl opacity-90">{t("home.shareText")}</p>
-          <Link to="/sugerir" className="mt-5 inline-flex min-h-12 items-center gap-3 bg-background px-5 font-bold text-foreground hover:bg-beige">
-            <MessageSquarePlus className="h-5 w-5" aria-hidden /> {t("home.shareBtn")}
-          </Link>
+        {/* Secciones del menú */}
+        <section aria-labelledby="secciones" className="bg-primary text-primary-foreground">
+          <div className="mx-auto max-w-5xl px-4 py-14">
+            <h2 id="secciones" className="font-display text-3xl font-extrabold sm:text-4xl">{t("home2.sectionsTitle")}</h2>
+            <ul className="mt-8 grid gap-px overflow-hidden rounded-soft bg-primary-foreground/15 sm:grid-cols-2">
+              {SECTIONS.map(({ key, text, Icon, to }, i) => {
+                const inner = (
+                  <>
+                    <span className="font-display text-sm font-bold text-accent">{String(i + 1).padStart(2, "0")}</span>
+                    <Icon className="h-6 w-6 shrink-0 text-accent" aria-hidden />
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2 font-display text-xl font-extrabold">
+                        {t(key)}
+                        {!to && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase text-accent-foreground">{t("home.soon")}</span>}
+                      </span>
+                      <span className="mt-0.5 block text-sm text-primary-foreground/80">{t(text)}</span>
+                    </span>
+                    {to && <ArrowUpRight className="h-5 w-5 shrink-0 opacity-60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden />}
+                  </>
+                );
+                const cls = "group flex h-full items-center gap-4 bg-primary p-5";
+                return (
+                  <li key={key} className={i === SECTIONS.length - 1 ? "sm:col-span-2" : ""}>
+                    {to ? (
+                      <Link to={to} {...(to === "/directorio" ? { search: { q: "", cat: "", of: "", tipo: "", urg: false } } : {})} className={`${cls} hover:bg-primary-foreground/10`}>{inner}</Link>
+                    ) : (
+                      <div className={`${cls} opacity-75`}>{inner}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </section>
       </main>
     </div>
   );
-}
-
-const RINCONES = [
-  { img: directorioImg, t: "home.r1t", d: "home.r1d" },
-  { img: cactusImg, t: "home.r2t", d: "home.r2d" },
-  { img: serviciosImg, t: "home.r3t", d: "home.r3d" },
-  { img: descubreImg, t: "home.r4t", d: "home.r4d" },
-] as const;
-
-function SmallDoor({ to, img, Icon, title, text, soon }: { to?: "/directorio"; img: string; Icon: typeof Store; title: string; text: string; soon?: boolean }) {
-  const { t } = useI18n();
-  const body = (
-    <>
-      <img src={img} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
-      {soon && <span className="absolute right-2 top-2 bg-accent px-2 py-0.5 text-xs font-bold text-accent-foreground">{t("home.soon")}</span>}
-      <div className="absolute inset-x-0 bottom-0 p-4">
-        <p className="flex items-center gap-2 font-display text-xl font-extrabold text-primary-foreground"><Icon className="h-5 w-5 text-accent" aria-hidden />{title}</p>
-        <p className="mt-1 text-sm text-primary-foreground/85">{text}</p>
-      </div>
-    </>
-  );
-  const cls = "group relative block min-h-[11rem] overflow-hidden rounded-soft";
-  return to ? <Link to={to} className={cls}>{body}</Link> : <div className={`${cls} opacity-90`}>{body}</div>;
 }
