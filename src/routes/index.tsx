@@ -42,7 +42,7 @@ function Home() {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
-  const blurTimer = useRef<ReturnType<typeof setTimeout>>();
+  const blurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const typed = text.trim().length >= 2;
   const { data } = useQuery({ ...directoryQuery, enabled: typed });
   const suggestions = useMemo(
