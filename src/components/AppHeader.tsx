@@ -34,6 +34,8 @@ type AppHeaderProps = {
   footnote?: ReactNode;
   /** Contenido opcional a la izquierda de la cabecera (p. ej., el tiempo). */
   left?: ReactNode;
+  /** Modo superpuesto: la barra flota sobre el hero de la portada, con textos en blanco. */
+  overlay?: boolean;
 };
 
 const SMALL_CLASS = "hover:text-beige";
@@ -43,7 +45,7 @@ const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hov
  * Cabecera compartida: menú siempre visible en escritorio y,
  * en móvil, menú a pantalla completa sobre fondo verde principal.
  */
-export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left }: AppHeaderProps) {
+export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left, overlay = false }: AppHeaderProps) {
   const [open, setOpen] = useState(false);
   const { t } = useI18n();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -85,12 +87,12 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
 
   return (
     <>
-      <header className="border-b bg-background">
+      <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
         <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center gap-x-2 px-4 py-2">
           <div className="flex justify-start">{left}</div>
           <div className="flex justify-center">{brand}</div>
           <div className="flex items-center justify-end">
-          <LangSwitch className="hidden sm:flex" />
+          <LangSwitch className={overlay ? "hidden sm:flex [&_button]:!text-primary-foreground" : "hidden sm:flex"} />
           <button
             type="button"
             onClick={() => setOpen(true)}
