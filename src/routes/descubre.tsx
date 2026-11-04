@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, Menu, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { LangSwitch, useI18n } from "@/lib/i18n";
@@ -102,6 +103,26 @@ function DirLink({ q, children }: { q: string; children: React.ReactNode }) {
 
 function Descubre() {
   const { t } = useI18n();
+  const [active, setActive] = useState<string>("");
+  useEffect(() => {
+    const onScroll = () => {
+      let cur = "";
+      for (const [id] of NAV) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= 140) cur = id;
+      }
+      setActive(cur);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  useEffect(() => {
+    if (!active) return;
+    const a = document.querySelector<HTMLElement>(`[data-nav="${active}"]`);
+    const box = a?.parentElement;
+    if (a && box) box.scrollTo({ left: a.offsetLeft - box.clientWidth / 2 + a.clientWidth / 2, behavior: "smooth" });
+  }, [active]);
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -134,7 +155,13 @@ function Descubre() {
             <div className="relative min-w-0">
               <div className="flex gap-1 overflow-x-auto py-2 pr-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {NAV.map(([id, label]) => (
-                  <a key={id} href={`#${id}`} className="shrink-0 rounded-full px-3 py-2 text-sm font-semibold hover:bg-muted sm:px-4">
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    data-nav={id}
+                    aria-current={active === id ? "location" : undefined}
+                    className={`shrink-0 rounded-full px-3 py-2 text-sm font-semibold transition-colors sm:px-4 ${active === id ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                  >
                     {label}
                   </a>
                 ))}
