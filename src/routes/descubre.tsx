@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, type LucideIcon } from "lucide-react";
+import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import calles from "@/assets/descubre/calles.jpg";
 import castillo from "@/assets/descubre/castillo.jpg";
@@ -9,6 +9,7 @@ import fuentes from "@/assets/descubre/fuentes.jpg";
 import sierra from "@/assets/descubre/sierra.jpg";
 import fiestas from "@/assets/descubre/fiestas.jpg";
 import gastronomia from "@/assets/descubre/gastronomia.jpg";
+import iglesia from "@/assets/descubre/iglesia.jpg";
 
 export const Route = createFileRoute("/descubre")({
   head: () => ({
@@ -37,7 +38,10 @@ const NAV = [
   ["consejos", "Consejos"],
 ] as const;
 
+const mapa = (q: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, Casarabonela`)}`;
+
 const RINCONES = [
+  { img: iglesia, name: "Iglesia de Santiago Apóstol", text: "Uno de los edificios más representativos del pueblo, en pleno casco histórico." },
   { img: castillo, name: "Castillo y mirador", text: "Los vestigios de su pasado fortificado permiten conocer la historia del pueblo y disfrutar de las vistas del entorno." },
   { img: cactus, name: "Jardín de Cactus", text: "Un espacio singular para descubrir una interesante colección de cactus y otras plantas suculentas." },
   { img: fuentes, name: "Fuentes y caños", text: "Forman parte de la identidad de Casarabonela y recuerdan la importancia del agua en la vida del pueblo." },
@@ -150,6 +154,9 @@ function Descubre() {
               ]}
             />
             <Closing>Un paseo por Casarabonela es también un viaje a través de su historia.</Closing>
+            <a href={mapa("Casco histórico")} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center gap-2 border-b-2 border-primary font-bold text-foreground hover:text-primary">
+              <MapPin className="h-4 w-4" aria-hidden /> Ubicar el casco histórico
+            </a>
           </div>
         </section>
 
@@ -167,8 +174,12 @@ function Descubre() {
                 "Caminos y senderos para descubrir el entorno.",
                 "Rincones naturales ideales para la fotografía.",
                 "Espacios donde disfrutar de la tranquilidad y desconectar.",
+                "Sierra Prieta, con su flora de montaña y una rica fauna, a un paso del pueblo.",
               ]}
             />
+            <p className="mt-6 border-l-4 border-primary bg-muted/60 p-4 text-base text-muted-foreground">
+              <strong className="text-foreground">Rutas y senderos:</strong> estamos preparando información detallada de las rutas de senderismo del municipio. Mientras tanto, la Oficina de Turismo puede orientarte.
+            </p>
             <Closing>Tanto si buscas una ruta por la montaña como un paseo tranquilo, el entorno de Bonela merece ser descubierto.</Closing>
           </div>
         </section>
@@ -186,6 +197,9 @@ function Descubre() {
                   <div className="p-4">
                     <h3 className="font-display text-lg font-extrabold">{r.name}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">{r.text}</p>
+                    <a href={mapa(r.name)} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-10 items-center gap-1 text-sm font-bold text-primary hover:underline">
+                      <MapPin className="h-4 w-4" aria-hidden /> Ver en el mapa
+                    </a>
                   </div>
                 </article>
               ))}
@@ -236,30 +250,34 @@ function Descubre() {
                 ]}
               />
               <Closing>Una buena forma de conocer un pueblo es sentarse a su mesa.</Closing>
-              <DirLink q="restaurante">Dónde disfrutarlo</DirLink>
+              <div className="flex flex-wrap gap-x-6">
+                <DirLink q="restaurante">Dónde comer</DirLink>
+                <DirLink q="alimentación">Dónde comprar</DirLink>
+              </div>
             </div>
           </div>
         </section>
 
         {/* 06. Consejos */}
-        <section id="consejos" className="mx-auto max-w-5xl scroll-mt-16 px-4 py-14">
-          <div className="border-2 border-primary bg-primary/5 p-6 sm:p-10">
+        <section id="consejos" className="scroll-mt-16 bg-sand">
+          <div className="mx-auto max-w-5xl px-4 py-14">
             <Kicker n="06">Consejos de vecino</Kicker>
             <div className="mt-2 flex items-center gap-3">
-              <Lightbulb className="h-8 w-8 text-primary" aria-hidden />
+              <Lightbulb className="h-7 w-7 text-primary" aria-hidden />
               <h2 className="font-display text-3xl font-extrabold text-balance">Para disfrutar Bonela como alguien de aquí</h2>
             </div>
-            <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            <ul className="mt-8 grid gap-x-10 sm:grid-cols-2">
               {CONSEJOS.map(({ Icon, title, text }) => (
-                <li key={title} className="flex gap-4 border border-primary/20 bg-card p-5 shadow-sm">
-                  <Icon className="h-6 w-6 shrink-0 text-primary" aria-hidden />
+                <li key={title} className="flex gap-3 border-t border-foreground/10 py-5">
+                  <Icon className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden />
                   <div>
-                    <p className="text-lg font-bold">{title}</p>
+                    <p className="font-display text-lg font-extrabold">{title}</p>
                     <p className="mt-1 text-base text-muted-foreground">{text}</p>
                   </div>
                 </li>
               ))}
             </ul>
+            <DirLink q="">Información práctica en el directorio</DirLink>
           </div>
         </section>
 
