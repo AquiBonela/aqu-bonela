@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, type LucideIcon } from "lucide-react";
+import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, Menu, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { LangSwitch, useI18n } from "@/lib/i18n";
 import calles from "@/assets/descubre/calles.jpg";
 import castillo from "@/assets/descubre/castillo.jpg";
 import cactus from "@/assets/descubre/cactus.jpg";
@@ -100,6 +101,7 @@ function DirLink({ q, children }: { q: string; children: React.ReactNode }) {
 }
 
 function Descubre() {
+  const { t } = useI18n();
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
