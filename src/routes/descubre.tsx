@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, type LucideIcon } from "lucide-react";
+import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, Menu, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { LangSwitch, useI18n } from "@/lib/i18n";
 import calles from "@/assets/descubre/calles.jpg";
 import castillo from "@/assets/descubre/castillo.jpg";
 import cactus from "@/assets/descubre/cactus.jpg";
@@ -100,6 +101,7 @@ function DirLink({ q, children }: { q: string; children: React.ReactNode }) {
 }
 
 function Descubre() {
+  const { t } = useI18n();
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -128,12 +130,28 @@ function Descubre() {
         </section>
 
         <nav aria-label="Secciones de la guía" className="sticky top-0 z-20 border-y bg-background/95 backdrop-blur">
-          <div className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 py-2">
-            {NAV.map(([id, label]) => (
-              <a key={id} href={`#${id}`} className="shrink-0 rounded-full px-4 py-2 text-sm font-semibold hover:bg-muted">
-                {label}
-              </a>
-            ))}
+          <div className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-1 pl-2 pr-2 sm:pl-4">
+            <div className="relative min-w-0">
+              <div className="flex gap-1 overflow-x-auto py-2 pr-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {NAV.map(([id, label]) => (
+                  <a key={id} href={`#${id}`} className="shrink-0 rounded-full px-3 py-2 text-sm font-semibold hover:bg-muted sm:px-4">
+                    {label}
+                  </a>
+                ))}
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" aria-hidden />
+            </div>
+            <div className="flex shrink-0 items-center gap-1 border-l pl-1">
+              <LangSwitch />
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event("open-site-menu"))}
+                aria-label={t("menu.open")}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-primary"
+              >
+                <Menu className="h-6 w-6" aria-hidden />
+              </button>
+            </div>
           </div>
         </nav>
 

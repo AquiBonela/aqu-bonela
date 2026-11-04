@@ -52,6 +52,13 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
 
   useEffect(() => setOpen(false), [pathname]);
 
+  // Permite abrir el menú desde otras barras (p. ej., la barra fija de Descubre)
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("open-site-menu", onOpen);
+    return () => window.removeEventListener("open-site-menu", onOpen);
+  }, []);
+
   // Evita desplazar la página de fondo mientras el menú cubre la pantalla
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
