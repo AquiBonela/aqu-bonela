@@ -249,9 +249,9 @@ function Descubre() {
               <Lightbulb className="h-8 w-8 text-primary" aria-hidden />
               <h2 className="font-display text-3xl font-extrabold text-balance">Para disfrutar Bonela como alguien de aquí</h2>
             </div>
-            <ul className="mt-6 grid gap-6 sm:grid-cols-2">
+            <ul className="mt-6 grid gap-4 sm:grid-cols-2">
               {CONSEJOS.map(({ Icon, title, text }) => (
-                <li key={title} className="flex gap-4">
+                <li key={title} className="flex gap-4 border border-primary/20 bg-card p-5 shadow-sm">
                   <Icon className="h-6 w-6 shrink-0 text-primary" aria-hidden />
                   <div>
                     <p className="text-lg font-bold">{title}</p>
