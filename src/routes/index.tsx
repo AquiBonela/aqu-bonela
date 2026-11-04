@@ -46,14 +46,14 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader hideBrand />
+      <div className="relative">
+        <SiteHeader overlay />
 
-      <section className="relative overflow-hidden">
-        <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/40 to-foreground/85" />
-        <div className="relative mx-auto flex min-h-[36rem] max-w-3xl flex-col items-center justify-center px-4 py-14 text-center">
-          <img src={logoWhite} alt="Aquí Bonela" className="h-auto w-64 sm:w-80" />
-          <h1 className="mt-6 font-display text-xl font-bold leading-snug text-primary-foreground sm:text-3xl">{t("home2.searchKicker")}</h1>
+        <section className="relative overflow-hidden">
+          <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/40 to-foreground/85" />
+          <div className="relative mx-auto flex min-h-[36rem] max-w-3xl flex-col items-center justify-center px-4 pb-14 pt-24 text-center">
+            <h1 className="font-display text-xl font-bold leading-snug text-primary-foreground sm:text-3xl">{t("home2.searchKicker")}</h1>
           <form onSubmit={submit} role="search" className="mt-8 flex w-full items-center gap-1 rounded-soft bg-card p-1.5 shadow-lg">
             <label htmlFor="buscar-portada" className="sr-only">{t("home.searchLabel")}</label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
