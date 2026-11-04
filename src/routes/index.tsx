@@ -4,7 +4,6 @@ import { Search, MapPin } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { useI18n, type TKey } from "@/lib/i18n";
-import logoWhite from "@/assets/logo-menu.webp";
 import imgDir from "@/assets/descubre/calles.jpg";
 import imgServ from "@/assets/descubre/fuentes.jpg";
 import imgDesc from "@/assets/descubre/castillo.jpg";
@@ -71,8 +70,9 @@ function Home() {
           <a href="https://www.google.com/maps/dir/?api=1&destination=Casarabonela%2C%20M%C3%A1laga" target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary-foreground/60 px-4 py-2 font-semibold text-primary-foreground hover:bg-primary-foreground/10">
             <MapPin className="h-4 w-4" aria-hidden /> {t("home2.howTo")}
           </a>
-        </div>
-      </section>
+          </div>
+        </section>
+      </div>
 
       <main>
         <section aria-labelledby="pueblo" className="mx-auto max-w-3xl px-4 py-14">
