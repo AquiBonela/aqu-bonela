@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 
 const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
   { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
-  { label: t("menu.servicios"), soon: true },
+  { to: "/servicios-publicos", label: t("menu.servicios") },
   { to: "/descubre", label: t("menu.descubre") },
   { label: t("menu.actualidad"), soon: true },
   { label: t("menu.clasificados"), soon: true },

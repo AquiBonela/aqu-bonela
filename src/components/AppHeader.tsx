@@ -9,6 +9,7 @@ export type HeaderRoute =
   | "/directorio"
   | "/sobre"
   | "/descubre"
+  | "/servicios-publicos"
   | "/sugerir"
   | "/admin"
   | "/admin/avisos"
