@@ -156,8 +156,8 @@ function Descubre() {
           aria-label={t("descubre.navLabel")}
           className={`sticky top-0 z-20 border-y transition-all duration-200 ${
             stuck
-              ? "border-border bg-background/95 opacity-100 backdrop-blur"
-              : "pointer-events-none -translate-y-2 border-transparent bg-transparent opacity-0"
+              ? "border-border bg-background/95 backdrop-blur"
+              : "border-border bg-background"
           }`}
         >
           <div className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-1 pl-2 pr-2 sm:pl-4">
@@ -177,7 +177,10 @@ function Descubre() {
               </div>
               <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" aria-hidden />
             </div>
-            <div className="flex shrink-0 items-center gap-1 border-l pl-1">
+            <div
+              aria-hidden={!stuck}
+              className={`flex shrink-0 items-center gap-1 border-l pl-1 transition-opacity duration-200 ${stuck ? "opacity-100" : "pointer-events-none invisible opacity-0"}`}
+            >
               <LangSwitch />
               <button
                 type="button"
