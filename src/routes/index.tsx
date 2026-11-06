@@ -28,11 +28,11 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-type Section = { key: TKey; text: TKey; img: string; to?: "/directorio" | "/descubre" };
+type Section = { key: TKey; text: TKey; img: string; to?: "/directorio" | "/descubre" | "/servicios-publicos" };
 const SECTIONS: Section[] = [
   { key: "menu.directorio", text: "home.dirText", img: imgDir, to: "/directorio" },
   { key: "menu.descubre", text: "home.descText", img: imgDesc, to: "/descubre" },
-  { key: "menu.servicios", text: "home.servText", img: imgServ },
+  { key: "menu.servicios", text: "home.servText", img: imgServ, to: "/servicios-publicos" },
   { key: "menu.actualidad", text: "home2.actText", img: imgAct },
   { key: "menu.clasificados", text: "home2.clasText", img: imgClas },
 ];
