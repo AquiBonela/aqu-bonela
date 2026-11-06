@@ -114,19 +114,25 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
       </header>
       {open && (
         <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
-          <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center justify-between px-4 py-2">
-            <LangSwitch className="[&_button]:!text-primary-foreground" />
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label={t("menu.close")}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
-            >
-              <X className="h-6 w-6" aria-hidden />
-            </button>
+          <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
+            <div className="flex justify-start">
+              <LangSwitch className="[&_button]:!text-primary-foreground" />
+            </div>
+            <div className="flex justify-center">
+              <img src={logoMenu} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label={t("menu.close")}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
+              >
+                <X className="h-6 w-6" aria-hidden />
+              </button>
+            </div>
           </div>
           <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
-            <img src={logoMenu} alt="Aquí Bonela" className="animate-menu-item mx-auto h-auto w-40 shrink-0 sm:w-48" />
             <div className="flex flex-1 flex-col items-center justify-center py-8">
               <ul className="flex flex-col items-center gap-6">
                 {items.map((item, i) => (

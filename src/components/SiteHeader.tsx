@@ -3,7 +3,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import { WeatherNow } from "@/components/WeatherNow";
 import logo from "@/assets/logo-2.webp";
-import logoWhite from "@/assets/logo-menu.webp";
 import { useI18n } from "@/lib/i18n";
 
 const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
@@ -23,11 +22,7 @@ const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
 
 export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?: boolean; overlay?: boolean } = {}) {
   const { t } = useI18n();
-  const brand = overlay ? (
-    <Link to="/" className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
-      <img src={logoWhite} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
-    </Link>
-  ) : hideBrand ? null : (
+  const brand = overlay ? null : hideBrand ? null : (
     <Link to="/" className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
       <img src={logo} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
     </Link>
