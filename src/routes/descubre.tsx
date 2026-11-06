@@ -42,17 +42,23 @@ const NAV = [
 
 const mapa = (q: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, Casarabonela`)}`;
 
-const RINCONES_IMG = [iglesia, castillo, cactus, fuentes, molino, calles] as const;
-const RINCONES_Q = [
-  "Iglesia de Santiago Apóstol",
-  "Castillo de Casarabonela",
-  "Jardín de Cactus",
-  "Fuentes y caños",
-  "Molino de Albaiva",
-  "Jardín Andalusí",
+const RINCONES = [
+  { img: iglesia, q: "Iglesia de Santiago Apóstol", name: "descubre.r1Name", text: "descubre.r1Text" },
+  { img: castillo, q: "Castillo de Casarabonela", name: "descubre.r2Name", text: "descubre.r2Text" },
+  { img: cactus, q: "Jardín de Cactus", name: "descubre.r3Name", text: "descubre.r3Text" },
+  { img: fuentes, q: "Fuentes y caños", name: "descubre.r4Name", text: "descubre.r4Text" },
+  { img: molino, q: "Molino de Albaiva", name: "descubre.r5Name", text: "descubre.r5Text" },
+  { img: calles, q: "Jardín Andalusí", name: "descubre.r6Name", text: "descubre.r6Text" },
 ] as const;
 
-const CONSEJOS_ICON = [Footprints, Car, Hourglass, Clock, MessageCircle, CalendarDays] as const;
+const CONSEJOS = [
+  { Icon: Footprints, title: "descubre.t1Title", text: "descubre.t1Text" },
+  { Icon: Car, title: "descubre.t2Title", text: "descubre.t2Text" },
+  { Icon: Hourglass, title: "descubre.t3Title", text: "descubre.t3Text" },
+  { Icon: Clock, title: "descubre.t4Title", text: "descubre.t4Text" },
+  { Icon: MessageCircle, title: "descubre.t5Title", text: "descubre.t5Text" },
+  { Icon: CalendarDays, title: "descubre.t6Title", text: "descubre.t6Text" },
+] as const;
 
 function Bullets({ items }: { items: string[] }) {
   return (
@@ -117,19 +123,6 @@ function Descubre() {
     const box = a?.parentElement;
     if (a && box) box.scrollTo({ left: a.offsetLeft - box.clientWidth / 2 + a.clientWidth / 2, behavior: "smooth" });
   }, [active]);
-
-  const RINCONES = RINCONES_Q.map((q, i) => ({
-    img: RINCONES_IMG[i],
-    q,
-    name: t(`descubre.r${i + 1}Name` as const),
-    text: t(`descubre.r${i + 1}Text` as const),
-  }));
-
-  const CONSEJOS = CONSEJOS_ICON.map((Icon, i) => ({
-    Icon,
-    title: t(`descubre.t${i + 1}Title` as const),
-    text: t(`descubre.t${i + 1}Text` as const),
-  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -227,10 +220,10 @@ function Descubre() {
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {RINCONES.map((r) => (
                 <article key={r.q} className="overflow-hidden bg-background shadow-sm">
-                  <img src={r.img} alt={r.name} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover" />
+                  <img src={r.img} alt={t(r.name)} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover" />
                   <div className="p-4">
-                    <h3 className="font-display text-lg font-extrabold">{r.name}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{r.text}</p>
+                    <h3 className="font-display text-lg font-extrabold">{t(r.name)}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{t(r.text)}</p>
                     <a href={mapa(r.q)} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-10 items-center gap-1 text-sm font-bold text-primary hover:underline">
                       <MapPin className="h-4 w-4" aria-hidden /> {t("descubre.viewMap")}
                     </a>
@@ -290,8 +283,8 @@ function Descubre() {
                 <li key={title} className="flex gap-3 border-t border-foreground/10 py-5">
                   <Icon className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden />
                   <div>
-                    <p className="font-display text-lg font-extrabold">{title}</p>
-                    <p className="mt-1 text-base text-muted-foreground">{text}</p>
+                    <p className="font-display text-lg font-extrabold">{t(title)}</p>
+                    <p className="mt-1 text-base text-muted-foreground">{t(text)}</p>
                   </div>
                 </li>
               ))}
