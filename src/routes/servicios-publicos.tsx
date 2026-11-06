@@ -4,6 +4,7 @@ import {
   Laptop, Bus, Scale, Dumbbell, ArrowRight, type LucideIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import hero from "@/assets/servicios-publicos.jpg";
 
 export const Route = createFileRoute("/servicios-publicos")({
   head: () => ({
@@ -51,8 +52,10 @@ function ServiciosPublicos() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main>
-        <section className="bg-primary text-primary-foreground">
-          <div className="mx-auto max-w-5xl px-4 py-12">
+        <section className="relative text-primary-foreground">
+          <img src={hero} alt="Plaza del Ayuntamiento de Casarabonela" width={1600} height={800} className="h-[50vh] min-h-72 w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-90">Página de ejemplo</p>
             <h1 className="mt-2 font-display text-4xl font-extrabold text-balance sm:text-5xl">¿Qué necesitas resolver?</h1>
             <p className="mt-3 max-w-2xl text-lg opacity-95">Teléfonos, trámites y datos prácticos de Casarabonela, a un toque.</p>
