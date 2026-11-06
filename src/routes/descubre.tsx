@@ -183,8 +183,8 @@ function Descubre() {
         </nav>
 
         {/* 01. Historia */}
-        <section id="historia" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2 sm:items-center">
-          <img src={castillo} alt="Castillo de Casarabonela" loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover" />
+        <section id="historia" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2">
+          <img src={castillo} alt="Castillo de Casarabonela" loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
           <div>
             <Kicker n="01">Historia y patrimonio</Kicker>
             <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">Un pasado que sigue vivo</h2>
@@ -254,10 +254,8 @@ function Descubre() {
         </section>
 
         {/* 04. Fiestas */}
-        <section id="fiestas" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2 sm:items-center">
-          <div className="sm:order-2">
-            <img src={fiestas} alt="Fiesta de los Rondeles" loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover" />
-          </div>
+        <section id="fiestas" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2">
+          <img src={fiestas} alt="Fiesta de los Rondeles" loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:order-2 sm:aspect-auto sm:h-full" />
           <div>
             <Kicker n="04">Fiestas y tradiciones</Kicker>
             <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">Una identidad que se celebra</h2>
@@ -279,8 +277,8 @@ function Descubre() {
 
         {/* 05. Sabores */}
         <section id="sabores" className="scroll-mt-16 bg-beige">
-          <div className="mx-auto grid max-w-5xl gap-8 px-4 py-14 sm:grid-cols-2 sm:items-center">
-            <img src={gastronomia} alt="Productos típicos de Casarabonela" loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover" />
+          <div className="mx-auto grid max-w-5xl gap-8 px-4 py-14 sm:grid-cols-2">
+            <img src={gastronomia} alt="Productos típicos de Casarabonela" loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
             <div>
               <Kicker n="05">Sabores de nuestra tierra</Kicker>
               <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">Tradición que también se disfruta en la mesa</h2>
