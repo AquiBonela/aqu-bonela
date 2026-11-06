@@ -13,3 +13,4 @@
 - [ ] Horarios y webs oficiales de servicios públicos: pendiente de datos reales del usuario.
 - [x] Añadir filtros de tipo, categoría y actividad al listado admin, combinables con búsqueda y estado.
 - [x] Logo pequeño y arriba dentro del menú verde (cabecera de la portada: solo el grande).
+- [x] Barra fija de Descubrir: visible solo al quedar anclada arriba.

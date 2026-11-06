@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, Menu, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { LangSwitch, useI18n } from "@/lib/i18n";
@@ -104,6 +104,8 @@ function DirLink({ q, children }: { q: string; children: React.ReactNode }) {
 function Descubre() {
   const { t } = useI18n();
   const [active, setActive] = useState<string>("");
+  const [stuck, setStuck] = useState(false);
+  const sentinel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const onScroll = () => {
       let cur = "";
@@ -112,6 +114,8 @@ function Descubre() {
         if (el && el.getBoundingClientRect().top <= 140) cur = id;
       }
       setActive(cur);
+      const s = sentinel.current;
+      setStuck(!!s && s.getBoundingClientRect().bottom <= 0);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -147,7 +151,15 @@ function Descubre() {
           <Closing>{t("descubre.introClosing")}</Closing>
         </section>
 
-        <nav aria-label={t("descubre.navLabel")} className="sticky top-0 z-20 border-y bg-background/95 backdrop-blur">
+        <div ref={sentinel} aria-hidden className="h-0" />
+        <nav
+          aria-label={t("descubre.navLabel")}
+          className={`sticky top-0 z-20 border-y transition-all duration-200 ${
+            stuck
+              ? "border-border bg-background/95 opacity-100 backdrop-blur"
+              : "pointer-events-none -translate-y-2 border-transparent bg-transparent opacity-0"
+          }`}
+        >
           <div className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-1 pl-2 pr-2 sm:pl-4">
             <div className="relative min-w-0">
               <div className="flex gap-1 overflow-x-auto py-2 pr-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
