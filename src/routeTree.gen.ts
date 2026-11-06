@@ -17,6 +17,7 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as DescubreRouteImport } from './routes/descubre'
 import { Route as DirectorioRouteImport } from './routes/directorio'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as ServiciosPublicosRouteImport } from './routes/servicios-publicos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as AsociacionesSlugRouteImport } from './routes/asociaciones.$slug'
@@ -67,6 +68,11 @@ const DirectorioRoute = DirectorioRouteImport.update({
 const PrivacidadRoute = PrivacidadRouteImport.update({
   id: '/privacidad',
   path: '/privacidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServiciosPublicosRoute = ServiciosPublicosRouteImport.update({
+  id: '/servicios-publicos',
+  path: '/servicios-publicos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SobreRoute = SobreRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/descubre': typeof DescubreRoute
   '/directorio': typeof DirectorioRoute
   '/privacidad': typeof PrivacidadRoute
+  '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/descubre': typeof DescubreRoute
   '/directorio': typeof DirectorioRoute
   '/privacidad': typeof PrivacidadRoute
+  '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/descubre': typeof DescubreRoute
   '/directorio': typeof DirectorioRoute
   '/privacidad': typeof PrivacidadRoute
+  '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/descubre'
     | '/directorio'
     | '/privacidad'
+    | '/servicios-publicos'
     | '/sobre'
     | '/sugerir'
     | '/asociaciones/$slug'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/descubre'
     | '/directorio'
     | '/privacidad'
+    | '/servicios-publicos'
     | '/sobre'
     | '/sugerir'
     | '/asociaciones/$slug'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/descubre'
     | '/directorio'
     | '/privacidad'
+    | '/servicios-publicos'
     | '/sobre'
     | '/sugerir'
     | '/asociaciones/$slug'
@@ -275,6 +287,7 @@ export interface RootRouteChildren {
   DescubreRoute: typeof DescubreRoute
   DirectorioRoute: typeof DirectorioRoute
   PrivacidadRoute: typeof PrivacidadRoute
+  ServiciosPublicosRoute: typeof ServiciosPublicosRoute
   SobreRoute: typeof SobreRoute
   SugerirRoute: typeof SugerirRoute
   AsociacionesSlugRoute: typeof AsociacionesSlugRoute
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       path: '/privacidad'
       fullPath: '/privacidad'
       preLoaderRoute: typeof PrivacidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicios-publicos': {
+      id: '/servicios-publicos'
+      path: '/servicios-publicos'
+      fullPath: '/servicios-publicos'
+      preLoaderRoute: typeof ServiciosPublicosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sobre': {
@@ -457,6 +477,7 @@ const rootRouteChildren: RootRouteChildren = {
   DescubreRoute: DescubreRoute,
   DirectorioRoute: DirectorioRoute,
   PrivacidadRoute: PrivacidadRoute,
+  ServiciosPublicosRoute: ServiciosPublicosRoute,
   SobreRoute: SobreRoute,
   SugerirRoute: SugerirRoute,
   AsociacionesSlugRoute: AsociacionesSlugRoute,

@@ -86,7 +86,7 @@ function ServiciosPublicos() {
                 <p className="mt-1 text-muted-foreground">Las incidencias y avisos del pueblo se comunican por Línea Verde, el canal oficial del Ayuntamiento.</p>
               </div>
             </div>
-            <a href="https://www.lineaverdeceutatrace.com" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 shrink-0 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground hover:opacity-90">
+            <a href="https://www.casarabonela.es" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 shrink-0 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground hover:opacity-90">
               Abrir Línea Verde <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
           </div>
