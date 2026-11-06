@@ -6,6 +6,7 @@ import { Search, MapPin } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { useI18n, type TKey } from "@/lib/i18n";
+import logoWhite from "@/assets/logo-menu.webp";
 import imgDir from "@/assets/descubre/calles.jpg";
 import imgServ from "@/assets/descubre/fuentes.jpg";
 import imgDesc from "@/assets/descubre/castillo.jpg";
@@ -73,7 +74,8 @@ function Home() {
           <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/40 to-foreground/85" />
           <div className="relative mx-auto flex min-h-[36rem] max-w-3xl flex-col items-center justify-center px-4 pb-14 pt-24 text-center">
-            <h1 className="font-display text-xl font-bold leading-snug text-primary-foreground sm:text-3xl">{t("home2.searchKicker")}</h1>
+            <img src={logoWhite} alt="Aquí Bonela" className="h-auto w-64 sm:w-80" />
+            <h1 className="mt-6 font-display text-xl font-bold leading-snug text-primary-foreground sm:text-3xl">{t("home2.searchKicker")}</h1>
           <div className="relative mt-8 w-full">
           <form id="form-portada" onSubmit={submit} role="search" className="flex w-full items-center gap-1 rounded-soft bg-card p-1.5 shadow-lg">
             <label htmlFor="buscar-portada" className="sr-only">{t("home.searchLabel")}</label>
