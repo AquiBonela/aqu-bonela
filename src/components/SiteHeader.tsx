@@ -23,11 +23,7 @@ const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
 
 export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?: boolean; overlay?: boolean } = {}) {
   const { t } = useI18n();
-  const brand = overlay ? (
-    <Link to="/" className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
-      <img src={logoMenu} alt="Aquí Bonela" className="h-11 w-auto sm:h-12" />
-    </Link>
-  ) : hideBrand ? null : (
+  const brand = overlay ? null : hideBrand ? null : (
     <Link to="/" className="inline-flex items-center" aria-label="Aquí Bonela, inicio">
       <img src={logo} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
     </Link>
