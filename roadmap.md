@@ -12,3 +12,4 @@
 - [x] Favicon e icono para pantalla de inicio (manifiesto + iconos 192/512).
 - [ ] Horarios y webs oficiales de servicios públicos: pendiente de datos reales del usuario.
 - [x] Añadir filtros de tipo, categoría y actividad al listado admin, combinables con búsqueda y estado.
+- [ ] Logo pequeño y arriba dentro del menú verde (cabecera de la portada: solo el grande).

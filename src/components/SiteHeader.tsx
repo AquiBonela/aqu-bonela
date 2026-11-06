@@ -3,7 +3,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import { WeatherNow } from "@/components/WeatherNow";
 import logo from "@/assets/logo-2.webp";
-import logoWhite from "@/assets/logo-menu.webp";
 import { useI18n } from "@/lib/i18n";
 
 const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
