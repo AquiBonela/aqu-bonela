@@ -157,7 +157,7 @@ function ServiciosPublicos() {
             {URGENCIAS.map((u) => (
               <a key={u.tel} href={`tel:${u.tel}`} className="flex min-h-16 items-center justify-between border-2 border-destructive/30 bg-destructive/5 px-4 hover:bg-destructive/10">
                 <span className="font-semibold">{u.label}</span>
-                <span className="flex items-center gap-2 font-display text-2xl font-extrabold text-destructive">
+                <span className="flex items-center gap-2 whitespace-nowrap font-display text-2xl font-extrabold text-destructive">
                   <Phone className="h-5 w-5" aria-hidden /> {u.show ?? u.tel}
                 </span>
               </a>
