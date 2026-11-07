@@ -125,21 +125,22 @@ function Home() {
         <section aria-label={t("home2.sectionsTitle")} className="mx-auto max-w-5xl px-4 pb-16 pt-6 sm:pt-8">
           <ul className="grid gap-4 sm:grid-cols-2">
             {SECTIONS.map(({ key, text, img, to }, i) => {
+              const inactive = !to;
               const inner = (
                 <>
-                  <img src={img} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent" />
-                  {!to && <span className="absolute right-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-foreground">{t("home.soon")}</span>}
+                  <img src={img} alt="" loading="lazy" className={`absolute inset-0 h-full w-full object-cover ${inactive ? "grayscale" : "transition-transform duration-700 group-hover:scale-105"}`} />
+                  <div aria-hidden className={`absolute inset-0 ${inactive ? "bg-muted/90" : "bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent"}`} />
+                  {inactive && <span className="absolute right-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-muted-foreground">{t("home.soon")}</span>}
                   <div className="absolute inset-x-0 bottom-0 p-5">
-                    <p className="font-display text-2xl font-extrabold text-primary-foreground">{t(key)}</p>
-                    <p className="mt-1 max-w-sm text-sm text-primary-foreground/85">{t(text)}</p>
+                    <p className={`font-display text-2xl font-extrabold ${inactive ? "text-muted-foreground" : "text-primary-foreground"}`}>{t(key)}</p>
+                    <p className={`mt-1 max-w-sm text-sm ${inactive ? "text-muted-foreground" : "text-primary-foreground/85"}`}>{t(text)}</p>
                   </div>
                 </>
               );
               const cls = `group relative block overflow-hidden rounded-soft ${i === 0 ? "aspect-[4/3] sm:col-span-2 sm:aspect-[21/9]" : "aspect-[4/3]"}`;
               return (
                 <li key={key} className={i === 0 ? "sm:col-span-2" : ""}>
-                  {to ? <Link to={to} className={cls}>{inner}</Link> : <div className={cls}>{inner}</div>}
+                  {to ? <Link to={to} className={cls}>{inner}</Link> : <div className={cls} aria-disabled="true">{inner}</div>}
                 </li>
               );
             })}

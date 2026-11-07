@@ -24,3 +24,4 @@
 - [x] Mostrar idioma móvil y estado del clima en cabecera, y texto Aquí Bonela sobre Directorio en menú.
 - [x] Abrir Enviar información en ventana y añadir separación antes de la tarjeta Directorio en portada.
 - [x] Añadir cabecera a fichas y flecha circular compartida en todas las páginas; verificar en móvil y escritorio.
+- [x] Poner Actualidad y Clasificados en gris y sin animación en la portada mientras no estén activos.
