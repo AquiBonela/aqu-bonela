@@ -122,17 +122,6 @@ function Home() {
       </div>
 
       <main>
-        <section aria-labelledby="pueblo" className="mx-auto max-w-3xl px-4 py-14">
-          <h2 id="pueblo" className="font-display text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">{t("home2.introTitle")}</h2>
-          <div className="mt-5 space-y-4 text-base leading-relaxed text-foreground/85 sm:text-lg">
-            <p>{t("home2.intro1")}</p>
-            <p>{t("home2.intro2")}</p>
-            <p>{t("home2.intro3")}</p>
-            <p>{t("home2.intro4")}</p>
-            <p className="font-semibold text-foreground">{t("home2.intro5")}</p>
-          </div>
-        </section>
-
         <section aria-label={t("home2.sectionsTitle")} className="mx-auto max-w-5xl px-4 pb-16">
           <ul className="grid gap-4 sm:grid-cols-2">
             {SECTIONS.map(({ key, text, img, to }, i) => {
