@@ -98,23 +98,23 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   return (
     <>
       <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
-        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[8.5rem_1fr_8.5rem] items-center gap-x-2 px-4 py-2">
+        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 px-4 py-2">
           <div className="flex items-center justify-start gap-3">
             <EmergencyButton />
             {left}
           </div>
-          <div className="flex justify-center">{brand}</div>
-          <div className="flex items-center justify-end">
-          <LangSwitch className={overlay ? "hidden sm:flex [&_button]:!text-primary-foreground" : "hidden sm:flex"} />
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-expanded={open}
-            aria-label={t("menu.open")}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
-          >
-            <Menu className="h-6 w-6" aria-hidden />
-          </button>
+          <div className="flex min-w-0 items-center justify-end gap-1">
+            {brand}
+            <LangSwitch className={overlay ? "hidden sm:flex [&_button]:!text-primary-foreground" : "hidden sm:flex"} />
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-expanded={open}
+              aria-label={t("menu.open")}
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center hover:text-beige"
+            >
+              <Menu className="h-6 w-6" aria-hidden />
+            </button>
           </div>
         </div>
       </header>
