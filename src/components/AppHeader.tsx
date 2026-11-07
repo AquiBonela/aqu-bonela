@@ -99,11 +99,13 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
     <>
       <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
         <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center gap-x-2 px-4 py-2">
-          <div className="flex justify-start">{left}</div>
+          <div className="flex items-center justify-start">
+            <EmergencyButton className={overlay ? "-ml-2 !text-primary-foreground" : "-ml-2"} />
+            {left}
+          </div>
           <div className="flex justify-center">{brand}</div>
           <div className="flex items-center justify-end">
           <LangSwitch className={overlay ? "hidden sm:flex [&_button]:!text-primary-foreground" : "hidden sm:flex"} />
-          <EmergencyButton className={overlay ? "!text-primary-foreground" : ""} />
           <button
             type="button"
             onClick={() => setOpen(true)}
