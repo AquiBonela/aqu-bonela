@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { Search, X, Zap, ArrowUp } from "lucide-react";
+import { Search, X, Zap } from "lucide-react";
 import { isEmergencyService } from "@/lib/listing-availability";
 import { useEffect, useMemo, useState } from "react";
 import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
@@ -227,30 +227,8 @@ function Index() {
           <BusinessSignupDialog><Button className="mt-4 h-12 rounded-soft text-base"><Text text="Dar de alta mi negocio" /></Button></BusinessSignupDialog>
         </aside>
       </main>
-      <BackToTop />
 
     </div>
   );
 }
 
-function BackToTop() {
-  const { tr, locale } = useI18n();
-  const [show, setShow] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 800);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  if (!show) return null;
-  return (
-    <Button variant="ghost"
-      type="button"
-      aria-label={tr("Volver arriba")}
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="fixed bottom-5 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary bg-card text-primary"
-    >
-      <ArrowUp className="h-6 w-6" aria-hidden />
-    </Button>
-  );
-}

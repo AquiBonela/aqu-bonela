@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
+import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n, type TKey } from "@/lib/i18n";
 
@@ -73,12 +75,11 @@ function Sobre() {
               <p>{t("sobre.grow2")}</p>
               <p>{t("sobre.grow3")}</p>
             </div>
-            <Link
-              to="/sugerir"
+            <BusinessSignupDialog business={false}><Button
               className="mt-4 inline-flex min-h-12 items-center bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary/90"
             >
               {t("menu.enviar")}
-            </Link>
+            </Button></BusinessSignupDialog>
           </div>
         </section>
 

@@ -10,6 +10,7 @@ import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingC
 import { ReportDialog } from "@/components/ReportDialog";
 import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availability";
 import { Switch } from "@/components/ui/switch";
+import { SiteHeader } from "@/components/SiteHeader";
 
 export type ReviewField = "address" | "phone" | "whatsapp" | "email" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
@@ -48,6 +49,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
 
   return (
     <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
+      {!review && <SiteHeader />}
       {!review && <div className="mx-auto max-w-3xl px-4">
         <BackLink className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
           <ArrowLeft className="h-4 w-4" aria-hidden />  <Text text="Volver al directorio" /> </BackLink>

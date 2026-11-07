@@ -2,8 +2,11 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import { WeatherNow } from "@/components/WeatherNow";
 import { useI18n } from "@/lib/i18n";
+import { useState } from "react";
+import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 
-const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
+const menuItems = (t: ReturnType<typeof useI18n>["t"], onSend: () => void): HeaderItem[] => [
+  { to: "/", label: "Aquí Bonela", activeOptions: { exact: true } },
   { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
   { to: "/servicios-publicos", label: t("menu.servicios") },
   { to: "/descubre", label: t("menu.descubre") },
@@ -12,7 +15,7 @@ const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
   { to: "/sobre", label: t("menu.sobre") },
 
   {
-    to: "/sugerir",
+    onClick: onSend,
     label: t("menu.enviar"),
     description: t("menu.enviarDesc"),
   },
@@ -20,6 +23,7 @@ const menuItems = (t: ReturnType<typeof useI18n>["t"]): HeaderItem[] => [
 
 export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?: boolean; overlay?: boolean } = {}) {
   const { t } = useI18n();
+  const [sendOpen, setSendOpen] = useState(false);
   const brand = null;
   const left = overlay ? (
     <span className="[&_button]:!text-primary-foreground [&_svg]:!text-primary-foreground">
@@ -29,13 +33,16 @@ export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?:
     <WeatherNow />
   );
   return (
+    <>
     <AppHeader
       navLabel={t("menu.label")}
       footnote={<SiteFooter inMenu />}
       left={left}
       overlay={overlay}
       brand={brand}
-      items={menuItems(t)}
+      items={menuItems(t, () => setSendOpen(true))}
     />
+    <BusinessSignupDialog business={false} open={sendOpen} onOpenChange={setSendOpen} />
+    </>
   );
 }
