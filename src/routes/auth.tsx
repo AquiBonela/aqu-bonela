@@ -54,7 +54,7 @@ function AuthPage() {
             <Label htmlFor="pw"><Text text="Contraseña" /></Label>
             <Input id="pw" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive">{tr(error)}</p>}
           <button disabled={busy} className="h-11 w-full bg-primary font-medium text-primary-foreground disabled:opacity-60">
             {tr(busy ? "Entrando…" : "Entrar")}
           </button>

@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { adminReportsQuery, adminSuggestionsQuery, isAdminQuery } from "@/lib/admin";
-import { Toaster } from "@/components/ui/sonner";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import logo from "@/assets/logo-2.webp";
 
@@ -70,7 +69,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <span className="hidden sm:inline"><Text text="Administración" /></span>
           </Link>
         }
-        items={items}
+        items={items.map((item) => ({ ...item, label: tr(item.label) }))}
       />
       <main className="mx-auto max-w-5xl px-4 py-6">
         {isLoading ? null : isAdmin ? (
@@ -82,7 +81,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <p className="border p-4 text-sm"><Text text="Esta cuenta no tiene permisos de administración." /></p>
         )}
       </main>
-      <Toaster />
     </div>
   );
 }

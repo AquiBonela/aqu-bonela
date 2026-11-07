@@ -14,7 +14,7 @@ export function EmergencyPhonesList() {
       >
         <span>
           <span className="block font-display text-xl font-extrabold">{tr(MAIN_EMERGENCY.label)}</span>
-          <span className="mt-1 block text-sm opacity-95">{tr(MAIN_EMERGENCY.note)}</span>
+          <span className="mt-1 block text-sm opacity-95">{tr(MAIN_EMERGENCY.note ?? "")}</span>
         </span>
         <span className="flex items-center gap-2 whitespace-nowrap font-display text-4xl font-extrabold">
           <Phone className="h-7 w-7" aria-hidden /> 112

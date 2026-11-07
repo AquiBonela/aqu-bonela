@@ -120,11 +120,11 @@ function ListBody() {
                   {isFeatured(l) && <CollaboratorBadge />}
                 </div>
                 <p className="truncate text-xs text-muted-foreground">
-                  {l.categories?.name ?? "Sin categoría"}{l.activity ? ` · ${l.activity}` : ""}
+                  {tr(l.categories?.name ?? "Sin categoría")}{l.activity ? ` · ${tr(l.activity)}` : ""}
                     {tr(l.urgent_24h ? " · Urgencias 24h" : "")}
                 </p>
               </div>
-              <span className="shrink-0 border px-2 py-0.5 text-xs">{tr(statusLabel[l.status])}</span>
+              <span className="shrink-0 border px-2 py-0.5 text-xs">{tr(statusLabel[l.status] ?? l.status)}</span>
             </Link>
           </li>
         ))}
