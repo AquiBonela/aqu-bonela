@@ -169,7 +169,22 @@ function ServiciosPublicos() {
                 <p className="mt-1 text-muted-foreground"><Text text="Avísalo por Línea Verde, el canal oficial del Ayuntamiento." /></p>
               </div>
             </div>
-            <a href="https://www.casarabonela.es" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 shrink-0 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground hover:opacity-90">
+            <a
+              href="https://www.lineaverde.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                const ua = navigator.userAgent;
+                const play = "https://play.google.com/store/apps/details?id=lineaVerde.App";
+                if (/android/i.test(ua)) {
+                  e.preventDefault();
+                  window.location.href = `intent://#Intent;package=lineaVerde.App;S.browser_fallback_url=${encodeURIComponent(play)};end`;
+                } else if (/iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) {
+                  e.preventDefault();
+                  window.location.href = "https://apps.apple.com/es/app/l%C3%ADnea-verde/id556432672";
+                }
+              }}
+              className="inline-flex min-h-12 shrink-0 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground hover:opacity-90">
                <Text text="Abrir Línea Verde" /> <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
           </div>
