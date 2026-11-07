@@ -9,7 +9,7 @@ import { SuggestionForm } from "@/components/SuggestionForm";
 export function BusinessSignupDialog({ children, business = true, open, onOpenChange }: { children?: ReactElement; business?: boolean; open?: boolean; onOpenChange?: (open: boolean) => void }) {
   const { tr, locale } = useI18n();
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog {...(open === undefined ? {} : { open })} {...(onOpenChange ? { onOpenChange } : {})}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogPortal>
         <DialogOverlay className="bg-foreground/50 motion-reduce:animate-none" />
