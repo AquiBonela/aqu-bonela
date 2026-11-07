@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { HeartHandshake } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Listing } from "@/lib/directory";
@@ -18,6 +19,7 @@ export const typeTheme = (t: Listing["type"]) =>
         : { border: "border-l-primary", text: "text-primary", chip: "bg-secondary text-primary" };
 
 export function TypeLabel({ type, className }: { type: Listing["type"]; className?: string }) {
+  const { tr } = useI18n();
   return (
     <span
       className={cn(
@@ -26,7 +28,7 @@ export function TypeLabel({ type, className }: { type: Listing["type"]; classNam
         className,
       )}
     >
-      {typeLabel(type)}
+      {tr(typeLabel(type))}
     </span>
   );
 }
@@ -34,16 +36,15 @@ export function TypeLabel({ type, className }: { type: Listing["type"]; classNam
 export function CollaboratorBadge() {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-sm font-semibold text-accent-foreground">
-      <HeartHandshake className="h-3.5 w-3.5" aria-hidden /> Colaborador
-    </span>
+      <HeartHandshake className="h-3.5 w-3.5" aria-hidden />  <Text text="Colaborador" /> </span>
   );
 }
 
-function actionText(l: Listing) {
-  const parts = [l.public_phone && "teléfono", l.public_whatsapp && "WhatsApp", l.public_address && "ubicación"].filter(Boolean) as string[];
-  if (!parts.length) return "Ver ficha →";
+function actionText(l: Listing, tr: (text: string) => string) {
+  const parts = [l.public_phone && tr("teléfono"), l.public_whatsapp && "WhatsApp", l.public_address && tr("ubicación")].filter(Boolean) as string[];
+  if (!parts.length) return `${tr("Ver ficha")} →`;
   const last = parts.pop();
-  return `Ver ${parts.length ? parts.join(", ") + " y " : ""}${last} →`;
+  return `${tr("Ver")} ${parts.length ? parts.join(", ") + tr(" y ") : ""}${last} →`;
 }
 
 export function ListingCard({
@@ -55,8 +56,9 @@ export function ListingCard({
   categoryName?: string | undefined;
   collaborator: boolean;
 }) {
+  const { tr, locale } = useI18n();
   const theme = typeTheme(listing.type);
-  const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
+  const subtitle = [categoryName, listing.activity].filter((value): value is string => Boolean(value)).map(tr).join(" · ");
   const marks = [...(listing.urgent_24h ? ["Urgencias 24h"] : []), ...availabilityTags(listing.tags)];
   return (
     <article className={cn("relative flex overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.03] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", theme.border)}>
@@ -78,19 +80,19 @@ export function ListingCard({
             {listing.name}
           </Link>
         </h3>
-        {subtitle && <p className={cn("mt-1 text-base font-bold", theme.text)}>{subtitle}</p>}
-        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{listing.short_description || listing.description}</p>
+        {subtitle && <p className={cn("mt-1 text-base font-bold", theme.text)}>{tr(subtitle)}</p>}
+        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{tr(listing.short_description || listing.description)}</p>
         <p className={cn("mt-3 text-base font-bold", theme.text)} aria-hidden>
-          {actionText(listing)}
+          {actionText(listing, tr)}
         </p>
       </div>
       </div>
       {marks.length > 0 && (
-        <div className="flex shrink-0 divide-x divide-availability-border border-l border-availability-border bg-availability text-availability-foreground" aria-label={marks.join(", ")}>
+        <div className="flex shrink-0 divide-x divide-availability-border border-l border-availability-border bg-availability text-availability-foreground" aria-label={marks.map(tr).join(", ")}>
           {marks.map((m) => (
             <span key={m} className="flex w-9 items-center justify-center py-3" aria-hidden>
               <span className="whitespace-nowrap text-sm font-bold uppercase tracking-wide [writing-mode:vertical-rl] rotate-180">
-                {m.toLowerCase().startsWith("urgencias") ? "⚡ " : ""}{m}
+                {m.toLowerCase().startsWith("urgencias") ? "⚡ " : ""}{tr(m)}
               </span>
             </span>
           ))}
@@ -101,9 +103,10 @@ export function ListingCard({
 }
 
 export function UrgentBadge({ label = "Urgencias 24h" }: { label?: string }) {
+  const { tr, locale } = useI18n();
   return (
     <span className="inline-flex items-center gap-1.5 border border-availability-border bg-availability px-2.5 py-1 text-sm font-semibold text-availability-foreground">
-      <span className="h-2 w-2 shrink-0 rounded-full bg-availability-foreground" aria-hidden /> {label}
+      <span className="h-2 w-2 shrink-0 rounded-full bg-availability-foreground" aria-hidden /> {tr(label)}
     </span>
   );
 }

@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { useI18n } from "@/lib/i18n";
+import { useI18n , Text} from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
@@ -15,12 +15,13 @@ export type ReviewField = "address" | "phone" | "whatsapp" | "email" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
 
 function Toggle({ review, field, label }: { review: ReviewControls | undefined; field: ReviewField; label: string }) {
+  const { tr, locale } = useI18n();
   if (!review) return null;
   const on = review.show[field];
   return (
     <label className="ml-auto flex shrink-0 items-center gap-2 rounded-full border-2 border-primary/40 bg-background px-3 py-1.5 text-sm font-semibold">
-      <Switch checked={on} onCheckedChange={(v) => review.onToggle(field, v)} aria-label={`Mostrar ${label}`} />
-      {on ? "Se ve" : "Oculto"}
+      <Switch checked={on} onCheckedChange={(v) => review.onToggle(field, v)} aria-label={`${tr("Mostrar")} ${tr(label)}`} />
+      {tr(on ? "Se ve" : "Oculto")}
     </label>
   );
 }
@@ -29,6 +30,7 @@ function Toggle({ review, field, label }: { review: ReviewControls | undefined; 
 type GalleryPhoto = { url: string; alt: string };
 
 export function ListingPage({ listing, review }: { listing: ListingDetail; review?: ReviewControls | undefined }) {
+  const { tr, locale } = useI18n();
   const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
   const showHours = review ? listing.hours.length > 0 : listing.hours.length > 0 && !hoursHidden(listing.tags);
   const collaborator = isFeatured(listing);
@@ -48,8 +50,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
     <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
       {!review && <div className="mx-auto max-w-3xl px-4">
         <BackLink className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
-          <ArrowLeft className="h-4 w-4" aria-hidden /> Volver al directorio
-        </BackLink>
+          <ArrowLeft className="h-4 w-4" aria-hidden />  <Text text="Volver al directorio" /> </BackLink>
       </div>}
       {listing.cover_url && (
         <div className="mx-auto max-w-3xl sm:px-4">
@@ -61,13 +62,13 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <TypeLabel type={listing.type} />
             {listing.categoryName && listing.categorySlug && (review ? (
-              <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{listing.categoryName}</span>
+              <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{tr(listing.categoryName)}</span>
             ) : (
               <Link to="/directorio" search={{ q: "", cat: listing.categorySlug, of: "" }} className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground hover:underline">
-                {listing.categoryName}
+                {tr(listing.categoryName)}
               </Link>
             ))}
-            {listing.activity && <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{listing.activity}</span>}
+            {listing.activity && <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{tr(listing.activity)}</span>}
             {collaborator && <CollaboratorBadge />}
           </div>
           <div className="flex max-w-40 flex-col items-end gap-1.5 text-right">
@@ -85,9 +86,9 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
         <div className="space-y-4">
-          {listing.description && <p className="whitespace-pre-line text-base text-pretty leading-relaxed">{listing.description}</p>}
+          {listing.description && <p className="whitespace-pre-line text-base text-pretty leading-relaxed">{tr(listing.description)}</p>}
           {listing.labels.length > 0 && (
-            <ul className="flex flex-wrap gap-2" aria-label="Etiquetas">
+            <ul className="flex flex-wrap gap-2" aria-label={tr("Etiquetas")}>
               {listing.labels.map((t) => (
                 <li key={t} className="bg-hashtag px-2 py-0.5 text-xs font-semibold text-hashtag-foreground">{hashtag(t)}</li>
               ))}
@@ -126,16 +127,15 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
           <section className="border-t pt-5">
             <div className="flex items-center gap-2">
               <h2 className="flex items-center gap-2 font-display font-bold">
-                <Clock className="h-5 w-5 text-primary" aria-hidden /> Horario
-              </h2>
-              <Toggle review={review} field="hours" label="horario" />
+                <Clock className="h-5 w-5 text-primary" aria-hidden />  <Text text="Horario" /> </h2>
+              <Toggle review={review} field="hours" label={tr("horario")} />
             </div>
             <dl className={`mt-2 divide-y ${review && !review.show.hours ? "opacity-40" : ""}`}>
               {hours.map((h, i) => (
                 <div key={h.day} className={`flex justify-between gap-4 py-2 ${i === today ? "font-semibold" : ""}`}>
-                  <dt>{h.day}{i === today && <span className="sr-only"> (hoy)</span>}</dt>
+                  <dt>{tr(h.day)}{i === today && <span className="sr-only">  <Text text="(hoy)" /></span>}</dt>
                   <dd className={h.slots.length ? "" : "text-muted-foreground"}>
-                    {h.slots.length ? h.slots.join(" · ") : "Cerrado"}
+                    {tr(h.slots.length ? h.slots.join(" · ") : "Cerrado")}
                   </dd>
                 </div>
               ))}
@@ -146,8 +146,8 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
         {gallery.length > 0 && (
           <section aria-labelledby="fotos">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-              <h2 id="fotos" className="flex min-w-0 items-center gap-2 font-display font-bold"><Images className="h-5 w-5 shrink-0 text-primary" aria-hidden /> Galería</h2>
-              <span className="shrink-0 text-xs text-muted-foreground">{gallery.length} {gallery.length === 1 ? "fotografía" : "fotografías"}</span>
+              <h2 id="fotos" className="flex min-w-0 items-center gap-2 font-display font-bold"><Images className="h-5 w-5 shrink-0 text-primary" aria-hidden />  <Text text="Galería" /></h2>
+              <span className="shrink-0 text-xs text-muted-foreground">{gallery.length} {tr(gallery.length === 1 ? "fotografía" : "fotografías")}</span>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-1.5">
               {gallery.map((p, i) => (
@@ -155,7 +155,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
                   key={`${p.url}-${i}`}
                   type="button"
                   onClick={() => setLightbox(i)}
-                  aria-label={`Ampliar fotografía ${i + 1} de ${listing.name}`}
+                  aria-label={`${tr("Ampliar fotografía")} ${i + 1}: ${listing.name}`}
                   className={`relative min-w-0 cursor-zoom-in overflow-hidden ${i === gallery.length - 1 && gallery.length % 2 === 1 ? "col-span-2 aspect-[2/1]" : "aspect-square"}`}
                 >
                   <img src={p.url} alt={p.alt} loading="lazy" className="h-full w-full object-cover" />
@@ -177,7 +177,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
 
       {/* Botonera fija inferior: solo en móvil */}
       {!review && <nav
-        aria-label="Contactar"
+        aria-label={tr("Contactar")}
         className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 px-4 py-3 backdrop-blur sm:hidden"
       >
         <div className="mx-auto flex max-w-3xl gap-2">
@@ -198,8 +198,7 @@ function ActionLinks({ listing, vertical = false }: { listing: ListingDetail; ve
     <>
       {listing.public_phone && (
         <a href={`tel:${listing.public_phone}`} className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary`}>
-          <Phone className="h-5 w-5" aria-hidden /> Llamar
-        </a>
+          <Phone className="h-5 w-5" aria-hidden />  <Text text="Llamar" /> </a>
       )}
       {listing.public_whatsapp && (
         <a
@@ -208,8 +207,7 @@ function ActionLinks({ listing, vertical = false }: { listing: ListingDetail; ve
           rel="noopener noreferrer"
           className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm bg-primary font-semibold text-primary-foreground hover:bg-primary/90`}
         >
-          <MessageCircle className="h-5 w-5" aria-hidden /> Mensaje
-        </a>
+          <MessageCircle className="h-5 w-5" aria-hidden />  <Text text="Mensaje" /> </a>
       )}
       {listing.public_address && (
         <a
@@ -218,14 +216,14 @@ function ActionLinks({ listing, vertical = false }: { listing: ListingDetail; ve
           rel="noopener noreferrer"
           className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary`}
         >
-          <Navigation className="h-5 w-5" aria-hidden /> Cómo llegar
-        </a>
+          <Navigation className="h-5 w-5" aria-hidden />  <Text text="Cómo llegar" /> </a>
       )}
     </>
   );
 }
 
 function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initial: number; onClose: () => void }) {
+  const { tr, locale } = useI18n();
   const [index, setIndex] = useState(initial);
   const [zoom, setZoom] = useState(false);
   const [origin, setOrigin] = useState("50% 50%");
@@ -260,16 +258,16 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
   const stop = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Fotografía ampliada" className="fixed inset-0 z-50 flex flex-col bg-foreground/95" onClick={onClose}>
+    <div role="dialog" aria-modal="true" aria-label={tr("Fotografía ampliada")} className="fixed inset-0 z-50 flex flex-col bg-foreground/95" onClick={onClose}>
       <div className="flex items-center justify-between p-3" onClick={stop}>
         <span className="text-sm font-semibold text-background">{index + 1} / {photos.length}</span>
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="flex h-11 w-11 items-center justify-center text-background">
+        <button type="button" onClick={onClose} aria-label={tr("Cerrar")} className="flex h-11 w-11 items-center justify-center text-background">
           <X className="h-6 w-6" aria-hidden />
         </button>
       </div>
       <div className="flex flex-1 items-center justify-center gap-1 px-2 pb-6">
         {photos.length > 1 && (
-          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i - 1 + photos.length) % photos.length); }} aria-label="Fotografía anterior" className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
+          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i - 1 + photos.length) % photos.length); }} aria-label={tr("Fotografía anterior")} className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
             <ChevronLeft className="h-8 w-8" aria-hidden />
           </button>
         )}
@@ -286,7 +284,7 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
           />
         </div>
         {photos.length > 1 && (
-          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i + 1) % photos.length); }} aria-label="Fotografía siguiente" className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
+          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i + 1) % photos.length); }} aria-label={tr("Fotografía siguiente")} className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
             <ChevronRight className="h-8 w-8" aria-hidden />
           </button>
         )}
@@ -296,6 +294,7 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
 }
 
 function CopyValue({ label, value }: { label: string; value: string }) {
+  const { tr, locale } = useI18n();
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const copy = async () => {
@@ -307,18 +306,18 @@ function CopyValue({ label, value }: { label: string; value: string }) {
     } catch { toast.error(t("feedback.copyError")); }
   };
   return (
-    <button type="button" onClick={copy} title="Toca para copiar" className="select-text text-left hover:text-primary">
-      <span className="font-semibold">{label}:</span> {value}
-      <span aria-live="polite" className="ml-2 text-sm font-semibold text-primary">{copied ? "Copiado ✓" : ""}</span>
+    <button type="button" onClick={copy} title={tr("Toca para copiar")} className="select-text text-left hover:text-primary">
+      <span className="font-semibold">{tr(label)}:</span> {value}
+      <span aria-live="polite" className="ml-2 text-sm font-semibold text-primary">{tr(copied ? "Copiado ✓" : "")}</span>
     </button>
   );
 }
 
 function ShareButton({ name }: { name: string }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const share = async () => {
     const url = window.location.href;
-    const text = `${name} en Aquí Bonela`;
+    const text = `${name} ${lang === "en" ? "on" : "en"} Aquí Bonela`;
     if (navigator.share) {
       try {
         await navigator.share({ title: name, text, url });
@@ -333,19 +332,17 @@ function ShareButton({ name }: { name: string }) {
   };
   return (
     <Button variant="outline" type="button" onClick={share} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-base font-semibold hover:bg-secondary">
-      <Share2 className="h-5 w-5" aria-hidden /> Compartir ficha
-    </Button>
+      <Share2 className="h-5 w-5" aria-hidden />  <Text text="Compartir ficha" /> </Button>
   );
 }
 
 export function ListingNotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
-      <h1 className="font-display text-2xl font-bold">Esta ficha no está disponible</h1>
-      <p className="text-muted-foreground">Puede que se haya retirado o que el enlace no sea correcto.</p>
+      <h1 className="font-display text-2xl font-bold"><Text text="Esta ficha no está disponible" /></h1>
+      <p className="text-muted-foreground"><Text text="Puede que se haya retirado o que el enlace no sea correcto." /></p>
       <Link to="/directorio" className="inline-flex min-h-11 items-center bg-primary px-4 font-semibold text-primary-foreground">
-        Ver el directorio
-      </Link>
+         <Text text="Ver el directorio" /> </Link>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -87,6 +88,7 @@ const normalizeUrl = (u: string) => {
 const list = (s: string, sep: RegExp) => s.split(sep).map((x) => x.trim()).filter(Boolean);
 
 function EditPage() {
+  const { tr, locale } = useI18n();
   const { id } = Route.useParams();
   const isNew = id === "nueva";
   const navigate = useNavigate();
@@ -110,11 +112,11 @@ function EditPage() {
       setReviewLink({ url: `${window.location.origin}/revision/${res.token}`, expiresAt: res.expiresAt });
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? error.code : null;
-      toast.error(code === "42501"
+      toast.error(tr(code === "42501"
         ? "Tu sesión no tiene permisos de administrador. Vuelve a iniciar sesión."
         : code === "23503"
           ? "La ficha ya no existe. Vuelve al listado y ábrela de nuevo."
-          : "No se pudo guardar el enlace. Comprueba tu conexión e inténtalo de nuevo.");
+          : "No se pudo guardar el enlace. Comprueba tu conexión e inténtalo de nuevo."));
     } finally {
       setLinkBusy(false);
     }
@@ -141,8 +143,8 @@ function EditPage() {
   async function save(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     const labels = list(f.labels, /,/);
-    if (labels.length > 3) { toast.error("Máximo 3 etiquetas destacadas."); return; }
-    if (!f.category_id) { toast.error("Elige una categoría."); return; }
+    if (labels.length > 3) { toast.error(tr("Máximo 3 etiquetas destacadas.")); return; }
+    if (!f.category_id) { toast.error(tr("Elige una categoría.")); return; }
     setSaving(true);
     const featured_until = f.collaborator
       ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil(new Date(), months)
@@ -186,36 +188,36 @@ function EditPage() {
       }
       await qc.invalidateQueries({ queryKey: ["admin"] });
       qc.invalidateQueries({ queryKey: ["directory"] });
-      toast.success("Ficha guardada");
+      toast.success(tr("Ficha guardada"));
       if (isNew) navigate({ to: "/admin/fichas/$id", params: { id: listingId } });
     } catch (err) {
       const msg = (err as { message?: string }).message ?? "";
-      toast.error(msg.includes("duplicate") ? "Ya existe una ficha con esa dirección web (slug)." : `No se pudo guardar: ${msg}`);
+      toast.error(tr(msg.includes("duplicate") ? "Ya existe una ficha con esa dirección web (slug)." : `No se pudo guardar: ${msg}`));
     } finally {
       setSaving(false);
     }
   }
 
   async function eliminar() {
-    if (!window.confirm(`¿Eliminar definitivamente «${f.name}»? Se borrarán también sus fotos, contactos, horarios, avisos y autorizaciones. Esta acción no se puede deshacer.`)) return;
+    if (!window.confirm(tr(`¿Eliminar definitivamente «${f.name}»? Se borrarán también sus fotos, contactos, horarios, avisos y autorizaciones. Esta acción no se puede deshacer.`))) return;
     setDeleting(true);
     try {
       const result = await deleteListing(id);
       await qc.invalidateQueries({ queryKey: ["admin"] });
       await qc.invalidateQueries({ queryKey: ["directory"] });
       await qc.invalidateQueries({ queryKey: ["listing"] });
-      if (result.cleanupFailed) toast.warning("Ficha eliminada, pero no se pudieron borrar algunos archivos de fotos.");
-      else toast.success("Ficha eliminada");
+      if (result.cleanupFailed) toast.warning(tr("Ficha eliminada, pero no se pudieron borrar algunos archivos de fotos."));
+      else toast.success(tr("Ficha eliminada"));
       navigate({ to: "/admin" });
     } catch {
-      toast.error("No se pudo eliminar la ficha. Comprueba tu conexión y tus permisos.");
+      toast.error(tr("No se pudo eliminar la ficha. Comprueba tu conexión y tus permisos."));
     } finally {
       setDeleting(false);
     }
   }
 
-  if (!isNew && isLoading) return <p className="text-sm text-muted-foreground">Cargando…</p>;
-  if (!isNew && !data?.listing) return <p>Ficha no encontrada.</p>;
+  if (!isNew && isLoading) return <p className="text-sm text-muted-foreground"><Text text="Cargando…" /></p>;
+  if (!isNew && !data?.listing) return <p><Text text="Ficha no encontrada." /></p>;
 
   return (
     <form onSubmit={save} className="space-y-6 pb-24">
@@ -223,15 +225,14 @@ function EditPage() {
         <Link to="/admin" className="text-muted-foreground hover:text-foreground" aria-label="Volver">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="font-display text-2xl font-bold">{isNew ? "Nueva ficha" : f.name || "Editar ficha"}</h1>
+        <h1 className="font-display text-2xl font-bold">{tr(isNew ? "Nueva ficha" : f.name || "Editar ficha")}</h1>
         {!isNew && f.status === "publicada" && (
           <a href={listingPath(f.type, f.slug)} target="_blank" rel="noreferrer" className="ml-auto text-sm text-terracotta underline">
-            Ver ficha pública
-          </a>
+             <Text text="Ver ficha pública" /> </a>
         )}
       </div>
 
-      <Section title="1. Tipo y categoría">
+      <Section title={tr("1. Tipo y categoría")}>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {LISTING_TYPES.map(({ value: t, label }) => (
             <button
@@ -239,27 +240,27 @@ function EditPage() {
               onClick={() => setF((p) => p.type === t ? p : { ...p, type: t, category_id: "", activity: "" })}
               className={`min-h-10 flex-1 border px-2 py-1 text-sm font-medium ${f.type === t ? TYPE_BUTTON[t] : ""}`}
             >
-              {label}
+              {tr(label)}
             </button>
           ))}
         </div>
-        <Field label="Categoría general" hint="Las categorías y actividades se crean en Configuración.">
+        <Field label={tr("Categoría general")} hint={tr("Las categorías y actividades se crean en Configuración.")}>
           <select required value={f.category_id} onChange={(e) => setF((p) => ({ ...p, category_id: e.target.value, activity: "" }))} className="h-10 w-full border bg-background px-3 text-sm">
-            <option value="">Elige una categoría</option>
-            {cats.filter((c) => c.type === f.type || c.id === f.category_id).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            <option value=""><Text text="Elige una categoría" /></option>
+            {cats.filter((c) => c.type === f.type || c.id === f.category_id).map((c) => <option key={c.id} value={c.id}>{tr(c.name)}</option>)}
           </select>
         </Field>
-        <Field label="Actividad">
+        <Field label={tr("Actividad")}>
           <select value={f.activity} onChange={(e) => set("activity", e.target.value)} disabled={!f.category_id} className="h-10 w-full border bg-background px-3 text-sm disabled:opacity-60">
-            <option value="">{f.category_id ? "Elige una actividad" : "Elige antes una categoría"}</option>
+            <option value="">{tr(f.category_id ? "Elige una actividad" : "Elige antes una categoría")}</option>
             {f.activity && !acts.some((a) => a.category_id === f.category_id && a.name === f.activity) && (
-              <option value={f.activity}>{f.activity} (no está en la lista)</option>
+              <option value={f.activity}>{f.activity}  <Text text="(no está en la lista)" /></option>
             )}
-            {acts.filter((a) => a.category_id === f.category_id).map((a) => <option key={a.id} value={a.name}>{a.name}</option>)}
+            {acts.filter((a) => a.category_id === f.category_id).map((a) => <option key={a.id} value={a.name}>{tr(a.name)}</option>)}
           </select>
         </Field>
         {f.category_id && (
-          <Field label="Otras actividades" hint="Opcional. Marca otros servicios que también ofrece; ayudan a encontrar la ficha.">
+          <Field label={tr("Otras actividades")} hint={tr("Opcional. Marca otros servicios que también ofrece; ayudan a encontrar la ficha.")}>
             <div className="flex flex-wrap gap-1.5">
               {acts
                 .filter((a) => a.name !== f.activity && (a.category_id === f.category_id || f.extra_activities.includes(a.id)))
@@ -271,21 +272,21 @@ function EditPage() {
                       onClick={() => set("extra_activities", on ? f.extra_activities.filter((x) => x !== a.id) : [...f.extra_activities, a.id])}
                       className={`rounded-md border px-2.5 py-1 text-sm ${on ? "border-primary bg-primary text-primary-foreground" : "bg-background"}`}
                     >
-                      {a.name}
+                      {tr(a.name)}
                     </button>
                   );
                 })}
             </div>
           </Field>
         )}
-        <Field label="Página web" hint="Opcional. Se mostrará en la ficha más adelante.">
+        <Field label={tr("Página web")} hint={tr("Opcional. Se mostrará en la ficha más adelante.")}>
           <Input type="url" inputMode="url" placeholder="https://…" value={f.website} onChange={(e) => set("website", e.target.value)} />
         </Field>
-        <Toggle label="Servicio a domicilio" checked={f.home_service} onChange={(v) => set("home_service", v)} hint="Se desplaza a casa del cliente." />
-        <Field label="Zona de servicio" hint="Opcional. Ej.: Casarabonela y alrededores">
+        <Toggle label={tr("Servicio a domicilio")} checked={f.home_service} onChange={(v) => set("home_service", v)} hint={tr("Se desplaza a casa del cliente.")} />
+        <Field label={tr("Zona de servicio")} hint={tr("Opcional. Ej.: Casarabonela y alrededores")}>
           <Input value={f.service_area} onChange={(e) => set("service_area", e.target.value)} />
         </Field>
-        <Field label="Etiquetas destacadas" hint="Hasta 3, separadas por comas. Ej.: Pan de leña, Encargos">
+        <Field label={tr("Etiquetas destacadas")} hint={tr("Hasta 3, separadas por comas. Ej.: Pan de leña, Encargos")}>
           <Input value={f.labels} onChange={(e) => set("labels", e.target.value)} />
           {!!settings?.common_labels.length && (
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -309,76 +310,73 @@ function EditPage() {
         </Field>
       </Section>
 
-      <Section title="2. Datos básicos">
-        <Field label="Nombre">
+      <Section title={tr("2. Datos básicos")}>
+        <Field label={tr("Nombre")}>
           <Input required value={f.name} onChange={(e) => { set("name", e.target.value); if (!slugTouched) set("slug", slugify(e.target.value)); }} />
         </Field>
-        <Field label="Dirección web" hint={`aquibonela…${listingPath(f.type, f.slug || "…")}`}>
+        <Field label={tr("Dirección web")} hint={`aquibonela…${listingPath(f.type, f.slug || "…")}`}>
           <Input value={f.slug} onChange={(e) => { setSlugTouched(true); set("slug", slugify(e.target.value)); }} />
         </Field>
-        <Field label="Descripción corta" hint={`Se ve en la tarjeta del directorio. ${f.short_description.length}/140`}>
+        <Field label={tr("Descripción corta")} hint={`${tr("Se ve en la tarjeta del directorio.")} ${f.short_description.length}/140`}>
           <Input maxLength={140} value={f.short_description} onChange={(e) => set("short_description", e.target.value)} />
         </Field>
-        <Field label="Descripción extensa" hint="Se ve en la página de la ficha.">
+        <Field label={tr("Descripción extensa")} hint={tr("Se ve en la página de la ficha.")}>
           <Textarea rows={7} value={f.description} onChange={(e) => set("description", e.target.value)} />
         </Field>
-        <Field label="Palabras de búsqueda (no visibles)" hint="Separadas por comas. Ej.: bollería, tartas, pan integral">
+        <Field label={tr("Palabras de búsqueda (no visibles)")} hint={tr("Separadas por comas. Ej.: bollería, tartas, pan integral")}>
           <Input value={f.tags} onChange={(e) => set("tags", e.target.value)} />
         </Field>
       </Section>
 
-      <Section title="3. Contacto" hint="Solo se publica lo que marques como visible.">
-        <ContactRow label="Teléfono" value={f.phone} onValue={(v) => set("phone", v)} show={f.show_phone} onShow={(v) => set("show_phone", v)} />
+      <Section title={tr("3. Contacto")} hint={tr("Solo se publica lo que marques como visible.")}>
+        <ContactRow label={tr("Teléfono")} value={f.phone} onValue={(v) => set("phone", v)} show={f.show_phone} onShow={(v) => set("show_phone", v)} />
         <ContactRow label="WhatsApp" value={f.whatsapp} onValue={(v) => set("whatsapp", v)} show={f.show_whatsapp} onShow={(v) => set("show_whatsapp", v)} />
-        <ContactRow label="Dirección" value={f.address} onValue={(v) => set("address", v)} show={f.show_address} onShow={(v) => set("show_address", v)} />
+        <ContactRow label={tr("Dirección")} value={f.address} onValue={(v) => set("address", v)} show={f.show_address} onShow={(v) => set("show_address", v)} />
         <ContactRow label="Email" value={f.email} onValue={(v) => set("email", v)} show={f.show_email} onShow={(v) => set("show_email", v)} />
         <div className="grid gap-3 border-t pt-3 sm:grid-cols-2">
-          <Field label="Titular (privado)"><Input value={f.owner_name} onChange={(e) => set("owner_name", e.target.value)} /></Field>
-          <Field label="Contacto del titular (privado)" hint="Para enviarle el enlace de revisión"><Input value={f.owner_contact} onChange={(e) => set("owner_contact", e.target.value)} /></Field>
+          <Field label={tr("Titular (privado)")}><Input value={f.owner_name} onChange={(e) => set("owner_name", e.target.value)} /></Field>
+          <Field label={tr("Contacto del titular (privado)")} hint={tr("Para enviarle el enlace de revisión")}><Input value={f.owner_contact} onChange={(e) => set("owner_contact", e.target.value)} /></Field>
         </div>
       </Section>
 
-      <Section title="4. Horario">
+      <Section title={tr("4. Horario")}>
         {f.hours.map((h, i) => (
           <div key={i} className="flex items-center gap-2">
             <select value={h.weekday} onChange={(e) => set("hours", f.hours.map((x, j) => j === i ? { ...x, weekday: +e.target.value } : x))} className="h-10 border bg-background px-2 text-sm">
-              {WEEKDAYS.map((d, k) => <option key={d} value={k + 1}>{d}</option>)}
+              {WEEKDAYS.map((d, k) => <option key={d} value={k + 1}>{tr(d)}</option>)}
             </select>
             <Input type="time" value={h.opens} onChange={(e) => set("hours", f.hours.map((x, j) => j === i ? { ...x, opens: e.target.value } : x))} className="h-10 w-28" />
             <span>–</span>
             <Input type="time" value={h.closes} onChange={(e) => set("hours", f.hours.map((x, j) => j === i ? { ...x, closes: e.target.value } : x))} className="h-10 w-28" />
-            <button type="button" aria-label="Quitar tramo" onClick={() => set("hours", f.hours.filter((_, j) => j !== i))} className="p-2 text-muted-foreground hover:text-destructive">
+            <button type="button" aria-label={tr("Quitar tramo")} onClick={() => set("hours", f.hours.filter((_, j) => j !== i))} className="p-2 text-muted-foreground hover:text-destructive">
               <Trash2 className="h-4 w-4" />
             </button>
           </div>
         ))}
         <button type="button" onClick={() => set("hours", [...f.hours, { weekday: 1, opens: "09:00", closes: "14:00" }])} className="inline-flex items-center gap-1 text-sm text-terracotta">
-          <Plus className="h-4 w-4" /> Añadir tramo
-        </button>
+          <Plus className="h-4 w-4" />  <Text text="Añadir tramo" /> </button>
       </Section>
 
-      <Section title="5. Imágenes y distinciones">
-        {isNew ? <p className="text-sm text-muted-foreground">Guarda la ficha para poder subir imágenes.</p> : <CoverPicker listingId={id} />}
-        <Toggle label="Colaborador (1 mes)" checked={f.collaborator} onChange={(v) => set("collaborator", v)}
-          hint={f.collaborator && f.featured_until && new Date(f.featured_until) > new Date() ? `Hasta el ${new Date(f.featured_until).toLocaleDateString("es-ES")}` : "Aparece en portada y con galería de fotos"} />
+      <Section title={tr("5. Imágenes y distinciones")}>
+        {isNew ? <p className="text-sm text-muted-foreground"><Text text="Guarda la ficha para poder subir imágenes." /></p> : <CoverPicker listingId={id} />}
+        <Toggle label={tr("Colaborador (1 mes)")} checked={f.collaborator} onChange={(v) => set("collaborator", v)}
+          hint={f.collaborator && f.featured_until && new Date(f.featured_until) > new Date() ? `${tr("Hasta el")} ${new Date(f.featured_until).toLocaleDateString(locale)}` : "Aparece en portada y con galería de fotos"} />
         {f.collaborator && !isNew && <GalleryPicker listingId={id} />}
-        <Toggle label="Urgencias 24h" checked={f.urgent_24h} onChange={(v) => set("urgent_24h", v)} hint="Fontaneros, cerrajeros, electricistas…" />
+        <Toggle label={tr("Urgencias 24h")} checked={f.urgent_24h} onChange={(v) => set("urgent_24h", v)} hint={tr("Fontaneros, cerrajeros, electricistas…")} />
         {AVAILABILITY_OPTIONS.map((option) => <Toggle key={option} label={option}
           checked={f.availability.includes(option)}
           onChange={(on) => set("availability", on ? [...f.availability, option] : f.availability.filter((value) => value !== option))} />)}
       </Section>
 
-      <Section title="6. Estado">
+      <Section title={tr("6. Estado")}>
         <select value={f.status} onChange={(e) => set("status", e.target.value as Status)} className="h-10 w-full border bg-background px-3 text-sm sm:w-72">
-          {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          {STATUSES.map((s) => <option key={s.value} value={s.value}>{tr(s.label)}</option>)}
         </select>
         <div className="space-y-3 border-t pt-3">
           <p className="text-xs text-muted-foreground">
-            Genera un enlace privado y envíaselo al titular por WhatsApp: podrá revisar su ficha, marcar qué datos se
-            publican y autorizarla. Válido 30 días.
-          </p>
+             <Text text="Genera un enlace privado y envíaselo al titular por WhatsApp: podrá revisar su ficha, marcar qué datos se publican y autorizarla. Válido 30 días." /> </p>
           {isNew ? (
-            <p className="text-xs text-muted-foreground">Guarda la ficha para poder generar el enlace.</p>
+            <p className="text-xs text-muted-foreground"><Text text="Guarda la ficha para poder generar el enlace." /></p>
           ) : !reviewLink ? (
             <button
               type="button"
@@ -386,7 +384,7 @@ function EditPage() {
               disabled={linkBusy}
               className="h-10 bg-terracotta px-4 text-sm text-terracotta-foreground disabled:opacity-60"
             >
-              {linkBusy ? "Generando…" : "Generar enlace de revisión"}
+              {tr(linkBusy ? "Generando…" : "Generar enlace de revisión")}
             </button>
           ) : (
             <div className="space-y-2">
@@ -396,25 +394,21 @@ function EditPage() {
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText(reviewLink.url);
-                    toast.success("Enlace copiado");
+                    toast.success(tr("Enlace copiado"));
                   }}
                   className="h-10 border px-4 text-sm"
                 >
-                  Copiar enlace
-                </button>
+                   <Text text="Copiar enlace" /> </button>
                 <a
                   href={whatsappShareUrl(reviewMessage(f.owner_name || null, reviewLink.url, settings?.whatsapp_template), f.owner_contact)}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex h-10 items-center bg-primary px-4 text-sm text-primary-foreground"
                 >
-                  Abrir WhatsApp
-                </a>
+                   <Text text="Abrir WhatsApp" /> </a>
               </div>
               <p className="text-xs text-muted-foreground">
-                Caduca el {new Date(reviewLink.expiresAt).toLocaleDateString("es-ES")}. Puedes generar un enlace nuevo
-                cuando quieras.
-              </p>
+                 <Text text="Caduca el" /> {new Date(reviewLink.expiresAt).toLocaleDateString(locale)}<Text text=". Puedes generar un enlace nuevo cuando quieras." /> </p>
             </div>
           )}
         </div>
@@ -422,15 +416,15 @@ function EditPage() {
 
       {!isNew && <div className="border-t pt-4">
         <Button type="button" variant="outline" disabled={deleting || saving} onClick={eliminar} className="border-destructive text-destructive shadow-none">
-          <Trash2 aria-hidden /> {deleting ? "Eliminando…" : "Eliminar ficha"}
+          <Trash2 aria-hidden /> {tr(deleting ? "Eliminando…" : "Eliminar ficha")}
         </Button>
       </div>}
 
       <div className="fixed inset-x-0 bottom-0 border-t bg-background">
         <div className="mx-auto flex max-w-5xl justify-end gap-2 px-4 py-3">
-          <Link to="/admin" className="inline-flex h-11 items-center border px-4 text-sm">Cancelar</Link>
+          <Link to="/admin" className="inline-flex h-11 items-center border px-4 text-sm"><Text text="Cancelar" /></Link>
           <Button type="submit" disabled={saving || deleting} className="h-11 bg-primary px-6 text-sm font-medium text-primary-foreground shadow-none disabled:opacity-60">
-            {saving ? "Guardando…" : "Guardar ficha"}
+            {tr(saving ? "Guardando…" : "Guardar ficha")}
           </Button>
         </div>
       </div>
@@ -446,11 +440,12 @@ const TYPE_BUTTON: Record<ListingType, string> = {
 };
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+  const { tr, locale } = useI18n();
   return (
     <section className="space-y-3 border p-4">
       <div>
-        <h2 className="font-display text-lg font-bold">{title}</h2>
-        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+        <h2 className="font-display text-lg font-bold">{tr(title)}</h2>
+        {hint && <p className="text-xs text-muted-foreground">{tr(hint)}</p>}
       </div>
       {children}
     </section>
@@ -458,21 +453,23 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
 }
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  const { tr, locale } = useI18n();
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <Label>{tr(label)}</Label>
       {children}
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground">{tr(hint)}</p>}
     </div>
   );
 }
 
 function Toggle({ label, hint, checked, onChange }: { label: string; hint?: string; checked: boolean; onChange: (v: boolean) => void }) {
+  const { tr, locale } = useI18n();
   return (
     <label className="flex items-center justify-between gap-3 border p-3">
       <span>
-        <span className="block text-sm font-medium">{label}</span>
-        {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+        <span className="block text-sm font-medium">{tr(label)}</span>
+        {hint && <span className="block text-xs text-muted-foreground">{tr(hint)}</span>}
       </span>
       <Switch checked={checked} onCheckedChange={onChange} />
     </label>
@@ -484,8 +481,7 @@ function ContactRow({ label, value, onValue, show, onShow }: { label: string; va
     <div className="flex items-end gap-3">
       <div className="flex-1"><Field label={label}><Input value={value} onChange={(e) => onValue(e.target.value)} /></Field></div>
       <label className="flex h-10 items-center gap-2 text-xs">
-        <Switch checked={show} onCheckedChange={onShow} /> Visible
-      </label>
+        <Switch checked={show} onCheckedChange={onShow} />  <Text text="Visible" /> </label>
     </div>
   );
 }

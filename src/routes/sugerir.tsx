@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { SuggestionForm } from "@/components/SuggestionForm";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -21,17 +22,14 @@ function Sugerir() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-2xl px-4 py-10">
-        <h1 className="font-display text-3xl font-extrabold text-pretty">¿Conoces algo que debería estar en Aquí Bonela?</h1>
+        <h1 className="font-display text-3xl font-extrabold text-pretty"><Text text="¿Conoces algo que debería estar en Aquí Bonela?" /></h1>
 
         <div className="mt-5 grid gap-3 text-base leading-relaxed">
           <p>
-            Puedes enviarnos información sobre comercios, profesionales, lugares de interés, eventos, noticias o
-            cualquier otro contenido que consideres útil para Casarabonela.
-          </p>
+             <Text text="Puedes enviarnos información sobre comercios, profesionales, lugares de interés, eventos, noticias o cualquier otro contenido que consideres útil para Casarabonela." /> </p>
           <p>
-            También puedes comunicarnos errores, sugerir cambios o contarnos cómo podemos mejorar Aquí Bonela.
-          </p>
-          <p>Toda aportación es bienvenida. Revisaremos la información antes de publicarla.</p>
+             <Text text="También puedes comunicarnos errores, sugerir cambios o contarnos cómo podemos mejorar Aquí Bonela." /> </p>
+          <p><Text text="Toda aportación es bienvenida. Revisaremos la información antes de publicarla." /></p>
         </div>
 
         <SuggestionForm />

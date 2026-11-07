@@ -2,7 +2,7 @@ import { SITE_URL, listingPath, type ListingDetail } from "@/lib/listing-detail"
 
 export function listingHead(loaderData: ListingDetail | undefined) {
   if (!loaderData) {
-    return { meta: [{ title: "Ficha no disponible — Aquí Bonela" }, { name: "robots", content: "noindex" }] };
+    return { meta: [{ title: "Ficha no disponible — Aquí Bonela" }, { name: "description", content: "Esta ficha no está disponible." }, { property: "og:title", content: "Ficha no disponible — Aquí Bonela" }, { property: "og:description", content: "Esta ficha no está disponible." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] };
   }
   const l = loaderData;
   const url = SITE_URL + listingPath(l.type, l.slug);

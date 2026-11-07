@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { englishText } from "@/lib/i18n-extra";
+import { Button } from "@/components/ui/button";
 
 /**
  * Sistema de idiomas. Español es el idioma original y por defecto.
@@ -429,15 +431,45 @@ const en: Partial<Record<TKey, string>> = {
 const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en };
 const STORAGE_KEY = "aquibonela-lang";
 
-type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: TKey) => string };
-const I18nContext = createContext<Ctx>({ lang: "es", setLang: () => {}, t: (k) => es[k] });
+const originalTranslations = new Map(Object.entries(es).map(([key, value]) => [value.replace(/\s+/g, " ").trim(), en[key as TKey] ?? value]));
+const extraTranslations = new Map(Object.entries(englishText).map(([key, value]) => [key.replace(/\s+/g, " ").trim(), value]));
+
+export function translateText(text: string, lang: Lang): string {
+  if (lang === "es") return text;
+  const normalized = text.replace(/\s+/g, " ").trim();
+  const translated = extraTranslations.get(normalized) ?? originalTranslations.get(normalized);
+  if (translated) return translated;
+  if (text.includes("\n")) return text.split("\n").map((line) => translateText(line, lang)).join("\n");
+  if (text.includes(" · ")) return text.split(" · ").map((part) => translateText(part, lang)).join(" · ");
+  const patterns: [RegExp, (match: RegExpMatchArray) => string][] = [
+    [/^(\d+) fichas$/, (m) => `${m[1]} listings`],
+    [/^(\d+) sin atender$/, (m) => `${m[1]} unhandled`],
+    [/^(\d+) pendientes?$/, (m) => `${m[1]} pending`],
+    [/^No se puede borrar: (?:tiene|la usan) (\d+) ficha\(s\)\.$/, (m) => `Cannot delete: used by ${m[1]} listing(s).`],
+    [/^¿Borrar la categoría «(.+)» y todas sus actividades\?$/, (m) => `Delete category “${m[1]}” and all its activities?`],
+    [/^¿Borrar la actividad «(.+)»\?$/, (m) => `Delete activity “${m[1]}”?`],
+    [/^¿Eliminar definitivamente «(.+)»\? Se borrarán también sus fotos, contactos, horarios, avisos y autorizaciones\. Esta acción no se puede deshacer\.$/, (m) => `Permanently delete “${m[1]}”? Its photos, contacts, opening hours, reports and approvals will also be deleted. This cannot be undone.`],
+    [/^No se pudo (guardar el texto|guardar|quitar|subir): (.*)$/, (m) => `Couldn't ${m[1] === "subir" ? "upload" : m[1] === "quitar" ? "remove" : "save"}: ${translateText(m[2] ?? "", lang)}`],
+    [/^Hasta el (.+)$/, (m) => `Until ${m[1]}`],
+  ];
+  for (const [pattern, format] of patterns) {
+    const match = normalized.match(pattern);
+    if (match) return format(match);
+  }
+  return text;
+}
+
+type Ctx = { lang: Lang; locale: string; setLang: (l: Lang) => void; t: (k: TKey) => string; tr: (text: string) => string };
+const I18nContext = createContext<Ctx>({ lang: "es", locale: "es-ES", setLang: () => {}, t: (k) => es[k], tr: (text) => text });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("es");
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved && (LANGS as readonly string[]).includes(saved)) setLangState(saved as Lang);
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved && (LANGS as readonly string[]).includes(saved)) setLangState(saved as Lang);
+    } catch { /* Language selection still works when storage is unavailable. */ }
   }, []);
 
   useEffect(() => {
@@ -446,15 +478,21 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
-    window.localStorage.setItem(STORAGE_KEY, l);
+    try { window.localStorage.setItem(STORAGE_KEY, l); } catch { /* Keep the current selection in memory. */ }
   }, []);
 
   const t = useCallback((k: TKey) => DICTS[lang][k] ?? es[k], [lang]);
+  const tr = useCallback((text: string) => translateText(text, lang), [lang]);
 
-  return <I18nContext.Provider value={{ lang, setLang, t }}>{children}</I18nContext.Provider>;
+  return <I18nContext.Provider value={{ lang, locale: lang === "en" ? "en-GB" : "es-ES", setLang, t, tr }}>{children}</I18nContext.Provider>;
 }
 
 export const useI18n = () => useContext(I18nContext);
+
+export function Text({ text }: { text: string }) {
+  const { tr } = useI18n();
+  return <>{tr(text)}</>;
+}
 
 export function LangSwitch({ className = "" }: { className?: string }) {
   const { lang, setLang, t } = useI18n();
@@ -463,14 +501,14 @@ export function LangSwitch({ className = "" }: { className?: string }) {
       {LANGS.map((l, i) => (
         <span key={l} className="flex items-center">
           {i > 0 && <span aria-hidden className="px-0.5 opacity-40">|</span>}
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={() => setLang(l)}
             aria-pressed={lang === l}
             className={`min-h-11 px-1 uppercase ${lang === l ? "text-primary underline underline-offset-4" : "opacity-60 hover:opacity-100"}`}
           >
             {l}
-          </button>
+          </Button>
         </span>
       ))}
     </div>

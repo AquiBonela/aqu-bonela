@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -39,12 +40,13 @@ export const Route = createFileRoute("/directorio")({
   }),
   component: Index,
   errorComponent: () => (
-    <div role="alert" className="p-8 text-center">No hemos podido cargar el directorio. Inténtalo de nuevo.</div>
+    <div role="alert" className="p-8 text-center"><Text text="No hemos podido cargar el directorio. Inténtalo de nuevo." /></div>
   ),
-  notFoundComponent: () => <div className="p-8 text-center">No encontrado.</div>,
+  notFoundComponent: () => <div className="p-8 text-center"><Text text="No encontrado." /></div>,
 });
 
 function Index() {
+  const { tr, locale } = useI18n();
   const { q, cat, of, tipo, urg } = Route.useSearch();
   const navigate = useNavigate({ from: "/directorio" });
   const { data } = useSuspenseQuery(directoryQuery);
@@ -78,7 +80,7 @@ function Index() {
       <SiteHeader />
       {data.banner && (
         <div role="status" className="border-b bg-accent/15 px-4 py-2.5 text-center text-sm font-medium text-foreground">
-          {data.banner}
+          {tr(data.banner)}
         </div>
       )}
 
@@ -92,16 +94,16 @@ function Index() {
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
           <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
             <h1 className="max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
-              {data.heroTitle}
+              {tr(data.heroTitle)}
             </h1>
             {data.heroSubtitle && (
-              <p className="mt-3 max-w-xl text-base text-primary-foreground/85 sm:text-lg">{data.heroSubtitle}</p>
+              <p className="mt-3 max-w-xl text-base text-primary-foreground/85 sm:text-lg">{tr(data.heroSubtitle)}</p>
             )}
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
           <form onSubmit={submit} role="search" className="mx-auto flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5">
-            <label htmlFor="buscar" className="sr-only">Buscar comercios y profesionales</label>
+            <label htmlFor="buscar" className="sr-only"><Text text="Buscar comercios y profesionales" /></label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
               id="buscar"
@@ -109,7 +111,7 @@ function Index() {
               enterKeyHint="search"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Panadería, fontanero, tapas…"
+              placeholder={tr("Panadería, fontanero, tapas…")}
               className="h-12 min-w-0 flex-1 bg-transparent text-lg text-foreground outline-none placeholder:text-muted-foreground"
             />
             {text && (
@@ -117,48 +119,47 @@ function Index() {
                 variant="ghost" size="icon"
                 type="button"
                 onClick={() => setText("")}
-                aria-label="Borrar búsqueda"
+                aria-label={tr("Borrar búsqueda")}
                 className="flex h-12 w-12 items-center justify-center rounded-soft-inner text-muted-foreground hover:bg-secondary"
               >
                 <X className="h-5 w-5" />
               </Button>
             )}
             <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">
-              Buscar
-            </Button>
+               <Text text="Buscar" /> </Button>
           </form>
         </div>
       </section>
 
-      <nav aria-label="Filtros" className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
+      <nav aria-label={tr("Filtros")} className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-4xl flex-col gap-3 px-4 py-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <label className="min-w-0 sm:w-56">
-            <select aria-label="Tipo de ficha" value={tipo} onChange={(e) => {
+            <select aria-label={tr("Tipo de ficha")} value={tipo} onChange={(e) => {
               const value = e.target.value;
               if (value !== "" && !isListingType(value)) return;
               setText("");
               navigate({ search: (p) => ({ ...p, tipo: value, cat: "", of: "", q: "", urg: false }), resetScroll: false });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value="">Todos</option>
-              {LISTING_TYPES.filter((t) => data.listings.some((l) => l.type === t.value)).map((t) => <option key={t.value} value={t.value}>{t.plural}</option>)}
+              <option value=""><Text text="Todos" /></option>
+              {LISTING_TYPES.filter((t) => data.listings.some((l) => l.type === t.value)).map((t) => <option key={t.value} value={t.value}>{tr(t.plural)}</option>)}
             </select>
           </label>
           <label className="min-w-0 sm:w-64">
-            <select aria-label="Categoría" value={cat} onChange={(e) => {
+            <select aria-label={tr("Categoría")} value={cat} onChange={(e) => {
               const value = e.target.value;
               setText("");
               const c = data.categories.find((x) => x.slug === value);
               const t = c ? (c.type ?? data.listings.find((l) => l.category_id === c.id)?.type ?? tipo) : tipo;
               navigate({ search: (p) => ({ ...p, cat: value, tipo: t, of: "", q: "", urg: false }), resetScroll: false });
             }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value="">Todas las categorías</option>
-              {data.categories.filter((c) => data.listings.some((l) => (!tipo || l.type === tipo) && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+              <option value=""><Text text="Todas las categorías" /></option>
+              {data.categories.filter((c) => data.listings.some((l) => (!tipo || l.type === tipo) && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{tr(c.name)}</option>)}
             </select>
           </label>
           {activeCat && <label className="min-w-0 sm:w-64">
-            <select aria-label="Oficio / actividad" value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }), resetScroll: false })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value="">Todos los oficios</option>
-              {activities.map((a) => <option key={a} value={a}>{a}</option>)}
+            <select aria-label={tr("Oficio / actividad")} value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }), resetScroll: false })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
+              <option value=""><Text text="Todos los oficios" /></option>
+              {activities.map((a) => <option key={a} value={a}>{tr(a)}</option>)}
             </select>
           </label>}
         </div>
@@ -172,14 +173,14 @@ function Index() {
               urg ? "border-availability-border bg-availability text-availability-foreground" : "border-foreground/70 bg-card text-foreground",
             )}
           >
-            <Zap className="h-5 w-5" aria-hidden /> Urgencias y guardias{urg ? " · quitar" : ""}
+            <Zap className="h-5 w-5" aria-hidden />  <Text text="Urgencias y guardias" />{tr(urg ? " · quitar" : "")}
           </Button>
         </div>
       </nav>
 
       <main className="mx-auto max-w-2xl px-4 py-6">
         {browsingHome && collaborators.length > 0 && (
-          <section aria-label="Colaboradores" className="mb-6 border-b pb-6">
+          <section aria-label={tr("Colaboradores")} className="mb-6 border-b pb-6">
             <div className="grid gap-4">
               {collaborators.map((l) => (
                 <ListingCard key={l.id} listing={l} collaborator categoryName={catName.get(l.category_id ?? "")} />
@@ -188,24 +189,23 @@ function Index() {
           </section>
         )}
 
-        <section key={JSON.stringify([q, cat, of, tipo, urg])} aria-label="Directorio" className="animate-results-in">
+        <section key={JSON.stringify([q, cat, of, tipo, urg])} aria-label={tr("Directorio")} className="animate-results-in">
           {!browsingHome && (
             <h2 className="text-center font-display text-2xl font-bold">
-              {urg ? "Urgencias y guardias" : activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : "Resultados"}
+              {tr(urg ? "Urgencias y guardias" : activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : "Resultados")}
             </h2>
           )}
           <p className={browsingHome ? "sr-only" : "text-center text-sm text-muted-foreground"} aria-live="polite">
-            {results.length} {results.length === 1 ? "resultado" : "resultados"}
+            {results.length} {tr(results.length === 1 ? "resultado" : "resultados")}
           </p>
           {results.length === 0 ? (
             <div className="mt-6 rounded-soft border bg-card p-6 text-center">
-              <p className="font-display text-xl font-bold">Vaya, no encontramos nada con ese nombre</p>
-              <p className="mt-2 text-base text-muted-foreground">Es posible que aún no esté registrado o esté escrito de otra forma.</p>
+              <p className="font-display text-xl font-bold"><Text text="Vaya, no encontramos nada con ese nombre" /></p>
+              <p className="mt-2 text-base text-muted-foreground"><Text text="Es posible que aún no esté registrado o esté escrito de otra forma." /></p>
               <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
                 <Button type="button" variant="outline" className="h-12 rounded-soft text-base" onClick={() => { setText(""); navigate({ search: { q: "", cat: "", of: "", tipo: "", urg: false } }); }}>
-                  Ver todo el directorio
-                </Button>
-                <BusinessSignupDialog><Button className="h-12 rounded-soft text-base">Sugerir este negocio</Button></BusinessSignupDialog>
+                   <Text text="Ver todo el directorio" /> </Button>
+                <BusinessSignupDialog><Button className="h-12 rounded-soft text-base"><Text text="Sugerir este negocio" /></Button></BusinessSignupDialog>
               </div>
             </div>
           ) : (
@@ -223,8 +223,8 @@ function Index() {
         </section>
 
         <aside className="mt-8 rounded-soft border bg-secondary/60 p-6 text-center">
-          <p className="text-lg font-semibold">¿Tienes un comercio o prestas un servicio en el pueblo y no apareces?</p>
-          <BusinessSignupDialog><Button className="mt-4 h-12 rounded-soft text-base">Dar de alta mi negocio</Button></BusinessSignupDialog>
+          <p className="text-lg font-semibold"><Text text="¿Tienes un comercio o prestas un servicio en el pueblo y no apareces?" /></p>
+          <BusinessSignupDialog><Button className="mt-4 h-12 rounded-soft text-base"><Text text="Dar de alta mi negocio" /></Button></BusinessSignupDialog>
         </aside>
       </main>
       <BackToTop />
@@ -234,6 +234,7 @@ function Index() {
 }
 
 function BackToTop() {
+  const { tr, locale } = useI18n();
   const [show, setShow] = useState(false);
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 800);
@@ -245,7 +246,7 @@ function BackToTop() {
   return (
     <Button variant="ghost"
       type="button"
-      aria-label="Volver arriba"
+      aria-label={tr("Volver arriba")}
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       className="fixed bottom-5 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary bg-card text-primary"
     >

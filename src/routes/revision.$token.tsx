@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -25,10 +26,11 @@ export const Route = createFileRoute("/revision/$token")({
   }),
   loader: ({ context, params }) => context.queryClient.ensureQueryData(reviewQuery(params.token)),
   component: Page,
-  errorComponent: () => <div role="alert" className="p-8 text-center">No hemos podido cargar esta página.</div>,
+  errorComponent: () => <div role="alert" className="p-8 text-center"><Text text="No hemos podido cargar esta página." /></div>,
 });
 
 function Page() {
+  const { tr, locale } = useI18n();
   const { token } = Route.useParams();
   const { data } = useSuspenseQuery(reviewQuery(token));
   const [approvedUrl, setApprovedUrl] = useState<string | null>(null);
@@ -38,7 +40,7 @@ function Page() {
       <Shell>
         <Estado
           title={data.reason === "expired" ? "El enlace ha caducado" : "El enlace no es válido"}
-          text="Pide al administrador que te envíe uno nuevo por WhatsApp."
+          text={tr("Pide al administrador que te envíe uno nuevo por WhatsApp.")}
         />
       </Shell>
     );
@@ -70,7 +72,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <header className="border-b px-4 py-3">
         <div className="mx-auto flex max-w-2xl items-baseline justify-between">
           <span className="font-display text-lg font-bold">Aquí Bonela</span>
-          <span className="text-xs uppercase tracking-widest text-foreground">Revisión de ficha</span>
+          <span className="text-xs uppercase tracking-widest text-foreground"><Text text="Revisión de ficha" /></span>
         </div>
       </header>
       <main className="mx-auto max-w-2xl px-4 py-6">{children}</main>
@@ -79,10 +81,11 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 function Estado({ title, text }: { title: string; text: string }) {
+  const { tr, locale } = useI18n();
   return (
     <div className="space-y-3 py-10 text-center">
       <CircleAlert className="mx-auto h-10 w-10 text-terracotta" />
-      <h1 className="font-display text-2xl font-bold">{title}</h1>
+      <h1 className="font-display text-2xl font-bold">{tr(title)}</h1>
       <p className="text-sm text-muted-foreground">{text}</p>
     </div>
   );
@@ -92,12 +95,11 @@ function Done({ url }: { url: string | null }) {
   return (
     <div className="space-y-4 py-10 text-center">
       <BadgeCheck className="mx-auto h-12 w-12 text-primary" />
-      <h1 className="font-display text-2xl font-bold">¡Gracias! Tu ficha está autorizada</h1>
-      <p className="text-sm text-muted-foreground">Ya aparece publicada en el directorio de Casarabonela. Puedes cerrar esta página.</p>
+      <h1 className="font-display text-2xl font-bold"><Text text="¡Gracias! Tu ficha está autorizada" /></h1>
+      <p className="text-sm text-muted-foreground"><Text text="Ya aparece publicada en el directorio de Casarabonela. Puedes cerrar esta página." /></p>
       {url && (
         <a href={url} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center bg-primary px-5 text-sm font-medium text-primary-foreground">
-          Ver mi ficha
-        </a>
+           <Text text="Ver mi ficha" /> </a>
       )}
     </div>
   );
@@ -118,6 +120,7 @@ function ReviewForm({
   expiresAt: string;
   onApproved: (url: string | null) => void;
 }) {
+  const { tr, locale } = useI18n();
   const submit = useServerFn(submitReview);
   const [show, setShow] = useState({
     phone: contact?.show_phone ?? true,
@@ -145,9 +148,9 @@ function ReviewForm({
     try {
       const res = await correct({ data: { token, comment: comment.trim() } });
       if (res.ok) setSent(true);
-      else toast.error(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido.");
+      else toast.error(tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."));
     } catch {
-      toast.error("No se pudo enviar. Inténtalo de nuevo.");
+      toast.error(tr("No se pudo enviar. Inténtalo de nuevo."));
     } finally {
       setBusy(false);
     }
@@ -167,13 +170,13 @@ function ReviewForm({
         },
       });
       if (res.ok) {
-        toast.success("Ficha autorizada y publicada");
+        toast.success(tr("Ficha autorizada y publicada"));
         onApproved(res.url);
       } else {
-        toast.error(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido.");
+        toast.error(tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."));
       }
     } catch {
-      toast.error("No se pudo guardar. Inténtalo de nuevo.");
+      toast.error(tr("No se pudo guardar. Inténtalo de nuevo."));
     } finally {
       setBusy(false);
     }
@@ -183,16 +186,15 @@ function ReviewForm({
     <div className="space-y-5">
     <div className="space-y-5">
       <div>
-        <h1 className="font-display text-2xl font-bold">Revisa tu ficha</h1>
+        <h1 className="font-display text-2xl font-bold"><Text text="Revisa tu ficha" /></h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Comprueba que todo está bien, elige qué datos se publican y autoriza. Este enlace caduca el{" "}
-          {new Date(expiresAt).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}.
+           <Text text="Comprueba que todo está bien, elige qué datos se publican y autoriza. Este enlace caduca el" />{" "}
+          {new Date(expiresAt).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })}.
         </p>
       </div>
 
       <p className="rounded-xl bg-secondary px-4 py-3 text-base text-secondary-foreground">
-        Así se verá tu ficha. Usa los interruptores <strong>«Se ve / Oculto»</strong> para elegir qué datos aparecen.
-      </p>
+         <Text text="Así se verá tu ficha. Usa los interruptores" /> <strong><Text text="«Se ve / Oculto»" /></strong>  <Text text="para elegir qué datos aparecen." /> </p>
     </div>
 
     <div className="-mx-4 border-y py-4">
@@ -201,32 +203,32 @@ function ReviewForm({
 
     <div className="space-y-5">
       <section className="space-y-3 rounded-xl border p-4">
-        <h2 className="font-display text-lg font-bold">Si todo está correcto</h2>
+        <h2 className="font-display text-lg font-bold"><Text text="Si todo está correcto" /></h2>
         <label className="flex items-start gap-2 text-base">
           <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1 h-5 w-5" />
-          <span>Confirmo que soy el titular de este negocio y autorizo la publicación de los datos marcados en Aquí Bonela.</span>
+          <span><Text text="Confirmo que soy el titular de este negocio y autorizo la publicación de los datos marcados en Aquí Bonela." /></span>
         </label>
         <button
           onClick={approve}
           disabled={busy || !agree}
           className="h-12 w-full rounded-xl bg-primary text-base font-semibold text-primary-foreground disabled:opacity-60"
         >
-          {busy ? "Enviando…" : "Autorizo la publicación de estos datos"}
+          {tr(busy ? "Enviando…" : "Autorizo la publicación de estos datos")}
         </button>
       </section>
 
       <section className="space-y-3 rounded-xl border p-4">
-        <h2 className="font-display text-lg font-bold">Si algo no es correcto</h2>
+        <h2 className="font-display text-lg font-bold"><Text text="Si algo no es correcto" /></h2>
         {sent ? (
-          <p className="text-base">Mensaje enviado. El administrador revisará los cambios y te avisará. Tu ficha sigue sin publicar.</p>
+          <p className="text-base"><Text text="Mensaje enviado. El administrador revisará los cambios y te avisará. Tu ficha sigue sin publicar." /></p>
         ) : (
           <>
             <Textarea
               rows={3}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Escribe qué hay que corregir"
-              aria-label="Qué hay que corregir"
+              placeholder={tr("Escribe qué hay que corregir")}
+              aria-label={tr("Qué hay que corregir")}
               className="text-base"
             />
             <button
@@ -234,8 +236,7 @@ function ReviewForm({
               disabled={busy || !comment.trim()}
               className="h-12 w-full rounded-xl border bg-card text-base font-semibold disabled:opacity-60"
             >
-              Avisar al administrador
-            </button>
+               <Text text="Avisar al administrador" /> </button>
           </>
         )}
       </section>

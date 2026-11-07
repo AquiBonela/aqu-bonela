@@ -40,7 +40,7 @@ const SECTIONS: Section[] = [
 
 function Home() {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
@@ -94,7 +94,7 @@ function Home() {
                     <li key={l.id} role="option" aria-selected={i === active}>
                       <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => goListing(l)} className={`block w-full px-4 py-2.5 text-left hover:bg-muted ${i === active ? "bg-muted" : ""}`}>
                         <span className="block font-semibold text-foreground">{l.name}</span>
-                        <span className="block truncate text-xs text-muted-foreground">{l.activity || l.short_description}</span>
+                        <span className="block truncate text-xs text-muted-foreground">{tr(l.activity || l.short_description || "")}</span>
                       </button>
                     </li>
                   ))}
