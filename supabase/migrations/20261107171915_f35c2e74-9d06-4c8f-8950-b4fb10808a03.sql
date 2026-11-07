@@ -1,0 +1,1 @@
+UPDATE public.site_settings SET banner_text = 'Versión de prueba: estamos completando la información del pueblo.', banner_enabled = true;
