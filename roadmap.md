@@ -17,4 +17,4 @@
 
 - [x] Incorporar respuesta táctil, transiciones de resultados, sugerencias animadas y confirmaciones flotantes; comprobar búsquedas, compartir y movimiento reducido en navegador.
 
-- [ ] Abrir alta de negocio en una ventana desde portada y directorio, reutilizando el formulario de sugerencias.
+- [x] Abrir alta de negocio en una ventana desde portada y directorio, reutilizando el formulario de sugerencias; verificar apertura, campos y cierre en móvil y escritorio.
