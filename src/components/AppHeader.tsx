@@ -112,7 +112,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               onClick={() => setOpen(true)}
               aria-expanded={open}
               aria-label={t("menu.open")}
-              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center hover:text-beige"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-inherit hover:bg-transparent hover:text-beige"
             >
               <Menu className="h-6 w-6" aria-hidden />
             </Button>
@@ -131,7 +131,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
                 type="button"
                 onClick={() => { setClosing(true); window.setTimeout(() => { setOpen(false); setClosing(false); }, 160); }}
                 aria-label={t("menu.close")}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center text-primary-foreground hover:bg-transparent hover:text-beige"
               >
                 <X className="h-6 w-6" aria-hidden />
               </Button>
