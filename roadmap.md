@@ -16,3 +16,5 @@
 - [x] Barra fija de Descubrir: visible solo al quedar anclada arriba.
 
 - [x] Incorporar respuesta táctil, transiciones de resultados, sugerencias animadas y confirmaciones flotantes; comprobar búsquedas, compartir y movimiento reducido en navegador.
+
+- [ ] Abrir alta de negocio en una ventana desde portada y directorio, reutilizando el formulario de sugerencias.
