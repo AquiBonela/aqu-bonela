@@ -112,11 +112,11 @@ function EditPage() {
       setReviewLink({ url: `${window.location.origin}/revision/${res.token}`, expiresAt: res.expiresAt });
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? error.code : null;
-      toast.error(code === "42501"
+      toast.error(tr(code === "42501"
         ? "Tu sesión no tiene permisos de administrador. Vuelve a iniciar sesión."
         : code === "23503"
           ? "La ficha ya no existe. Vuelve al listado y ábrela de nuevo."
-          : "No se pudo guardar el enlace. Comprueba tu conexión e inténtalo de nuevo.");
+          : "No se pudo guardar el enlace. Comprueba tu conexión e inténtalo de nuevo."));
     } finally {
       setLinkBusy(false);
     }
@@ -143,8 +143,8 @@ function EditPage() {
   async function save(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     const labels = list(f.labels, /,/);
-    if (labels.length > 3) { toast.error("Máximo 3 etiquetas destacadas."); return; }
-    if (!f.category_id) { toast.error("Elige una categoría."); return; }
+    if (labels.length > 3) { toast.error(tr("Máximo 3 etiquetas destacadas.")); return; }
+    if (!f.category_id) { toast.error(tr("Elige una categoría.")); return; }
     setSaving(true);
     const featured_until = f.collaborator
       ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil(new Date(), months)
@@ -188,29 +188,29 @@ function EditPage() {
       }
       await qc.invalidateQueries({ queryKey: ["admin"] });
       qc.invalidateQueries({ queryKey: ["directory"] });
-      toast.success("Ficha guardada");
+      toast.success(tr("Ficha guardada"));
       if (isNew) navigate({ to: "/admin/fichas/$id", params: { id: listingId } });
     } catch (err) {
       const msg = (err as { message?: string }).message ?? "";
-      toast.error(msg.includes("duplicate") ? "Ya existe una ficha con esa dirección web (slug)." : `No se pudo guardar: ${msg}`);
+      toast.error(tr(msg.includes("duplicate") ? "Ya existe una ficha con esa dirección web (slug)." : `No se pudo guardar: ${msg}`));
     } finally {
       setSaving(false);
     }
   }
 
   async function eliminar() {
-    if (!window.confirm(`¿Eliminar definitivamente «${f.name}»? Se borrarán también sus fotos, contactos, horarios, avisos y autorizaciones. Esta acción no se puede deshacer.`)) return;
+    if (!window.confirm(tr(`¿Eliminar definitivamente «${f.name}»? Se borrarán también sus fotos, contactos, horarios, avisos y autorizaciones. Esta acción no se puede deshacer.`))) return;
     setDeleting(true);
     try {
       const result = await deleteListing(id);
       await qc.invalidateQueries({ queryKey: ["admin"] });
       await qc.invalidateQueries({ queryKey: ["directory"] });
       await qc.invalidateQueries({ queryKey: ["listing"] });
-      if (result.cleanupFailed) toast.warning("Ficha eliminada, pero no se pudieron borrar algunos archivos de fotos.");
-      else toast.success("Ficha eliminada");
+      if (result.cleanupFailed) toast.warning(tr("Ficha eliminada, pero no se pudieron borrar algunos archivos de fotos."));
+      else toast.success(tr("Ficha eliminada"));
       navigate({ to: "/admin" });
     } catch {
-      toast.error("No se pudo eliminar la ficha. Comprueba tu conexión y tus permisos.");
+      toast.error(tr("No se pudo eliminar la ficha. Comprueba tu conexión y tus permisos."));
     } finally {
       setDeleting(false);
     }
@@ -317,7 +317,7 @@ function EditPage() {
         <Field label={tr("Dirección web")} hint={`aquibonela…${listingPath(f.type, f.slug || "…")}`}>
           <Input value={f.slug} onChange={(e) => { setSlugTouched(true); set("slug", slugify(e.target.value)); }} />
         </Field>
-        <Field label={tr("Descripción corta")} hint={`Se ve en la tarjeta del directorio. ${f.short_description.length}/140`}>
+        <Field label={tr("Descripción corta")} hint={`${tr("Se ve en la tarjeta del directorio.")} ${f.short_description.length}/140`}>
           <Input maxLength={140} value={f.short_description} onChange={(e) => set("short_description", e.target.value)} />
         </Field>
         <Field label={tr("Descripción extensa")} hint={tr("Se ve en la página de la ficha.")}>
@@ -360,7 +360,7 @@ function EditPage() {
       <Section title={tr("5. Imágenes y distinciones")}>
         {isNew ? <p className="text-sm text-muted-foreground"><Text text="Guarda la ficha para poder subir imágenes." /></p> : <CoverPicker listingId={id} />}
         <Toggle label={tr("Colaborador (1 mes)")} checked={f.collaborator} onChange={(v) => set("collaborator", v)}
-          hint={f.collaborator && f.featured_until && new Date(f.featured_until) > new Date() ? `Hasta el ${new Date(f.featured_until).toLocaleDateString(locale)}` : "Aparece en portada y con galería de fotos"} />
+          hint={f.collaborator && f.featured_until && new Date(f.featured_until) > new Date() ? `${tr("Hasta el")} ${new Date(f.featured_until).toLocaleDateString(locale)}` : "Aparece en portada y con galería de fotos"} />
         {f.collaborator && !isNew && <GalleryPicker listingId={id} />}
         <Toggle label={tr("Urgencias 24h")} checked={f.urgent_24h} onChange={(v) => set("urgent_24h", v)} hint={tr("Fontaneros, cerrajeros, electricistas…")} />
         {AVAILABILITY_OPTIONS.map((option) => <Toggle key={option} label={option}
@@ -394,7 +394,7 @@ function EditPage() {
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText(reviewLink.url);
-                    toast.success("Enlace copiado");
+                    toast.success(tr("Enlace copiado"));
                   }}
                   className="h-10 border px-4 text-sm"
                 >

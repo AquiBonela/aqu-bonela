@@ -39,7 +39,7 @@ export function CoverPicker({ listingId }: { listingId: string }) {
       await setCover(uploaded);
     } catch (e) {
       if (uploaded) await removeFile(uploaded);
-      toast.error(`No se pudo subir: ${errMsg(e)}`);
+      toast.error(tr(`No se pudo subir: ${errMsg(e)}`));
     } finally {
       setBusy(false);
       if (input.current) input.current.value = "";
@@ -48,7 +48,7 @@ export function CoverPicker({ listingId }: { listingId: string }) {
 
   async function quitar() {
     setBusy(true);
-    try { await setCover(null); } catch (e) { toast.error(`No se pudo quitar: ${errMsg(e)}`); } finally { setBusy(false); }
+    try { await setCover(null); } catch (e) { toast.error(tr(`No se pudo quitar: ${errMsg(e)}`)); } finally { setBusy(false); }
   }
 
   return (
@@ -87,7 +87,7 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
     const list = Array.from(files).slice(0, 5 - photos.length);
-    if (files.length > list.length) toast.error("Máximo 5 fotos en la galería.");
+    if (files.length > list.length) toast.error(tr("Máximo 5 fotos en la galería."));
     setBusy(true);
     let order = photos.reduce((m, p) => Math.max(m, p.sort_order), -1);
     for (const file of list) {
@@ -98,7 +98,7 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
         if (error) throw error;
       } catch (e) {
         if (uploaded) await removeFile(uploaded);
-        toast.error(`${file.name}: ${errMsg(e)}`);
+        toast.error(tr(`${file.name}: ${errMsg(e)}`));
       }
     }
     await load();
@@ -108,7 +108,7 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
 
   async function quitar(p: Photo) {
     const { error } = await supabase.from("listing_photos").delete().eq("id", p.id);
-    if (error) { toast.error(`No se pudo quitar: ${error.message}`); return; }
+    if (error) { toast.error(tr(`No se pudo quitar: ${error.message}`)); return; }
     await removeFile(p.storage_path);
     setPhotos((ps) => ps.filter((x) => x.id !== p.id));
   }
@@ -116,7 +116,7 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
   async function saveAlt(p: Photo, alt: string) {
     if (alt === p.alt) return;
     const { error } = await supabase.from("listing_photos").update({ alt }).eq("id", p.id);
-    if (error) toast.error(`No se pudo guardar el texto: ${error.message}`);
+    if (error) toast.error(tr(`No se pudo guardar el texto: ${error.message}`));
     else setPhotos((ps) => ps.map((x) => (x.id === p.id ? { ...x, alt } : x)));
   }
 

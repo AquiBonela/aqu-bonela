@@ -45,13 +45,14 @@ function GeneralSettings() {
   const set = <K extends keyof SiteSettings>(k: K, v: SiteSettings[K]) => setF({ ...f, [k]: v });
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    const labels = Array.from(new Set(f!.common_labels.map((t) => t.trim()).filter(Boolean)));
+    if (!f) return;
+    const labels = Array.from(new Set(f.common_labels.map((t) => t.trim()).filter(Boolean)));
     const { error } = await supabase
       .from("site_settings")
-      .update({ ...f!, common_labels: labels, collaborator_months: Number(f!.collaborator_months) || 1 })
+      .update({ ...f, common_labels: labels, collaborator_months: Number(f.collaborator_months) || 1 })
       .eq("id", true);
-    if (error) { toast.error("No se pudo guardar."); return; }
-    toast.success("Configuración guardada");
+    if (error) { toast.error(tr("No se pudo guardar.")); return; }
+    toast.success(tr("Configuración guardada"));
     qc.invalidateQueries({ queryKey: ["admin", "settings"] });
     qc.invalidateQueries({ queryKey: ["directory"] });
     qc.invalidateQueries({ queryKey: ["legal-owner"] });
@@ -146,13 +147,13 @@ function Categories() {
     if (cats.some((c) => c.slug === slug)) slug = `${slug}-${tab}`;
     const sort = Math.max(0, ...cats.map((c) => c.sort_order)) + 1;
     const { error } = await supabase.from("categories").insert({ name: n, slug, type: tab, sort_order: sort, is_provisional: false });
-    if (error) { toast.error("No se pudo crear (¿nombre repetido?)."); return; }
+    if (error) { toast.error(tr("No se pudo crear (¿nombre repetido?).")); return; }
     setName(""); refresh();
   }
   async function rename(id: string, newName: string) {
     if (!newName.trim()) return;
     const { error } = await supabase.from("categories").update({ name: newName.trim() }).eq("id", id);
-    if (error) toast.error("No se pudo renombrar."); else { toast.success("Categoría actualizada"); refresh(); }
+    if (error) toast.error(tr("No se pudo renombrar.")); else { toast.success(tr("Categoría actualizada")); refresh(); }
   }
   async function move(i: number, dir: -1 | 1) {
     const a = list[i], b = list[i + dir];
@@ -163,10 +164,10 @@ function Categories() {
   }
   async function remove(c: Cat) {
     const n = count(c.id);
-    if (n) { toast.error(`No se puede borrar: tiene ${n} ficha(s).`); return; }
-    if (!confirm(`¿Borrar la categoría «${c.name}» y todas sus actividades?`)) return;
+    if (n) { toast.error(tr(`No se puede borrar: tiene ${n} ficha(s).`)); return; }
+    if (!confirm(tr(`¿Borrar la categoría «${c.name}» y todas sus actividades?`))) return;
     const { error } = await supabase.from("categories").delete().eq("id", c.id);
-    if (error) toast.error("No se pudo borrar."); else refresh();
+    if (error) toast.error(tr("No se pudo borrar.")); else refresh();
   }
 
   return (
@@ -190,8 +191,8 @@ function Categories() {
           return (
             <li key={c.id} className="border">
               <div className="flex flex-wrap items-center gap-2 p-2">
-                <Input defaultValue={c.name} className="max-w-xs flex-1" onBlur={(e) => e.target.value !== c.name && rename(c.id, e.target.value)} aria-label={`Nombre de ${c.name}`} />
-                <span className="text-xs text-muted-foreground">{mine.length} actividades · {n} fichas</span>
+                <Input defaultValue={c.name} className="max-w-xs flex-1" onBlur={(e) => e.target.value !== c.name && rename(c.id, e.target.value)} aria-label={`${tr("Nombre de")} ${c.name}`} />
+                <span className="text-xs text-muted-foreground">{mine.length} <Text text="actividades" /> · {n} <Text text="fichas" /></span>
                 <div className="ml-auto flex gap-1">
                   <Button type="button" variant="outline" size="sm" onClick={() => setOpen(open === c.id ? null : c.id)}>
                     {tr(open === c.id ? "Cerrar" : "Actividades")}
@@ -208,7 +209,7 @@ function Categories() {
         {!list.length && <li className="text-sm text-muted-foreground"><Text text="Todavía no hay categorías de este tipo." /></li>}
       </ul>
       <form onSubmit={add} className="mt-4 flex gap-2">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={`Nueva categoría de ${LISTING_TYPES.find((t) => t.value === tab)!.plural.toLowerCase()}`} className="max-w-xs" />
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={`${tr("Nueva categoría de")} ${tr(LISTING_TYPES.find((t) => t.value === tab)?.plural ?? "").toLowerCase()}`} className="max-w-xs" />
         <Button type="submit"><Text text="Añadir" /></Button>
       </form>
     </section>
@@ -228,24 +229,24 @@ function Activities({ category, items, used, onChange }: {
     if (!n) return;
     const sort = Math.max(-1, ...items.map((a) => a.sort_order)) + 1;
     const { error } = await supabase.from("activities").insert({ category_id: category.id, name: n, sort_order: sort });
-    if (error) { toast.error("No se pudo crear (¿ya existe?)."); return; }
+    if (error) { toast.error(tr("No se pudo crear (¿ya existe?).")); return; }
     setName(""); onChange();
   }
   async function update(a: Act, patch: { name?: string; synonyms?: string[] }) {
     const { error } = await supabase.from("activities").update(patch).eq("id", a.id);
-    if (error) { toast.error("No se pudo guardar."); return; }
+    if (error) { toast.error(tr("No se pudo guardar.")); return; }
     // Las fichas guardan el nombre de la actividad: al renombrar, se actualizan también.
     if (patch.name && patch.name !== a.name) {
       await supabase.from("listings").update({ activity: patch.name }).eq("category_id", category.id).eq("activity", a.name);
     }
-    toast.success("Actividad guardada"); onChange();
+    toast.success(tr("Actividad guardada")); onChange();
   }
   async function remove(a: Act) {
     const n = inUse(a);
-    if (n) { toast.error(`No se puede borrar: la usan ${n} ficha(s).`); return; }
-    if (!confirm(`¿Borrar la actividad «${a.name}»?`)) return;
+    if (n) { toast.error(tr(`No se puede borrar: la usan ${n} ficha(s).`)); return; }
+    if (!confirm(tr(`¿Borrar la actividad «${a.name}»?`))) return;
     const { error } = await supabase.from("activities").delete().eq("id", a.id);
-    if (error) toast.error("No se pudo borrar."); else onChange();
+    if (error) toast.error(tr("No se pudo borrar.")); else onChange();
   }
 
   return (
@@ -257,13 +258,13 @@ function Activities({ category, items, used, onChange }: {
           <li key={a.id} className="grid gap-2 sm:grid-cols-[14rem_1fr_auto] sm:items-center">
             <Input defaultValue={a.name} aria-label={tr("Nombre de la actividad")}
               onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== a.name) update(a, { name: v }); }} />
-            <Input defaultValue={a.synonyms.join(", ")} placeholder={tr("Palabras parecidas")} aria-label={`Palabras parecidas de ${a.name}`}
+            <Input defaultValue={a.synonyms.join(", ")} placeholder={tr("Palabras parecidas")} aria-label={`${tr("Palabras parecidas de")} ${a.name}`}
               onBlur={(e) => {
                 const v = e.target.value.split(",").map((x) => x.trim()).filter(Boolean);
                 if (v.join(",") !== a.synonyms.join(",")) update(a, { synonyms: v });
               }} />
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">{inUse(a)} fichas</span>
+              <span className="text-xs text-muted-foreground">{inUse(a)} <Text text="fichas" /></span>
               <Button type="button" variant="ghost" size="sm" onClick={() => remove(a)}><Text text="Borrar" /></Button>
             </div>
           </li>

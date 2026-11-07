@@ -148,9 +148,9 @@ function ReviewForm({
     try {
       const res = await correct({ data: { token, comment: comment.trim() } });
       if (res.ok) setSent(true);
-      else toast.error(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido.");
+      else toast.error(tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."));
     } catch {
-      toast.error("No se pudo enviar. Inténtalo de nuevo.");
+      toast.error(tr("No se pudo enviar. Inténtalo de nuevo."));
     } finally {
       setBusy(false);
     }
@@ -170,13 +170,13 @@ function ReviewForm({
         },
       });
       if (res.ok) {
-        toast.success("Ficha autorizada y publicada");
+        toast.success(tr("Ficha autorizada y publicada"));
         onApproved(res.url);
       } else {
-        toast.error(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido.");
+        toast.error(tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."));
       }
     } catch {
-      toast.error("No se pudo guardar. Inténtalo de nuevo.");
+      toast.error(tr("No se pudo guardar. Inténtalo de nuevo."));
     } finally {
       setBusy(false);
     }
