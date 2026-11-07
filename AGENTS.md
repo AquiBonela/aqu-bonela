@@ -29,3 +29,5 @@
 
 - Mount one shared Sonner notification host in the root layout; emit confirmations only after success and never for cancelled sharing. Why: consistent feedback without duplicate or misleading notices.
 - Keep brief press and list-entry effects in shared CSS and respect reduced-motion preferences. Why: consistent feedback without layout shifts or scroll effects.
+
+- Business signup dialogs and the suggestion page reuse SuggestionForm and the existing suggestions insert. Why: keep one submission flow while preserving the standalone information page.

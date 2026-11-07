@@ -6,6 +6,7 @@ import { Search, X, Zap, ArrowUp } from "lucide-react";
 import { isEmergencyService } from "@/lib/listing-availability";
 import { useEffect, useMemo, useState } from "react";
 import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
+import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import heroImg from "@/assets/hero-casarabonela.jpg";
@@ -204,7 +205,7 @@ function Index() {
                 <Button type="button" variant="outline" className="h-12 rounded-soft text-base" onClick={() => { setText(""); navigate({ search: { q: "", cat: "", of: "", tipo: "", urg: false } }); }}>
                   Ver todo el directorio
                 </Button>
-                <Button asChild className="h-12 rounded-soft text-base"><Link to="/sugerir">Sugerir este negocio</Link></Button>
+                <BusinessSignupDialog><Button className="h-12 rounded-soft text-base">Sugerir este negocio</Button></BusinessSignupDialog>
               </div>
             </div>
           ) : (
@@ -223,7 +224,7 @@ function Index() {
 
         <aside className="mt-8 rounded-soft border bg-secondary/60 p-6 text-center">
           <p className="text-lg font-semibold">¿Tienes un comercio o prestas un servicio en el pueblo y no apareces?</p>
-          <Button asChild className="mt-4 h-12 rounded-soft text-base"><Link to="/sugerir">Dar de alta mi negocio</Link></Button>
+          <BusinessSignupDialog><Button className="mt-4 h-12 rounded-soft text-base">Dar de alta mi negocio</Button></BusinessSignupDialog>
         </aside>
       </main>
       <BackToTop />
