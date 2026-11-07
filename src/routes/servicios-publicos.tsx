@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
+import { EmergencyPhonesList } from "@/components/EmergencyPhones";
 import hero from "@/assets/servicios-publicos.jpg";
 
 export const Route = createFileRoute("/servicios-publicos")({
@@ -22,11 +23,6 @@ export const Route = createFileRoute("/servicios-publicos")({
   component: ServiciosPublicos,
 });
 
-const URGENCIAS = [
-  { label: "Emergencias", tel: "112" },
-  { label: "Guardia Civil", tel: "062" },
-  { label: "Salud Responde", tel: "955545060", show: "955 54 50 60" },
-];
 
 type Cat = "salud" | "tramites" | "diario" | "movilidad";
 const CATS: { id: Cat | "todos"; label: string }[] = [
@@ -154,18 +150,9 @@ function ServiciosPublicos() {
 
         <section className="mx-auto max-w-5xl px-4 pt-8">
           <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.15em] text-destructive">
-            <Siren className="h-5 w-5" aria-hidden /> Urgencias
+            <Siren className="h-5 w-5" aria-hidden /> Emergencias y teléfonos de ayuda
           </div>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            {URGENCIAS.map((u) => (
-              <a key={u.tel} href={`tel:${u.tel}`} className="flex min-h-16 items-center justify-between border-2 border-destructive/30 bg-destructive/5 px-4 hover:bg-destructive/10">
-                <span className="font-semibold">{u.label}</span>
-                <span className="flex items-center gap-2 whitespace-nowrap font-display text-2xl font-extrabold text-destructive">
-                  <Phone className="h-5 w-5" aria-hidden /> {u.show ?? u.tel}
-                </span>
-              </a>
-            ))}
-          </div>
+          <div className="mt-3"><EmergencyPhonesList /></div>
           <div className="mt-3 flex gap-3 bg-muted p-4 text-sm">
             <Moon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <p><strong>¿Consultorio cerrado, de noche o en fin de semana?</strong> Llama al 112 o a Salud Responde. <span className="italic text-muted-foreground">Centro de urgencias de referencia y farmacia de guardia: por confirmar.</span></p>
