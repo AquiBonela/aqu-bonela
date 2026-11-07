@@ -4,7 +4,6 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { EmergencyButton } from "@/components/EmergencyPhones";
-import logoAb from "@/assets/logo-ab.webp";
 
 export type HeaderRoute =
   | "/"
@@ -131,14 +130,12 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         <div id="menu-principal" onClick={(event) => {
           if (!(event.target instanceof Element) || event.target.closest("a, button, [role='group'], footer, img, li")) return;
           closeMenu();
-        }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary/97 text-primary-foreground`}>
+        }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground`}>
           <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
             <div className="flex justify-start">
               <LangSwitch className="[&_button]:!text-primary-foreground" />
             </div>
-            <div className="flex justify-center">
-              <img src={logoAb} alt="ab" className="h-10 w-auto" />
-            </div>
+            <div />
             <div className="flex justify-end">
               <Button variant="ghost" size="icon"
                 type="button"
