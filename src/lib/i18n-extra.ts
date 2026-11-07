@@ -525,6 +525,7 @@ export const englishText: Record<string, string> = {
   "Hasta el": "Until",
   "Se ve en la tarjeta del directorio.": "Shown on the directory card.",
   "Proyecto en periodo de prueba": "Project in its trial period",
+  "Versión de prueba: estamos completando la información del pueblo.": "Trial version: we are still adding information about the village.",
   "Busca un negocio, un profesional, un servicio o cualquier información del pueblo": "Find a business, a professional, a service or any information about the village",
   "Alimentación": "Food shops",
   "Alojamiento": "Accommodation",

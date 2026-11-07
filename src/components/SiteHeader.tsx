@@ -3,6 +3,7 @@ import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import { WeatherNow } from "@/components/WeatherNow";
 import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
+import { SiteBanner } from "@/components/SiteBanner";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 
 const menuItems = (t: ReturnType<typeof useI18n>["t"], onSend: () => void): HeaderItem[] => [
@@ -42,6 +43,7 @@ export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?:
       brand={brand}
       items={menuItems(t, () => setSendOpen(true))}
     />
+    <SiteBanner />
     <BusinessSignupDialog business={false} open={sendOpen} onOpenChange={setSendOpen} />
     </>
   );

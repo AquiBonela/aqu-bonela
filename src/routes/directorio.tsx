@@ -78,11 +78,6 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      {data.banner && (
-        <div role="status" className="border-b bg-accent/15 px-4 py-2.5 text-center text-sm font-medium text-foreground">
-          {tr(data.banner)}
-        </div>
-      )}
 
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[24rem] w-full sm:h-[30rem]">
