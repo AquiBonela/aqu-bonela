@@ -21,6 +21,6 @@
 - [x] Quitar el logo de la cabecera (móvil y escritorio)
 - [x] Completar traducciones al inglés de todas las páginas, ventanas y mensajes; verificar el selector y la persistencia del idioma.
 - [ ] Verificar traducciones del panel y revisión válida con sesión/enlace: acceso externo sin sesión de prueba ni enlace de revisión disponible.
-- [ ] Mostrar idioma móvil y estado del clima en cabecera, y texto Aquí Bonela sobre Directorio en menú.
-- [ ] Abrir Enviar información en ventana y añadir separación antes de la tarjeta Directorio en portada.
-- [ ] Añadir cabecera a fichas y flecha circular compartida en todas las páginas; verificar en móvil y escritorio.
+- [x] Mostrar idioma móvil y estado del clima en cabecera, y texto Aquí Bonela sobre Directorio en menú.
+- [x] Abrir Enviar información en ventana y añadir separación antes de la tarjeta Directorio en portada.
+- [x] Añadir cabecera a fichas y flecha circular compartida en todas las páginas; verificar en móvil y escritorio.
