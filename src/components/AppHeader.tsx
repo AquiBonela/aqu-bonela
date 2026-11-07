@@ -98,9 +98,9 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   return (
     <>
       <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
-        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center gap-x-2 px-4 py-2">
-          <div className="flex items-center justify-start">
-            <EmergencyButton className={overlay ? "-ml-2 !text-primary-foreground" : "-ml-2"} />
+        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[8.5rem_1fr_8.5rem] items-center gap-x-2 px-4 py-2">
+          <div className="flex items-center justify-start gap-3">
+            <EmergencyButton />
             {left}
           </div>
           <div className="flex justify-center">{brand}</div>
