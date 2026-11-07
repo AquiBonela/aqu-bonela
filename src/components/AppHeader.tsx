@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { EmergencyButton } from "@/components/EmergencyPhones";
+import logoAb from "@/assets/logo-ab.webp";
 
 export type HeaderRoute =
   | "/"
@@ -53,6 +54,13 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   const [closing, setClosing] = useState(false);
   const { t } = useI18n();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const closeMenu = () => {
+    if (closing) return;
+    setClosing(true);
+    window.setTimeout(() => { setOpen(false); setClosing(false); }, 160);
+  };
+  const sendItem = items.find((item) => item.label === t("menu.enviar"));
+  const mainItems = items.filter((item) => item !== sendItem);
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -120,16 +128,21 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         </div>
       </header>
       {open && (
-        <div id="menu-principal" className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground`}>
+        <div id="menu-principal" onClick={(event) => {
+          if (!(event.target instanceof Element) || event.target.closest("a, button, [role='group'], footer, img, li")) return;
+          closeMenu();
+        }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary/95 text-primary-foreground`}>
           <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
             <div className="flex justify-start">
               <LangSwitch className="[&_button]:!text-primary-foreground" />
             </div>
-            <div />
+            <div className="flex justify-center">
+              <img src={logoAb} alt="ab" className="h-10 w-auto" />
+            </div>
             <div className="flex justify-end">
               <Button variant="ghost" size="icon"
                 type="button"
-                onClick={() => { setClosing(true); window.setTimeout(() => { setOpen(false); setClosing(false); }, 160); }}
+                onClick={closeMenu}
                 aria-label={t("menu.close")}
                 className="inline-flex min-h-11 min-w-11 items-center justify-center text-primary-foreground hover:bg-transparent hover:text-beige"
               >
@@ -140,13 +153,14 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
           <nav aria-label={tr("Menú móvil")} className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
             <div className="flex flex-1 flex-col items-center justify-center py-8">
               <ul className="flex flex-col items-center gap-6">
-                {items.map((item, i) => (
+                {mainItems.map((item, i) => (
                   <li key={item.label} className={`animate-menu-item ${item.to === "/" ? "whitespace-nowrap" : ""}`} style={{ animationDelay: `${0.06 * (i + 1)}s` }}>
                     {renderItem(item, true)}
                   </li>
                 ))}
               </ul>
             </div>
+            {sendItem && <div className="pb-6 [&_button]:text-xl [&_button]:font-bold">{renderItem(sendItem, true)}</div>}
             {footnote && (
               <div className="mt-auto border-t border-primary-foreground/15 pb-6 pt-6">{footnote}</div>
             )}
