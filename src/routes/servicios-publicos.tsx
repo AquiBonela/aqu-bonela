@@ -94,7 +94,8 @@ function Tarjeta({ b }: { b: Bloque }) {
           <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="inline-flex min-h-11 items-center gap-1 text-sm font-bold underline-offset-4 hover:underline">
             ¿Cómo se hace? <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
           </button>
-          {open && (
+          <div className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`} aria-hidden={!open}>
+            <div className="overflow-hidden">
             <ol className="mt-1 space-y-2 text-sm">
               {b.steps.map((s, i) => (
                 <li key={s} className="flex gap-2">
@@ -103,7 +104,8 @@ function Tarjeta({ b }: { b: Bloque }) {
                 </li>
               ))}
             </ol>
-          )}
+            </div>
+          </div>
         </div>
       )}
       <div className="mt-auto flex flex-wrap gap-2 pt-4">

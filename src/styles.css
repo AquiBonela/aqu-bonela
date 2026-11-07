@@ -221,6 +221,31 @@
   animation: menu-full-in 0.25s ease-out;
 }
 
+@keyframes fade-out-soft {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(1.5rem) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@utility animate-fade-out-soft {
+  animation: fade-out-soft 0.16s ease-in forwards;
+}
+@utility animate-backdrop-in {
+  animation: backdrop-in 0.15s ease-out;
+}
+@utility animate-dialog-in {
+  animation: dialog-in 0.2s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-menu-full, .animate-menu-item, .animate-backdrop-in, .animate-dialog-in, .animate-fade-out-soft { animation-duration: 1ms !important; }
+}
+
 @utility animate-menu-item {
   animation: menu-item-in 0.3s ease-out both;
 }

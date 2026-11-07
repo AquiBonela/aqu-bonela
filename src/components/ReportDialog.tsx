@@ -37,8 +37,10 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
     setState(error ? "error" : "sent");
   };
 
+  const [closing, setClosing] = useState(false);
   function close() {
-    setOpen(false);
+    setClosing(true);
+    window.setTimeout(() => { setOpen(false); setClosing(false); }, 160);
     if (state === "sent") {
       setMessage("");
       setContact("");
@@ -53,8 +55,8 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
         <Flag className="shrink-0" aria-hidden /> ¿Algo no es correcto en esta ficha? Avísanos
       </Button>
       {open && (
-        <div role="dialog" aria-modal="true" aria-labelledby="report-title" className="fixed inset-0 z-50 flex justify-center bg-foreground/50 sm:items-center sm:p-4">
-          <div className="flex h-full w-full flex-col overflow-y-auto bg-card sm:h-auto sm:max-h-[92vh] sm:max-w-lg sm:rounded-2xl sm:border">
+        <div role="dialog" aria-modal="true" aria-labelledby="report-title" onClick={(e) => e.target === e.currentTarget && close()} className={`fixed inset-0 z-50 flex justify-center bg-foreground/50 sm:items-center sm:p-4 ${closing ? "animate-fade-out-soft" : "animate-backdrop-in"}`}>
+          <div className="animate-dialog-in flex h-full w-full flex-col overflow-y-auto bg-card sm:h-auto sm:max-h-[92vh] sm:max-w-lg sm:rounded-2xl sm:border">
             <div className="flex items-start gap-3 border-b p-5">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
                 <PencilLine className="h-6 w-6" aria-hidden />
