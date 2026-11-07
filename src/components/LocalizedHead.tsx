@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n";
 const originals = new WeakMap<Element, { source: string; rendered: string }>();
 
 export function LocalizedHead() {
-  const { tr } = useI18n();
+  const { tr, lang } = useI18n();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   useEffect(() => {
     const translate = () => {
@@ -17,7 +17,7 @@ export function LocalizedHead() {
         const source = previous?.rendered === current ? previous.source : current;
         let rendered = tr(source);
         const suffix = " — Aquí Bonela";
-        if (rendered === source && source.endsWith(suffix)) {
+        if (lang === "en" && rendered === source && source.endsWith(suffix)) {
           const base = source.slice(0, -suffix.length);
           const listing = base.match(/^(.*) en Casarabonela$/);
           rendered = `${listing ? `${tr(listing[1] ?? "")} in Casarabonela` : tr(base)}${suffix}`;
@@ -32,6 +32,6 @@ export function LocalizedHead() {
     const observer = new MutationObserver(translate);
     observer.observe(document.head, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["content"] });
     return () => observer.disconnect();
-  }, [tr, pathname]);
+  }, [tr, lang, pathname]);
   return null;
 }
