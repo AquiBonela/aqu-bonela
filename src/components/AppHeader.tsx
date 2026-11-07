@@ -160,7 +160,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
                 ))}
               </ul>
             </div>
-            {sendItem && <div className="pb-6 [&_button]:text-xl [&_button]:font-bold">{renderItem(sendItem, true)}</div>}
+            {sendItem && <div className="flex justify-center pb-6 [&_button]:text-xl [&_button]:font-bold">{renderItem(sendItem, true)}</div>}
             {footnote && (
               <div className="mt-auto border-t border-primary-foreground/15 pb-6 pt-6">{footnote}</div>
             )}
