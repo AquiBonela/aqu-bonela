@@ -19,4 +19,5 @@
 
 - [x] Abrir alta de negocio en una ventana desde portada y directorio, reutilizando el formulario de sugerencias; verificar apertura, campos y cierre en móvil y escritorio.
 - [x] Quitar el logo de la cabecera (móvil y escritorio)
-- [ ] Completar traducciones al inglés de todas las páginas, ventanas y mensajes; verificar el selector y la persistencia del idioma.
+- [x] Completar traducciones al inglés de todas las páginas, ventanas y mensajes; verificar el selector y la persistencia del idioma.
+- [ ] Verificar traducciones del panel y revisión válida con sesión/enlace: acceso externo sin sesión de prueba ni enlace de revisión disponible.

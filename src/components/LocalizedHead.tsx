@@ -16,7 +16,12 @@ export function LocalizedHead() {
         const previous = originals.get(element);
         const source = previous?.rendered === current ? previous.source : current;
         let rendered = tr(source);
-        if (rendered === source && source.endsWith(" — Aquí Bonela")) rendered = `${tr(source.slice(0, -15))} — Aquí Bonela`;
+        const suffix = " — Aquí Bonela";
+        if (rendered === source && source.endsWith(suffix)) {
+          const base = source.slice(0, -suffix.length);
+          const listing = base.match(/^(.*) en Casarabonela$/);
+          rendered = `${listing ? `${tr(listing[1] ?? "")} in Casarabonela` : tr(base)}${suffix}`;
+        }
         originals.set(element, { source, rendered });
         if (current === rendered) return;
         if (title) element.textContent = rendered;
