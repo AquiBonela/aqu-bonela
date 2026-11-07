@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Flag, X, PencilLine, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +8,7 @@ import { Button } from "@/components/ui/button";
 const REASONS = ["Horario incorrecto", "Teléfono erróneo", "Cerrado / Mudado", "Otro motivo"] as const;
 
 export function ReportDialog({ listingId, listingName }: { listingId: string; listingName: string }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<string>(REASONS[0]);
   const [message, setMessage] = useState("");
@@ -35,6 +38,8 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
       contact: contact.trim() || null,
     });
     setState(error ? "error" : "sent");
+    if (error) toast.error(t("feedback.reportError"));
+    else toast.success(t("feedback.reportSent"));
   };
 
   const [closing, setClosing] = useState(false);
@@ -67,15 +72,15 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
                   <span className="font-semibold text-foreground">{listingName}</span>
                 </p>
               </div>
-              <button type="button" onClick={close} aria-label="Cerrar" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-secondary">
+              <Button variant="ghost" type="button" onClick={close} aria-label="Cerrar" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-secondary">
                 <X className="h-7 w-7" />
-              </button>
+              </Button>
             </div>
 
             {state === "sent" ? (
               <div className="grid gap-5 p-5">
                 <p className="text-lg">Gracias. Lo revisaremos lo antes posible.</p>
-                <button type="button" onClick={close} className="min-h-14 rounded-xl bg-primary text-lg font-semibold text-primary-foreground">Cerrar</button>
+                <Button type="button" onClick={close} className="min-h-14 rounded-xl bg-primary text-lg font-semibold text-primary-foreground">Cerrar</Button>
               </div>
             ) : (
               <form onSubmit={send} className="grid flex-1 content-start gap-5 p-5">
@@ -102,9 +107,9 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
 
                 {state === "error" && <p className="text-base font-medium text-destructive">No se ha podido enviar. Inténtalo de nuevo.</p>}
 
-                <button type="submit" disabled={state === "sending"} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
+                <Button type="submit" disabled={state === "sending"} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
                   <Send className="h-5 w-5" aria-hidden /> {state === "sending" ? "Enviando…" : "Enviar aviso"}
-                </button>
+                </Button>
                 <p className="border-t pt-4 text-center text-base text-muted-foreground">
                   Tu reporte ayuda a mantener actualizado el directorio municipal de Casarabonela. Sin spam ni datos públicos.
                 </p>

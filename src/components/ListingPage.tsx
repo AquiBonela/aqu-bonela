@@ -1,3 +1,6 @@
+import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Globe, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
@@ -108,7 +111,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
                       {c.value}
                     </a>
                   ) : review ? (
-                    <span className={dim(c.field!)}>{c.value}</span>
+                    <span className={c.field ? dim(c.field) : ""}>{c.value}</span>
                   ) : (
                     <CopyValue label={c.label} value={c.value} />
                   )}
@@ -293,13 +296,15 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
 }
 
 function CopyValue({ label, value }: { label: string; value: string }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
+      toast.success(t("feedback.copied"));
       setTimeout(() => setCopied(false), 1800);
-    } catch { /* sin permiso */ }
+    } catch { toast.error(t("feedback.copyError")); }
   };
   return (
     <button type="button" onClick={copy} title="Toca para copiar" className="select-text text-left hover:text-primary">
@@ -310,19 +315,26 @@ function CopyValue({ label, value }: { label: string; value: string }) {
 }
 
 function ShareButton({ name }: { name: string }) {
+  const { t } = useI18n();
   const share = async () => {
     const url = window.location.href;
     const text = `${name} en Aquí Bonela`;
     if (navigator.share) {
-      try { await navigator.share({ title: name, text, url }); } catch { /* cancelado */ }
+      try {
+        await navigator.share({ title: name, text, url });
+        toast.success(t("feedback.shared"));
+      } catch (error) {
+        if (!(error instanceof Error && error.name === "AbortError")) toast.error(t("feedback.shareError"));
+      }
       return;
     }
     window.open(`https://wa.me/?text=${encodeURIComponent(`${text}: ${url}`)}`, "_blank", "noopener,noreferrer");
+    toast(t("feedback.whatsapp"));
   };
   return (
-    <button type="button" onClick={share} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-base font-semibold hover:bg-secondary">
+    <Button variant="outline" type="button" onClick={share} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-base font-semibold hover:bg-secondary">
       <Share2 className="h-5 w-5" aria-hidden /> Compartir ficha
-    </button>
+    </Button>
   );
 }
 

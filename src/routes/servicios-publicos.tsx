@@ -5,6 +5,7 @@ import {
   Laptop, Bus, Scale, Dumbbell, ArrowRight, Search, Moon, ChevronDown, type LucideIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { Button } from "@/components/ui/button";
 import hero from "@/assets/servicios-publicos.jpg";
 
 export const Route = createFileRoute("/servicios-publicos")({
@@ -91,9 +92,9 @@ function Tarjeta({ b }: { b: Bloque }) {
       )}
       {b.steps && (
         <div className="mt-3">
-          <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="inline-flex min-h-11 items-center gap-1 text-sm font-bold underline-offset-4 hover:underline">
+          <Button variant="ghost" type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="inline-flex min-h-11 items-center gap-1 text-sm font-bold underline-offset-4 hover:underline">
             ¿Cómo se hace? <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
-          </button>
+          </Button>
           <div className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`} aria-hidden={!open}>
             <div className="overflow-hidden">
             <ol className="mt-1 space-y-2 text-sm">
@@ -193,16 +194,16 @@ function ServiciosPublicos() {
           </label>
           <div className="mt-4 flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filtrar por tema">
             {CATS.map((c) => (
-              <button key={c.id} type="button" onClick={() => setCat(c.id)} aria-pressed={cat === c.id}
+              <Button variant="ghost" key={c.id} type="button" onClick={() => setCat(c.id)} aria-pressed={cat === c.id}
                 className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-bold ${cat === c.id ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-beige"}`}>
                 {c.label}
-              </button>
+              </Button>
             ))}
           </div>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <div key={JSON.stringify([cat, q])} className="mt-6 grid gap-5 sm:grid-cols-2 animate-results-in">
             {lista.map((b) => <Tarjeta key={b.title} b={b} />)}
           </div>
-          {lista.length === 0 && <p className="mt-6 text-muted-foreground">No hay resultados. Prueba con otra palabra.</p>}
+          {lista.length === 0 && <p key={q + cat} className="mt-6 text-muted-foreground animate-results-in">No hay resultados. Prueba con otra palabra.</p>}
         </section>
       </main>
     </div>

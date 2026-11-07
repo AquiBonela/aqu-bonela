@@ -257,3 +257,36 @@ body:has(.listing-page) > footer, body:has(.listing-page) footer.mt-8 { padding-
 html { -webkit-tap-highlight-color: transparent; }
 body { -webkit-user-select: none; user-select: none; }
 input, textarea, select, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
+
+/* Respuesta breve al toque, sin cambiar el espacio ocupado por el control. */
+@utility press-feedback {
+  transition-property: color, background-color, border-color, opacity, scale;
+  transition-duration: 120ms;
+  &:active { scale: 0.98; }
+}
+@layer base {
+  :where(button, a[href^="tel:"], a[href*="wa.me"], a[href*="google.com/maps"]) {
+    transition: color 120ms, background-color 120ms, border-color 120ms, opacity 120ms, scale 120ms;
+  }
+  :where(button, a[href^="tel:"], a[href*="wa.me"], a[href*="google.com/maps"]):active:not(:disabled) {
+    scale: 0.98;
+  }
+}
+@keyframes results-in {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+@keyframes suggestions-in {
+  from { opacity: 0; transform: translateY(-0.25rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@utility animate-results-in { animation: results-in 150ms ease-out; }
+@utility animate-suggestions-in { animation: suggestions-in 120ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-results-in, .animate-suggestions-in { animation: none; }
+  .press-feedback, :where(button, a[href^="tel:"], a[href*="wa.me"], a[href*="google.com/maps"]) {
+    transition: none !important;
+    scale: 1 !important;
+  }
+  [data-sonner-toast] { transition: none !important; animation: none !important; }
+}

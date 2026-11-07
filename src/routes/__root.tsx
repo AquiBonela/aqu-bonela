@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { Toaster } from "@/components/ui/sonner";
 import { SiteFooter } from "@/components/SiteFooter";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -132,6 +133,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <SiteFooter />
+        <Toaster position="bottom-center" offset={100} duration={3500} closeButton toastOptions={{ classNames: { toast: "!bg-card !text-card-foreground !border-border !rounded-none !shadow-none", description: "!text-muted-foreground" } }} />
       </I18nProvider>
     </QueryClientProvider>
   );
