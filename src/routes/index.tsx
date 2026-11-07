@@ -133,7 +133,7 @@ function Home() {
                   {inactive && <span className="absolute right-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-muted-foreground">{t("home.soon")}</span>}
                   <div className="absolute inset-x-0 bottom-0 p-5">
                     <p className={`font-display text-2xl font-extrabold ${inactive ? "text-muted-foreground" : "text-primary-foreground"}`}>{t(key)}</p>
-                    <p className={`mt-1 max-w-sm text-sm ${inactive ? "text-muted-foreground/80" : "text-primary-foreground/85"}`}>{t(text)}</p>
+                    <p className={`mt-1 max-w-sm text-sm ${inactive ? "text-muted-foreground" : "text-primary-foreground/85"}`}>{t(text)}</p>
                   </div>
                 </>
               );
