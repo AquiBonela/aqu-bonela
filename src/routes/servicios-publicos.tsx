@@ -99,7 +99,7 @@ function Tarjeta({ b }: { b: Bloque }) {
               {b.steps.map((s, i) => (
                 <li key={s} className="flex gap-2">
                   <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${b.featured ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"}`}>{i + 1}</span>
-                  {s}
+                  {tr(s)}
                 </li>
               ))}
             </ol>
@@ -133,8 +133,8 @@ function ServiciosPublicos() {
   const [q, setQ] = useState("");
   const lista = useMemo(() => {
     const n = norm(q.trim());
-    return BLOQUES.filter((b) => (cat === "todos" || b.cat === cat) && (!n || norm(`${b.title} ${b.text} ${b.keywords ?? ""}`).includes(n)));
-  }, [cat, q]);
+    return BLOQUES.filter((b) => (cat === "todos" || b.cat === cat) && (!n || norm(`${b.title} ${b.text} ${tr(b.title)} ${tr(b.text)} ${b.keywords ?? ""}`).includes(n)));
+  }, [cat, q, tr]);
 
   return (
     <div className="min-h-screen bg-background">

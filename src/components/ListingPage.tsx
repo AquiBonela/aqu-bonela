@@ -20,7 +20,7 @@ function Toggle({ review, field, label }: { review: ReviewControls | undefined; 
   const on = review.show[field];
   return (
     <label className="ml-auto flex shrink-0 items-center gap-2 rounded-full border-2 border-primary/40 bg-background px-3 py-1.5 text-sm font-semibold">
-      <Switch checked={on} onCheckedChange={(v) => review.onToggle(field, v)} aria-label={`Mostrar ${label}`} />
+      <Switch checked={on} onCheckedChange={(v) => review.onToggle(field, v)} aria-label={`${tr("Mostrar")} ${tr(label)}`} />
       {tr(on ? "Se ve" : "Oculto")}
     </label>
   );
@@ -155,7 +155,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
                   key={`${p.url}-${i}`}
                   type="button"
                   onClick={() => setLightbox(i)}
-                  aria-label={`Ampliar fotografía ${i + 1} de ${listing.name}`}
+                  aria-label={`${tr("Ampliar fotografía")} ${i + 1}: ${listing.name}`}
                   className={`relative min-w-0 cursor-zoom-in overflow-hidden ${i === gallery.length - 1 && gallery.length % 2 === 1 ? "col-span-2 aspect-[2/1]" : "aspect-square"}`}
                 >
                   <img src={p.url} alt={p.alt} loading="lazy" className="h-full w-full object-cover" />
@@ -314,10 +314,10 @@ function CopyValue({ label, value }: { label: string; value: string }) {
 }
 
 function ShareButton({ name }: { name: string }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const share = async () => {
     const url = window.location.href;
-    const text = `${name} en Aquí Bonela`;
+    const text = `${name} ${lang === "en" ? "on" : "en"} Aquí Bonela`;
     if (navigator.share) {
       try {
         await navigator.share({ title: name, text, url });

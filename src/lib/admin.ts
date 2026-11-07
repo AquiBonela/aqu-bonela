@@ -95,8 +95,8 @@ export const adminSuggestionsQuery = queryOptions({
 });
 
 /** Fecha corta en español, p. ej. «12 mar 2026». */
-export function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+export function fmtDate(iso: string, locale = "es-ES") {
+  return new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
 }
 
 export type SiteSettings = {

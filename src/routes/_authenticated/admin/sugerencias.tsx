@@ -64,7 +64,7 @@ function SuggestionsBody() {
           <li key={s.id} className={`border p-4 ${s.handled ? "bg-secondary/40" : ""}`}>
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="font-medium">{s.name}</p>
-              <span className="text-xs text-muted-foreground">{fmtDate(s.created_at)}</span>
+              <span className="text-xs text-muted-foreground">{fmtDate(s.created_at, locale)}</span>
             </div>
             <p className="mt-2 whitespace-pre-line text-sm">{s.message}</p>
             {s.contact && (

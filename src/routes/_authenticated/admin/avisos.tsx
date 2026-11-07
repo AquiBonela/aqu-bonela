@@ -74,10 +74,10 @@ function ReportsBody() {
               <p className="font-medium">
                  <Text text="Ficha:" />{" "}
                 <Link to="/admin/fichas/$id" params={{ id: r.listing_id }} className="underline underline-offset-4">
-                  {r.listings?.name ?? "Ficha eliminada"}
+                  {r.listings?.name ?? tr("Ficha eliminada")}
                 </Link>
               </p>
-              <span className="text-xs text-muted-foreground">{fmtDate(r.created_at)}</span>
+              <span className="text-xs text-muted-foreground">{fmtDate(r.created_at, locale)}</span>
             </div>
             <p className="mt-2 whitespace-pre-line text-sm">{r.message}</p>
             {r.contact && (
