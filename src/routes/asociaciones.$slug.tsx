@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { listingDetailQuery } from "@/lib/listing-detail";
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/asociaciones/$slug")({
   head: ({ loaderData }) => listingHead(loaderData),
   component: Page,
   notFoundComponent: ListingNotFound,
-  errorComponent: () => <div role="alert" className="p-8 text-center">No hemos podido cargar esta ficha.</div>,
+  errorComponent: () => <div role="alert" className="p-8 text-center"><Text text="No hemos podido cargar esta ficha." /></div>,
 });
 
 function Page() {

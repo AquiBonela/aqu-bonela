@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -69,6 +70,7 @@ const TONE: Record<Badge["tone"], string> = {
 const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
 function Tarjeta({ b }: { b: Bloque }) {
+  const { tr, locale } = useI18n();
   const [open, setOpen] = useState(false);
   return (
     <article className={`flex flex-col p-5 ${b.featured ? "bg-primary text-primary-foreground sm:col-span-2" : "border bg-card"}`}>
@@ -76,20 +78,20 @@ function Tarjeta({ b }: { b: Bloque }) {
         <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${b.featured ? "bg-primary-foreground/15" : "bg-beige text-primary"}`}>
           <b.Icon className="h-6 w-6" aria-hidden />
         </span>
-        <h3 className="font-display text-xl font-extrabold">{b.title}</h3>
+        <h3 className="font-display text-xl font-extrabold">{tr(b.title)}</h3>
       </div>
-      <p className={`mt-3 ${b.featured ? "opacity-90" : "text-muted-foreground"}`}>{b.text}</p>
+      <p className={`mt-3 ${b.featured ? "opacity-90" : "text-muted-foreground"}`}>{tr(b.text)}</p>
       {b.badges && (
         <div className="mt-3 flex flex-wrap gap-2">
           {b.badges.map((x) => (
-            <span key={x.text} className={`rounded-full px-3 py-1 text-xs font-semibold ${b.featured ? "bg-primary-foreground/15" : TONE[x.tone]}`}>{x.text}</span>
+            <span key={x.text} className={`rounded-full px-3 py-1 text-xs font-semibold ${b.featured ? "bg-primary-foreground/15" : TONE[x.tone]}`}>{tr(x.text)}</span>
           ))}
         </div>
       )}
       {b.steps && (
         <div className="mt-3">
           <Button variant="ghost" type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="inline-flex min-h-11 items-center gap-1 text-sm font-bold underline-offset-4 hover:underline">
-            ¿Cómo se hace? <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+             <Text text="¿Cómo se hace?" /> <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
           </Button>
           <div className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`} aria-hidden={!open}>
             <div className="overflow-hidden">
@@ -108,17 +110,16 @@ function Tarjeta({ b }: { b: Bloque }) {
       <div className="mt-auto flex flex-wrap gap-2 pt-4">
         {b.tel && (
           <a href={`tel:${b.tel}`} className={`inline-flex min-h-11 items-center gap-2 px-4 text-sm font-bold hover:opacity-90 ${b.featured ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"}`}>
-            <Phone className="h-4 w-4" aria-hidden /> Llamar
-          </a>
+            <Phone className="h-4 w-4" aria-hidden />  <Text text="Llamar" /> </a>
         )}
         {b.link && (
           <a href={b.link.href} target="_blank" rel="noopener noreferrer" className={`inline-flex min-h-11 items-center gap-2 border px-4 text-sm font-bold ${b.featured ? "border-primary-foreground/40 hover:bg-primary-foreground/10" : "hover:bg-muted"}`}>
-            {b.link.label} <ExternalLink className="h-4 w-4" aria-hidden />
+            {tr(b.link.label)} <ExternalLink className="h-4 w-4" aria-hidden />
           </a>
         )}
         {b.dir && (
           <Link to="/directorio" search={{ q: b.dir, cat: "", of: "" }} className={`inline-flex min-h-11 items-center gap-2 px-2 text-sm font-bold hover:underline ${b.featured ? "" : "text-primary"}`}>
-            Ver ficha <ArrowRight className="h-4 w-4" aria-hidden />
+             <Text text="Ver ficha" /> <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         )}
       </div>
@@ -127,6 +128,7 @@ function Tarjeta({ b }: { b: Bloque }) {
 }
 
 function ServiciosPublicos() {
+  const { tr, locale } = useI18n();
   const [cat, setCat] = useState<Cat | "todos">("todos");
   const [q, setQ] = useState("");
   const lista = useMemo(() => {
@@ -139,23 +141,22 @@ function ServiciosPublicos() {
       <SiteHeader />
       <main>
         <section className="relative text-primary-foreground">
-          <img src={hero} alt="Plaza del Ayuntamiento de Casarabonela" width={1600} height={800} className="h-[45vh] min-h-72 w-full object-cover" />
+          <img src={hero} alt={tr("Plaza del Ayuntamiento de Casarabonela")} width={1600} height={800} className="h-[45vh] min-h-72 w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-90">Servicios públicos</p>
-            <h1 className="mt-2 font-display text-4xl font-extrabold text-balance sm:text-5xl">¿Qué necesitas resolver?</h1>
-            <p className="mt-3 max-w-2xl text-lg opacity-95">Teléfonos, trámites y datos prácticos de Casarabonela, a un toque.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-90"><Text text="Servicios públicos" /></p>
+            <h1 className="mt-2 font-display text-4xl font-extrabold text-balance sm:text-5xl"><Text text="¿Qué necesitas resolver?" /></h1>
+            <p className="mt-3 max-w-2xl text-lg opacity-95"><Text text="Teléfonos, trámites y datos prácticos de Casarabonela, a un toque." /></p>
           </div>
         </section>
 
         <section className="mx-auto max-w-5xl px-4 pt-8">
           <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.15em] text-destructive">
-            <Siren className="h-5 w-5" aria-hidden /> Emergencias y teléfonos de ayuda
-          </div>
+            <Siren className="h-5 w-5" aria-hidden />  <Text text="Emergencias y teléfonos de ayuda" /> </div>
           <div className="mt-3"><EmergencyPhonesList /></div>
           <div className="mt-3 flex gap-3 bg-muted p-4 text-sm">
             <Moon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-            <p><strong>¿Consultorio cerrado, de noche o en fin de semana?</strong> Llama al 112 o a Salud Responde. <span className="italic text-muted-foreground">Centro de urgencias de referencia y farmacia de guardia: por confirmar.</span></p>
+            <p><strong><Text text="¿Consultorio cerrado, de noche o en fin de semana?" /></strong>  <Text text="Llama al 112 o a Salud Responde." /> <span className="italic text-muted-foreground"><Text text="Centro de urgencias de referencia y farmacia de guardia: por confirmar." /></span></p>
           </div>
         </section>
 
@@ -164,12 +165,12 @@ function ServiciosPublicos() {
             <div className="flex gap-3">
               <Lightbulb className="mt-1 h-6 w-6 shrink-0 text-primary" aria-hidden />
               <div>
-                <h2 className="font-display text-xl font-extrabold">¿Una farola rota, un bache o una avería?</h2>
-                <p className="mt-1 text-muted-foreground">Avísalo por Línea Verde, el canal oficial del Ayuntamiento.</p>
+                <h2 className="font-display text-xl font-extrabold"><Text text="¿Una farola rota, un bache o una avería?" /></h2>
+                <p className="mt-1 text-muted-foreground"><Text text="Avísalo por Línea Verde, el canal oficial del Ayuntamiento." /></p>
               </div>
             </div>
             <a href="https://www.casarabonela.es" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 shrink-0 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground hover:opacity-90">
-              Abrir Línea Verde <ExternalLink className="h-4 w-4" aria-hidden />
+               <Text text="Abrir Línea Verde" /> <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
           </div>
         </section>
@@ -177,20 +178,20 @@ function ServiciosPublicos() {
         <section className="mx-auto max-w-5xl px-4 py-10">
           <label className="flex min-h-12 items-center gap-2 border bg-card px-4 focus-within:ring-2 focus-within:ring-primary">
             <Search className="h-5 w-5 text-muted-foreground" aria-hidden />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Escribe lo que buscas: padrón, cita, autobús…" aria-label="Buscar servicio" className="w-full bg-transparent outline-none" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Escribe lo que buscas: padrón, cita, autobús…")} aria-label={tr("Buscar servicio")} className="w-full bg-transparent outline-none" />
           </label>
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filtrar por tema">
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1" role="group" aria-label={tr("Filtrar por tema")}>
             {CATS.map((c) => (
               <Button variant="ghost" key={c.id} type="button" onClick={() => setCat(c.id)} aria-pressed={cat === c.id}
                 className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-bold ${cat === c.id ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-beige"}`}>
-                {c.label}
+                {tr(c.label)}
               </Button>
             ))}
           </div>
           <div key={JSON.stringify([cat, q])} className="mt-6 grid gap-5 sm:grid-cols-2 animate-results-in">
             {lista.map((b) => <Tarjeta key={b.title} b={b} />)}
           </div>
-          {lista.length === 0 && <p key={q + cat} className="mt-6 text-muted-foreground animate-results-in">No hay resultados. Prueba con otra palabra.</p>}
+          {lista.length === 0 && <p key={q + cat} className="mt-6 text-muted-foreground animate-results-in"><Text text="No hay resultados. Prueba con otra palabra." /></p>}
         </section>
       </main>
     </div>

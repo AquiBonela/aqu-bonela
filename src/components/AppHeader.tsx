@@ -48,6 +48,7 @@ const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hov
  * en móvil, menú a pantalla completa sobre fondo verde principal.
  */
 export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left, overlay = false }: AppHeaderProps) {
+  const { tr, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const { t } = useI18n();
@@ -138,7 +139,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               </button>
             </div>
           </div>
-          <nav aria-label="Menú móvil" className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
+          <nav aria-label={tr("Menú móvil")} className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
             <div className="flex flex-1 flex-col items-center justify-center py-8">
               <ul className="flex flex-col items-center gap-6">
                 {items.map((item, i) => (

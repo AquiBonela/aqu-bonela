@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -44,6 +45,7 @@ function AdminList() {
 }
 
 function ListBody() {
+  const { tr, locale } = useI18n();
   const { data = [], isLoading } = useQuery(adminListingsQuery);
   const { data: categories = [] } = useQuery(categoriesQuery);
   const [filters, setFilters] = useState(emptyAdminFilters);
@@ -54,60 +56,59 @@ function ListBody() {
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-bold">Fichas</h1>
+        <h1 className="font-display text-2xl font-bold"><Text text="Fichas" /></h1>
         <Link
           to="/admin/fichas/$id"
           params={{ id: "nueva" }}
           className="inline-flex h-10 items-center gap-2 bg-terracotta px-4 text-sm font-medium text-terracotta-foreground"
         >
-          <Plus className="h-4 w-4" /> Nueva ficha
-        </Link>
+          <Plus className="h-4 w-4" />  <Text text="Nueva ficha" /> </Link>
       </div>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input aria-label="Buscar ficha" placeholder="Buscar ficha…" value={filters.q} onChange={(e) => setFilters((p) => ({ ...p, q: e.target.value }))} className="h-10 pl-9" />
+          <Input aria-label={tr("Buscar ficha")} placeholder={tr("Buscar ficha…")} value={filters.q} onChange={(e) => setFilters((p) => ({ ...p, q: e.target.value }))} className="h-10 pl-9" />
         </div>
       </div>
-      <div role="group" aria-label="Estado de ficha" className="mt-3 flex gap-2 overflow-x-auto pb-1">
+      <div role="group" aria-label={tr("Estado de ficha")} className="mt-3 flex gap-2 overflow-x-auto pb-1">
         {[{ value: "", label: "Todas" }, ...STATUS_PILLS].map((s) => {
           const count = s.value ? data.filter((l) => l.status === s.value).length : data.length;
           const active = filters.status === s.value;
           return (
             <button key={s.value || "all"} type="button" aria-pressed={active} onClick={() => setFilters((p) => ({ ...p, status: s.value }))}
               className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium ${active ? "border-primary bg-primary text-primary-foreground" : "bg-background text-foreground"}`}>
-              {s.label}
+              {tr(s.label)}
               <span className={`rounded-full px-1.5 text-xs ${active ? "bg-background/20" : "bg-secondary"}`}>{count}</span>
             </button>
           );
         })}
       </div>
       <div className="mt-2 grid gap-2 sm:grid-cols-3">
-        <select aria-label="Tipo de ficha" value={filters.type} onChange={(e) => {
+        <select aria-label={tr("Tipo de ficha")} value={filters.type} onChange={(e) => {
           const value = e.target.value;
           if (value === "" || isListingType(value)) setFilters((p) => changeAdminType(p, value));
         }} className="h-10 w-full min-w-0 border bg-background px-3 text-sm">
-          <option value="">Todos los tipos</option>
-          {LISTING_TYPES.map((t) => <option key={t.value} value={t.value}>{t.plural}</option>)}
+          <option value=""><Text text="Todos los tipos" /></option>
+          {LISTING_TYPES.map((t) => <option key={t.value} value={t.value}>{tr(t.plural)}</option>)}
         </select>
-        <select aria-label="Categoría" value={filters.category} onChange={(e) => {
+        <select aria-label={tr("Categoría")} value={filters.category} onChange={(e) => {
           const value = e.target.value;
           const category = categories.find((c) => c.id === value);
           setFilters((p) => changeAdminCategory(p, value, category?.type));
         }} className="h-10 w-full min-w-0 border bg-background px-3 text-sm">
-          <option value="">Todas las categorías</option>
-          {availableCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          <option value=""><Text text="Todas las categorías" /></option>
+          {availableCategories.map((c) => <option key={c.id} value={c.id}>{tr(c.name)}</option>)}
         </select>
-        {filters.category && <select aria-label="Oficio / actividad" value={filters.activity} onChange={(e) => setFilters((p) => ({ ...p, activity: e.target.value }))} className="h-10 w-full min-w-0 border bg-background px-3 text-sm">
-          <option value="">Todos los oficios</option>
-          {activities.map((activity) => <option key={activity} value={activity}>{activity}</option>)}
+        {filters.category && <select aria-label={tr("Oficio / actividad")} value={filters.activity} onChange={(e) => setFilters((p) => ({ ...p, activity: e.target.value }))} className="h-10 w-full min-w-0 border bg-background px-3 text-sm">
+          <option value=""><Text text="Todos los oficios" /></option>
+          {activities.map((activity) => <option key={activity} value={activity}>{tr(activity)}</option>)}
         </select>}
       </div>
       <div className="mt-3 flex items-center justify-between gap-2">
-        <p aria-live="polite" className="text-sm text-muted-foreground">{isLoading ? "Cargando…" : `${rows.length} fichas`}</p>
-        {hasFilters && <Button variant="ghost" size="sm" onClick={() => setFilters(emptyAdminFilters)}><X aria-hidden /> Limpiar filtros</Button>}
+        <p aria-live="polite" className="text-sm text-muted-foreground">{tr(isLoading ? "Cargando…" : `${rows.length} fichas`)}</p>
+        {hasFilters && <Button variant="ghost" size="sm" onClick={() => setFilters(emptyAdminFilters)}><X aria-hidden />  <Text text="Limpiar filtros" /></Button>}
       </div>
-      {!isLoading && rows.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">No hay fichas con estos filtros.</p>}
+      {!isLoading && rows.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground"><Text text="No hay fichas con estos filtros." /></p>}
       <ul className="mt-2 divide-y border">
         {rows.map((l) => (
           <li key={l.id}>
@@ -120,10 +121,10 @@ function ListBody() {
                 </div>
                 <p className="truncate text-xs text-muted-foreground">
                   {l.categories?.name ?? "Sin categoría"}{l.activity ? ` · ${l.activity}` : ""}
-                    {l.urgent_24h ? " · Urgencias 24h" : ""}
+                    {tr(l.urgent_24h ? " · Urgencias 24h" : "")}
                 </p>
               </div>
-              <span className="shrink-0 border px-2 py-0.5 text-xs">{statusLabel[l.status]}</span>
+              <span className="shrink-0 border px-2 py-0.5 text-xs">{tr(statusLabel[l.status])}</span>
             </Link>
           </li>
         ))}

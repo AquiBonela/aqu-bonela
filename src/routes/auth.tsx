@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
+  const { tr, locale } = useI18n();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,20 +43,20 @@ function AuthPage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-sm px-4 py-12">
-        <h1 className="font-display text-2xl font-bold">Administración</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Acceso solo para el equipo del directorio.</p>
+        <h1 className="font-display text-2xl font-bold"><Text text="Administración" /></h1>
+        <p className="mt-1 text-sm text-muted-foreground"><Text text="Acceso solo para el equipo del directorio." /></p>
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="email">Correo</Label>
+            <Label htmlFor="email"><Text text="Correo" /></Label>
             <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="pw">Contraseña</Label>
+            <Label htmlFor="pw"><Text text="Contraseña" /></Label>
             <Input id="pw" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <button disabled={busy} className="h-11 w-full bg-primary font-medium text-primary-foreground disabled:opacity-60">
-            {busy ? "Entrando…" : "Entrar"}
+            {tr(busy ? "Entrando…" : "Entrar")}
           </button>
         </form>
       </main>

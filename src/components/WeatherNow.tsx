@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudRain, CloudSnow, CloudSun, Sun, type LucideIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -21,6 +22,7 @@ function iconFor(code: number): { Icon: LucideIcon; label: string } {
 
 /** Tiempo actual en Casarabonela (Open-Meteo, sin claves ni cookies). */
 export function WeatherNow() {
+  const { tr, locale } = useI18n();
   const [w, setW] = useState<Weather | null>(null);
 
   useEffect(() => {
@@ -52,10 +54,10 @@ export function WeatherNow() {
         {w.temp}°
       </PopoverTrigger>
       <PopoverContent align="start" className="w-80 rounded-none">
-        <p className="text-base font-semibold">Tiempo en Casarabonela</p>
-        <p className="mb-2 text-sm text-muted-foreground">Ahora: {label}, {w.temp}°</p>
+        <p className="text-base font-semibold"><Text text="Tiempo en Casarabonela" /></p>
+        <p className="mb-2 text-sm text-muted-foreground"><Text text="Ahora:" /> {tr(label)}, {w.temp}°</p>
         <Forecast />
-        <p className="mt-2 text-xs text-muted-foreground">Datos: Open-Meteo</p>
+        <p className="mt-2 text-xs text-muted-foreground"><Text text="Datos: Open-Meteo" /></p>
       </PopoverContent>
     </Popover>
   );
@@ -69,7 +71,7 @@ const FORECAST_URL =
 function dayName(date: string, i: number) {
   if (i === 0) return "Hoy";
   if (i === 1) return "Mañana";
-  const s = new Date(date + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric" });
+  const s = new Date(date + "T12:00:00").toLocaleDateString(locale, { weekday: "long", day: "numeric" });
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
@@ -94,8 +96,8 @@ function Forecast() {
       })
       .catch(() => setError(true));
   }, []);
-  if (error) return <p className="text-sm text-muted-foreground">No se pudo cargar el pronóstico.</p>;
-  if (!days) return <p className="text-sm text-muted-foreground">Cargando…</p>;
+  if (error) return <p className="text-sm text-muted-foreground"><Text text="No se pudo cargar el pronóstico." /></p>;
+  if (!days) return <p className="text-sm text-muted-foreground"><Text text="Cargando…" /></p>;
   return (
     <ul className="divide-y divide-border">
       {days.map((d, i) => {

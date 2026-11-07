@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { HeartHandshake } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Listing } from "@/lib/directory";
@@ -34,8 +35,7 @@ export function TypeLabel({ type, className }: { type: Listing["type"]; classNam
 export function CollaboratorBadge() {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-sm font-semibold text-accent-foreground">
-      <HeartHandshake className="h-3.5 w-3.5" aria-hidden /> Colaborador
-    </span>
+      <HeartHandshake className="h-3.5 w-3.5" aria-hidden />  <Text text="Colaborador" /> </span>
   );
 }
 
@@ -55,6 +55,7 @@ export function ListingCard({
   categoryName?: string | undefined;
   collaborator: boolean;
 }) {
+  const { tr, locale } = useI18n();
   const theme = typeTheme(listing.type);
   const subtitle = [categoryName, listing.activity].filter(Boolean).join(" · ");
   const marks = [...(listing.urgent_24h ? ["Urgencias 24h"] : []), ...availabilityTags(listing.tags)];
@@ -78,10 +79,10 @@ export function ListingCard({
             {listing.name}
           </Link>
         </h3>
-        {subtitle && <p className={cn("mt-1 text-base font-bold", theme.text)}>{subtitle}</p>}
-        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{listing.short_description || listing.description}</p>
+        {subtitle && <p className={cn("mt-1 text-base font-bold", theme.text)}>{tr(subtitle)}</p>}
+        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{tr(listing.short_description || listing.description)}</p>
         <p className={cn("mt-3 text-base font-bold", theme.text)} aria-hidden>
-          {actionText(listing)}
+          {tr(actionText(listing))}
         </p>
       </div>
       </div>
@@ -101,9 +102,10 @@ export function ListingCard({
 }
 
 export function UrgentBadge({ label = "Urgencias 24h" }: { label?: string }) {
+  const { tr, locale } = useI18n();
   return (
     <span className="inline-flex items-center gap-1.5 border border-availability-border bg-availability px-2.5 py-1 text-sm font-semibold text-availability-foreground">
-      <span className="h-2 w-2 shrink-0 rounded-full bg-availability-foreground" aria-hidden /> {label}
+      <span className="h-2 w-2 shrink-0 rounded-full bg-availability-foreground" aria-hidden /> {tr(label)}
     </span>
   );
 }

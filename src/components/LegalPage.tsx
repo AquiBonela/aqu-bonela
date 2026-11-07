@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import type { ReactNode } from "react";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,12 +33,13 @@ export function useOwner() {
 export const UPDATED = "30 de octubre de 2026";
 
 export function LegalPage({ title, children }: { title: string; children: ReactNode }) {
+  const { tr, locale } = useI18n();
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-2xl px-4 py-10">
-        <h1 className="font-display text-3xl font-extrabold">{title}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Última actualización: {UPDATED}</p>
+        <h1 className="font-display text-3xl font-extrabold">{tr(title)}</h1>
+        <p className="mt-2 text-sm text-muted-foreground"><Text text="Última actualización:" /> {tr(UPDATED)}</p>
         <div className="mt-8 space-y-6 text-base leading-relaxed [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-8 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1">
           {children}
         </div>

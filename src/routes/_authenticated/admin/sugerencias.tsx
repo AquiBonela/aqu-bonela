@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +29,7 @@ function AdminSuggestions() {
 }
 
 function SuggestionsBody() {
+  const { tr, locale } = useI18n();
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery(adminSuggestionsQuery);
 
@@ -50,12 +52,12 @@ function SuggestionsBody() {
 
   return (
     <>
-      <h1 className="font-display text-2xl font-bold">Sugerencias</h1>
+      <h1 className="font-display text-2xl font-bold"><Text text="Sugerencias" /></h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        {isLoading ? "Cargando…" : `${open} sin atender`}
+        {tr(isLoading ? "Cargando…" : `${open} sin atender`)}
       </p>
       {!isLoading && data.length === 0 && (
-        <p className="mt-6 border p-4 text-sm text-muted-foreground">Todavía no hay sugerencias.</p>
+        <p className="mt-6 border p-4 text-sm text-muted-foreground"><Text text="Todavía no hay sugerencias." /></p>
       )}
       <ul className="mt-4 grid gap-3">
         {data.map((s) => (
@@ -66,7 +68,7 @@ function SuggestionsBody() {
             </div>
             <p className="mt-2 whitespace-pre-line text-sm">{s.message}</p>
             {s.contact && (
-              <p className="mt-2 text-sm text-muted-foreground">Contacto: <span className="font-medium">{s.contact}</span></p>
+              <p className="mt-2 text-sm text-muted-foreground"><Text text="Contacto:" /> <span className="font-medium">{s.contact}</span></p>
             )}
             <div className="mt-3 flex flex-wrap gap-2">
               <button
@@ -75,7 +77,7 @@ function SuggestionsBody() {
                 onClick={() => toggle.mutate({ id: s.id, handled: !s.handled })}
                 className="min-h-10 border px-3 text-sm font-medium hover:bg-secondary disabled:opacity-60"
               >
-                {s.handled ? "Reabrir" : "Marcar atendida"}
+                {tr(s.handled ? "Reabrir" : "Marcar atendida")}
               </button>
               <button
                 type="button"
@@ -85,8 +87,7 @@ function SuggestionsBody() {
                 }}
                 className="min-h-10 border px-3 text-sm text-destructive hover:bg-secondary disabled:opacity-60"
               >
-                Descartar
-              </button>
+                 <Text text="Descartar" /> </button>
             </div>
           </li>
         ))}

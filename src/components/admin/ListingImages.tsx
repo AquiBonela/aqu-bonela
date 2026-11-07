@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +10,7 @@ const btn = "border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-50";
 const errMsg = (e: unknown) => (e as { message?: string }).message ?? "Error desconocido";
 
 export function CoverPicker({ listingId }: { listingId: string }) {
+  const { tr, locale } = useI18n();
   const [path, setPath] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -51,16 +53,16 @@ export function CoverPicker({ listingId }: { listingId: string }) {
 
   return (
     <div className="space-y-2">
-      <span className="text-sm font-medium">Imagen de cabecera</span>
+      <span className="text-sm font-medium"><Text text="Imagen de cabecera" /></span>
       {url && <img src={url} alt="" className="h-32 w-full object-cover sm:w-64" />}
       <input ref={input} type="file" accept={ACCEPT} hidden onChange={(e) => onFile(e.target.files?.[0])} />
       <div className="flex gap-2">
         <button type="button" disabled={busy} onClick={() => input.current?.click()} className={btn}>
-          {busy ? "Subiendo…" : path ? "Reemplazar" : "Subir imagen"}
+          {tr(busy ? "Subiendo…" : path ? "Reemplazar" : "Subir imagen")}
         </button>
-        {path && <button type="button" disabled={busy} onClick={quitar} className={btn}>Quitar</button>}
+        {path && <button type="button" disabled={busy} onClick={quitar} className={btn}><Text text="Quitar" /></button>}
       </div>
-      <p className="text-xs text-muted-foreground">JPG, PNG o WebP, máximo 8 MB.</p>
+      <p className="text-xs text-muted-foreground"><Text text="JPG, PNG o WebP, máximo 8 MB." /></p>
     </div>
   );
 }
@@ -68,6 +70,7 @@ export function CoverPicker({ listingId }: { listingId: string }) {
 type Photo = { id: string; storage_path: string; alt: string; sort_order: number; url: string | null };
 
 export function GalleryPicker({ listingId }: { listingId: string }) {
+  const { tr, locale } = useI18n();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -119,20 +122,20 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
 
   return (
     <div className="space-y-2">
-      <span className="text-sm font-medium">Galería de fotos ({photos.length}/5)</span>
+      <span className="text-sm font-medium"><Text text="Galería de fotos (" />{photos.length}/5)</span>
       <div className="grid gap-3 sm:grid-cols-2">
         {photos.map((p) => (
           <div key={p.id} className="space-y-1 border p-2">
             {p.url && <img src={p.url} alt={p.alt} className="h-28 w-full object-cover" />}
-            <Input defaultValue={p.alt} placeholder="Texto alternativo (opcional)" onBlur={(e) => saveAlt(p, e.target.value.trim())} />
-            <button type="button" onClick={() => quitar(p)} className={btn}>Quitar</button>
+            <Input defaultValue={p.alt} placeholder={tr("Texto alternativo (opcional)")} onBlur={(e) => saveAlt(p, e.target.value.trim())} />
+            <button type="button" onClick={() => quitar(p)} className={btn}><Text text="Quitar" /></button>
           </div>
         ))}
       </div>
       <input ref={input} type="file" accept={ACCEPT} multiple hidden onChange={(e) => onFiles(e.target.files)} />
       {photos.length < 5 && (
         <button type="button" disabled={busy} onClick={() => input.current?.click()} className={btn}>
-          {busy ? "Subiendo…" : "Añadir fotos"}
+          {tr(busy ? "Subiendo…" : "Añadir fotos")}
         </button>
       )}
     </div>

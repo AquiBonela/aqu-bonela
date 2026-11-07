@@ -1,3 +1,4 @@
+import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -29,6 +30,7 @@ function AdminReports() {
 }
 
 function ReportsBody() {
+  const { tr, locale } = useI18n();
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery(adminReportsQuery);
   const [showResolved, setShowResolved] = useState(false);
@@ -54,24 +56,23 @@ function ReportsBody() {
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-bold">Avisos</h1>
+        <h1 className="font-display text-2xl font-bold"><Text text="Avisos" /></h1>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={showResolved} onChange={(e) => setShowResolved(e.target.checked)} />
-          Mostrar resueltos
-        </label>
+           <Text text="Mostrar resueltos" /> </label>
       </div>
       <p className="mt-3 text-sm text-muted-foreground">
-        {isLoading ? "Cargando…" : `${pending} pendiente${pending === 1 ? "" : "s"}`}
+        {tr(isLoading ? "Cargando…" : `${pending} pendiente${pending === 1 ? "" : "s"}`)}
       </p>
       {!isLoading && rows.length === 0 && (
-        <p className="mt-6 border p-4 text-sm text-muted-foreground">No hay avisos{showResolved ? "" : " pendientes"}.</p>
+        <p className="mt-6 border p-4 text-sm text-muted-foreground"><Text text="No hay avisos" />{tr(showResolved ? "" : " pendientes")}.</p>
       )}
       <ul className="mt-4 grid gap-3">
         {rows.map((r) => (
           <li key={r.id} className={`border p-4 ${r.resolved ? "bg-secondary/40" : ""}`}>
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="font-medium">
-                Ficha:{" "}
+                 <Text text="Ficha:" />{" "}
                 <Link to="/admin/fichas/$id" params={{ id: r.listing_id }} className="underline underline-offset-4">
                   {r.listings?.name ?? "Ficha eliminada"}
                 </Link>
@@ -80,7 +81,7 @@ function ReportsBody() {
             </div>
             <p className="mt-2 whitespace-pre-line text-sm">{r.message}</p>
             {r.contact && (
-              <p className="mt-2 text-sm text-muted-foreground">Contacto: <span className="font-medium">{r.contact}</span></p>
+              <p className="mt-2 text-sm text-muted-foreground"><Text text="Contacto:" /> <span className="font-medium">{r.contact}</span></p>
             )}
             <div className="mt-3 flex flex-wrap gap-2">
               <button
@@ -89,7 +90,7 @@ function ReportsBody() {
                 onClick={() => toggle.mutate({ id: r.id, resolved: !r.resolved })}
                 className="min-h-10 border px-3 text-sm font-medium hover:bg-secondary disabled:opacity-60"
               >
-                {r.resolved ? "Reabrir" : "Marcar resuelto"}
+                {tr(r.resolved ? "Reabrir" : "Marcar resuelto")}
               </button>
               <button
                 type="button"
@@ -99,8 +100,7 @@ function ReportsBody() {
                 }}
                 className="min-h-10 border px-3 text-sm text-destructive hover:bg-secondary disabled:opacity-60"
               >
-                Descartar
-              </button>
+                 <Text text="Descartar" /> </button>
             </div>
           </li>
         ))}
