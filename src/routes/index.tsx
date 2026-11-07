@@ -129,11 +129,11 @@ function Home() {
               const inner = (
                 <>
                   <img src={img} alt="" loading="lazy" className={`absolute inset-0 h-full w-full object-cover ${inactive ? "grayscale" : "transition-transform duration-700 group-hover:scale-105"}`} />
-                  <div aria-hidden className={`absolute inset-0 ${inactive ? "bg-muted/90" : "bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent"}`} />
+                  <div aria-hidden className={`absolute inset-0 ${inactive ? "bg-gradient-to-t from-foreground/85 via-foreground/40 to-foreground/10" : "bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent"}`} />
                   {inactive && <span className="absolute right-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-muted-foreground">{t("home.soon")}</span>}
                   <div className="absolute inset-x-0 bottom-0 p-5">
-                    <p className={`font-display text-2xl font-extrabold ${inactive ? "text-muted-foreground" : "text-primary-foreground"}`}>{t(key)}</p>
-                    <p className={`mt-1 max-w-sm text-sm ${inactive ? "text-muted-foreground" : "text-primary-foreground/85"}`}>{t(text)}</p>
+                    <p className="font-display text-2xl font-extrabold text-primary-foreground">{t(key)}</p>
+                    <p className="mt-1 max-w-sm text-sm text-primary-foreground/85">{t(text)}</p>
                   </div>
                 </>
               );
