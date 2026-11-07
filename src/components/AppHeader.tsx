@@ -3,6 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import logoMenu from "@/assets/logo-menu.webp";
 import { LangSwitch, useI18n } from "@/lib/i18n";
+import { EmergencyButton } from "@/components/EmergencyPhones";
 
 export type HeaderRoute =
   | "/"
@@ -102,6 +103,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
           <div className="flex justify-center">{brand}</div>
           <div className="flex items-center justify-end">
           <LangSwitch className={overlay ? "hidden sm:flex [&_button]:!text-primary-foreground" : "hidden sm:flex"} />
+          <EmergencyButton className={overlay ? "!text-primary-foreground" : ""} />
           <button
             type="button"
             onClick={() => setOpen(true)}

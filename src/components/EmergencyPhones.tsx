@@ -8,7 +8,7 @@ export function EmergencyPhonesList() {
     <div className="space-y-5">
       <a
         href={`tel:${MAIN_EMERGENCY.tel}`}
-        className="press flex items-center justify-between gap-4 bg-destructive p-5 text-destructive-foreground"
+        className="press-feedback flex items-center justify-between gap-4 bg-destructive p-5 text-destructive-foreground"
       >
         <span>
           <span className="block font-display text-xl font-extrabold">{MAIN_EMERGENCY.label}</span>
@@ -25,7 +25,7 @@ export function EmergencyPhonesList() {
           <ul className="mt-2 grid gap-2 sm:grid-cols-2">
             {g.phones.map((p) => (
               <li key={p.tel}>
-                <a href={`tel:${p.tel}`} className="press flex h-full items-start justify-between gap-3 border-2 border-destructive/20 bg-destructive/5 p-3 hover:bg-destructive/10">
+                <a href={`tel:${p.tel}`} className="press-feedback flex h-full items-start justify-between gap-3 border-2 border-destructive/20 bg-destructive/5 p-3 hover:bg-destructive/10">
                   <span>
                     <span className="block font-semibold">{p.label}</span>
                     {p.note && <span className="mt-0.5 block text-xs text-muted-foreground">{p.note}</span>}
@@ -51,7 +51,7 @@ export function EmergencyButton({ className = "" }: { className?: string }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Emergencias y teléfonos de ayuda"
-        className={`press inline-flex min-h-11 min-w-11 items-center justify-center gap-1 text-destructive hover:opacity-80 ${className}`}
+        className={`press-feedback inline-flex min-h-11 min-w-11 items-center justify-center gap-1 text-destructive hover:opacity-80 ${className}`}
       >
         <Siren className="h-5 w-5" aria-hidden />
         <span className="hidden text-xs font-bold uppercase sm:inline">SOS</span>
