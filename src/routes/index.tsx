@@ -84,7 +84,7 @@ function Home() {
             <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-4 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">{t("home.searchBtn")}</Button>
           </form>
           {open && typed && data && (
-            <ul id="sugerencias-portada" role="listbox" className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-soft bg-card text-left shadow-xl">
+            <ul id="sugerencias-portada" role="listbox" className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-soft bg-card text-left shadow-xl animate-suggestions-in">
               {suggestions.length === 0 ? (
                 <li className="px-4 py-3 text-sm text-muted-foreground">{t("home.suggestNone")}</li>
               ) : (

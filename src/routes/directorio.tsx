@@ -162,7 +162,7 @@ function Index() {
           </label>}
         </div>
         <div className="mx-auto flex max-w-5xl justify-center px-4 pb-3">
-          <button
+          <Button variant="ghost"
             type="button"
             aria-pressed={urg}
             onClick={() => { setText(""); navigate({ search: (p) => ({ ...p, urg: !urg, q: "", cat: "", of: "", tipo: "" }), resetScroll: false }); }}
@@ -172,7 +172,7 @@ function Index() {
             )}
           >
             <Zap className="h-5 w-5" aria-hidden /> Urgencias y guardias{urg ? " · quitar" : ""}
-          </button>
+          </Button>
         </div>
       </nav>
 
@@ -187,7 +187,7 @@ function Index() {
           </section>
         )}
 
-        <section aria-label="Directorio">
+        <section key={JSON.stringify([q, cat, of, tipo, urg])} aria-label="Directorio" className="animate-results-in">
           {!browsingHome && (
             <h2 className="text-center font-display text-2xl font-bold">
               {urg ? "Urgencias y guardias" : activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : "Resultados"}
@@ -242,13 +242,13 @@ function BackToTop() {
   }, []);
   if (!show) return null;
   return (
-    <button
+    <Button variant="ghost"
       type="button"
       aria-label="Volver arriba"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       className="fixed bottom-5 right-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary bg-card text-primary"
     >
       <ArrowUp className="h-6 w-6" aria-hidden />
-    </button>
+    </Button>
   );
 }
