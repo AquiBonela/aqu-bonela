@@ -114,7 +114,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         </div>
       </header>
       {open && (
-        <div id="menu-principal" className="animate-menu-full fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
+        <div id="menu-principal" className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed`} data-x=" inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
           <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
             <div className="flex justify-start">
               <LangSwitch className="[&_button]:!text-primary-foreground" />
@@ -125,7 +125,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
             <div className="flex justify-end">
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => { setClosing(true); window.setTimeout(() => { setOpen(false); setClosing(false); }, 160); }}
                 aria-label={t("menu.close")}
                 className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
               >
