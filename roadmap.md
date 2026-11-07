@@ -18,4 +18,4 @@
 - [x] Incorporar respuesta táctil, transiciones de resultados, sugerencias animadas y confirmaciones flotantes; comprobar búsquedas, compartir y movimiento reducido en navegador.
 
 - [x] Abrir alta de negocio en una ventana desde portada y directorio, reutilizando el formulario de sugerencias; verificar apertura, campos y cierre en móvil y escritorio.
-- Quitar el logo de la cabecera (móvil y escritorio)
+- [x] Quitar el logo de la cabecera (móvil y escritorio)
