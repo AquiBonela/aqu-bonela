@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { directoryQuery, filterListings, type Listing } from "@/lib/directory";
 import { Search, MapPin } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n, type TKey } from "@/lib/i18n";
 import logoWhite from "@/assets/logo-menu.webp";
@@ -160,9 +161,9 @@ function Home() {
           <div className="rounded-soft bg-primary px-6 py-10 text-center text-primary-foreground sm:px-12">
             <h2 className="font-display text-2xl font-extrabold leading-tight sm:text-3xl">{t("home.ctaTitle")}</h2>
             <p className="mx-auto mt-3 max-w-xl opacity-90">{t("home.ctaText")}</p>
-            <Button asChild className="mt-6 h-11 rounded-full bg-terracotta px-6 font-display font-semibold text-terracotta-foreground hover:bg-terracotta/90">
-              <Link to="/sugerir">{t("home.ctaBtn")}</Link>
-            </Button>
+            <BusinessSignupDialog>
+              <Button className="mt-6 h-11 rounded-full bg-terracotta px-6 font-display font-semibold text-terracotta-foreground hover:bg-terracotta/90">{t("home.ctaBtn")}</Button>
+            </BusinessSignupDialog>
           </div>
         </section>
       </main>
