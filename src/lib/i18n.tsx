@@ -431,12 +431,31 @@ const en: Partial<Record<TKey, string>> = {
 const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en };
 const STORAGE_KEY = "aquibonela-lang";
 
+const originalTranslations = new Map(Object.entries(es).map(([key, value]) => [value.replace(/\s+/g, " ").trim(), en[key as TKey] ?? value]));
+const extraTranslations = new Map(Object.entries(englishText).map(([key, value]) => [key.replace(/\s+/g, " ").trim(), value]));
+
 export function translateText(text: string, lang: Lang): string {
   if (lang === "es") return text;
   const normalized = text.replace(/\s+/g, " ").trim();
-  const keyed = Object.entries(es).find(([, value]) => value.replace(/\s+/g, " ").trim() === normalized);
-  const translated = englishText[normalized] ?? (keyed ? en[keyed[0] as TKey] : undefined);
+  const translated = extraTranslations.get(normalized) ?? originalTranslations.get(normalized);
   if (translated) return translated;
+  if (text.includes("\n")) return text.split("\n").map((line) => translateText(line, lang)).join("\n");
+  if (text.includes(" · ")) return text.split(" · ").map((part) => translateText(part, lang)).join(" · ");
+  const patterns: [RegExp, (match: RegExpMatchArray) => string][] = [
+    [/^(\d+) fichas$/, (m) => `${m[1]} listings`],
+    [/^(\d+) sin atender$/, (m) => `${m[1]} unhandled`],
+    [/^(\d+) pendientes?$/, (m) => `${m[1]} pending`],
+    [/^No se puede borrar: (?:tiene|la usan) (\d+) ficha\(s\)\.$/, (m) => `Cannot delete: used by ${m[1]} listing(s).`],
+    [/^¿Borrar la categoría «(.+)» y todas sus actividades\?$/, (m) => `Delete category “${m[1]}” and all its activities?`],
+    [/^¿Borrar la actividad «(.+)»\?$/, (m) => `Delete activity “${m[1]}”?`],
+    [/^¿Eliminar definitivamente «(.+)»\? Se borrarán también sus fotos, contactos, horarios, avisos y autorizaciones\. Esta acción no se puede deshacer\.$/, (m) => `Permanently delete “${m[1]}”? Its photos, contacts, opening hours, reports and approvals will also be deleted. This cannot be undone.`],
+    [/^No se pudo (guardar el texto|guardar|quitar|subir): (.*)$/, (m) => `Couldn't ${m[1] === "subir" ? "upload" : m[1] === "quitar" ? "remove" : "save"}: ${translateText(m[2] ?? "", lang)}`],
+    [/^Hasta el (.+)$/, (m) => `Until ${m[1]}`],
+  ];
+  for (const [pattern, format] of patterns) {
+    const match = normalized.match(pattern);
+    if (match) return format(match);
+  }
   return text;
 }
 
