@@ -131,7 +131,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         <div id="menu-principal" onClick={(event) => {
           if (!(event.target instanceof Element) || event.target.closest("a, button, [role='group'], footer, img, li")) return;
           closeMenu();
-        }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary/95 text-primary-foreground`}>
+        }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary/97 text-primary-foreground`}>
           <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
             <div className="flex justify-start">
               <LangSwitch className="[&_button]:!text-primary-foreground" />
