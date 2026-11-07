@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { englishText } from "@/lib/i18n-extra";
+import { Button } from "@/components/ui/button";
 
 /**
  * Sistema de idiomas. Español es el idioma original y por defecto.
@@ -429,15 +431,26 @@ const en: Partial<Record<TKey, string>> = {
 const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en };
 const STORAGE_KEY = "aquibonela-lang";
 
-type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: TKey) => string };
-const I18nContext = createContext<Ctx>({ lang: "es", setLang: () => {}, t: (k) => es[k] });
+export function translateText(text: string, lang: Lang): string {
+  if (lang === "es") return text;
+  const normalized = text.replace(/\s+/g, " ").trim();
+  const keyed = Object.entries(es).find(([, value]) => value.replace(/\s+/g, " ").trim() === normalized);
+  const translated = englishText[normalized] ?? (keyed ? en[keyed[0] as TKey] : undefined);
+  if (translated) return translated;
+  return text;
+}
+
+type Ctx = { lang: Lang; locale: string; setLang: (l: Lang) => void; t: (k: TKey) => string; tr: (text: string) => string };
+const I18nContext = createContext<Ctx>({ lang: "es", locale: "es-ES", setLang: () => {}, t: (k) => es[k], tr: (text) => text });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("es");
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved && (LANGS as readonly string[]).includes(saved)) setLangState(saved as Lang);
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved && (LANGS as readonly string[]).includes(saved)) setLangState(saved as Lang);
+    } catch { /* Language selection still works when storage is unavailable. */ }
   }, []);
 
   useEffect(() => {
@@ -446,15 +459,21 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
-    window.localStorage.setItem(STORAGE_KEY, l);
+    try { window.localStorage.setItem(STORAGE_KEY, l); } catch { /* Keep the current selection in memory. */ }
   }, []);
 
   const t = useCallback((k: TKey) => DICTS[lang][k] ?? es[k], [lang]);
+  const tr = useCallback((text: string) => translateText(text, lang), [lang]);
 
-  return <I18nContext.Provider value={{ lang, setLang, t }}>{children}</I18nContext.Provider>;
+  return <I18nContext.Provider value={{ lang, locale: lang === "en" ? "en-GB" : "es-ES", setLang, t, tr }}>{children}</I18nContext.Provider>;
 }
 
 export const useI18n = () => useContext(I18nContext);
+
+export function Text({ text }: { text: string }) {
+  const { tr } = useI18n();
+  return <>{tr(text)}</>;
+}
 
 export function LangSwitch({ className = "" }: { className?: string }) {
   const { lang, setLang, t } = useI18n();
@@ -463,14 +482,14 @@ export function LangSwitch({ className = "" }: { className?: string }) {
       {LANGS.map((l, i) => (
         <span key={l} className="flex items-center">
           {i > 0 && <span aria-hidden className="px-0.5 opacity-40">|</span>}
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={() => setLang(l)}
             aria-pressed={lang === l}
             className={`min-h-11 px-1 uppercase ${lang === l ? "text-primary underline underline-offset-4" : "opacity-60 hover:opacity-100"}`}
           >
             {l}
-          </button>
+          </Button>
         </span>
       ))}
     </div>

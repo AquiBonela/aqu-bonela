@@ -26,6 +26,7 @@
 - Home `/` is a neutral portal (no featured businesses); the searchable directory lives at `/directorio`. Why: Aquí Bonela is a local-life platform, not only a commercial guide.
 
 - UI text is translated via the dictionary in `src/lib/i18n.tsx` (`useI18n().t`), language saved in the browser, Spanish fallback for missing keys; URLs are not language-prefixed. Why: adding languages or translating pages later needs no route rebuild.
+- Editorial and legacy interface strings use the shared `tr`/`Text` dictionary extension; translate display values only, not persisted form values, identifiers, names or addresses. Why: switching language must not change stored data or break filters.
 
 - Mount one shared Sonner notification host in the root layout; emit confirmations only after success and never for cancelled sharing. Why: consistent feedback without duplicate or misleading notices.
 - Keep brief press and list-entry effects in shared CSS and respect reduced-motion preferences. Why: consistent feedback without layout shifts or scroll effects.
