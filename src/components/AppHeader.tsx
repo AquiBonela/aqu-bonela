@@ -48,6 +48,7 @@ const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hov
  */
 export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left, overlay = false }: AppHeaderProps) {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const { t } = useI18n();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -114,7 +115,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         </div>
       </header>
       {open && (
-        <div id="menu-principal" className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed`} data-x=" inset-0 z-50 flex flex-col bg-primary text-primary-foreground">
+        <div id="menu-principal" className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground`}>
           <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
             <div className="flex justify-start">
               <LangSwitch className="[&_button]:!text-primary-foreground" />
