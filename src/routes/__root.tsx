@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
 } from "@tanstack/react-router";
-import { I18nProvider } from "@/lib/i18n";
+import { I18nProvider, Text } from "@/lib/i18n";
 import {
   Link,
   createRootRouteWithContext,
@@ -18,21 +18,21 @@ import { SiteFooter } from "@/components/SiteFooter";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
-function NotFoundComponent() {
+function NotFoundContent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground"><Text text="Página no encontrada" /></h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          <Text text="La página que buscas no existe o se ha movido." />
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
+            <Text text="Volver al inicio" />
           </Link>
         </div>
       </div>
@@ -40,7 +40,11 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: ErrorComponentProps) {
+function NotFoundComponent() {
+  return <I18nProvider><NotFoundContent /></I18nProvider>;
+}
+
+function ErrorContent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -51,10 +55,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          <Text text="Esta página no se ha cargado" />
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          <Text text="Algo ha fallado. Puedes volver a intentarlo o regresar al inicio." />
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -64,13 +68,13 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            <Text text="Intentar de nuevo" />
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            <Text text="Volver al inicio" />
           </a>
         </div>
       </div>
@@ -109,6 +113,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
+
+function ErrorComponent(props: ErrorComponentProps) {
+  return <I18nProvider><ErrorContent {...props} /></I18nProvider>;
+}
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
