@@ -15,4 +15,4 @@
 - [x] Logo pequeño y arriba dentro del menú verde (cabecera de la portada: solo el grande).
 - [x] Barra fija de Descubrir: visible solo al quedar anclada arriba.
 
-- [ ] Incorporar respuesta táctil, transiciones de resultados, sugerencias animadas y confirmaciones flotantes.
+- [x] Incorporar respuesta táctil, transiciones de resultados, sugerencias animadas y confirmaciones flotantes; comprobar búsquedas, compartir y movimiento reducido en navegador.
