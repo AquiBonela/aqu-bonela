@@ -25,7 +25,7 @@ export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?:
   const { t } = useI18n();
   const brand = overlay ? null : hideBrand ? null : (
     <Link to="/" className="inline-flex min-w-0 items-center" aria-label="Aquí Bonela, inicio">
-      <img src={logoLinea} alt="Aquí Bonela" className="h-7 w-auto max-w-full object-contain sm:hidden" />
+      <img src={logoLinea} alt="Aquí Bonela" className="h-9 w-auto max-w-full object-contain sm:hidden" />
       <img src={logo} alt="Aquí Bonela" className="hidden h-10 w-auto sm:block sm:h-11" />
     </Link>
   );
