@@ -35,6 +35,8 @@ export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?:
   );
   return (
     <>
+    {overlay && <SiteBanner />}
+    <div className={overlay ? "relative" : undefined}>
     <AppHeader
       navLabel={t("menu.label")}
       footnote={<SiteFooter inMenu />}
@@ -43,7 +45,8 @@ export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?:
       brand={brand}
       items={menuItems(t, () => setSendOpen(true))}
     />
-    <SiteBanner />
+    </div>
+    {!overlay && <SiteBanner />}
     <BusinessSignupDialog business={false} open={sendOpen} onOpenChange={setSendOpen} />
     </>
   );
