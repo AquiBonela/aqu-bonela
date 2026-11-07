@@ -51,10 +51,10 @@ export function EmergencyButton({ className = "" }: { className?: string }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Emergencias y teléfonos de ayuda"
-        className={`press-feedback inline-flex min-h-11 min-w-11 items-center justify-center gap-1 text-destructive hover:opacity-80 ${className}`}
+        className={`press-feedback inline-flex h-7 shrink-0 items-center justify-center gap-1 bg-destructive px-2 text-xs font-bold uppercase tracking-wide text-destructive-foreground hover:opacity-90 ${className}`}
       >
-        <Siren className="h-5 w-5" aria-hidden />
-        <span className="hidden text-xs font-bold uppercase sm:inline">SOS</span>
+        <Siren className="h-3.5 w-3.5" aria-hidden />
+        <span>SOS</span>
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
