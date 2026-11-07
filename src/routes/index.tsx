@@ -122,7 +122,7 @@ function Home() {
       </div>
 
       <main>
-        <section aria-label={t("home2.sectionsTitle")} className="mx-auto max-w-5xl px-4 pb-16">
+        <section aria-label={t("home2.sectionsTitle")} className="mx-auto max-w-5xl px-4 pb-16 pt-6 sm:pt-8">
           <ul className="grid gap-4 sm:grid-cols-2">
             {SECTIONS.map(({ key, text, img, to }, i) => {
               const inner = (

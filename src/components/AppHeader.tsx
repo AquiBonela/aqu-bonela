@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
-import logoMenu from "@/assets/logo-menu.webp";
+import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { EmergencyButton } from "@/components/EmergencyPhones";
 
@@ -91,31 +91,31 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         )}
       </Link>
     ) : (
-      <button key={item.label} type="button" onClick={() => { setOpen(false); void item.onClick?.(); }} className={big ? BIG_CLASS : SMALL_CLASS}>
+      <Button variant="ghost" key={item.label} type="button" onClick={() => { setOpen(false); void item.onClick?.(); }} className={`h-auto whitespace-normal p-0 text-inherit hover:bg-transparent ${big ? BIG_CLASS : SMALL_CLASS}`}>
         {item.label}
-      </button>
+      </Button>
     );
 
   return (
     <>
       <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
         <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 px-4 py-2">
-          <div className="flex items-center justify-start gap-3">
+          <div className="flex min-w-0 items-center justify-start gap-3 sm:gap-5">
             <EmergencyButton />
             {left}
           </div>
-          <div className="flex min-w-0 items-center justify-end gap-1">
+          <div className="flex shrink-0 items-center justify-end gap-1">
             {brand}
-            <LangSwitch className={overlay ? "hidden sm:flex [&_button]:!text-primary-foreground" : "hidden sm:flex"} />
-            <button
+            <LangSwitch className={overlay ? "[&_button]:!text-primary-foreground" : ""} />
+            <Button variant="ghost" size="icon"
               type="button"
               onClick={() => setOpen(true)}
               aria-expanded={open}
               aria-label={t("menu.open")}
-              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center hover:text-beige"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-inherit hover:bg-transparent hover:text-beige"
             >
               <Menu className="h-6 w-6" aria-hidden />
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -125,25 +125,23 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
             <div className="flex justify-start">
               <LangSwitch className="[&_button]:!text-primary-foreground" />
             </div>
-            <div className="flex justify-center">
-              <img src={logoMenu} alt="Aquí Bonela" className="h-10 w-auto sm:h-11" />
-            </div>
+            <div />
             <div className="flex justify-end">
-              <button
+              <Button variant="ghost" size="icon"
                 type="button"
                 onClick={() => { setClosing(true); window.setTimeout(() => { setOpen(false); setClosing(false); }, 160); }}
                 aria-label={t("menu.close")}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-beige"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center text-primary-foreground hover:bg-transparent hover:text-beige"
               >
                 <X className="h-6 w-6" aria-hidden />
-              </button>
+              </Button>
             </div>
           </div>
           <nav aria-label={tr("Menú móvil")} className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
             <div className="flex flex-1 flex-col items-center justify-center py-8">
               <ul className="flex flex-col items-center gap-6">
                 {items.map((item, i) => (
-                  <li key={item.label} className="animate-menu-item" style={{ animationDelay: `${0.06 * (i + 1)}s` }}>
+                  <li key={item.label} className={`animate-menu-item ${item.to === "/" ? "whitespace-nowrap" : ""}`} style={{ animationDelay: `${0.06 * (i + 1)}s` }}>
                     {renderItem(item, true)}
                   </li>
                 ))}

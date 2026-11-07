@@ -16,6 +16,7 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LocalizedHead } from "@/components/LocalizedHead";
+import { BackToTop } from "@/components/BackToTop";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -143,6 +144,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <SiteFooter />
+        <BackToTop />
         <Toaster position="bottom-center" offset={100} duration={3500} closeButton toastOptions={{ classNames: { toast: "!bg-card !text-card-foreground !border-border !rounded-none !shadow-none", description: "!text-muted-foreground" } }} />
       </I18nProvider>
     </QueryClientProvider>

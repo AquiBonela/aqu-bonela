@@ -252,6 +252,9 @@
 
 /* Espacio para la barra fija de contacto en fichas */
 body:has(.listing-page) > footer, body:has(.listing-page) footer.mt-8 { padding-bottom: 8rem; }
+@media (max-width: 639px) {
+  body:has(.listing-page) .back-to-top { bottom: 6rem; }
+}
 
 /* Evita la selección de texto y el resaltado azul al tocar, salvo en campos de escritura */
 html { -webkit-tap-highlight-color: transparent; }
