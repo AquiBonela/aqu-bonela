@@ -141,7 +141,7 @@ function ServiciosPublicos() {
         <section className="mx-auto max-w-5xl px-4 pt-14">
           <SectionTitle n="02" title="Vida diaria en el pueblo" text="Información práctica para organizarte y usar los servicios municipales." />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-results-in">
-            {DIARIO.map((i) => (
+            {DIARIO.filter((i) => !i.wide).map((i) => (
               <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : ""}`}>
                 <div className="flex items-center gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
@@ -168,6 +168,38 @@ function ServiciosPublicos() {
             ))}
           </div>
         </section>
+
+        {DIARIO.filter((i) => i.wide).map((i) => (
+          <section key={i.title} className="mt-10 bg-primary text-primary-foreground">
+            <div className="mx-auto max-w-5xl px-4 py-10">
+              <div className="flex items-center gap-3">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary"><i.Icon className="h-6 w-6" aria-hidden /></span>
+                <h3 className="font-display text-2xl font-extrabold leading-tight">{tr(i.title)}</h3>
+              </div>
+              <p className="mt-3 opacity-90">{tr(i.text)}</p>
+              {i.facts && (
+                <dl className="mt-4 space-y-1 border-t border-primary-foreground/30 pt-4 text-sm">
+                  {i.facts.map((f) => (
+                    <div key={f.k} className="flex gap-2"><dt className="font-bold">{tr(f.k)}:</dt><dd>{tr(f.v)}</dd></div>
+                  ))}
+                </dl>
+              )}
+              {i.list && (
+                <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-3">
+                  {i.list.map((x) => (
+                    <li key={x} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />{tr(x)}</li>
+                  ))}
+                </ul>
+              )}
+              {i.note && <p className="mt-4 bg-primary-foreground/15 p-3 text-sm font-semibold">{tr(i.note)}</p>}
+              {i.tel && (
+                <a href={`tel:${i.tel}`} className="mt-5 inline-flex items-center gap-2 bg-primary-foreground px-5 py-3 text-sm font-bold text-primary">
+                  <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" /> {i.tel.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}
+                </a>
+              )}
+            </div>
+          </section>
+        ))}
 
         {/* 3. Trámites */}
         <section className="mx-auto max-w-5xl px-4 py-14">
