@@ -108,14 +108,15 @@ function ServiciosPublicos() {
             <Moon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <p><strong><Text text="¿Consultorio cerrado, de noche o en fin de semana?" /></strong> <Text text="Urgencias en el Centro de Salud de Pizarra (24 h) o llama al 112." /></p>
           </div>
-          <div className="mt-3 flex flex-col gap-4 bg-beige p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-3">
-              <Lightbulb className="mt-1 h-6 w-6 shrink-0 text-primary" aria-hidden />
-              <div>
-                <h3 className="font-display text-xl font-extrabold"><Text text="¿Una farola rota, un bache o una avería?" /></h3>
-                <p className="mt-1 text-muted-foreground"><Text text="Avísalo por Línea Verde, el canal oficial del Ayuntamiento." /></p>
-              </div>
+        </section>
+
+        <section className="mt-10 bg-primary text-primary-foreground">
+          <div className="mx-auto max-w-5xl px-4 py-10">
+            <div className="flex items-center gap-3">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary"><Lightbulb className="h-6 w-6" aria-hidden /></span>
+              <h3 className="font-display text-2xl font-extrabold leading-tight"><Text text="¿Una farola rota, un bache o una avería?" /></h3>
             </div>
+            <p className="mt-3 opacity-90"><Text text="Avísalo por Línea Verde, el canal oficial del Ayuntamiento para avisos de la vía pública." /></p>
             <a
               href="https://www.lineaverde.app/"
               target="_blank"
@@ -131,8 +132,8 @@ function ServiciosPublicos() {
                   window.location.href = "https://apps.apple.com/es/app/l%C3%ADnea-verde/id556432672";
                 }
               }}
-              className="inline-flex min-h-12 shrink-0 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground hover:opacity-90">
-               <Text text="Abrir Línea Verde" /> <ExternalLink className="h-4 w-4" aria-hidden />
+              className="mt-5 inline-flex min-h-12 items-center gap-2 bg-primary-foreground px-5 font-bold text-primary hover:opacity-90">
+              <Text text="Abrir Línea Verde" /> <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
           </div>
         </section>
