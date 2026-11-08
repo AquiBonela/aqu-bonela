@@ -189,7 +189,7 @@ function ServiciosPublicos() {
                         {i.timetable!.rows.map((r) => (
                           <div key={r.days} className="flex flex-wrap gap-x-3">
                             <dt className="w-28 shrink-0 font-semibold">{tr(r.days)}</dt>
-                            <dd className="tabular-nums">{r.cells[ci].join(" · ")}</dd>
+                            <dd className="tabular-nums">{(r.cells[ci] ?? []).join(" · ")}</dd>
                           </div>
                         ))}
                       </dl>
