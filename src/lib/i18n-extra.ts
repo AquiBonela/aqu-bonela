@@ -172,7 +172,7 @@ export const englishText: Record<string, string> = {
   "Llama al 112 o a Salud Responde.": "Call 112 or Salud Responde.",
   "Centro de urgencias de referencia y farmacia de guardia: por confirmar.": "Designated emergency clinic and on-call pharmacy: to be confirmed.",
   "¿Una farola rota, un bache o una avería?": "A broken streetlight, a pothole or a fault?",
-  "Avísalo por Línea Verde, el canal oficial del Ayuntamiento.": "Report it through Línea Verde, the Town Hall's official channel.",
+  "Avísalo por Línea Verde, el canal oficial del Ayuntamiento para avisos de la vía pública.": "Report it through Línea Verde, the Town Hall's official channel for public-space issues.",
   "Abrir Línea Verde": "Open Línea Verde",
   "Escribe lo que buscas: padrón, cita, autobús…": "Search for registration, appointments, buses…",
   "Buscar servicio": "Search services",
