@@ -25,3 +25,4 @@
 - [x] Abrir Enviar información en ventana y añadir separación antes de la tarjeta Directorio en portada.
 - [x] Añadir cabecera a fichas y flecha circular compartida en todas las páginas; verificar en móvil y escritorio.
 - [x] Poner Actualidad y Clasificados en gris y sin animación en la portada mientras no estén activos.
+- [x] Reordenar los horarios del autobús en Servicios Públicos: dos bloques (Hacia Málaga / Desde Málaga) con días y horas alineados; verificar en móvil y escritorio.
