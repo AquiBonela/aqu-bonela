@@ -185,11 +185,11 @@ function ServiciosPublicos() {
                   {i.timetable.columns.map((c, ci) => (
                     <div key={c}>
                       <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-primary">{tr(c)}</h4>
-                      <dl className="mt-2 space-y-1.5 text-sm">
+                      <dl className="mt-2 grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-1.5 text-sm">
                         {i.timetable!.rows.map((r) => (
-                          <div key={r.days} className="flex flex-wrap gap-x-3">
-                            <dt className="w-28 shrink-0 font-semibold">{tr(r.days)}</dt>
-                            <dd className="tabular-nums">{(r.cells[ci] ?? []).join(" · ")}</dd>
+                          <div key={r.days} className="contents">
+                            <dt className="font-semibold">{tr(r.days)}</dt>
+                            <dd className="whitespace-nowrap tabular-nums">{(r.cells[ci] ?? []).join(" · ")}</dd>
                           </div>
                         ))}
                       </dl>
