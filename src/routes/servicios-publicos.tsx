@@ -186,9 +186,9 @@ function ServiciosPublicos() {
                 </dl>
               )}
               {i.list && (
-                <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-3">
+                <ul className="mt-5 flex flex-col gap-3 text-lg font-semibold sm:text-xl">
                   {i.list.map((x) => (
-                    <li key={x} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />{tr(x)}</li>
+                    <li key={x} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0" aria-hidden />{tr(x)}</li>
                   ))}
                 </ul>
               )}
