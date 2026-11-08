@@ -39,21 +39,21 @@ const SEDE = "https://casarabonela.sedelectronica.es";
 
 const DIARIO: Item[] = [
   { Icon: Stethoscope, title: "Consultorio médico", text: "Atención primaria del Servicio Andaluz de Salud en el centro del pueblo.", facts: [{ k: "Horario", v: "Lunes a viernes, 8:00–15:00" }, { k: "Dónde", v: "Calle Málaga, s/n" }], tel: "951062980", link: { label: "Cita en ClicSalud+", href: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud/" } },
-  { Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta, verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Jueves, 9:00–14:00" }, { k: "Dónde", v: "Paseo de la Fuente" }] },
+  { Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta y verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Todos los viernes de 9:00 a 14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }] },
   { Icon: Truck, title: "Recogida de muebles y enseres", text: "Servicio gratuito de recogida en la puerta de casa, con aviso previo.", facts: [{ k: "Cuándo", v: "Primer martes de cada mes" }, { k: "Aviso", v: "Llamar antes del lunes anterior" }], tel: "952456005" },
-  { Icon: Recycle, title: "Punto limpio", text: "Para escombros pequeños, aceite, electrodomésticos, pilas y podas.", facts: [{ k: "Horario", v: "Sábados, 10:00–13:00" }, { k: "Dónde", v: "Polígono Los Llanos" }] },
-  { Icon: Bus, title: "Transporte público y autobús", text: "Conexión con Pizarra (tren de cercanías) y Málaga por el Consorcio de Transportes.", facts: [{ k: "Línea", v: "M-137 Casarabonela–Málaga" }, { k: "Parada", v: "Avenida de Andalucía" }], link: { label: "Horarios", href: "https://www.ctmam.es" } },
+  { Icon: Recycle, title: "Punto limpio", text: "Para escombros pequeños, aceite, electrodomésticos, pilas y podas.", facts: [{ k: "Horario", v: "Sábados, 10:00–13:00" }, { k: "Dónde", v: "Polígono industrial" }] },
+  { Icon: Bus, title: "Transporte público y autobús", text: "Autobús a Málaga.", facts: [{ k: "Línea", v: "M-137 Casarabonela–Málaga" }, { k: "Parada", v: "Avenida de Andalucía" }], link: { label: "Horarios", href: "https://www.ctmam.es" } },
   { Icon: Trash2, title: "Basura y reciclaje", text: "Saca la basura por la noche y usa los contenedores de colores para reciclar.", facts: [{ k: "Horario", v: "Depositar de 20:00 a 24:00" }, { k: "Reciclaje", v: "Amarillo, azul, verde y aceite" }] },
   { Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
 ];
 
 const TRAMITES: Item[] = [
-  { Icon: Home, title: "Empadronamiento", text: "Alta, cambio de domicilio o baja en el padrón municipal. Necesitas DNI o NIE y contrato o escritura de la vivienda.", facts: [{ k: "Dónde", v: "Ayuntamiento u online con Cl@ve" }], link: { label: "Información oficial", href: SEDE } },
+  { Icon: Home, title: "Empadronamiento", text: "Alta, cambio de domicilio o baja en el padrón municipal. Necesitas DNI o NIE y contrato o escritura de la vivienda.", facts: [{ k: "Dónde", v: "Ayuntamiento (sin cita previa)" }], link: { label: "Información oficial", href: SEDE } },
   { Icon: FileText, title: "Certificados y volantes", text: "El volante sirve para colegios o ayudas; el certificado, para juzgados, herencias o extranjería.", facts: [{ k: "Dónde", v: "Ayuntamiento o Sede Electrónica" }], link: { label: "Solicitar", href: SEDE } },
   { Icon: PenLine, title: "Instancia general", text: "El escrito oficial para cualquier solicitud o comunicación al Ayuntamiento que no tenga un trámite propio.", facts: [{ k: "Dónde", v: "Registro municipal u online" }], link: { label: "Presentar", href: SEDE } },
   { Icon: Hammer, title: "Licencias de obras", text: "Antes de reformar, pintar fachadas o construir, consulta si necesitas licencia o declaración responsable.", facts: [{ k: "Dónde", v: "Oficina técnica, martes y jueves" }], tel: "952456005", link: { label: "Requisitos", href: SEDE } },
   { Icon: HeartHandshake, title: "Ayudas y servicios sociales", text: "Orientación sobre ayudas, dependencia y atención a familias con la trabajadora social.", facts: [{ k: "Dónde", v: "Ayuntamiento, miércoles con cita" }], tel: "952456005" },
-  { Icon: MessageSquare, title: "Quejas y sugerencias", text: "Comunica una queja o propuesta al Ayuntamiento. Para averías en la calle, usa Línea Verde.", facts: [{ k: "Dónde", v: "Registro municipal u online" }], link: { label: "Enviar", href: SEDE } },
+  { Icon: MessageSquare, title: "Quejas y sugerencias", text: "Comunica una queja o propuesta al Ayuntamiento.\nPara averías en la calle, usa Línea Verde.", facts: [{ k: "Dónde", v: "Registro municipal u online" }], link: { label: "Enviar", href: SEDE } },
 ];
 
 function Actions({ i, compact }: { i: Item; compact?: boolean }) {
