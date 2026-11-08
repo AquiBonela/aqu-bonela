@@ -26,3 +26,4 @@
 - [x] Añadir cabecera a fichas y flecha circular compartida en todas las páginas; verificar en móvil y escritorio.
 - [x] Poner Actualidad y Clasificados en gris y sin animación en la portada mientras no estén activos.
 - [x] Reordenar los horarios del autobús en Servicios Públicos: dos bloques (Hacia Málaga / Desde Málaga) con días y horas alineados; verificar en móvil y escritorio.
+- [ ] Simplificar contactos locales, añadir Alozaina y explicar reciclaje; verificar móvil e inglés.

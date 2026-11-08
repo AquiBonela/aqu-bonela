@@ -1,11 +1,11 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, Truck, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, Moon,
+  Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, Truck, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, MapPin,
   Recycle, Trash2, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { EmergencyPhonesList } from "@/components/EmergencyPhones";
+import { Button } from "@/components/ui/button";
 import hero from "@/assets/servicios-publicos.jpg";
 
 export const Route = createFileRoute("/servicios-publicos")({
@@ -45,7 +45,7 @@ const DIARIO: Item[] = [
   { Icon: Truck, title: "Recogida de muebles y enseres", text: "Servicio gratuito de recogida en la puerta de casa, con aviso previo.", facts: [{ k: "Cuándo", v: "Primer martes de cada mes" }, { k: "Aviso", v: "Llamar antes del lunes anterior" }], tel: "952456005" },
   { Icon: Recycle, title: "Punto limpio", text: "Para escombros pequeños, aceite, electrodomésticos, pilas y podas.", facts: [{ k: "Horario", v: "Sábados, 10:00–13:00" }, { k: "Dónde", v: "Polígono industrial" }] },
   { Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
-  { Icon: Trash2, title: "Basura y reciclaje", text: "Saca la basura por la noche y usa los contenedores de colores para reciclar.", facts: [{ k: "Horario", v: "Depositar de 20:00 a 24:00" }, { k: "Reciclaje", v: "Amarillo, azul, verde y aceite" }] },
+  { Icon: Trash2, title: "Basura y reciclaje", text: "Separa los residuos y deposítalos dentro del contenedor correspondiente.", facts: [{ k: "Amarillo", v: "Envases de plástico, latas y briks." }, { k: "Azul", v: "Papel y cartón. Pliega las cajas." }, { k: "Verde", v: "Botellas y tarros de vidrio, sin tapas. No cristales ni cerámica." }, { k: "Resto", v: "Residuos no reciclables. La materia orgánica va al marrón si está disponible." }], note: "No dejes bolsas, muebles ni objetos fuera de los contenedores. Lleva los residuos voluminosos o especiales al Punto Limpio y consulta qué materiales admite." },
   { Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
 ];
 
@@ -105,11 +105,33 @@ function ServiciosPublicos() {
         {/* 1. Urgente */}
         <section className="mx-auto max-w-5xl px-4 pt-10">
           <SectionTitle n="01" title="Urgente y en la calle" text="Lo que puedes necesitar ahora mismo, a un toque." />
-          <EmergencyPhonesList />
-          <div className="mt-3 flex gap-3 bg-muted p-4 text-sm">
-            <Moon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-            <p><strong><Text text="¿Consultorio cerrado, de noche o en fin de semana?" /></strong> <Text text="Urgencias en el Centro de Salud de Pizarra (24 h) o llama al 112." /></p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { title: "Emergencias generales", tel: "112", description: "Ante una emergencia grave, llama al 112.", urgent: true },
+              { title: "Guardia Civil — Puesto de Casarabonela", tel: "952456665", description: "Avda. Federico Muñoz, 16.", urgent: false },
+              { title: "Policía Local", tel: "669291300", description: "Edificio de Usos Múltiples, Avda. Fernando Díaz. Atención según turnos.", urgent: false },
+            ].map((contact) => (
+              <article key={contact.tel} className={`flex flex-col gap-3 p-5 ${contact.urgent ? "bg-destructive text-destructive-foreground" : "border bg-card"}`}>
+                <h3 className="font-bold">{tr(contact.title)}</h3>
+                <p className="text-sm">{tr(contact.description)}</p>
+                <Button asChild variant={contact.urgent ? "secondary" : "default"} className="mt-auto min-h-11">
+                  <a href={`tel:${contact.tel}`}><Phone className="h-4 w-4" aria-hidden />{contact.tel.length === 9 ? contact.tel.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") : contact.tel}</a>
+                </Button>
+              </article>
+            ))}
           </div>
+          <p className="mt-3 text-sm text-muted-foreground"><Text text="Encontrarás todas las líneas de ayuda en el botón SOS de la cabecera." /></p>
+          <article className="mt-6 border-l-4 border-primary bg-muted p-5 sm:p-6">
+            <div className="flex items-center gap-3"><Stethoscope className="h-6 w-6 shrink-0 text-primary" aria-hidden /><h3 className="font-display text-xl font-extrabold"><Text text="Centro de Salud de Alozaina" /></h3></div>
+            <p className="mt-3 text-sm"><Text text="Si el consultorio está cerrado, acude a Urgencias de Alozaina. Para pediatría, llama antes y confirma la disponibilidad y el horario." /></p>
+            <p className="mt-2 text-sm"><Text text="Urbanización La Pasadilla, s/n — Alozaina." /></p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button asChild className="min-h-11"><a href="tel:951031437"><Phone className="h-4 w-4" aria-hidden /><Text text="Urgencias" /> · 951 03 14 37</a></Button>
+              <Button asChild variant="outline" className="min-h-11"><a href="tel:951504564"><Phone className="h-4 w-4" aria-hidden /><Text text="Información" /> · 951 50 45 64</a></Button>
+              <Button asChild variant="outline" className="min-h-11"><a href="https://www.google.com/maps/dir/?api=1&destination=Centro+de+Salud+de+Alozaina+Urbanizacion+La+Pasadilla" target="_blank" rel="noopener noreferrer"><MapPin className="h-4 w-4" aria-hidden /><Text text="Cómo llegar" /></a></Button>
+            </div>
+            <a href="https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/el-sas/servicios-y-centros/informacion-por-centros/23967" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary underline"><Text text="Información oficial del centro" /><ExternalLink className="h-4 w-4" aria-hidden /></a>
+          </article>
         </section>
 
         <section className="mt-10 bg-primary text-primary-foreground">
@@ -186,7 +208,7 @@ function ServiciosPublicos() {
                     <div key={c}>
                       <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-primary">{tr(c)}</h4>
                       <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-[13px] min-[380px]:text-sm">
-                        {i.timetable!.rows.map((r) => (
+                        {i.timetable?.rows.map((r) => (
                           <div key={r.days} className="contents">
                             <dt className="font-semibold">{tr(r.days)}</dt>
                             <dd className="whitespace-nowrap tabular-nums">{(r.cells[ci] ?? []).join(" · ")}</dd>
