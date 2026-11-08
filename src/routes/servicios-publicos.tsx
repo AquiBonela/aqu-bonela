@@ -28,9 +28,11 @@ type Item = {
   title: string;
   text: string;
   facts?: { k: string; v: string }[];
+  timetable?: { columns: string[]; rows: { days: string; cells: string[][] }[]; note?: string };
   list?: string[];
   note?: string;
   wide?: boolean;
+  full?: boolean;
   tel?: string;
   link?: { label: string; href: string };
 };
@@ -42,7 +44,7 @@ const DIARIO: Item[] = [
   { Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta y verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Todos los viernes de 9:00 a 14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }] },
   { Icon: Truck, title: "Recogida de muebles y enseres", text: "Servicio gratuito de recogida en la puerta de casa, con aviso previo.", facts: [{ k: "Cuándo", v: "Primer martes de cada mes" }, { k: "Aviso", v: "Llamar antes del lunes anterior" }], tel: "952456005" },
   { Icon: Recycle, title: "Punto limpio", text: "Para escombros pequeños, aceite, electrodomésticos, pilas y podas.", facts: [{ k: "Horario", v: "Sábados, 10:00–13:00" }, { k: "Dónde", v: "Polígono industrial" }] },
-  { Icon: Bus, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", facts: [{ k: "Hacia Málaga", v: "L–S: 7:50 · 9:45 · 17:00 | Domingos: 18:50" }, { k: "Desde Málaga", v: "L–S: 8:00 · 14:00 · 17:00 (18:00 del 16/04 al 15/09) | Domingos: 20:00" }, { k: "Festivos", v: "Ida 7:50 y 17:00; vuelta 8:00 y 17:00" }], tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
+  { Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
   { Icon: Trash2, title: "Basura y reciclaje", text: "Saca la basura por la noche y usa los contenedores de colores para reciclar.", facts: [{ k: "Horario", v: "Depositar de 20:00 a 24:00" }, { k: "Reciclaje", v: "Amarillo, azul, verde y aceite" }] },
   { Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
 ];
@@ -142,7 +144,7 @@ function ServiciosPublicos() {
         <section className="mx-auto max-w-5xl px-4 pt-14">
           <SectionTitle n="02" title="Vida diaria en el pueblo" text="Información práctica para organizarte y usar los servicios municipales." />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-results-in">
-            {DIARIO.filter((i) => !i.wide).map((i) => (
+            {DIARIO.filter((i) => !i.wide && !i.full).map((i) => (
               <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : ""}`}>
                 <div className="flex items-center gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
@@ -169,6 +171,37 @@ function ServiciosPublicos() {
             ))}
           </div>
         </section>
+
+        {DIARIO.filter((i) => i.full).map((i) => (
+          <section key={i.title} className="mx-auto max-w-5xl px-4 pt-5">
+            <article className="border bg-card p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
+                <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
+              </div>
+              <p className="mt-3 text-sm text-muted-foreground">{tr(i.text)}</p>
+              {i.timetable && (
+                <div className="mt-4 grid gap-x-10 gap-y-5 border-t pt-4 sm:grid-cols-2">
+                  {i.timetable.columns.map((c, ci) => (
+                    <div key={c}>
+                      <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-primary">{tr(c)}</h4>
+                      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-[13px] min-[380px]:text-sm">
+                        {i.timetable!.rows.map((r) => (
+                          <div key={r.days} className="contents">
+                            <dt className="font-semibold">{tr(r.days)}</dt>
+                            <dd className="whitespace-nowrap tabular-nums">{(r.cells[ci] ?? []).join(" · ")}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {i.timetable?.note && <p className="mt-3 text-xs text-muted-foreground">{tr(i.timetable.note)}</p>}
+              <Actions i={i} />
+            </article>
+          </section>
+        ))}
 
         {DIARIO.filter((i) => i.wide).map((i) => (
           <section key={i.title} className="mt-10 bg-primary text-primary-foreground">
