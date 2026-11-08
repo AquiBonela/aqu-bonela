@@ -4,7 +4,7 @@ import { Phone, Siren } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { EMERGENCY_GROUPS, MAIN_EMERGENCY } from "@/lib/emergency-phones";
 
-export function EmergencyPhonesList() {
+export function EmergencyPhonesList({ mainOnly = false }: { mainOnly?: boolean } = {}) {
   const { tr, locale } = useI18n();
   return (
     <div className="space-y-5">
@@ -21,7 +21,7 @@ export function EmergencyPhonesList() {
         </span>
       </a>
       <p className="text-sm text-muted-foreground"><Text text="Si no sabes qué servicio necesitas, llama al 112: ellos coordinan la ayuda." /></p>
-      {EMERGENCY_GROUPS.map((g) => (
+      {!mainOnly && EMERGENCY_GROUPS.map((g) => (
         <div key={g.id}>
           <h3 className="text-sm font-bold uppercase tracking-[0.15em] text-muted-foreground">{tr(g.title)}</h3>
           <ul className="mt-2 grid gap-2 sm:grid-cols-2">
