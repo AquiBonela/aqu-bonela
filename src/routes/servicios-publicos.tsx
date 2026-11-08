@@ -172,6 +172,37 @@ function ServiciosPublicos() {
           </div>
         </section>
 
+        {DIARIO.filter((i) => i.full).map((i) => (
+          <section key={i.title} className="mx-auto max-w-5xl px-4 pt-5">
+            <article className="border bg-card p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
+                <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
+              </div>
+              <p className="mt-3 text-sm text-muted-foreground">{tr(i.text)}</p>
+              {i.timetable && (
+                <div className="mt-4 grid gap-x-10 gap-y-5 border-t pt-4 sm:grid-cols-2">
+                  {i.timetable.columns.map((c, ci) => (
+                    <div key={c}>
+                      <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-primary">{tr(c)}</h4>
+                      <dl className="mt-2 space-y-1.5 text-sm">
+                        {i.timetable!.rows.map((r) => (
+                          <div key={r.days} className="flex flex-wrap gap-x-3">
+                            <dt className="w-28 shrink-0 font-semibold">{tr(r.days)}</dt>
+                            <dd className="tabular-nums">{r.cells[ci].join(" · ")}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {i.timetable?.note && <p className="mt-3 text-xs text-muted-foreground">{tr(i.timetable.note)}</p>}
+              <Actions i={i} />
+            </article>
+          </section>
+        ))}
+
         {DIARIO.filter((i) => i.wide).map((i) => (
           <section key={i.title} className="mt-10 bg-primary text-primary-foreground">
             <div className="mx-auto max-w-5xl px-4 py-10">
