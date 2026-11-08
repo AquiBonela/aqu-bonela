@@ -119,6 +119,8 @@ export const englishText: Record<string, string> = {
   "24 h, gratuito y confidencial. No aparece en la factura; borra la llamada del historial.": "24 hours, free and confidential. It does not appear on your bill; delete the call from your call history.",
   "Atención a la conducta suicida": "Suicide crisis support",
   "24 h, gratuito y confidencial.": "24 hours, free and confidential.",
+  "Ayuda a las adicciones": "Addiction helpline",
+  "Junta de Andalucía. Gratuito y confidencial. Orientación a personas afectadas y familias.": "Andalusian Regional Government. Free and confidential. Guidance for affected people and their families.",
   "Información toxicológica": "Poison information",
   "Picaduras, plantas o ingestión accidental.": "Stings, plants or accidental ingestion.",
   "Trámites": "Administrative matters",
