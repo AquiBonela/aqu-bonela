@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
+import { EmergencyPhonesList } from "@/components/EmergencyPhones";
 import hero from "@/assets/servicios-publicos.jpg";
 
 export const Route = createFileRoute("/servicios-publicos")({
@@ -105,16 +106,16 @@ function ServiciosPublicos() {
         {/* 1. Urgente */}
         <section className="mx-auto max-w-5xl px-4 pt-10">
           <SectionTitle n="01" title="Urgente y en la calle" text="Lo que puedes necesitar ahora mismo, a un toque." />
-          <div className="grid gap-3 sm:grid-cols-3">
+          <EmergencyPhonesList mainOnly />
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {[
-              { title: "Emergencias generales", tel: "112", description: "Ante una emergencia grave, llama al 112.", urgent: true },
-              { title: "Guardia Civil — Puesto de Casarabonela", tel: "952456665", description: "Avda. Federico Muñoz, 16.", urgent: false },
-              { title: "Policía Local", tel: "669291300", description: "Edificio de Usos Múltiples, Avda. Fernando Díaz. Atención según turnos.", urgent: false },
+              { title: "Guardia Civil — Puesto de Casarabonela", tel: "952456665", description: "Avda. Federico Muñoz, 16." },
+              { title: "Policía Local", tel: "669291300", description: "Edificio de Usos Múltiples, Avda. Fernando Díaz. Atención según turnos." },
             ].map((contact) => (
-              <article key={contact.tel} className={`flex flex-col gap-3 p-5 ${contact.urgent ? "bg-destructive text-destructive-foreground" : "border bg-card"}`}>
+              <article key={contact.tel} className="flex flex-col gap-3 border bg-card p-5">
                 <h3 className="font-bold">{tr(contact.title)}</h3>
                 <p className="text-sm">{tr(contact.description)}</p>
-                <Button asChild variant={contact.urgent ? "secondary" : "default"} className="mt-auto min-h-11">
+                <Button asChild className="mt-auto min-h-11">
                   <a href={`tel:${contact.tel}`}><Phone className="h-4 w-4" aria-hidden />{contact.tel.length === 9 ? contact.tel.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") : contact.tel}</a>
                 </Button>
               </article>

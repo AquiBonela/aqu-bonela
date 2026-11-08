@@ -33,3 +33,4 @@
 
 - Signup/information dialogs and the suggestion page reuse SuggestionForm. Why: one submission flow.
 - Mount BackToTop once in root; public ListingPage uses SiteHeader, not embedded reviews. Why: consistent navigation.
+- Reuse EmergencyPhonesList with mainOnly for the public-services emergency banner. Why: the 112 presentation stays consistent with SOS without duplicating the full helpline list.
