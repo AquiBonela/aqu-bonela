@@ -1,7 +1,7 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Phone, ExternalLink, Lightbulb, Truck, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, Moon,
+  Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, Truck, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, Moon,
   Recycle, Trash2, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -28,6 +28,9 @@ type Item = {
   title: string;
   text: string;
   facts?: { k: string; v: string }[];
+  list?: string[];
+  note?: string;
+  wide?: boolean;
   tel?: string;
   link?: { label: string; href: string };
 };
@@ -41,6 +44,7 @@ const DIARIO: Item[] = [
   { Icon: Recycle, title: "Punto limpio", text: "Para escombros pequeños, aceite, electrodomésticos, pilas y podas.", facts: [{ k: "Horario", v: "Sábados, 10:00–13:00" }, { k: "Dónde", v: "Polígono Los Llanos" }] },
   { Icon: Bus, title: "Transporte público y autobús", text: "Conexión con Pizarra (tren de cercanías) y Málaga por el Consorcio de Transportes.", facts: [{ k: "Línea", v: "M-137 Casarabonela–Málaga" }, { k: "Parada", v: "Avenida de Andalucía" }], link: { label: "Horarios", href: "https://www.ctmam.es" } },
   { Icon: Trash2, title: "Basura y reciclaje", text: "Saca la basura por la noche y usa los contenedores de colores para reciclar.", facts: [{ k: "Horario", v: "Depositar de 20:00 a 24:00" }, { k: "Reciclaje", v: "Amarillo, azul, verde y aceite" }] },
+  { Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
 ];
 
 const TRAMITES: Item[] = [
@@ -138,7 +142,7 @@ function ServiciosPublicos() {
           <SectionTitle n="02" title="Vida diaria en el pueblo" text="Información práctica para organizarte y usar los servicios municipales." />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-results-in">
             {DIARIO.map((i) => (
-              <article key={i.title} className="flex flex-col border bg-card p-5">
+              <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : ""}`}>
                 <div className="flex items-center gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
                   <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
@@ -151,6 +155,14 @@ function ServiciosPublicos() {
                     ))}
                   </dl>
                 )}
+                {i.list && (
+                  <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+                    {i.list.map((x) => (
+                      <li key={x} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />{tr(x)}</li>
+                    ))}
+                  </ul>
+                )}
+                {i.note && <p className="mt-3 bg-beige p-3 text-sm font-semibold">{tr(i.note)}</p>}
                 <Actions i={i} />
               </article>
             ))}

@@ -665,5 +665,13 @@ export const englishText: Record<string, string> = {
   "Información útil para realizar algunas de las gestiones más habituales en Casarabonela.": "Useful information for the most common procedures in Casarabonela.",
   "¿Necesitas realizar otro trámite?": "Need another procedure?",
   "Consulta el catálogo completo en la Sede Electrónica del Ayuntamiento.": "See the full catalogue on the Town Hall's e-office.",
-  "Acceder a la Sede Electrónica": "Go to the e-office"
+  "Acceder a la Sede Electrónica": "Go to the e-office",
+  "Punto Vuela": "Punto Vuela digital help point",
+  "Servicio gratuito de apoyo digital para vecinos de todas las edades.": "Free digital support service for residents of all ages.",
+  "Calle Real, 12 (junto al Ayuntamiento)": "Calle Real, 12 (next to the Town Hall)",
+  "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00": "Monday to Friday, 9:00–14:00; Tuesday and Thursday, 17:00–20:00",
+  "Asesoramiento y acompañamiento digital": "Digital advice and support",
+  "Ayuda con gestiones online con la Administración": "Help with online government procedures",
+  "Formación y competencias digitales": "Digital skills training",
+  "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.": "If you're not comfortable with digital certificates, Cl@ve or online procedures, they'll help you step by step."
 };
