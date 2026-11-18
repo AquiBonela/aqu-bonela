@@ -2,7 +2,7 @@ import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, Truck, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, MapPin,
-  Recycle, Trash2, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
+  Recycle, Trash2, HeartPulse, Users, Pill, Car, Mail, Landmark, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -34,20 +34,34 @@ type Item = {
   note?: string;
   wide?: boolean;
   full?: boolean;
+  group?: string;
   tel?: string;
   link?: { label: string; href: string };
+  link2?: { label: string; href: string };
 };
 
 const SEDE = "https://casarabonela.sedelectronica.es";
 
 const DIARIO: Item[] = [
-  { Icon: Stethoscope, title: "Consultorio médico", text: "Atención primaria del Servicio Andaluz de Salud en el centro del pueblo.", facts: [{ k: "Horario", v: "Lunes a viernes, 8:00–15:00" }, { k: "Dónde", v: "Calle Málaga, s/n" }], tel: "951062980", link: { label: "Cita en ClicSalud+", href: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud/" } },
-  { Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta y verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Todos los viernes de 9:00 a 14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }] },
-  { Icon: Truck, title: "Recogida de muebles y enseres", text: "Servicio gratuito de recogida en la puerta de casa, con aviso previo.", facts: [{ k: "Cuándo", v: "Primer martes de cada mes" }, { k: "Aviso", v: "Llamar antes del lunes anterior" }], tel: "952456005" },
-  { Icon: Recycle, title: "Punto limpio", text: "Para escombros pequeños, aceite, electrodomésticos, pilas y podas.", facts: [{ k: "Horario", v: "Sábados, 10:00–13:00" }, { k: "Dónde", v: "Polígono industrial" }] },
-  { Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
-  { Icon: Trash2, title: "Basura y reciclaje", text: "Separa los residuos y deposítalos dentro del contenedor correspondiente.", facts: [{ k: "Amarillo", v: "Envases de plástico, latas y briks." }, { k: "Azul", v: "Papel y cartón. Pliega las cajas." }, { k: "Verde", v: "Botellas y tarros de vidrio, sin tapas. No cristales ni cerámica." }, { k: "Resto", v: "Residuos no reciclables. La materia orgánica va al marrón si está disponible." }], note: "No dejes bolsas, muebles ni objetos fuera de los contenedores. Lleva los residuos voluminosos o especiales al Punto Limpio y consulta qué materiales admite." },
-  { Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
+  { group: "salud", Icon: Stethoscope, title: "Consultorio médico", text: "Atención primaria del Servicio Andaluz de Salud en el centro del pueblo.", facts: [{ k: "Horario", v: "Lunes a viernes, 8:00–15:00" }, { k: "Dónde", v: "Calle Málaga, s/n" }], tel: "951062980", link: { label: "Cita en ClicSalud+", href: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud/" } },
+  { group: "salud", Icon: Pill, title: "Farmacia", text: "Farmacia Bonela atiende en el pueblo. Las guardias de la zona se consultan en el calendario oficial.", link: { label: "Ver en el Directorio", href: "/comercios/farmacia-bonela" }, link2: { label: "Farmacias de guardia", href: "https://www.cofmalaga.com/farmacias-de-guardia/" } },
+  { group: "transporte", Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
+  { group: "transporte", Icon: Car, title: "Taxi", text: "Servicio de taxi local para trayectos al centro de salud, a la estación o a Málaga.", facts: [{ k: "Reserva", v: "Por teléfono, con antelación" }, { k: "Teléfono", v: "Pendiente de confirmar" }] },
+  { group: "residuos", Icon: Trash2, title: "Basura y reciclaje", text: "Separa los residuos y deposítalos dentro del contenedor correspondiente.", facts: [{ k: "Amarillo", v: "Envases de plástico, latas y briks." }, { k: "Azul", v: "Papel y cartón. Pliega las cajas." }, { k: "Verde", v: "Botellas y tarros de vidrio, sin tapas. No cristales ni cerámica." }, { k: "Resto", v: "Residuos no reciclables. La materia orgánica va al marrón si está disponible." }], note: "No dejes bolsas, muebles ni objetos fuera de los contenedores. Lleva los residuos voluminosos o especiales al Punto Limpio y consulta qué materiales admite." },
+  { group: "residuos", Icon: Truck, title: "Recogida de muebles y enseres", text: "Servicio gratuito de recogida en la puerta de casa, con aviso previo.", facts: [{ k: "Cuándo", v: "Primer martes de cada mes" }, { k: "Aviso", v: "Llamar antes del lunes anterior" }], tel: "952456005" },
+  { group: "residuos", Icon: Recycle, title: "Punto limpio", text: "Para escombros pequeños, aceite, electrodomésticos, pilas y podas.", facts: [{ k: "Horario", v: "Sábados, 10:00–13:00" }, { k: "Dónde", v: "Polígono industrial" }] },
+  { group: "vecinos", Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
+  { group: "vecinos", Icon: Mail, title: "Oficina de Correos", text: "Envío y recogida de cartas y paquetes, certificados y giros.", facts: [{ k: "Horario", v: "Lunes a viernes, 9:00–11:30" }, { k: "Dónde", v: "Calle Real (junto al Ayuntamiento)" }] },
+  { group: "vecinos", Icon: Landmark, title: "Cajeros automáticos", text: "Hay cajero automático en el centro del pueblo. Consulta las entidades y sus horarios en el Directorio.", link: { label: "Ver en el Directorio", href: "/directorio" } },
+  { group: "mercado", Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta y verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Todos los viernes de 9:00 a 14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }] },
+];
+
+const GRUPOS: { id: string; title: string; Icon: LucideIcon }[] = [
+  { id: "salud", title: "Salud y atención médica", Icon: HeartPulse },
+  { id: "transporte", title: "Transporte y movilidad", Icon: Bus },
+  { id: "residuos", title: "Limpieza y gestión de residuos", Icon: Recycle },
+  { id: "vecinos", title: "Servicios para vecinos", Icon: Users },
+  { id: "mercado", title: "Mercado y actividad cotidiana", Icon: ShoppingBasket },
 ];
 
 const TRAMITES: Item[] = [
@@ -61,7 +75,8 @@ const TRAMITES: Item[] = [
 
 function Actions({ i, compact }: { i: Item; compact?: boolean }) {
   const { tr } = useI18n();
-  if (!i.tel && !i.link) return null;
+  if (!i.tel && !i.link && !i.link2) return null;
+  const ext = (h: string) => (h.startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" });
   return (
     <div className={`mt-auto flex flex-wrap gap-2 ${compact ? "pt-3" : "pt-4"}`}>
       {i.tel && (
@@ -69,11 +84,11 @@ function Actions({ i, compact }: { i: Item; compact?: boolean }) {
           <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" />
         </a>
       )}
-      {i.link && (
-        <a href={i.link.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 border px-4 text-sm font-bold hover:bg-muted">
-          {tr(i.link.label)} <ExternalLink className="h-4 w-4" aria-hidden />
+      {[i.link, i.link2].map((l) => l && (
+        <a key={l.href} href={l.href} {...ext(l.href)} className="inline-flex min-h-11 items-center gap-2 border px-4 text-sm font-bold hover:bg-muted">
+          {tr(l.label)} {l.href.startsWith("/") ? <ArrowRight className="h-4 w-4" aria-hidden /> : <ExternalLink className="h-4 w-4" aria-hidden />}
         </a>
-      )}
+      ))}
     </div>
   );
 }
@@ -182,36 +197,19 @@ function ServiciosPublicos() {
         {/* 2. Vida diaria */}
         <section className="mx-auto max-w-5xl px-4 pt-14">
           <SectionTitle n="02" title="Vida diaria en el pueblo" text="Información práctica para organizarte y usar los servicios municipales." />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-results-in">
-            {DIARIO.filter((i) => !i.wide && !i.full).map((i) => (
-              <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : ""}`}>
-                <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
-                  <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">{tr(i.text)}</p>
-                {i.facts && (
-                  <dl className="mt-3 space-y-1 border-t pt-3 text-sm">
-                    {i.facts.map((f) => (
-                      <div key={f.k} className="flex gap-2"><dt className="font-bold">{tr(f.k)}:</dt><dd>{tr(f.v)}</dd></div>
-                    ))}
-                  </dl>
-                )}
-                {i.list && (
-                  <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
-                    {i.list.map((x) => (
-                      <li key={x} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />{tr(x)}</li>
-                    ))}
-                  </ul>
-                )}
-                {i.note && <p className="mt-3 bg-beige p-3 text-sm font-semibold">{tr(i.note)}</p>}
-                <Actions i={i} />
-              </article>
-            ))}
-          </div>
         </section>
-
-        {DIARIO.filter((i) => i.full).map((i) => (
+        {GRUPOS.map((g, gi) => {
+          const items = DIARIO.filter((i) => i.group === g.id);
+          return (
+            <div key={g.id} className="pt-10">
+              <div className="mx-auto max-w-5xl px-4">
+                <div className="flex items-center gap-3 border-b-2 border-primary pb-2">
+                  <span className="font-display text-sm font-extrabold tabular-nums text-terracotta">02.{gi + 1}</span>
+                  <g.Icon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+                  <h3 className="font-display text-xl font-extrabold leading-tight sm:text-2xl">{tr(g.title)}</h3>
+                </div>
+              </div>
+{items.filter((i) => i.full).map((i) => (
           <section key={i.title} className="mx-auto max-w-5xl px-4 pt-5">
             <article className="border bg-card p-5">
               <div className="flex items-center gap-3">
@@ -242,8 +240,40 @@ function ServiciosPublicos() {
           </section>
         ))}
 
-        {DIARIO.filter((i) => i.wide).map((i) => (
-          <section key={i.title} className="mt-10 bg-primary text-primary-foreground">
+        
+                      {items.some((i) => !i.wide && !i.full) && (
+                <section className="mx-auto max-w-5xl px-4 pt-5">
+                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-results-in">
+                    {items.filter((i) => !i.wide && !i.full).map((i) => (
+                      <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : ""}`}>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
+                  <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">{tr(i.text)}</p>
+                {i.facts && (
+                  <dl className="mt-3 space-y-1 border-t pt-3 text-sm">
+                    {i.facts.map((f) => (
+                      <div key={f.k} className="flex gap-2"><dt className="font-bold">{tr(f.k)}:</dt><dd>{tr(f.v)}</dd></div>
+                    ))}
+                  </dl>
+                )}
+                {i.list && (
+                  <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+                    {i.list.map((x) => (
+                      <li key={x} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />{tr(x)}</li>
+                    ))}
+                  </ul>
+                )}
+                {i.note && <p className="mt-3 bg-beige p-3 text-sm font-semibold">{tr(i.note)}</p>}
+                <Actions i={i} />
+              </article>
+                    ))}
+                  </div>
+                </section>
+              )}
+        {items.filter((i) => i.wide).map((i) => (
+          <section key={i.title} className="mt-6 bg-primary text-primary-foreground">
             <div className="mx-auto max-w-5xl px-4 py-10">
               <div className="flex items-center gap-3">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary"><i.Icon className="h-6 w-6" aria-hidden /></span>
@@ -273,6 +303,10 @@ function ServiciosPublicos() {
             </div>
           </section>
         ))}
+
+            </div>
+          );
+        })}
 
         {/* 3. Trámites */}
         <section className="mx-auto max-w-5xl px-4 py-14">
