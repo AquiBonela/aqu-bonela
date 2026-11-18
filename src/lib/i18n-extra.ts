@@ -631,7 +631,6 @@ export const englishText: Record<string, string> = {
   "Línea": "Line",
   "Parada": "Stop",
   "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.": "Autobuses Sierra de las Nieves (Grupo Paco Pepe): daily connection with Málaga.",
-  "Emergencias sanitarias": "Medical emergencies",
   "Alternativa directa para urgencias médicas graves y ambulancias.": "Direct alternative for serious medical emergencies and ambulances.",
   "Seguridad ciudadana": "Public safety",
   "Urgencias sanitarias": "Urgent medical care",
