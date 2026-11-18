@@ -34,6 +34,7 @@ type Item = {
   note?: string;
   wide?: boolean;
   full?: boolean;
+  span?: boolean;
   group?: string;
   tel?: string;
   link?: { label: string; href: string };
@@ -47,7 +48,7 @@ const DIARIO: Item[] = [
   { group: "salud", Icon: Pill, title: "Farmacia", text: "Farmacia Bonela atiende en el pueblo. Las guardias de la zona se consultan en el calendario oficial.", link: { label: "Ver en el Directorio", href: "/comercios/farmacia-bonela" }, link2: { label: "Farmacias de guardia", href: "https://www.cofmalaga.com/farmacias-de-guardia/" } },
   { group: "transporte", Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
   { group: "transporte", Icon: Car, title: "Taxi", text: "Servicio de taxi local para trayectos al centro de salud, a la estación o a Málaga.", facts: [{ k: "Reserva", v: "Por teléfono, con antelación" }, { k: "Teléfono", v: "Pendiente de confirmar" }] },
-  { group: "residuos", Icon: Recycle, title: "Basura, enseres y punto limpio", text: "Deposita cada residuo dentro del contenedor que le corresponde.", facts: [{ k: "Muebles y enseres", v: "Primer martes de cada mes, avisando antes del lunes anterior" }, { k: "Punto limpio", v: "Sábados, 10:00–13:00 · Polígono industrial" }], tel: "952456005", note: "No dejes bolsas ni muebles fuera de los contenedores: para enseres usa la recogida mensual y para otros residuos, el Punto Limpio." },
+  { group: "residuos", Icon: Recycle, span: true, title: "Basura, enseres y punto limpio", text: "Deposita cada residuo dentro del contenedor que le corresponde.", facts: [{ k: "Muebles y enseres", v: "Primer martes de cada mes, avisando antes del lunes anterior" }, { k: "Punto limpio", v: "Sábados, 10:00–13:00 · Polígono industrial" }], tel: "952456005", note: "No dejes bolsas ni muebles fuera de los contenedores: para enseres usa la recogida mensual y para otros residuos, el Punto Limpio." },
   { group: "vecinos", Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
   { group: "vecinos", Icon: Mail, title: "Oficina de Correos", text: "Envío y recogida de cartas y paquetes, certificados y giros.", facts: [{ k: "Horario", v: "Lunes a viernes, 9:00–11:30" }, { k: "Dónde", v: "Calle Real (junto al Ayuntamiento)" }] },
   { group: "vecinos", Icon: Landmark, title: "Cajeros automáticos", text: "Hay cajero automático en el centro del pueblo. Consulta las entidades y sus horarios en el Directorio.", link: { label: "Ver en el Directorio", href: "/directorio" } },
@@ -198,7 +199,6 @@ function ServiciosPublicos() {
         </section>
         {GRUPOS.map((g, gi) => {
           const items = DIARIO.filter((i) => i.group === g.id);
-          const solo = items.filter((i) => !i.wide && !i.full).length === 1;
           return (
             <div key={g.id} className="pt-10">
               <div className="mx-auto max-w-5xl px-4">
@@ -243,7 +243,7 @@ function ServiciosPublicos() {
                 <section className="mx-auto max-w-5xl px-4 pt-5">
                   <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-results-in">
                     {items.filter((i) => !i.wide && !i.full).map((i) => (
-                      <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : solo ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+                      <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : i.span ? "sm:col-span-2 lg:col-span-3" : ""}`}>
                 <div className="flex items-center gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
                   <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
