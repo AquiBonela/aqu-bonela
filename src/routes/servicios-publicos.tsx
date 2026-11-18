@@ -31,6 +31,7 @@ type Item = {
   facts?: { k: string; v: string }[];
   timetable?: { columns: string[]; rows: { days: string; cells: string[][] }[]; note?: string };
   list?: string[];
+  blocks?: { k: string; v: string; tel?: string }[];
   note?: string;
   wide?: boolean;
   full?: boolean;
@@ -48,7 +49,7 @@ const DIARIO: Item[] = [
   { group: "salud", Icon: Pill, title: "Farmacia", text: "Farmacia Bonela atiende en el pueblo. Las guardias de la zona se consultan en el calendario oficial.", link: { label: "Ver en el Directorio", href: "/comercios/farmacia-bonela" }, link2: { label: "Farmacias de guardia", href: "https://www.cofmalaga.com/farmacias-de-guardia/" } },
   { group: "transporte", Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
   { group: "transporte", Icon: Car, title: "Taxi", text: "Servicio de taxi local para trayectos al centro de salud, a la estación o a Málaga.", facts: [{ k: "Reserva", v: "Por teléfono, con antelación" }, { k: "Teléfono", v: "Pendiente de confirmar" }] },
-  { group: "residuos", Icon: Recycle, span: true, title: "Basura, enseres y punto limpio", text: "Deposita cada residuo dentro del contenedor que le corresponde.", facts: [{ k: "Muebles y enseres", v: "Primer martes de cada mes, avisando antes del lunes anterior" }, { k: "Punto limpio", v: "Sábados, 10:00–13:00 · Polígono industrial" }], tel: "952456005", note: "No dejes bolsas ni muebles fuera de los contenedores: para enseres usa la recogida mensual y para otros residuos, el Punto Limpio." },
+  { group: "residuos", Icon: Recycle, span: true, title: "Basura, enseres y punto limpio", text: "Cómo separar la basura, dónde llevar los enseres y cuándo abre el Punto limpio.", blocks: [{ k: "Contenedores", v: "Cada residuo, dentro del contenedor que le corresponde. No dejes bolsas ni muebles fuera." }, { k: "Muebles y enseres", v: "Primer martes de cada mes, avisando antes del lunes anterior", tel: "952456005" }, { k: "Punto limpio", v: "Sábados, 10:00–13:00 · Polígono industrial" }] },
   { group: "vecinos", Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
   { group: "vecinos", Icon: Mail, title: "Oficina de Correos", text: "Envío y recogida de cartas y paquetes, certificados y giros.", facts: [{ k: "Horario", v: "Lunes a viernes, 9:00–11:30" }, { k: "Dónde", v: "Calle Real (junto al Ayuntamiento)" }] },
   { group: "vecinos", Icon: Landmark, title: "Cajeros automáticos", text: "Hay cajero automático en el centro del pueblo. Consulta las entidades y sus horarios en el Directorio.", link: { label: "Ver en el Directorio", href: "/directorio" } },
@@ -249,6 +250,23 @@ function ServiciosPublicos() {
                   <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground">{tr(i.text)}</p>
+                {i.blocks && (
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    {i.blocks.map((b) => (
+                      <div key={b.k} className="flex flex-col border bg-muted/40 p-4">
+                        <h4 className="font-bold">{tr(b.k)}</h4>
+                        <p className="mt-1 text-sm">{tr(b.v)}</p>
+                        <div className="mt-auto pt-3">
+                          {b.tel && (
+                            <a href={`tel:${b.tel}`} className="inline-flex min-h-11 items-center gap-2 bg-primary px-4 text-sm font-bold text-primary-foreground hover:opacity-90">
+                              <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {i.facts && (
                   <dl className="mt-3 space-y-1 border-t pt-3 text-sm">
                     {i.facts.map((f) => (
