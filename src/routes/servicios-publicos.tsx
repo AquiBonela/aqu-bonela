@@ -107,7 +107,15 @@ function ServiciosPublicos() {
         <section className="mx-auto max-w-5xl px-4 pt-10">
           <SectionTitle n="01" title="Urgente y en la calle" text="Lo que puedes necesitar ahora mismo, a un toque." />
           <EmergencyPhonesList mainOnly />
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <a href="tel:061" className="press-feedback mt-3 flex items-center justify-between gap-4 border-2 border-destructive/30 bg-destructive/5 p-4 hover:bg-destructive/10">
+            <span>
+              <span className="block font-bold"><Text text="Emergencias sanitarias" /></span>
+              <span className="mt-0.5 block text-sm text-muted-foreground"><Text text="Alternativa directa para urgencias médicas graves y ambulancias." /></span>
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap font-display text-2xl font-extrabold text-destructive"><Phone className="h-5 w-5" aria-hidden /> 061</span>
+          </a>
+          <h3 className="mt-8 text-sm font-bold uppercase tracking-[0.15em] text-muted-foreground"><Text text="Seguridad ciudadana" /></h3>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {[
               { title: "Guardia Civil — Puesto de Casarabonela", tel: "952456665", description: "Avda. Federico Muñoz, 16." },
               { title: "Policía Local", tel: "669291300", description: "Edificio de Usos Múltiples, Avda. Fernando Díaz. Atención según turnos." },
@@ -122,7 +130,8 @@ function ServiciosPublicos() {
             ))}
           </div>
           <p className="mt-3 text-sm text-muted-foreground"><Text text="Encontrarás todas las líneas de ayuda en el botón SOS de la cabecera." /></p>
-          <article className="mt-6 border-l-4 border-primary bg-muted p-5 sm:p-6">
+          <h3 className="mt-8 text-sm font-bold uppercase tracking-[0.15em] text-muted-foreground"><Text text="Urgencias sanitarias" /></h3>
+          <article className="mt-3 border-l-4 border-primary bg-muted p-5 sm:p-6">
             <div className="flex items-center gap-3"><Stethoscope className="h-6 w-6 shrink-0 text-primary" aria-hidden /><h3 className="font-display text-xl font-extrabold"><Text text="Centro de Salud de Alozaina" /></h3></div>
             <p className="mt-3 text-sm"><Text text="Si el consultorio está cerrado, acude a Urgencias de Alozaina. Para pediatría, llama antes y confirma la disponibilidad y el horario." /></p>
             <p className="mt-2 text-sm"><Text text="Urbanización La Pasadilla, s/n — Alozaina." /></p>
@@ -133,6 +142,7 @@ function ServiciosPublicos() {
             </div>
             <a href="https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/el-sas/servicios-y-centros/informacion-por-centros/23967" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary underline"><Text text="Información oficial del centro" /><ExternalLink className="h-4 w-4" aria-hidden /></a>
           </article>
+          <p className="mt-3 text-sm text-muted-foreground"><Text text="El consultorio del pueblo atiende consultas habituales en su horario, no es un servicio de urgencias. Encontrarás sus datos en «Vida diaria en el pueblo»." /></p>
         </section>
 
         <section className="mt-10 bg-primary text-primary-foreground">
@@ -142,6 +152,12 @@ function ServiciosPublicos() {
               <h3 className="font-display text-2xl font-extrabold leading-tight"><Text text="¿Una farola rota, un bache o una avería?" /></h3>
             </div>
             <p className="mt-3 opacity-90"><Text text="Avísalo por Línea Verde, el canal oficial del Ayuntamiento para avisos de la vía pública." /></p>
+            <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+              {["Alumbrado público averiado", "Desperfectos en calles y aceras", "Mobiliario urbano deteriorado", "Limpieza viaria", "Incidencias en parques y espacios públicos", "Otros problemas de mantenimiento municipal"].map((x) => (
+                <li key={x} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />{tr(x)}</li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm opacity-90"><Text text="Para problemas que no son una emergencia. Si hay peligro inmediato, llama al 112." /></p>
             <a
               href="https://www.lineaverde.app/"
               target="_blank"
