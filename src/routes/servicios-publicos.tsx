@@ -2,7 +2,7 @@ import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, Truck, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, MapPin,
-  Recycle, Trash2, HeartPulse, Users, Pill, Car, Mail, Landmark, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
+  Recycle, Trash2, Pill, Car, Mail, Landmark, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -56,12 +56,12 @@ const DIARIO: Item[] = [
   { group: "mercado", Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta y verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Todos los viernes de 9:00 a 14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }] },
 ];
 
-const GRUPOS: { id: string; title: string; Icon: LucideIcon }[] = [
-  { id: "salud", title: "Salud y atención médica", Icon: HeartPulse },
-  { id: "transporte", title: "Transporte y movilidad", Icon: Bus },
-  { id: "residuos", title: "Limpieza y gestión de residuos", Icon: Recycle },
-  { id: "vecinos", title: "Servicios para vecinos", Icon: Users },
-  { id: "mercado", title: "Mercado y actividad cotidiana", Icon: ShoppingBasket },
+const GRUPOS: { id: string; title: string }[] = [
+  { id: "salud", title: "Salud y atención médica" },
+  { id: "transporte", title: "Transporte y movilidad" },
+  { id: "residuos", title: "Limpieza y gestión de residuos" },
+  { id: "vecinos", title: "Servicios para vecinos" },
+  { id: "mercado", title: "Mercado y actividad cotidiana" },
 ];
 
 const TRAMITES: Item[] = [
@@ -205,7 +205,6 @@ function ServiciosPublicos() {
               <div className="mx-auto max-w-5xl px-4">
                 <div className="flex items-center gap-3 border-b-2 border-primary pb-2">
                   <span className="font-display text-sm font-extrabold tabular-nums text-terracotta">02.{gi + 1}</span>
-                  <g.Icon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
                   <h3 className="font-display text-xl font-extrabold leading-tight sm:text-2xl">{tr(g.title)}</h3>
                 </div>
               </div>
