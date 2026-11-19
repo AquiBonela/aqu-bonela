@@ -1,10 +1,7 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TramitesSection } from "@/components/TramitesSection";
-import {
-  Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, Bus, ArrowRight, MapPin,
-  Recycle, Pill, Car, Mail, Landmark, type LucideIcon,
-} from "lucide-react";
+import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
@@ -24,64 +21,6 @@ export const Route = createFileRoute("/servicios-publicos")({
   component: ServiciosPublicos,
 });
 
-
-type Item = {
-  Icon: LucideIcon;
-  title: string;
-  text: string;
-  facts?: { k: string; v: string }[];
-  timetable?: { columns: string[]; rows: { days: string; cells: string[][] }[]; note?: string };
-  list?: string[];
-  blocks?: { k: string; v: string; tel?: string }[];
-  note?: string;
-  wide?: boolean;
-  full?: boolean;
-  span?: boolean;
-  group?: string;
-  tel?: string;
-  link?: { label: string; href: string };
-  link2?: { label: string; href: string };
-};
-
-const DIARIO: Item[] = [
-  { group: "salud", Icon: Stethoscope, title: "Consultorio médico", text: "Atención primaria del Servicio Andaluz de Salud en el centro del pueblo.", facts: [{ k: "Horario", v: "Lunes a viernes, 8:00–15:00" }, { k: "Dónde", v: "Calle Málaga, s/n" }], tel: "951062980", link: { label: "Cita en ClicSalud+", href: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud/" } },
-  { group: "salud", Icon: Pill, title: "Farmacia", text: "Farmacia Bonela atiende en el pueblo. Las guardias de la zona se consultan en el calendario oficial.", link: { label: "Ver en el Directorio", href: "/comercios/farmacia-bonela" }, link2: { label: "Farmacias de guardia", href: "https://www.cofmalaga.com/farmacias-de-guardia/" } },
-  { group: "transporte", Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
-  { group: "transporte", Icon: Car, title: "Taxi", text: "Servicio de taxi local para trayectos al centro de salud, a la estación o a Málaga.", facts: [{ k: "Reserva", v: "Por teléfono, con antelación" }, { k: "Teléfono", v: "Pendiente de confirmar" }] },
-  { group: "residuos", Icon: Recycle, span: true, title: "Basura, enseres y punto limpio", text: "Cómo separar la basura, dónde llevar los enseres y cuándo abre el Punto limpio.", blocks: [{ k: "Contenedores", v: "Cada residuo, dentro del contenedor que le corresponde. No dejes bolsas ni muebles fuera." }, { k: "Muebles y enseres", v: "Primer martes de cada mes, avisando antes del lunes anterior", tel: "952456005" }, { k: "Punto limpio", v: "Sábados, 10:00–13:00 · Polígono industrial" }] },
-  { group: "vecinos", Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "Calle Real, 12 (junto al Ayuntamiento)" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456120" },
-  { group: "vecinos", Icon: Mail, title: "Oficina de Correos", text: "Envío y recogida de cartas y paquetes, certificados y giros.", facts: [{ k: "Horario", v: "Lunes a viernes, 9:00–11:30" }, { k: "Dónde", v: "Calle Real (junto al Ayuntamiento)" }] },
-  { group: "vecinos", Icon: Landmark, title: "Cajeros automáticos", text: "Hay cajero automático en el centro del pueblo. Consulta las entidades y sus horarios en el Directorio.", link: { label: "Ver en el Directorio", href: "/directorio" } },
-  { group: "mercado", Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta y verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Todos los viernes de 9:00 a 14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }] },
-];
-
-const GRUPOS: { id: string; title: string }[] = [
-  { id: "salud", title: "Salud y atención médica" },
-  { id: "transporte", title: "Transporte y movilidad" },
-  { id: "residuos", title: "Limpieza y gestión de residuos" },
-  { id: "vecinos", title: "Servicios para vecinos" },
-  { id: "mercado", title: "Mercado y actividad cotidiana" },
-];
-
-function Actions({ i, compact }: { i: Item; compact?: boolean }) {
-  const { tr } = useI18n();
-  if (!i.tel && !i.link && !i.link2) return null;
-  const ext = (h: string) => (h.startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" });
-  return (
-    <div className={`mt-auto flex flex-wrap gap-2 ${compact ? "pt-3" : "pt-4"}`}>
-      {i.tel && (
-        <a href={`tel:${i.tel}`} className="inline-flex min-h-11 items-center gap-2 bg-primary px-4 text-sm font-bold text-primary-foreground hover:opacity-90">
-          <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" />
-        </a>
-      )}
-      {[i.link, i.link2].map((l) => l && (
-        <a key={l.href} href={l.href} {...ext(l.href)} className="inline-flex min-h-11 items-center gap-2 border px-4 text-sm font-bold hover:bg-muted">
-          {tr(l.label)} {l.href.startsWith("/") ? <ArrowRight className="h-4 w-4" aria-hidden /> : <ExternalLink className="h-4 w-4" aria-hidden />}
-        </a>
-      ))}
-    </div>
-  );
-}
 
 function SectionTitle({ n, title, text }: { n: string; title: string; text: string }) {
   return (
@@ -187,132 +126,16 @@ function ServiciosPublicos() {
         {/* 2. Vida diaria */}
         <section className="mx-auto max-w-5xl px-4 pt-14">
           <SectionTitle n="02" title="Vida diaria en el pueblo" text="Información práctica para organizarte y usar los servicios municipales." />
+          <Link to="/vida-diaria" className="press-feedback group block border-2 border-primary bg-card p-6 hover:bg-muted">
+            <ul className="grid gap-x-6 gap-y-2 text-sm font-semibold sm:grid-cols-3">
+              {["Transporte", "Residuos y limpieza", "Espacios públicos", "Servicios municipales", "Educación", "Otros servicios"].map((x) => (
+                <li key={x} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-hidden />{tr(x)}</li>
+              ))}
+            </ul>
+            <span className="mt-5 inline-flex min-h-11 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground"><Text text="Ver vida diaria" /> <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden /></span>
+          </Link>
         </section>
-        {GRUPOS.map((g, gi) => {
-          const items = DIARIO.filter((i) => i.group === g.id);
-          return (
-            <div key={g.id} className="pt-10">
-              <div className="mx-auto max-w-5xl px-4">
-                <div className="flex items-center gap-3 border-b-2 border-primary pb-2">
-                  <span className="font-display text-sm font-extrabold tabular-nums text-terracotta">02.{gi + 1}</span>
-                  <h3 className="font-display text-xl font-extrabold leading-tight sm:text-2xl">{tr(g.title)}</h3>
-                </div>
-              </div>
-{items.filter((i) => i.full).map((i) => (
-          <section key={i.title} className="mx-auto max-w-5xl px-4 pt-5">
-            <article className="border bg-card p-5">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
-                <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
-              </div>
-              <p className="mt-3 text-sm text-muted-foreground">{tr(i.text)}</p>
-              {i.timetable && (
-                <div className="mt-4 grid gap-x-10 gap-y-5 border-t pt-4 sm:grid-cols-2">
-                  {i.timetable.columns.map((c, ci) => (
-                    <div key={c}>
-                      <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-primary">{tr(c)}</h4>
-                      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-[13px] min-[380px]:text-sm">
-                        {i.timetable?.rows.map((r) => (
-                          <div key={r.days} className="contents">
-                            <dt className="font-semibold">{tr(r.days)}</dt>
-                            <dd className="whitespace-nowrap tabular-nums">{(r.cells[ci] ?? []).join(" · ")}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {i.timetable?.note && <p className="mt-3 text-xs text-muted-foreground">{tr(i.timetable.note)}</p>}
-              <Actions i={i} />
-            </article>
-          </section>
-        ))}
 
-        
-                      {items.some((i) => !i.wide && !i.full) && (
-                <section className="mx-auto max-w-5xl px-4 pt-5">
-                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-results-in">
-                    {items.filter((i) => !i.wide && !i.full).map((i) => (
-                      <article key={i.title} className={`flex flex-col border bg-card p-5 ${i.wide ? "border-primary/40 sm:col-span-2 lg:col-span-3" : i.span ? "sm:col-span-2 lg:col-span-3" : ""}`}>
-                <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-primary"><i.Icon className="h-5 w-5" aria-hidden /></span>
-                  <h3 className="font-display text-lg font-extrabold leading-tight">{tr(i.title)}</h3>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">{tr(i.text)}</p>
-                {i.blocks && (
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                    {i.blocks.map((b) => (
-                      <div key={b.k} className="flex flex-col border bg-muted/40 p-4">
-                        <h4 className="font-bold">{tr(b.k)}</h4>
-                        <p className="mt-1 text-sm">{tr(b.v)}</p>
-                        <div className="mt-auto pt-3">
-                          {b.tel && (
-                            <a href={`tel:${b.tel}`} className="inline-flex min-h-11 items-center gap-2 bg-primary px-4 text-sm font-bold text-primary-foreground hover:opacity-90">
-                              <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {i.facts && (
-                  <dl className="mt-3 space-y-1 border-t pt-3 text-sm">
-                    {i.facts.map((f) => (
-                      <div key={f.k} className="flex gap-2"><dt className="font-bold">{tr(f.k)}:</dt><dd>{tr(f.v)}</dd></div>
-                    ))}
-                  </dl>
-                )}
-                {i.list && (
-                  <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
-                    {i.list.map((x) => (
-                      <li key={x} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />{tr(x)}</li>
-                    ))}
-                  </ul>
-                )}
-                {i.note && <p className="mt-3 bg-beige p-3 text-sm font-semibold">{tr(i.note)}</p>}
-                <Actions i={i} />
-              </article>
-                    ))}
-                  </div>
-                </section>
-              )}
-        {items.filter((i) => i.wide).map((i) => (
-          <section key={i.title} className="mt-6 bg-primary text-primary-foreground">
-            <div className="mx-auto max-w-5xl px-4 py-10">
-              <div className="flex items-center gap-3">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary"><i.Icon className="h-6 w-6" aria-hidden /></span>
-                <h3 className="font-display text-2xl font-extrabold leading-tight">{tr(i.title)}</h3>
-              </div>
-              <p className="mt-3 opacity-90">{tr(i.text)}</p>
-              {i.facts && (
-                <dl className="mt-4 space-y-1 border-t border-primary-foreground/30 pt-4 text-sm">
-                  {i.facts.map((f) => (
-                    <div key={f.k} className="flex gap-2"><dt className="font-bold">{tr(f.k)}:</dt><dd>{tr(f.v)}</dd></div>
-                  ))}
-                </dl>
-              )}
-              {i.list && (
-                <ul className="mt-5 flex flex-col gap-3 text-lg font-semibold sm:text-xl">
-                  {i.list.map((x) => (
-                    <li key={x} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0" aria-hidden />{tr(x)}</li>
-                  ))}
-                </ul>
-              )}
-              {i.note && <p className="mt-4 bg-primary-foreground/15 p-3 text-sm font-semibold">{tr(i.note)}</p>}
-              {i.tel && (
-                <a href={`tel:${i.tel}`} className="mt-5 inline-flex items-center gap-2 bg-primary-foreground px-5 py-3 text-sm font-bold text-primary">
-                  <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" /> {i.tel.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}
-                </a>
-              )}
-            </div>
-          </section>
-        ))}
-
-            </div>
-          );
-        })}
 
         {/* 3. Trámites */}
         <section id="tramites" className="scroll-mt-24 mx-auto max-w-5xl px-4 py-14">

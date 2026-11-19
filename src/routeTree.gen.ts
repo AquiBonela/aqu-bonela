@@ -20,6 +20,7 @@ import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as ServiciosPublicosRouteImport } from './routes/servicios-publicos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SugerirRouteImport } from './routes/sugerir'
+import { Route as VidaDiariaRouteImport } from './routes/vida-diaria'
 import { Route as AsociacionesSlugRouteImport } from './routes/asociaciones.$slug'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
@@ -86,6 +87,11 @@ const SobreRoute = SobreRouteImport.update({
 const SugerirRoute = SugerirRouteImport.update({
   id: '/sugerir',
   path: '/sugerir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VidaDiariaRoute = VidaDiariaRouteImport.update({
+  id: '/vida-diaria',
+  path: '/vida-diaria',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AsociacionesSlugRoute = AsociacionesSlugRouteImport.update({
@@ -170,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
+  '/vida-diaria': typeof VidaDiariaRoute
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
@@ -195,6 +202,7 @@ export interface FileRoutesByTo {
   '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
+  '/vida-diaria': typeof VidaDiariaRoute
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
+  '/vida-diaria': typeof VidaDiariaRoute
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/servicios-publicos'
     | '/sobre'
     | '/sugerir'
+    | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
     | '/profesionales/$slug'
@@ -274,6 +284,7 @@ export interface FileRouteTypes {
     | '/servicios-publicos'
     | '/sobre'
     | '/sugerir'
+    | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
     | '/profesionales/$slug'
@@ -300,6 +311,7 @@ export interface FileRouteTypes {
     | '/servicios-publicos'
     | '/sobre'
     | '/sugerir'
+    | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
     | '/profesionales/$slug'
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   ServiciosPublicosRoute: typeof ServiciosPublicosRoute
   SobreRoute: typeof SobreRoute
   SugerirRoute: typeof SugerirRoute
+  VidaDiariaRoute: typeof VidaDiariaRoute
   AsociacionesSlugRoute: typeof AsociacionesSlugRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
@@ -414,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/sugerir'
       fullPath: '/sugerir'
       preLoaderRoute: typeof SugerirRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vida-diaria': {
+      id: '/vida-diaria'
+      path: '/vida-diaria'
+      fullPath: '/vida-diaria'
+      preLoaderRoute: typeof VidaDiariaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/asociaciones/$slug': {
@@ -541,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServiciosPublicosRoute: ServiciosPublicosRoute,
   SobreRoute: SobreRoute,
   SugerirRoute: SugerirRoute,
+  VidaDiariaRoute: VidaDiariaRoute,
   AsociacionesSlugRoute: AsociacionesSlugRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
