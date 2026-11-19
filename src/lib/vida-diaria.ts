@@ -5,5 +5,5 @@ export const CATEGORIAS_VIDA: { id: string; title: string; text: string }[] = [
   { id: "espacios", title: "Espacios públicos", text: "Parques, instalaciones deportivas y piscina municipal." },
   { id: "municipales", title: "Servicios municipales", text: "Horarios de atención, dependencias municipales y contacto." },
   { id: "educacion", title: "Educación", text: "Colegio, guardería y otros servicios educativos." },
-  { id: "otros", title: "Otros servicios", text: "Punto Vuela, biblioteca, cementerio, consultorio, Correos y más." },
+  { id: "otros", title: "Otros servicios", text: "Biblioteca, cementerio, consultorio, Correos y más." },
 ];

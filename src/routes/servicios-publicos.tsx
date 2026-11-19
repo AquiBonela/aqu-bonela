@@ -1,7 +1,7 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TramitesSection } from "@/components/TramitesSection";
-import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin } from "lucide-react";
+import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Laptop } from "lucide-react";
 import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -138,6 +138,30 @@ function ServiciosPublicos() {
           </div>
         </section>
 
+
+        {/* Punto Vuela */}
+        <section className="mt-10 bg-primary text-primary-foreground">
+          <div className="mx-auto max-w-5xl px-4 py-10">
+            <div className="flex items-center gap-3">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary"><Laptop className="h-6 w-6" aria-hidden /></span>
+              <h3 className="font-display text-2xl font-extrabold leading-tight"><Text text="Punto Vuela" /></h3>
+            </div>
+            <p className="mt-3 opacity-90"><Text text="Servicio gratuito de apoyo digital para vecinos de todas las edades." /></p>
+            <dl className="mt-4 space-y-1 border-t border-primary-foreground/30 pt-4 text-sm">
+              <div className="flex gap-2"><dt className="font-bold"><Text text="Dónde" />:</dt><dd><Text text="C/ Cuatro Esquinas, 10" /></dd></div>
+              <div className="flex gap-2"><dt className="font-bold"><Text text="Horario" />:</dt><dd><Text text="Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" /></dd></div>
+            </dl>
+            <ul className="mt-5 flex flex-col gap-3 text-lg font-semibold sm:text-xl">
+              {["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"].map((x) => (
+                <li key={x} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0" aria-hidden />{tr(x)}</li>
+              ))}
+            </ul>
+            <p className="mt-4 bg-primary-foreground/15 p-3 text-sm font-semibold"><Text text="Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso." /></p>
+            <a href="tel:952456140" className="mt-5 inline-flex items-center gap-2 bg-primary-foreground px-5 py-3 text-sm font-bold text-primary">
+              <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" /> 952 456 140
+            </a>
+          </div>
+        </section>
 
         {/* 3. Trámites */}
         <section id="tramites" className="scroll-mt-24 mx-auto max-w-5xl px-4 py-14">

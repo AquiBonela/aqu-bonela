@@ -1,6 +1,6 @@
 import { Text, useI18n } from "@/lib/i18n";
 import {
-  Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, Bus, ArrowRight, MapPin,
+  CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, Bus, ArrowRight, MapPin,
   Recycle, Pill, Car, Mail, Landmark, Trees, Dumbbell, Waves, Building2, School, Baby, BookOpen, GraduationCap, Cross, type LucideIcon,
 } from "lucide-react";
 import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
@@ -55,7 +55,6 @@ const DIARIO: Item[] = [
   { group: "educacion", Icon: School, title: "Colegio de Primaria", text: "Educación Infantil (3–5 años) y Primaria en el pueblo.", facts: [{ k: "Matrícula", v: "Plazo de solicitud en marzo" }] },
   { group: "educacion", Icon: Baby, title: "Escuela infantil", text: "Guardería para niños y niñas de 0 a 3 años.", facts: [{ k: "Plazas", v: "Consulta en el Ayuntamiento" }] },
   { group: "educacion", Icon: GraduationCap, title: "Educación de adultos", text: "Clases para obtener titulaciones y cursos para personas adultas.", facts: [{ k: "Información", v: "En el Ayuntamiento" }] },
-  { group: "otros", Icon: Laptop, wide: true, title: "Punto Vuela", text: "Servicio gratuito de apoyo digital para vecinos de todas las edades.", facts: [{ k: "Dónde", v: "C/ Cuatro Esquinas, 10" }, { k: "Horario", v: "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" }], list: ["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"], note: "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.", tel: "952456140" },
   { group: "otros", Icon: Stethoscope, title: "Consultorio médico", text: "Atención primaria del Servicio Andaluz de Salud en el centro del pueblo.", facts: [{ k: "Horario", v: "Lunes a viernes, 8:00–15:00" }, { k: "Dónde", v: "Avda. Fernando Díaz" }], tel: "952456559", link: { label: "Cita en ClicSalud+", href: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud/" } },
   { group: "otros", Icon: Pill, title: "Farmacia", text: "Farmacia Bonela atiende en el pueblo. Las guardias de la zona se consultan en el calendario oficial.", link: { label: "Ver en el Directorio", href: "/comercios/farmacia-bonela" }, link2: { label: "Farmacias de guardia", href: "https://www.cofmalaga.com/farmacias-de-guardia/" } },
   { group: "otros", Icon: BookOpen, title: "Biblioteca municipal", text: "Préstamo de libros, sala de lectura y actividades culturales.", facts: [{ k: "Horario", v: "Lunes a viernes, 16:00–20:00" }] },

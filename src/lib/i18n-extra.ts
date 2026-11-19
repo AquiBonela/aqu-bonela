@@ -885,5 +885,5 @@ export const englishText: Record<string, string> = {
   "Parques, instalaciones deportivas y piscina municipal.": "Parks, sports facilities and municipal swimming pool.",
   "Horarios de atención, dependencias municipales y contacto.": "Opening hours, municipal offices and contact.",
   "Colegio, guardería y otros servicios educativos.": "School, nursery and other educational services.",
-  "Punto Vuela, biblioteca, cementerio, consultorio, Correos y más.": "Punto Vuela, library, cemetery, medical centre, Post Office and more.",
+  "Biblioteca, cementerio, consultorio, Correos y más.": "Library, cemetery, medical centre, Post Office and more.",
 };
