@@ -1,0 +1,1 @@
+- Procedures guide data lives in `src/lib/tramites.ts` and renders at `/tramites` → `/tramites/$categoria` → `/tramites/$categoria/$tramite`; procedures without `pasos` show an official-link placeholder. Why: shareable URLs per procedure, adding one is a data entry.

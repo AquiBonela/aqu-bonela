@@ -1,0 +1,50 @@
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
+import { SiteHeader } from "@/components/SiteHeader";
+import { useI18n } from "@/lib/i18n";
+import { getCategoria, tramitesDe } from "@/lib/tramites";
+import { Hero, TramiteCard } from "@/components/TramitesUI";
+
+export const Route = createFileRoute("/tramites/$categoria/")({
+  loader: ({ params }) => {
+    const c = getCategoria(params.categoria);
+    if (!c) throw notFound();
+    return c;
+  },
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: `${loaderData?.title ?? "Trámites"} — Trámites | Aquí Bonela` },
+      { name: "description", content: loaderData?.text ?? "Guía de trámites de Aquí Bonela." },
+      { property: "og:title", content: `${loaderData?.title ?? "Trámites"} — Aquí Bonela` },
+      { property: "og:description", content: loaderData?.text ?? "Guía de trámites." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: CategoriaPage,
+  notFoundComponent: () => <NotFoundMsg />,
+  errorComponent: () => <NotFoundMsg />,
+});
+
+function NotFoundMsg() {
+  const { tr } = useI18n();
+  return <div className="p-10 text-center"><p>{tr("Esta categoría no existe.")}</p><Link to="/tramites" className="mt-4 inline-block font-semibold text-primary underline">{tr("Volver a Trámites")}</Link></div>;
+}
+
+function CategoriaPage() {
+  const c = Route.useLoaderData();
+  const { tr } = useI18n();
+  const list = tramitesDe(c.slug);
+  return (
+    <div className="min-h-dvh bg-background">
+      <SiteHeader />
+      <main>
+        <Hero kicker="Trámites" title={c.title} text={c.text} />
+        <div className="mx-auto max-w-5xl px-4 py-10">
+          <Link to="/tramites" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" aria-hidden />{tr("Todos los trámites")}</Link>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">{list.map((t) => <TramiteCard key={t.slug} t={t} />)}</div>
+        </div>
+      </main>
+    </div>
+  );
+}

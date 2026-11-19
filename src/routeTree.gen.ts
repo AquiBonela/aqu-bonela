@@ -25,10 +25,13 @@ import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
 import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
 import { Route as ServiciosSlugRouteImport } from './routes/servicios.$slug'
+import { Route as TramitesIndexRouteImport } from './routes/tramites/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
 import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_authenticated/admin/configuracion'
 import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
+import { Route as TramitesCategoriaIndexRouteImport } from './routes/tramites/$categoria.index'
+import { Route as TramitesCategoriaTramiteRouteImport } from './routes/tramites/$categoria.$tramite'
 import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -110,6 +113,11 @@ const ServiciosSlugRoute = ServiciosSlugRouteImport.update({
   path: '/servicios/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TramitesIndexRoute = TramitesIndexRouteImport.update({
+  id: '/tramites/',
+  path: '/tramites/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -132,6 +140,17 @@ const AuthenticatedAdminSugerenciasRoute =
     id: '/admin/sugerencias',
     path: '/admin/sugerencias',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const TramitesCategoriaIndexRoute = TramitesCategoriaIndexRouteImport.update({
+  id: '/tramites/$categoria/',
+  path: '/tramites/$categoria/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TramitesCategoriaTramiteRoute =
+  TramitesCategoriaTramiteRouteImport.update({
+    id: '/tramites/$categoria/$tramite',
+    path: '/tramites/$categoria/$tramite',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedAdminFichasIdRoute =
   AuthenticatedAdminFichasIdRouteImport.update({
@@ -156,10 +175,13 @@ export interface FileRoutesByFullPath {
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
+  '/tramites/': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
+  '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
 export interface FileRoutesByTo {
@@ -178,10 +200,13 @@ export interface FileRoutesByTo {
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
+  '/tramites': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
+  '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/tramites/$categoria': typeof TramitesCategoriaIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
 export interface FileRoutesById {
@@ -202,10 +227,13 @@ export interface FileRoutesById {
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
+  '/tramites/': typeof TramitesIndexRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
   '/_authenticated/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
+  '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
   '/_authenticated/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
 }
 export interface FileRouteTypes {
@@ -226,10 +254,13 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
+    | '/tramites/'
     | '/admin/avisos'
     | '/admin/configuracion'
     | '/admin/sugerencias'
+    | '/tramites/$categoria/$tramite'
     | '/admin/'
+    | '/tramites/$categoria/'
     | '/admin/fichas/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -248,10 +279,13 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
+    | '/tramites'
     | '/admin/avisos'
     | '/admin/configuracion'
     | '/admin/sugerencias'
+    | '/tramites/$categoria/$tramite'
     | '/admin'
+    | '/tramites/$categoria'
     | '/admin/fichas/$id'
   id:
     | '__root__'
@@ -271,10 +305,13 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
+    | '/tramites/'
     | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/configuracion'
     | '/_authenticated/admin/sugerencias'
+    | '/tramites/$categoria/$tramite'
     | '/_authenticated/admin/'
+    | '/tramites/$categoria/'
     | '/_authenticated/admin/fichas/$id'
   fileRoutesById: FileRoutesById
 }
@@ -295,6 +332,9 @@ export interface RootRouteChildren {
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
   RevisionTokenRoute: typeof RevisionTokenRoute
   ServiciosSlugRoute: typeof ServiciosSlugRoute
+  TramitesIndexRoute: typeof TramitesIndexRoute
+  TramitesCategoriaTramiteRoute: typeof TramitesCategoriaTramiteRoute
+  TramitesCategoriaIndexRoute: typeof TramitesCategoriaIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -411,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServiciosSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tramites/': {
+      id: '/tramites/'
+      path: '/tramites'
+      fullPath: '/tramites/'
+      preLoaderRoute: typeof TramitesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/admin'
@@ -438,6 +485,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/sugerencias'
       preLoaderRoute: typeof AuthenticatedAdminSugerenciasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/tramites/$categoria/': {
+      id: '/tramites/$categoria/'
+      path: '/tramites/$categoria'
+      fullPath: '/tramites/$categoria/'
+      preLoaderRoute: typeof TramitesCategoriaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tramites/$categoria/$tramite': {
+      id: '/tramites/$categoria/$tramite'
+      path: '/tramites/$categoria/$tramite'
+      fullPath: '/tramites/$categoria/$tramite'
+      preLoaderRoute: typeof TramitesCategoriaTramiteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/fichas/$id': {
       id: '/_authenticated/admin/fichas/$id'
@@ -485,6 +546,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
   RevisionTokenRoute: RevisionTokenRoute,
   ServiciosSlugRoute: ServiciosSlugRoute,
+  TramitesIndexRoute: TramitesIndexRoute,
+  TramitesCategoriaTramiteRoute: TramitesCategoriaTramiteRoute,
+  TramitesCategoriaIndexRoute: TramitesCategoriaIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

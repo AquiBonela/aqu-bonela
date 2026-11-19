@@ -1,5 +1,5 @@
 import { Text, useI18n } from "@/lib/i18n";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, MapPin,
   Recycle, Pill, Car, Mail, Landmark, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
@@ -342,6 +342,10 @@ function ServiciosPublicos() {
               </article>
             ))}
           </div>
+          <Link to="/tramites" className="press mt-6 flex items-center justify-between gap-4 border-2 border-primary bg-card p-5 hover:bg-muted">
+            <span><span className="block font-display text-xl font-extrabold"><Text text="Guía de trámites paso a paso" /></span><span className="mt-1 block text-sm text-muted-foreground"><Text text="Documentación, salud, empleo, ayudas, vehículos y gestiones municipales." /></span></span>
+            <ArrowRight className="h-6 w-6 shrink-0 text-primary" aria-hidden />
+          </Link>
           <div className="mt-6 flex flex-col gap-4 bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="font-display text-xl font-extrabold"><Text text="¿Necesitas realizar otro trámite?" /></h3>
