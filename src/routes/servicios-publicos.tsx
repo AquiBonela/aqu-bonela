@@ -2,8 +2,8 @@ import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TramitesSection } from "@/components/TramitesSection";
 import {
-  Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, MapPin,
-  Recycle, Pill, Car, Mail, Landmark, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
+  Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, Bus, ArrowRight, MapPin,
+  Recycle, Pill, Car, Mail, Landmark, type LucideIcon,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -43,8 +43,6 @@ type Item = {
   link2?: { label: string; href: string };
 };
 
-const SEDE = "https://casarabonela.sedelectronica.es";
-
 const DIARIO: Item[] = [
   { group: "salud", Icon: Stethoscope, title: "Consultorio médico", text: "Atención primaria del Servicio Andaluz de Salud en el centro del pueblo.", facts: [{ k: "Horario", v: "Lunes a viernes, 8:00–15:00" }, { k: "Dónde", v: "Calle Málaga, s/n" }], tel: "951062980", link: { label: "Cita en ClicSalud+", href: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud/" } },
   { group: "salud", Icon: Pill, title: "Farmacia", text: "Farmacia Bonela atiende en el pueblo. Las guardias de la zona se consultan en el calendario oficial.", link: { label: "Ver en el Directorio", href: "/comercios/farmacia-bonela" }, link2: { label: "Farmacias de guardia", href: "https://www.cofmalaga.com/farmacias-de-guardia/" } },
@@ -63,15 +61,6 @@ const GRUPOS: { id: string; title: string }[] = [
   { id: "residuos", title: "Limpieza y gestión de residuos" },
   { id: "vecinos", title: "Servicios para vecinos" },
   { id: "mercado", title: "Mercado y actividad cotidiana" },
-];
-
-const TRAMITES: Item[] = [
-  { Icon: Home, title: "Empadronamiento", text: "Alta, cambio de domicilio o baja en el padrón municipal. Necesitas DNI o NIE y contrato o escritura de la vivienda.", facts: [{ k: "Dónde", v: "Ayuntamiento (sin cita previa)" }], link: { label: "Información oficial", href: SEDE } },
-  { Icon: FileText, title: "Certificados y volantes", text: "El volante sirve para colegios o ayudas; el certificado, para juzgados, herencias o extranjería.", facts: [{ k: "Dónde", v: "Ayuntamiento o Sede Electrónica" }], link: { label: "Solicitar", href: SEDE } },
-  { Icon: PenLine, title: "Instancia general", text: "El escrito oficial para cualquier solicitud o comunicación al Ayuntamiento que no tenga un trámite propio.", facts: [{ k: "Dónde", v: "Registro municipal u online" }], link: { label: "Presentar", href: SEDE } },
-  { Icon: Hammer, title: "Licencias de obras", text: "Antes de reformar, pintar fachadas o construir, consulta si necesitas licencia o declaración responsable.", facts: [{ k: "Dónde", v: "Oficina técnica, martes y jueves" }], tel: "952456005", link: { label: "Requisitos", href: SEDE } },
-  { Icon: HeartHandshake, title: "Ayudas y servicios sociales", text: "Orientación sobre ayudas, dependencia y atención a familias con la trabajadora social.", facts: [{ k: "Dónde", v: "Ayuntamiento, miércoles con cita" }], tel: "952456005" },
-  { Icon: MessageSquare, title: "Quejas y sugerencias", text: "Comunica una queja o propuesta al Ayuntamiento.\nPara averías en la calle, usa Línea Verde.", facts: [{ k: "Dónde", v: "Registro municipal u online" }], link: { label: "Enviar", href: SEDE } },
 ];
 
 function Actions({ i, compact }: { i: Item; compact?: boolean }) {
@@ -329,15 +318,6 @@ function ServiciosPublicos() {
         <section id="tramites" className="scroll-mt-24 mx-auto max-w-5xl px-4 py-14">
           <SectionTitle n="03" title="Trámites y gestiones" text="Información útil para realizar algunas de las gestiones más habituales en Casarabonela." />
           <TramitesSection />
-          <div className="mt-6 flex flex-col gap-4 bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="font-display text-xl font-extrabold"><Text text="¿Necesitas realizar otro trámite?" /></h3>
-              <p className="mt-1 opacity-90"><Text text="Consulta el catálogo completo en la Sede Electrónica del Ayuntamiento." /></p>
-            </div>
-            <a href={SEDE} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 shrink-0 items-center gap-2 bg-primary-foreground px-5 font-bold text-primary hover:opacity-90">
-              <Text text="Acceder a la Sede Electrónica" /> <ArrowRight className="h-4 w-4" aria-hidden />
-            </a>
-          </div>
         </section>
       </main>
     </div>
