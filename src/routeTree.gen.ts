@@ -27,6 +27,7 @@ import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$s
 import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
 import { Route as ServiciosSlugRouteImport } from './routes/servicios.$slug'
 import { Route as TramitesIndexRouteImport } from './routes/tramites/index'
+import { Route as VidaDiariaCategoriaRouteImport } from './routes/vida-diaria.$categoria'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
 import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_authenticated/admin/configuracion'
@@ -124,6 +125,11 @@ const TramitesIndexRoute = TramitesIndexRouteImport.update({
   path: '/tramites/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VidaDiariaCategoriaRoute = VidaDiariaCategoriaRouteImport.update({
+  id: '/$categoria',
+  path: '/$categoria',
+  getParentRoute: () => VidaDiariaRoute,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -176,12 +182,13 @@ export interface FileRoutesByFullPath {
   '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
-  '/vida-diaria': typeof VidaDiariaRoute
+  '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
+  '/vida-diaria/$categoria': typeof VidaDiariaCategoriaRoute
   '/tramites/': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
@@ -202,12 +209,13 @@ export interface FileRoutesByTo {
   '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
-  '/vida-diaria': typeof VidaDiariaRoute
+  '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
+  '/vida-diaria/$categoria': typeof VidaDiariaCategoriaRoute
   '/tramites': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
@@ -230,12 +238,13 @@ export interface FileRoutesById {
   '/servicios-publicos': typeof ServiciosPublicosRoute
   '/sobre': typeof SobreRoute
   '/sugerir': typeof SugerirRoute
-  '/vida-diaria': typeof VidaDiariaRoute
+  '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
+  '/vida-diaria/$categoria': typeof VidaDiariaCategoriaRoute
   '/tramites/': typeof TramitesIndexRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
+    | '/vida-diaria/$categoria'
     | '/tramites/'
     | '/admin/avisos'
     | '/admin/configuracion'
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
+    | '/vida-diaria/$categoria'
     | '/tramites'
     | '/admin/avisos'
     | '/admin/configuracion'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
+    | '/vida-diaria/$categoria'
     | '/tramites/'
     | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/configuracion'
@@ -339,7 +351,7 @@ export interface RootRouteChildren {
   ServiciosPublicosRoute: typeof ServiciosPublicosRoute
   SobreRoute: typeof SobreRoute
   SugerirRoute: typeof SugerirRoute
-  VidaDiariaRoute: typeof VidaDiariaRoute
+  VidaDiariaRoute: typeof VidaDiariaRouteWithChildren
   AsociacionesSlugRoute: typeof AsociacionesSlugRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
@@ -478,6 +490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TramitesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vida-diaria/$categoria': {
+      id: '/vida-diaria/$categoria'
+      path: '/$categoria'
+      fullPath: '/vida-diaria/$categoria'
+      preLoaderRoute: typeof VidaDiariaCategoriaRouteImport
+      parentRoute: typeof VidaDiariaRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/admin'
@@ -549,6 +568,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface VidaDiariaRouteChildren {
+  VidaDiariaCategoriaRoute: typeof VidaDiariaCategoriaRoute
+}
+
+const VidaDiariaRouteChildren: VidaDiariaRouteChildren = {
+  VidaDiariaCategoriaRoute: VidaDiariaCategoriaRoute,
+}
+
+const VidaDiariaRouteWithChildren = VidaDiariaRoute._addFileChildren(
+  VidaDiariaRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -561,7 +592,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServiciosPublicosRoute: ServiciosPublicosRoute,
   SobreRoute: SobreRoute,
   SugerirRoute: SugerirRoute,
-  VidaDiariaRoute: VidaDiariaRoute,
+  VidaDiariaRoute: VidaDiariaRouteWithChildren,
   AsociacionesSlugRoute: AsociacionesSlugRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,

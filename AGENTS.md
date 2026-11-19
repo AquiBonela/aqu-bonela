@@ -34,4 +34,4 @@
 - Signup/information dialogs and the suggestion page reuse SuggestionForm. Why: one submission flow.
 - Mount BackToTop once in root; public ListingPage uses SiteHeader, not embedded reviews. Why: consistent navigation.
 - Reuse EmergencyPhonesList with mainOnly for the public-services emergency banner. Why: the 112 presentation stays consistent with SOS without duplicating the full helpline list.
-- Vida diaria lives at `/vida-diaria` (its own data and categories); Servicios Públicos section 02 is only an access card. Why: keeps the public-services page short and scannable.
+- Vida diaria categories live in `src/lib/vida-diaria.ts`, shown as cards in `/servicios-publicos#vida-diaria` (`/vida-diaria` redirects there); each opens `/vida-diaria/$categoria` with its items. Why: mirrors the Trámites pattern with shareable URLs.

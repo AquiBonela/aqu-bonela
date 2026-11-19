@@ -2,6 +2,7 @@ import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TramitesSection } from "@/components/TramitesSection";
 import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin } from "lucide-react";
+import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
@@ -124,16 +125,17 @@ function ServiciosPublicos() {
         </section>
 
         {/* 2. Vida diaria */}
-        <section className="mx-auto max-w-5xl px-4 pt-14">
+        <section id="vida-diaria" className="scroll-mt-24 mx-auto max-w-5xl px-4 pt-14">
           <SectionTitle n="02" title="Vida diaria en el pueblo" text="Información práctica para organizarte y usar los servicios municipales." />
-          <Link to="/vida-diaria" className="press-feedback group block border-2 border-primary bg-card p-6 hover:bg-muted">
-            <ul className="grid gap-x-6 gap-y-2 text-sm font-semibold sm:grid-cols-3">
-              {["Transporte", "Residuos y limpieza", "Espacios públicos", "Servicios municipales", "Educación", "Otros servicios"].map((x) => (
-                <li key={x} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-hidden />{tr(x)}</li>
-              ))}
-            </ul>
-            <span className="mt-5 inline-flex min-h-11 items-center gap-2 bg-primary px-5 font-bold text-primary-foreground"><Text text="Ver vida diaria" /> <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden /></span>
-          </Link>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {CATEGORIAS_VIDA.map((c) => (
+              <Link key={c.id} to="/vida-diaria/$categoria" params={{ categoria: c.id }} className="press flex flex-col gap-2 border-l-4 border-primary bg-muted/50 p-5 transition-colors hover:bg-muted">
+                <h3 className="font-display text-lg font-extrabold leading-tight">{tr(c.title)}</h3>
+                <p className="text-sm text-muted-foreground">{tr(c.text)}</p>
+                <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-semibold text-primary"><Text text="Ver información" /> <ArrowRight className="h-4 w-4" aria-hidden /></span>
+              </Link>
+            ))}
+          </div>
         </section>
 
 

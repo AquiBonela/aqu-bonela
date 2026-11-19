@@ -880,4 +880,10 @@ export const englishText: Record<string, string> = {
   "11:00–20:00": "11:00–20:00",
   "C/ Cuatro Esquinas, 10": "C/ Cuatro Esquinas, 10",
   "Avda. Fernando Díaz": "Avda. Fernando Díaz",
+  "Autobuses, horarios, taxi y conexiones con otros municipios.": "Buses, timetables, taxi and connections with other towns.",
+  "Contenedores, recogida de muebles y enseres, y punto limpio.": "Bins, furniture and bulky item collection, and recycling centre.",
+  "Parques, instalaciones deportivas y piscina municipal.": "Parks, sports facilities and municipal swimming pool.",
+  "Horarios de atención, dependencias municipales y contacto.": "Opening hours, municipal offices and contact.",
+  "Colegio, guardería y otros servicios educativos.": "School, nursery and other educational services.",
+  "Punto Vuela, biblioteca, cementerio, consultorio, Correos y más.": "Punto Vuela, library, cemetery, medical centre, Post Office and more.",
 };
