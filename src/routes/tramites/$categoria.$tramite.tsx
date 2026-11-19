@@ -29,7 +29,7 @@ export const Route = createFileRoute("/tramites/$categoria/$tramite")({
 
 function Missing() {
   const { tr } = useI18n();
-  return <div className="p-10 text-center"><p>{tr("Este trámite no existe.")}</p><Link to="/tramites" className="mt-4 inline-block font-semibold text-primary underline">{tr("Volver a Trámites")}</Link></div>;
+  return <div className="p-10 text-center"><p>{tr("Este trámite no existe.")}</p><Link to="/servicios-publicos" hash="tramites" className="mt-4 inline-block font-semibold text-primary underline">{tr("Volver a Trámites")}</Link></div>;
 }
 
 function Block({ title, items }: { title: string; items?: string[] | undefined }) {

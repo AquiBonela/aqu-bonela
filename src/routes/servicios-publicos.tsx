@@ -325,27 +325,9 @@ function ServiciosPublicos() {
         })}
 
         {/* 3. Trámites */}
-        <section className="mx-auto max-w-5xl px-4 py-14">
+        <section id="tramites" className="scroll-mt-24 mx-auto max-w-5xl px-4 py-14">
           <SectionTitle n="03" title="Trámites y gestiones" text="Información útil para realizar algunas de las gestiones más habituales en Casarabonela." />
-          <div className="grid gap-3 sm:grid-cols-2">
-            {TRAMITES.map((i) => (
-              <article key={i.title} className="flex flex-col border-l-4 border-primary bg-muted/50 p-4">
-                <div className="flex items-center gap-2">
-                  <i.Icon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
-                  <h3 className="font-bold">{tr(i.title)}</h3>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">{tr(i.text)}</p>
-                {i.facts?.map((f) => (
-                  <p key={f.k} className="mt-2 text-xs"><span className="font-bold">{tr(f.k)}:</span> {tr(f.v)}</p>
-                ))}
-                <Actions i={i} compact />
-              </article>
-            ))}
-          </div>
-          <Link to="/tramites" className="press mt-6 flex items-center justify-between gap-4 border-2 border-primary bg-card p-5 hover:bg-muted">
-            <span><span className="block font-display text-xl font-extrabold"><Text text="Guía de trámites paso a paso" /></span><span className="mt-1 block text-sm text-muted-foreground"><Text text="Documentación, salud, empleo, ayudas, vehículos y gestiones municipales." /></span></span>
-            <ArrowRight className="h-6 w-6 shrink-0 text-primary" aria-hidden />
-          </Link>
+          <TramitesSection />
           <div className="mt-6 flex flex-col gap-4 bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="font-display text-xl font-extrabold"><Text text="¿Necesitas realizar otro trámite?" /></h3>
