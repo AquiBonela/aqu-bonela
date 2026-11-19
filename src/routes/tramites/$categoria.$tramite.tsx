@@ -67,7 +67,7 @@ function TramitePage() {
               <ol className="mt-4 space-y-4">
                 {t.pasos.map((p, n) => (
                   <li key={p.t} className="flex gap-4 border-l-4 border-primary bg-muted/50 p-4">
-                    <span className="font-display text-2xl font-extrabold text-primary">{n + 1}</span>
+                    <span className="w-6 shrink-0 font-display text-2xl font-extrabold text-primary">{n + 1}</span>
                     <div><h3 className="font-bold">{tr(p.t)}</h3><p className="mt-1 text-sm">{tr(p.d)}</p></div>
                   </li>
                 ))}
