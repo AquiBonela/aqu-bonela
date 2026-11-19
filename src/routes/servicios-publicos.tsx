@@ -1,5 +1,6 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { TramitesSection } from "@/components/TramitesSection";
 import {
   Laptop, CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, FileText, Bus, ArrowRight, MapPin,
   Recycle, Pill, Car, Mail, Landmark, Home, PenLine, Hammer, HeartHandshake, MessageSquare, type LucideIcon,
