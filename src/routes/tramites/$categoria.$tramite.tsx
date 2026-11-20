@@ -51,7 +51,7 @@ function GuideSection({ value, title, children }: { value: string; title: string
   const { tr } = useI18n();
   return (
     <AccordionItem value={value} className="border-b">
-      <AccordionTrigger className="py-4 font-display text-lg font-extrabold hover:no-underline">{tr(title)}</AccordionTrigger>
+      <AccordionTrigger className="py-4 font-display text-lg font-extrabold text-foreground hover:no-underline">{tr(title)}</AccordionTrigger>
       <AccordionContent className="pb-5 text-base leading-relaxed">{children}</AccordionContent>
     </AccordionItem>
   );
