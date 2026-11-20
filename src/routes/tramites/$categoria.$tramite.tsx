@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ExternalLink, CheckCircle2, LifeBuoy, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, ExternalLink, CheckCircle2, LifeBuoy, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -50,7 +50,7 @@ function Block({ title, items }: { title: string; items?: string[] | undefined }
 function GuideSection({ value, title, children }: { value: string; title: string; children: ReactNode }) {
   const { tr } = useI18n();
   return (
-    <AccordionItem value={value} className="border bg-card px-4 shadow-sm">
+    <AccordionItem value={value} className="border-b">
       <AccordionTrigger className="py-4 font-display text-lg font-extrabold hover:no-underline">{tr(title)}</AccordionTrigger>
       <AccordionContent className="pb-5 text-base leading-relaxed">{children}</AccordionContent>
     </AccordionItem>
@@ -72,17 +72,27 @@ function GuideList({ items }: { items?: string[] | undefined }) {
   );
 }
 
-function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?: boolean }) {
+function PuntoVuelaText({ text }: { text: string }) {
   const { tr } = useI18n();
   return (
-    <a
-      href={link.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={prominent
-        ? "press mt-4 inline-flex min-h-11 items-center gap-2 bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
-        : "mt-3 inline-flex items-center gap-1.5 font-semibold text-primary underline underline-offset-4"}
-    >
+    <>
+      {tr(text).split(/(Punto Vuela)/g).map((part, index) => part === "Punto Vuela" ? (
+        <Link key={index} to="/punto-vuela" className="font-semibold text-primary underline underline-offset-2">{part}</Link>
+      ) : part)}
+    </>
+  );
+}
+
+function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?: boolean }) {
+  const { tr } = useI18n();
+  const className = prominent
+    ? "press mt-4 inline-flex min-h-11 items-center gap-2 bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+    : "mt-3 inline-flex items-center gap-1.5 font-semibold text-primary underline underline-offset-4";
+  if (link.url === "/punto-vuela") {
+    return <Link to="/punto-vuela" className={className}>{tr(link.label)} <ArrowRight className="h-4 w-4 shrink-0" aria-hidden /></Link>;
+  }
+  return (
+    <a href={link.url} target="_blank" rel="noopener noreferrer" className={className}>
       {tr(link.label)} <ExternalLink className="h-4 w-4 shrink-0" aria-hidden />
     </a>
   );
@@ -95,7 +105,7 @@ function CertificadoDigitalGuide({ t }: { t: Tramite }) {
 
   return (
     <>
-      <Accordion type="multiple" className="mt-8 space-y-3">
+      <Accordion type="multiple" className="mt-8">
         <GuideSection value="para" title="¿Para qué sirve?">
           <GuideList items={t.para} />
         </GuideSection>
@@ -108,7 +118,7 @@ function CertificadoDigitalGuide({ t }: { t: Tramite }) {
 
         <GuideSection value="necesitas" title="¿Qué necesitas?">
           <GuideList items={t.necesitas} />
-          <p className="mt-4 bg-muted/50 p-3 text-sm font-semibold">{tr(guide.necesitasNota)}</p>
+          <p className="mt-4 bg-muted/50 p-3 text-sm font-semibold"><PuntoVuelaText text={guide.necesitasNota} /></p>
         </GuideSection>
 
         <GuideSection value="pasos" title="¿Cómo hacerlo paso a paso?">
@@ -117,9 +127,9 @@ function CertificadoDigitalGuide({ t }: { t: Tramite }) {
               <li key={step.t} className="flex gap-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-display text-lg font-extrabold text-primary-foreground">{index + 1}</span>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-bold">{tr(step.t)}</h3>
+                  <h3 className="font-bold"><PuntoVuelaText text={step.t} /></h3>
                   <div className="mt-2 space-y-2 text-sm">
-                    {step.d.map((paragraph) => <p key={paragraph}>{tr(paragraph)}</p>)}
+                    {step.d.map((paragraph) => <p key={paragraph}><PuntoVuelaText text={paragraph} /></p>)}
                   </div>
                   {step.link && <GuideLink link={step.link} prominent />}
                 </div>
@@ -132,10 +142,10 @@ function CertificadoDigitalGuide({ t }: { t: Tramite }) {
           <div className="space-y-4">
             {guide.lugares.map((place) => (
               <article key={place.title} className="border bg-muted/30 p-4">
-                <h3 className="font-display text-lg font-extrabold">{tr(place.title)}</h3>
+                <h3 className="font-display text-lg font-extrabold"><PuntoVuelaText text={place.title} /></h3>
                 <p className="mt-0.5 text-sm font-semibold text-primary">{tr(place.subtitle)}</p>
                 <div className="mt-3 space-y-2 text-sm">
-                  {place.description.map((paragraph) => <p key={paragraph}>{tr(paragraph)}</p>)}
+                  {place.description.map((paragraph) => <p key={paragraph}><PuntoVuelaText text={paragraph} /></p>)}
                 </div>
                 {place.details && (
                   <dl className="mt-4 space-y-2 border-t pt-3 text-sm">
@@ -192,9 +202,9 @@ function TramitePage() {
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-8">
         <Link to="/tramites/$categoria" params={{ categoria: c.slug }} className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" aria-hidden />{tr(c.title)}</Link>
-        <h1 className="mt-4 whitespace-pre-line font-display text-3xl font-extrabold text-balance sm:text-4xl">{tr(t.title)}</h1>
-        <p className="mt-2 whitespace-pre-line text-lg text-muted-foreground">{tr(t.short)}</p>
         <div className="mt-4"><Tags tags={t.tags} /></div>
+        <h1 className="mt-3 whitespace-pre-line font-display text-3xl font-extrabold text-balance sm:text-4xl">{tr(t.title)}</h1>
+        <p className="mt-2 whitespace-pre-line text-lg text-muted-foreground">{tr(t.short)}</p>
 
         {t.primaryAction && (
           <a href={t.primaryAction.url} target="_blank" rel="noopener noreferrer" className="press mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-6 py-3 font-bold text-primary-foreground sm:w-auto">

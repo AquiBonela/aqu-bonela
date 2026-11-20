@@ -42,8 +42,8 @@ export type Tramite = {
 export type Categoria = { slug: string; title: string; text: string; icon: "doc" | "salud" | "trabajo" | "familia" | "coche" | "muni" };
 
 export const TAG_LABEL: Record<TramiteTag, string> = {
-  gratis: "Trámite gratuito",
-  online: "Se puede hacer online",
+  gratis: "Gratuito",
+  online: "Online",
   presencial: "Requiere acudir en persona",
 };
 
@@ -113,7 +113,7 @@ export const TRAMITES: Tramite[] = [
             { label: "Correo", value: "casarabonela@puntosvuela.es", href: "mailto:casarabonela@puntosvuela.es" },
           ],
           note: "Consulta los horarios y disponibilidad antes de acudir.",
-          link: { label: "Consultar información del Punto Vuela", url: "https://puntosvuela.es/centros" },
+          link: { label: "Consultar información del Punto Vuela", url: "/punto-vuela" },
         },
       ],
       fuentes: [
