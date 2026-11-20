@@ -126,14 +126,17 @@ function DetailedGuide({ t }: { t: Tramite }) {
         <GuideSection value="pasos" title="¿Cómo hacerlo paso a paso?">
           <ol className="space-y-5">
             {guide.pasos.map((step, index) => (
-              <li key={step.t} className="flex gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-display text-lg font-extrabold text-primary-foreground">{index + 1}</span>
+              <li key={step.t}>
+                {step.grupo && <h3 className="mb-4 border-b pb-2 font-display text-lg font-extrabold">{tr(step.grupo)}</h3>}
+                <div className="flex gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-display text-lg font-extrabold text-primary-foreground">{index + 1 - guide.pasos.slice(0, index + 1).reduce((start, item, position) => item.grupo ? position : start, 0)}</span>
                 <div className="min-w-0 flex-1">
                   <h3 className="font-bold"><PuntoVuelaText text={step.t} /></h3>
                   <div className="mt-2 space-y-2 text-sm">
                     {step.d.map((paragraph) => <p key={paragraph}><PuntoVuelaText text={paragraph} /></p>)}
                   </div>
                   {step.link && <GuideLink link={step.link} prominent />}
+                </div>
                 </div>
               </li>
             ))}

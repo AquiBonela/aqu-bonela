@@ -34,3 +34,4 @@
 - [x] Crear la guía completa del NIE con la estructura de Certificado Digital, enlaces oficiales y traducciones; verificado en móvil, escritorio e inglés.
 - [x] Quitar Punto Vuela del bloque «Dónde» de Certificado Digital y usar cita previa como acción principal del NIE; verificado en móvil, escritorio e inglés.
 - [x] Actualizar Empadronamiento con la información aportada, desplegables y traducción al inglés; ficha y listado comprobados en móvil y escritorio.
+- [x] Limitar etiquetas de trámites a Gratuito, Online y Requiere acudir en persona, y crear la guía de Cl@ve; pruebas y navegación verificadas en español e inglés, móvil y escritorio.

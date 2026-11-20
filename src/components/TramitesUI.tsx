@@ -9,9 +9,6 @@ const TAG_CLASS: Record<TramiteTag, string> = {
   gratis: "bg-primary/10 text-primary",
   online: "bg-secondary text-secondary-foreground",
   presencial: "bg-accent text-accent-foreground",
-  pago: "bg-accent text-accent-foreground",
-  policia: "bg-secondary text-secondary-foreground",
-  ayuntamiento: "bg-secondary text-secondary-foreground",
 };
 
 export function Tags({ tags }: { tags?: TramiteTag[] | undefined }) {

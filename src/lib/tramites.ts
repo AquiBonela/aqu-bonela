@@ -1,5 +1,5 @@
 // Guía de trámites: datos navegables en 3 niveles (portada → categoría → ficha).
-export type TramiteTag = "gratis" | "online" | "presencial" | "pago" | "policia" | "ayuntamiento";
+export type TramiteTag = "gratis" | "online" | "presencial";
 export type TramiteLink = { label: string; url: string };
 export type TramiteGuide = {
   paraIntro?: string;
@@ -8,7 +8,7 @@ export type TramiteGuide = {
   quienIntro: string;
   quienNota: string;
   necesitasNota: string;
-  pasos: { t: string; d: string[]; link?: TramiteLink }[];
+  pasos: { t: string; d: string[]; link?: TramiteLink; grupo?: string }[];
   lugares: {
     title: string;
     subtitle: string;
@@ -51,9 +51,6 @@ export const TAG_LABEL: Record<TramiteTag, string> = {
   gratis: "Gratuito",
   online: "Online",
   presencial: "Requiere acudir en persona",
-  pago: "Trámite de pago",
-  policia: "Policía Nacional",
-  ayuntamiento: "Ayuntamiento de Casarabonela",
 };
 
 export const CATEGORIAS: Categoria[] = [
@@ -130,7 +127,7 @@ export const TRAMITES: Tramite[] = [
     slug: "empadronamiento", cat: "documentacion", title: "Empadronamiento – Alta en el padrón municipal",
     summary: "Inscríbete en el padrón de Casarabonela para acreditar tu domicilio habitual y realizar gestiones administrativas.",
     short: "¿Vives en Casarabonela? Inscríbete en el padrón municipal.\n\nEmpadronarse consiste en inscribirse en el registro de habitantes del municipio donde resides habitualmente. Permite acreditar oficialmente tu domicilio y es necesario para realizar numerosas gestiones administrativas.\n\nImportante: debes empadronarte en el municipio donde resides habitualmente, independientemente de si eres propietario, inquilino o vives en una vivienda de otra persona. No necesitas tener nacionalidad española ni permiso de residencia para empadronarte.",
-    tags: ["gratis", "presencial", "ayuntamiento"],
+    tags: ["gratis", "presencial"],
     para: ["Realizar trámites relacionados con la residencia y extranjería.", "Escolarizar a tus hijos.", "Solicitar determinadas ayudas y servicios sociales.", "Realizar gestiones con la Seguridad Social.", "Acceder a determinados servicios municipales.", "Acreditar tu domicilio ante diferentes administraciones."],
     necesitas: [
       "Documento de identidad: DNI, NIE o pasaporte en vigor, según corresponda.",
@@ -174,7 +171,7 @@ export const TRAMITES: Tramite[] = [
     slug: "nie", cat: "documentacion", title: "NIE – Número de Identidad de Extranjero",
     summary: "Identificación de extranjeros para trámites administrativos, laborales y económicos en España.",
     short: "El NIE es un número personal que identifica a las personas extranjeras que tienen relación con España por motivos económicos, profesionales o sociales.\n\nSe utiliza para realizar numerosos trámites administrativos, laborales, fiscales y económicos.\n\nImportante: tener un NIE no significa tener permiso de residencia ni autorización para trabajar. Es un número de identificación, no un permiso de residencia.",
-    tags: ["pago", "presencial", "policia"],
+    tags: ["presencial"],
     para: [
       "Trabajar y realizar gestiones relacionadas con el empleo.",
       "Abrir una cuenta bancaria.",
@@ -258,7 +255,56 @@ export const TRAMITES: Tramite[] = [
     },
     links: [],
   },
-  { slug: "clave", cat: "documentacion", title: "Registrarse en Cl@ve", short: "Sistema para identificarte en internet con un PIN, sin certificado.", tags: ["gratis", "online"], links: [{ label: "Cl@ve", url: "https://clave.gob.es" }] },
+  {
+    slug: "clave", cat: "documentacion", title: "Cl@ve – Registro en el sistema de identificación electrónica",
+    summary: "Regístrate en Cl@ve para identificarte de forma segura y realizar trámites online con las administraciones públicas, sin certificado digital.",
+    short: "¿Quieres realizar trámites por Internet con las Administraciones Públicas? Regístrate en Cl@ve, el sistema que te permite identificarte de forma segura sin necesidad de utilizar un certificado digital.\n\nImportante: existen dos niveles de registro. El básico permite acceder a numerosos servicios, mientras que el avanzado ofrece acceso a más trámites y permite utilizar Cl@ve Firma.",
+    tags: ["gratis", "online", "presencial"],
+    para: [
+      "Consultar información y realizar trámites con la Seguridad Social.",
+      "Acceder a servicios de la Agencia Tributaria.",
+      "Consultar prestaciones y gestiones del SEPE.",
+      "Presentar solicitudes y documentación por Internet.",
+      "Consultar expedientes y notificaciones electrónicas.",
+    ],
+    necesitas: [
+      "DNI o NIE: documento de identidad en vigor.",
+      "Teléfono móvil: un número personal donde recibir códigos y notificaciones.",
+      "Correo electrónico: una dirección activa.",
+    ],
+    primaryAction: { label: "Comenzar registro en Cl@ve", url: "https://clave.gob.es/registro/como-puedo-registrarme" },
+    guia: {
+      paraIntro: "Cl@ve permite identificarte electrónicamente para realizar gestiones con las Administraciones Públicas, como por ejemplo:",
+      paraNota: "Entre otras gestiones.",
+      quienIntro: "Cualquier persona que necesite identificarse electrónicamente ante las Administraciones Públicas y cumpla los requisitos de identificación.",
+      quienNota: "Pueden registrarse ciudadanos españoles y extranjeros que dispongan de DNI o NIE y la documentación necesaria para acreditar su identidad.",
+      necesitasIntro: "Para realizar el registro necesitarás:",
+      necesitasNota: "Si realizas el registro online mediante videoidentificación, también necesitarás la aplicación Cl@ve y un teléfono móvil con cámara y conexión a Internet.",
+      pasos: [
+        { grupo: "Opción A. Por Internet", t: "Descarga la aplicación oficial Cl@ve.", d: ["Descarga la aplicación oficial Cl@ve en tu teléfono móvil."], link: { label: "Cómo registrarse en Cl@ve", url: "https://clave.gob.es/registro/como-puedo-registrarme" } },
+        { t: "Accede a la opción de registro.", d: ["Accede a la opción de registro y sigue las instrucciones."] },
+        { t: "Facilita tus datos.", d: ["Facilita los datos de tu documento de identidad, teléfono móvil y correo electrónico."] },
+        { t: "Completa la videoidentificación.", d: ["Completa el proceso de videoidentificación siguiendo las indicaciones de la aplicación."] },
+        { t: "Recibe la confirmación del registro.", d: ["Una vez verificada tu identidad, recibirás la confirmación del registro.", "Esta modalidad permite obtener inicialmente el nivel básico. Tras la revisión de la videoidentificación por parte de un empleado público, puedes obtener el nivel avanzado sin acudir presencialmente.", "También puedes registrarte por Internet mediante carta de invitación o utilizando un certificado digital o DNI electrónico."] },
+        { grupo: "Opción B. Presencialmente", t: "Localiza una oficina habilitada.", d: ["Localiza una oficina habilitada para realizar el registro en Cl@ve."], link: { label: "Buscar oficinas de registro Cl@ve", url: "https://administracion.gob.es/pagFront/atencionCiudadana/oficinasEGEO/encuentraOficina.htm" } },
+        { t: "Comprueba si necesitas cita previa.", d: ["Comprueba si necesitas solicitar cita previa."] },
+        { t: "Acude personalmente a la oficina.", d: ["Acude personalmente con tu documento de identidad, teléfono móvil y correo electrónico."] },
+        { t: "Acredita tu identidad.", d: ["El personal de la oficina verificará tu identidad y tramitará el alta."] },
+        { t: "Recibe el SMS de confirmación.", d: ["Una vez completado el registro, recibirás un SMS de confirmación.", "El registro presencial proporciona directamente el nivel avanzado."] },
+      ],
+      lugares: [
+        { title: "Por Internet", subtitle: "Página oficial y aplicación Cl@ve", description: ["Desde la página oficial de Cl@ve o mediante su aplicación móvil."], link: { label: "Cómo registrarse en Cl@ve", url: "https://clave.gob.es/registro/como-puedo-registrarme" } },
+        { title: "Presencialmente", subtitle: "Oficinas habilitadas de registro", description: ["En las oficinas habilitadas de la Agencia Tributaria, Seguridad Social, SEPE y otras administraciones públicas.", "Puedes localizar la oficina más cercana en el buscador oficial."], link: { label: "Buscar oficinas de registro Cl@ve", url: "https://administracion.gob.es/pagFront/atencionCiudadana/oficinasEGEO/encuentraOficina.htm" } },
+      ],
+      fuentes: [{ label: "Cómo registrarse en Cl@ve", url: "https://clave.gob.es/registro/como-puedo-registrarme" }],
+      costeTitulo: "Registro en Cl@ve",
+      costeImporte: "0 €",
+      costeTexto: "El registro en Cl@ve es gratuito, tanto por Internet como presencialmente.",
+      ayuda: ["Si necesitas ayuda para realizar el trámite por Internet, puedes acudir al Punto Vuela de Casarabonela, donde pueden orientarte y acompañarte en las gestiones digitales."],
+      revision: "Información orientativa. Los requisitos pueden variar según tu documento de identidad y la modalidad de registro elegida.",
+    },
+    links: [],
+  },
   { slug: "tarjeta-sanitaria", cat: "salud", title: "Solicitar la tarjeta sanitaria", short: "Acceso a la sanidad pública andaluza y asignación de médico.", tags: ["gratis", "presencial"], links: [{ label: "ClicSalud+", url: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud" }] },
   { slug: "tarjeta-europea", cat: "salud", title: "Tarjeta sanitaria europea", short: "Asistencia sanitaria en viajes por la Unión Europea.", tags: ["gratis", "online"], links: [{ label: "Seguridad Social", url: "https://sede.seg-social.gob.es" }] },
   { slug: "vida-laboral", cat: "trabajo", title: "Consultar la vida laboral", short: "Informe con todos los periodos que has cotizado.", tags: ["gratis", "online"], links: [{ label: "Seguridad Social", url: "https://sede.seg-social.gob.es" }] },

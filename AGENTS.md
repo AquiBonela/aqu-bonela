@@ -36,3 +36,4 @@
 - Reuse EmergencyPhonesList with mainOnly for the public-services emergency banner. Why: the 112 presentation stays consistent with SOS without duplicating the full helpline list.
 - Vida diaria categories live in `src/lib/vida-diaria.ts`, shown as cards in `/servicios-publicos#vida-diaria` (`/vida-diaria` redirects there); each opens `/vida-diaria/$categoria` with its items. Why: mirrors the Trámites pattern with shareable URLs.
 - Detailed procedure guides use optional introductory and closing text fields in shared accordion sections. Why: preserve supplied context without duplicating page layouts.
+- Procedure steps may carry a group heading that restarts their numbering. Why: keep alternative application methods separate within the shared guide.

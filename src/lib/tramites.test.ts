@@ -1,7 +1,20 @@
 import { describe, it, expect } from "vitest";
-import { buscarTramites, CATEGORIAS, DESTACADOS, TRAMITES, getTramite } from "./tramites";
+import { buscarTramites, CATEGORIAS, DESTACADOS, TRAMITES, TAG_LABEL, getTramite } from "./tramites";
 
 describe("guía de trámites", () => {
+  it("solo admite etiquetas de gratuidad y modalidad, nunca de lugar o de pago", () => {
+    expect(Object.keys(TAG_LABEL).sort()).toEqual(["gratis", "online", "presencial"]);
+    for (const tramite of TRAMITES) {
+      for (const tag of tramite.tags ?? []) expect(["gratis", "online", "presencial"]).toContain(tag);
+    }
+    expect(getTramite("documentacion", "nie")?.tags).toEqual(["presencial"]);
+    expect(getTramite("documentacion", "empadronamiento")?.tags).toEqual(["gratis", "presencial"]);
+  });
+  it("Cl@ve es gratuito tanto online como presencialmente", () => {
+    const tramite = getTramite("documentacion", "clave");
+    expect(tramite?.guia?.costeImporte).toBe("0 €");
+    expect(tramite?.tags).toEqual(["gratis", "online", "presencial"]);
+  });
   it("tiene 6 categorías", () => expect(CATEGORIAS).toHaveLength(6));
   it("los 4 destacados existen", () => {
     expect(DESTACADOS).toHaveLength(4);
