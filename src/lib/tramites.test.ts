@@ -2,6 +2,14 @@ import { describe, it, expect } from "vitest";
 import { buscarTramites, CATEGORIAS, DESTACADOS, TRAMITES, TAG_LABEL, getTramite } from "./tramites";
 
 describe("guía de trámites", () => {
+  it("la TIE requiere tasa y combina cita online con asistencia presencial", () => {
+    const tramite = getTramite("documentacion", "tie");
+    expect(tramite?.tags).toEqual(["online", "presencial"]);
+    expect(tramite?.guia?.costeImporte).toBe("Tasa oficial vigente");
+    expect(tramite?.primaryAction?.url).toBe("https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus");
+    expect(tramite?.guia?.pasos).toHaveLength(5);
+    expect(tramite?.necesitas).toContain("Formulario EX-17: cumplimentado y firmado.");
+  });
   it("solo admite etiquetas de gratuidad y modalidad, nunca de lugar o de pago", () => {
     expect(Object.keys(TAG_LABEL).sort()).toEqual(["gratis", "online", "presencial"]);
     for (const tramite of TRAMITES) {
