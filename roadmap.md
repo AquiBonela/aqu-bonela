@@ -31,3 +31,4 @@
 - [x] Quitar recuadros de las preguntas, subir etiquetas y enlazar Punto Vuela a su ficha; verificar móvil, escritorio e inglés.
 - [x] Renombrar categoría y Certificado Digital, y mantener los enlaces legales en una línea; verificado en móvil, escritorio e inglés.
 - [x] Mostrar un resumen de dos o tres líneas en las tarjetas de trámites, conservando la descripción completa en cada ficha; verificado en móvil, escritorio e inglés.
+- [x] Crear la guía completa del NIE con la estructura de Certificado Digital, enlaces oficiales y traducciones; verificado en móvil, escritorio e inglés.

@@ -1,5 +1,5 @@
 // Guía de trámites: datos navegables en 3 niveles (portada → categoría → ficha).
-export type TramiteTag = "gratis" | "online" | "presencial";
+export type TramiteTag = "gratis" | "online" | "presencial" | "pago" | "policia";
 export type TramiteLink = { label: string; url: string };
 export type TramiteGuide = {
   quienIntro: string;
@@ -18,7 +18,9 @@ export type TramiteGuide = {
   costeTitulo: string;
   costeImporte: string;
   costeTexto: string;
-  seguridad: string;
+  ayuda?: string[];
+  aclaracion?: { titulo: string; introduccion: string; puntos: string[]; nota: string };
+  seguridad?: string;
   revision: string;
 };
 export type Tramite = {
@@ -46,6 +48,8 @@ export const TAG_LABEL: Record<TramiteTag, string> = {
   gratis: "Gratuito",
   online: "Online",
   presencial: "Requiere acudir en persona",
+  pago: "Trámite de pago",
+  policia: "Policía Nacional",
 };
 
 export const CATEGORIAS: Categoria[] = [
@@ -148,7 +152,94 @@ export const TRAMITES: Tramite[] = [
     ayuda: "Llama al Ayuntamiento antes de ir si tu caso es especial (sin contrato, menores sin ambos progenitores...).",
     links: [{ label: "Sede Electrónica del Ayuntamiento", url: SEDE }],
   },
-  { slug: "nie", cat: "documentacion", title: "Solicitar el NIE", short: "Número de identidad de extranjero para residir, trabajar o comprar en España.", tags: ["presencial"], links: [{ label: "Información oficial", url: "https://sede.administracionespublicas.gob.es/icpplus/index.html" }] },
+  {
+    slug: "nie", cat: "documentacion", title: "NIE – Número de Identidad de Extranjero",
+    summary: "Identificación de extranjeros para trámites administrativos, laborales y económicos en España.",
+    short: "El NIE es un número personal que identifica a las personas extranjeras que tienen relación con España por motivos económicos, profesionales o sociales.\n\nSe utiliza para realizar numerosos trámites administrativos, laborales, fiscales y económicos.\n\nImportante: tener un NIE no significa tener permiso de residencia ni autorización para trabajar. Es un número de identificación, no un permiso de residencia.",
+    tags: ["pago", "presencial", "policia"],
+    para: [
+      "Trabajar y realizar gestiones relacionadas con el empleo.",
+      "Abrir una cuenta bancaria.",
+      "Comprar o vender una vivienda.",
+      "Comprar un vehículo.",
+      "Realizar trámites con Hacienda y la Seguridad Social.",
+      "Firmar contratos y otros trámites administrativos.",
+    ],
+    quien: ["Económicos.", "Profesionales.", "Sociales."],
+    necesitas: [
+      "Formulario EX-15: solicitud cumplimentada y firmada, por duplicado.",
+      "Pasaporte en vigor: original y copia completa.",
+      "Justificante del motivo: documentación que explique por qué necesitas obtener el NIE.",
+      "Tasa 790, código 012: justificante del pago correspondiente.",
+    ],
+    primaryAction: { label: "Descargar formulario EX-15", url: "https://www.inclusion.gob.es/web/migraciones/modelos-generales" },
+    guia: {
+      quienIntro: "Pueden solicitarlo las personas extranjeras que necesiten identificarse en España por motivos:",
+      quienNota: "Es necesario justificar el motivo de la solicitud. También puede solicitarse desde el país de origen a través del Consulado de España correspondiente. Si eres ciudadano de la Unión Europea y vas a residir en España durante más de tres meses, normalmente debes inscribirte en el Registro Central de Extranjeros; en ese procedimiento te asignarán un NIE.",
+      necesitasNota: "Si la solicitud la presenta un representante, deberá acreditar que está autorizado para hacerlo.",
+      pasos: [
+        {
+          t: "Prepara la solicitud.",
+          d: ["Descarga y completa el formulario EX-15 con tus datos personales. Indica el motivo por el que necesitas obtener el NIE."],
+          link: { label: "Descargar formulario EX-15", url: "https://www.inclusion.gob.es/web/migraciones/modelos-generales" },
+        },
+        {
+          t: "Paga la tasa correspondiente.",
+          d: ["Accede al modelo 790, código 012, selecciona el concepto de asignación de NIE a instancia del interesado y genera el documento para realizar el pago."],
+          link: { label: "Acceder al modelo 790-012", url: "https://sede.policia.gob.es/Tasa790_012/ImpresoRellenar" },
+        },
+        {
+          t: "Solicita cita previa.",
+          d: ["Accede al sistema de cita previa de Extranjería, selecciona la provincia de Málaga y busca el trámite correspondiente a la asignación de NIE."],
+          link: { label: "Solicitar cita previa", url: "https://icp.administracionelectronica.gob.es/icpplus/index.html" },
+        },
+        {
+          t: "Acude a la cita.",
+          d: ["Presenta el formulario EX-15, el pasaporte, la documentación que justifica el motivo de la solicitud y el justificante del pago."],
+        },
+        {
+          t: "Recibe tu NIE.",
+          d: ["Una vez tramitada y aprobada la solicitud, se te asignará tu número de identidad de extranjero."],
+        },
+      ],
+      lugares: [
+        {
+          title: "Policía Nacional – Oficina de Extranjería",
+          subtitle: "Oficinas habilitadas en la provincia de Málaga",
+          description: [
+            "La solicitud se presenta en las oficinas habilitadas de la Policía Nacional.",
+            "Si resides en Casarabonela, tendrás que consultar las oficinas disponibles en la provincia de Málaga.",
+          ],
+          note: "Importante: este trámite no se realiza en el Ayuntamiento de Casarabonela.",
+          link: { label: "Información oficial de la Policía Nacional", url: "https://sede.policia.gob.es/portalCiudadano/_es/tramites_extranjeria_tramite_asignacion_nie.php" },
+        },
+      ],
+      fuentes: [
+        { label: "Información oficial de la Policía Nacional", url: "https://sede.policia.gob.es/portalCiudadano/_es/tramites_extranjeria_tramite_asignacion_nie.php" },
+        { label: "Cita previa de Extranjería", url: "https://icp.administracionelectronica.gob.es/icpplus/index.html" },
+      ],
+      costeTitulo: "Tasa de asignación del NIE",
+      costeImporte: "Tasa oficial vigente",
+      costeTexto: "El importe depende de la tasa oficial vigente. Consulta el concepto correspondiente en el modelo 790, código 012, antes de realizar el pago.",
+      ayuda: [
+        "Policía Nacional: información sobre la asignación del NIE.",
+        "Oficinas de Extranjería: orientación sobre los procedimientos de extranjería.",
+        "Punto Vuela Casarabonela: puedes acudir para recibir ayuda con gestiones digitales y utilizar los servicios de administración electrónica.",
+      ],
+      aclaracion: {
+        titulo: "NIE, TIE y certificado de registro UE: ¿son lo mismo?",
+        introduccion: "No. Aunque están relacionados, son documentos diferentes:",
+        puntos: [
+          "NIE: número que identifica a una persona extranjera en España.",
+          "TIE: tarjeta física que acredita una autorización de residencia o estancia.",
+          "Certificado de registro UE: documento que acredita la inscripción de un ciudadano de la Unión Europea residente en España.",
+        ],
+        nota: "Tener un NIE no significa automáticamente tener autorización de residencia o trabajo.",
+      },
+      revision: "Información orientativa. Consulta siempre los requisitos y tasas oficiales antes de iniciar el trámite.",
+    },
+    links: [],
+  },
   { slug: "clave", cat: "documentacion", title: "Registrarse en Cl@ve", short: "Sistema para identificarte en internet con un PIN, sin certificado.", tags: ["gratis", "online"], links: [{ label: "Cl@ve", url: "https://clave.gob.es" }] },
   { slug: "tarjeta-sanitaria", cat: "salud", title: "Solicitar la tarjeta sanitaria", short: "Acceso a la sanidad pública andaluza y asignación de médico.", tags: ["gratis", "presencial"], links: [{ label: "ClicSalud+", url: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud" }] },
   { slug: "tarjeta-europea", cat: "salud", title: "Tarjeta sanitaria europea", short: "Asistencia sanitaria en viajes por la Unión Europea.", tags: ["gratis", "online"], links: [{ label: "Seguridad Social", url: "https://sede.seg-social.gob.es" }] },

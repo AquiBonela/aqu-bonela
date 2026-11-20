@@ -58,14 +58,13 @@ function GuideSection({ value, title, children }: { value: string; title: string
 }
 
 function GuideList({ items }: { items?: string[] | undefined }) {
-  const { tr } = useI18n();
   if (!items?.length) return null;
   return (
     <ul className="space-y-3">
       {items.map((item) => (
         <li key={item} className="flex gap-2">
           <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden />
-          <span>{tr(item)}</span>
+          <span><PuntoVuelaText text={item} /></span>
         </li>
       ))}
     </ul>
@@ -98,7 +97,7 @@ function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?:
   );
 }
 
-function CertificadoDigitalGuide({ t }: { t: Tramite }) {
+function DetailedGuide({ t }: { t: Tramite }) {
   const { tr } = useI18n();
   const guide = t.guia;
   if (!guide) return null;
@@ -182,12 +181,28 @@ function CertificadoDigitalGuide({ t }: { t: Tramite }) {
           </div>
         </GuideSection>
 
-        <GuideSection value="seguridad" title="Consejo de seguridad">
-          <div className="flex gap-3 bg-muted/50 p-4">
-            <ShieldCheck className="h-6 w-6 shrink-0 text-primary" aria-hidden />
-            <p>{tr(guide.seguridad)}</p>
-          </div>
-        </GuideSection>
+        {guide.ayuda?.length ? (
+          <GuideSection value="ayuda" title="¿Necesitas ayuda?">
+            <GuideList items={guide.ayuda} />
+          </GuideSection>
+        ) : null}
+
+        {guide.aclaracion && (
+          <GuideSection value="aclaracion" title={guide.aclaracion.titulo}>
+            <p className="mb-4">{tr(guide.aclaracion.introduccion)}</p>
+            <GuideList items={guide.aclaracion.puntos} />
+            <p className="mt-4 border-l-4 border-primary bg-muted/50 p-3 text-sm">{tr(guide.aclaracion.nota)}</p>
+          </GuideSection>
+        )}
+
+        {guide.seguridad && (
+          <GuideSection value="seguridad" title="Consejo de seguridad">
+            <div className="flex gap-3 bg-muted/50 p-4">
+              <ShieldCheck className="h-6 w-6 shrink-0 text-primary" aria-hidden />
+              <p>{tr(guide.seguridad ?? "")}</p>
+            </div>
+          </GuideSection>
+        )}
       </Accordion>
       <p className="mt-5 text-xs text-muted-foreground">{tr(guide.revision)}</p>
     </>
@@ -212,7 +227,7 @@ function TramitePage() {
           </a>
         )}
 
-        {t.guia ? <CertificadoDigitalGuide t={t} /> : t.pasos?.length ? (
+        {t.guia ? <DetailedGuide t={t} /> : t.pasos?.length ? (
           <>
             <Block title="¿Para qué sirve?" items={t.para} />
             <Block title="¿Quién puede solicitarlo?" items={t.quien} />
