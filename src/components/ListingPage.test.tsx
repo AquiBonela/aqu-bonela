@@ -97,3 +97,26 @@ describe("contactos ampliados de la ficha", () => {
     expect(onToggle).toHaveBeenCalledWith(field, false);
   });
 });
+
+function renderWithDescription(description: string) {
+  render(
+    <I18nProvider>
+      <ListingPage listing={{ ...listing, description }} review={{ show: visible, onToggle: vi.fn() }} />
+    </I18nProvider>,
+  );
+}
+
+describe("formato de la descripción en la ficha", () => {
+  it("muestra en negrita el doble asterisco y en cursiva el asterisco simple", () => {
+    renderWithDescription("**Cerrado** *por obras*");
+    expect(screen.getByText("Cerrado").tagName).toBe("STRONG");
+    expect(screen.getByText("por obras").tagName).toBe("EM");
+  });
+
+  it("no interpreta HTML escrito dentro de la cursiva", () => {
+    renderWithDescription("*<em>hola</em>*");
+    const italic = screen.getByText("<em>hola</em>");
+    expect(italic.tagName).toBe("EM");
+    expect(italic.childElementCount).toBe(0);
+  });
+});

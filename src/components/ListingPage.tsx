@@ -100,9 +100,11 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
             <p className="whitespace-pre-line text-base text-pretty leading-relaxed">
               {tr(listing.description).split("\n").map((line, index, lines) => (
                 <span key={`${index}-${line}`}>
-                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : parseDescription(line).map((part, partIndex) => (
-                    part.bold ? <strong key={partIndex} className="font-semibold">{part.text}</strong> : part.text
-                  ))}
+                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : parseDescription(line).map((part, partIndex) => {
+                    if (part.bold) return <strong key={partIndex} className="font-semibold">{part.italic ? <em>{part.text}</em> : part.text}</strong>;
+                    if (part.italic) return <em key={partIndex}>{part.text}</em>;
+                    return part.text;
+                  })}
                   {index < lines.length - 1 ? "\n" : null}
                 </span>
               ))}
