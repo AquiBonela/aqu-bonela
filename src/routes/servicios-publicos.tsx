@@ -1,7 +1,7 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TramitesSection } from "@/components/TramitesSection";
-import { CheckCircle2, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Laptop } from "lucide-react";
+import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Laptop } from "lucide-react";
 import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
