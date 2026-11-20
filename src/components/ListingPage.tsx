@@ -11,6 +11,7 @@ import { ReportDialog } from "@/components/ReportDialog";
 import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availability";
 import { Switch } from "@/components/ui/switch";
 import { SiteHeader } from "@/components/SiteHeader";
+import { parseDescription } from "@/lib/description";
 
 export type ReviewField = "address" | "phone" | "phone_2" | "whatsapp" | "email" | "linkedin" | "facebook" | "youtube" | "x_twitter" | "instagram" | "tiktok" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
@@ -99,7 +100,9 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
             <p className="whitespace-pre-line text-base text-pretty leading-relaxed">
               {tr(listing.description).split("\n").map((line, index, lines) => (
                 <span key={`${index}-${line}`}>
-                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : line}
+                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : parseDescription(line).map((part, partIndex) => (
+                    part.bold ? <strong key={partIndex} className="font-semibold">{part.text}</strong> : part.text
+                  ))}
                   {index < lines.length - 1 ? "\n" : null}
                 </span>
               ))}

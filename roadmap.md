@@ -38,3 +38,4 @@
 - [x] Crear TIE con el contenido aportado, traducciones y cita previa; verificados listado, siete desplegables, cinco pasos y acceso a Punto Vuela en móvil/escritorio y ambos idiomas.
 - [x] Añadir segundo teléfono y redes sociales con visibilidad individual en alta, revisión y ficha pública; 68 pruebas y sincronización de visibilidad verificadas.
 - [x] Poner cada línea de Punto Vuela en una sola línea, acortando «Ayuda con gestiones online» y agrandando la letra; verificado en móvil (320–480), escritorio, ambos idiomas y los dos temas.
+- [x] Habilitar negrita con doble asterisco en las descripciones compartidas por fichas y revisión; 11 pruebas pasan y presentación verificada en móvil y escritorio con respuesta de lectura interceptada, sin alterar datos guardados.

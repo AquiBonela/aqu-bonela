@@ -37,3 +37,4 @@
 - Vida diaria categories live in `src/lib/vida-diaria.ts`, shown as cards in `/servicios-publicos#vida-diaria` (`/vida-diaria` redirects there); each opens `/vida-diaria/$categoria` with its items. Why: mirrors the Trámites pattern with shareable URLs.
 - Detailed procedure guides use optional introductory and closing text fields in shared accordion sections. Why: preserve supplied context without duplicating page layouts.
 - Procedure steps may carry a group heading that restarts their numbering. Why: keep alternative application methods separate within the shared guide.
+- Listing descriptions interpret paired double asterisks through a browser-safe text parser in the shared public/review ListingPage, never raw HTML. Why: admins can emphasize arbitrary phrases without enabling HTML injection or changing stored descriptions.
