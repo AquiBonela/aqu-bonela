@@ -1,7 +1,10 @@
 // Guía de trámites: datos navegables en 3 niveles (portada → categoría → ficha).
-export type TramiteTag = "gratis" | "online" | "presencial" | "pago" | "policia";
+export type TramiteTag = "gratis" | "online" | "presencial" | "pago" | "policia" | "ayuntamiento";
 export type TramiteLink = { label: string; url: string };
 export type TramiteGuide = {
+  paraIntro?: string;
+  paraNota?: string;
+  necesitasIntro?: string;
   quienIntro: string;
   quienNota: string;
   necesitasNota: string;
@@ -50,6 +53,7 @@ export const TAG_LABEL: Record<TramiteTag, string> = {
   presencial: "Requiere acudir en persona",
   pago: "Trámite de pago",
   policia: "Policía Nacional",
+  ayuntamiento: "Ayuntamiento de Casarabonela",
 };
 
 export const CATEGORIAS: Categoria[] = [
@@ -123,22 +127,48 @@ export const TRAMITES: Tramite[] = [
     links: [],
   },
   {
-    slug: "empadronamiento", cat: "documentacion", title: "Empadronarse en Casarabonela",
-    short: "Inscribirte en el padrón municipal al vivir en el pueblo.",
-    tags: ["gratis", "presencial"],
-    para: ["Acceder a la tarjeta sanitaria y al médico del pueblo.", "Escolarizar a tus hijos.", "Solicitar ayudas municipales y autonómicas.", "Votar en las elecciones municipales."],
-    quien: ["Toda persona que viva habitualmente en Casarabonela, sea cual sea su nacionalidad."],
-    necesitas: ["DNI, NIE o pasaporte en vigor.", "Escritura, contrato de alquiler o autorización del propietario.", "Libro de familia para empadronar a menores."],
-    pasos: [
-      { t: "Reúne la documentación", d: "Lleva originales; el Ayuntamiento hará las copias necesarias." },
-      { t: "Acude al Ayuntamiento", d: "Se atiende en horario de mañana, sin cita previa." },
-      { t: "Firma la hoja de inscripción", d: "Deben firmarla todas las personas mayores de edad que se empadronan." },
-      { t: "Pide tu volante", d: "Puedes solicitar en el momento un volante o certificado de empadronamiento." },
+    slug: "empadronamiento", cat: "documentacion", title: "Empadronamiento – Alta en el padrón municipal",
+    summary: "Inscríbete en el padrón de Casarabonela para acreditar tu domicilio habitual y realizar gestiones administrativas.",
+    short: "¿Vives en Casarabonela? Inscríbete en el padrón municipal.\n\nEmpadronarse consiste en inscribirse en el registro de habitantes del municipio donde resides habitualmente. Permite acreditar oficialmente tu domicilio y es necesario para realizar numerosas gestiones administrativas.\n\nImportante: debes empadronarte en el municipio donde resides habitualmente, independientemente de si eres propietario, inquilino o vives en una vivienda de otra persona. No necesitas tener nacionalidad española ni permiso de residencia para empadronarte.",
+    tags: ["gratis", "presencial", "ayuntamiento"],
+    para: ["Realizar trámites relacionados con la residencia y extranjería.", "Escolarizar a tus hijos.", "Solicitar determinadas ayudas y servicios sociales.", "Realizar gestiones con la Seguridad Social.", "Acceder a determinados servicios municipales.", "Acreditar tu domicilio ante diferentes administraciones."],
+    necesitas: [
+      "Documento de identidad: DNI, NIE o pasaporte en vigor, según corresponda.",
+      "Justificante de domicilio: contrato de alquiler, escritura de propiedad u otro documento que permita acreditar que resides en la vivienda.",
+      "Autorización del titular: si vives en una vivienda cuyo propietario o titular del contrato es otra persona, es necesario presentar su autorización (en el mismo contrato o en un papel aparte) y documentación identificativa (fotocopia del DNI del titular de la vivienda).",
+      "Documentación familiar: si vas a empadronar a menores de edad, lleva también sus documentos de identidad o libro de familia, según corresponda.",
     ],
-    coste: "Gratuito.",
-    donde: "Ayuntamiento de Casarabonela · 952 456 561.",
-    ayuda: "Llama al Ayuntamiento antes de ir si tu caso es especial (sin contrato, menores sin ambos progenitores...).",
-    links: [{ label: "Sede Electrónica del Ayuntamiento", url: SEDE }],
+    guia: {
+      paraIntro: "Estar empadronado permite acreditar oficialmente que resides en Casarabonela. Lo necesitarás, por ejemplo, para:",
+      paraNota: "Entre otras gestiones.",
+      quienIntro: "Toda persona que resida habitualmente en Casarabonela debe estar inscrita en el padrón municipal.",
+      quienNota: "Si te mudas a otra vivienda dentro del municipio, debes comunicar el cambio para actualizar tus datos.",
+      necesitasIntro: "Antes de acudir al Ayuntamiento, prepara:",
+      necesitasNota: "Si tienes dudas sobre qué documentación presentar, consulta previamente con el Ayuntamiento para evitar desplazamientos innecesarios.",
+      pasos: [
+        { t: "Prepara la documentación.", d: ["Reúne tu documento de identidad y el justificante de la vivienda donde resides. Si vas a empadronar a otros miembros de tu familia, prepara también su documentación."] },
+        { t: "Acude al Ayuntamiento de Casarabonela.", d: ["Dirígete a las oficinas municipales e indica que quieres realizar un alta en el padrón municipal o un cambio de domicilio."] },
+        { t: "Cumplimenta la solicitud.", d: ["En el Ayuntamiento te facilitarán la hoja de inscripción padronal. Completa tus datos personales, los de las personas que van a empadronarse y firma la solicitud."] },
+        { t: "Presenta la documentación.", d: ["Entrega la solicitud junto con los documentos de identidad y la acreditación del domicilio.", "El personal municipal revisará la documentación y tramitará tu solicitud."] },
+        { t: "Comprobación del domicilio.", d: ["Una vez presentada la solicitud, la Policía Local realizará una comprobación en el domicilio para verificar que resides realmente en la vivienda y corroborar la información aportada."] },
+        { t: "Finalización del trámite.", d: ["Una vez realizadas las comprobaciones correspondientes y completada la tramitación municipal, quedarás inscrito en el padrón de Casarabonela."] },
+      ],
+      lugares: [{
+        title: "Ayuntamiento de Casarabonela",
+        subtitle: "Oficina de atención municipal",
+        description: ["Puedes acudir al Ayuntamiento para realizar el alta, comunicar un cambio de domicilio o resolver dudas sobre la documentación necesaria."],
+        details: [
+          { label: "Dirección", value: "Plaza de Buenavista, 1 · 29566 Casarabonela (Málaga)" },
+          { label: "Teléfono", value: "952 456 561", href: "tel:952456561" },
+        ],
+      }],
+      fuentes: [{ label: "Web del Ayuntamiento", url: "https://www.casarabonela.es/" }],
+      costeTitulo: "Alta, modificación o cambio de domicilio en el padrón municipal",
+      costeImporte: "0 €",
+      costeTexto: "El empadronamiento es gratuito.",
+      revision: "Información orientativa. La documentación puede variar según la situación personal y familiar. Consulta con el Ayuntamiento si tienes dudas antes de acudir.",
+    },
+    links: [],
   },
   {
     slug: "nie", cat: "documentacion", title: "NIE – Número de Identidad de Extranjero",

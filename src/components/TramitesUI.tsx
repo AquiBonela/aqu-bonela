@@ -11,6 +11,7 @@ const TAG_CLASS: Record<TramiteTag, string> = {
   presencial: "bg-accent text-accent-foreground",
   pago: "bg-accent text-accent-foreground",
   policia: "bg-secondary text-secondary-foreground",
+  ayuntamiento: "bg-secondary text-secondary-foreground",
 };
 
 export function Tags({ tags }: { tags?: TramiteTag[] | undefined }) {

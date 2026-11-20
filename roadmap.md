@@ -33,3 +33,4 @@
 - [x] Mostrar un resumen de dos o tres líneas en las tarjetas de trámites, conservando la descripción completa en cada ficha; verificado en móvil, escritorio e inglés.
 - [x] Crear la guía completa del NIE con la estructura de Certificado Digital, enlaces oficiales y traducciones; verificado en móvil, escritorio e inglés.
 - [x] Quitar Punto Vuela del bloque «Dónde» de Certificado Digital y usar cita previa como acción principal del NIE; verificado en móvil, escritorio e inglés.
+- [x] Actualizar Empadronamiento con la información aportada, desplegables y traducción al inglés; ficha y listado comprobados en móvil y escritorio.

@@ -12,4 +12,9 @@ describe("guía de trámites", () => {
   });
   it("busca sin tildes", () => expect(buscarTramites("padron").length + buscarTramites("empadronamiento").length).toBeGreaterThan(0));
   it("el certificado digital está en documentación", () => expect(getTramite("documentacion", "certificado-digital")).toBeTruthy());
+  it("el alta y cambio de domicilio en el padrón son gratuitos", () => {
+    const tramite = getTramite("documentacion", "empadronamiento");
+    expect(tramite?.guia?.costeImporte).toBe("0 €");
+    expect(tramite?.tags).toContain("gratis");
+  });
 });

@@ -106,7 +106,9 @@ function DetailedGuide({ t }: { t: Tramite }) {
     <>
       <Accordion type="multiple" className="mt-8">
         <GuideSection value="para" title="¿Para qué sirve?">
+          {guide.paraIntro && <p className="mb-4">{tr(guide.paraIntro)}</p>}
           <GuideList items={t.para} />
+          {guide.paraNota && <p className="mt-4">{tr(guide.paraNota)}</p>}
         </GuideSection>
 
         <GuideSection value="quien" title="¿Quién puede solicitarlo?">
@@ -116,6 +118,7 @@ function DetailedGuide({ t }: { t: Tramite }) {
         </GuideSection>
 
         <GuideSection value="necesitas" title="¿Qué necesitas?">
+          {guide.necesitasIntro && <p className="mb-4">{tr(guide.necesitasIntro)}</p>}
           <GuideList items={t.necesitas} />
           <p className="mt-4 bg-muted/50 p-3 text-sm font-semibold"><PuntoVuelaText text={guide.necesitasNota} /></p>
         </GuideSection>
