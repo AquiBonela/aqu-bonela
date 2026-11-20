@@ -167,6 +167,7 @@ export const englishText: Record<string, string> = {
   "Volver al directorio": "Back to the directory",
   "Ver el directorio": "View the directory",
   "Ver ficha": "View listing",
+  "Ver ficha de Punto Vuela": "View Punto Vuela listing",
   "Ver ficha →": "View listing →",
   "Compartir ficha": "Share listing",
   "Teléfono": "Phone",

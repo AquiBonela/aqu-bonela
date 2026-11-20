@@ -1,12 +1,32 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TramitesSection } from "@/components/TramitesSection";
-import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Laptop } from "lucide-react";
+import { CheckCircle2, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Laptop } from "lucide-react";
 import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
 import hero from "@/assets/servicios-publicos.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { listingDetailQuery, groupHours } from "@/lib/listing-detail";
+
+const PUNTO_VUELA_SLUG = "punto-vuela-casarabonela";
+
+function PuntoVuelaInfo() {
+  const { tr } = useI18n();
+  const { data } = useQuery(listingDetailQuery("publico", PUNTO_VUELA_SLUG));
+  const days = data ? groupHours(data.hours).filter((d) => d.slots.length) : [];
+  return (
+    <dl className="mt-4 space-y-1 border-t border-primary-foreground/30 pt-4 text-sm">
+      <div className="flex gap-2"><dt className="font-bold"><Text text="Dónde" />:</dt><dd>{data?.public_address ?? "Calle Cuatro Esquinas, 10"}</dd></div>
+      {days.length > 0 && (
+        <div className="flex gap-2"><dt className="font-bold"><Text text="Horario" />:</dt>
+          <dd className="space-y-0.5">{days.map((d) => <div key={d.day}>{tr(d.day)}: {d.slots.join(", ")}</div>)}</dd>
+        </div>
+      )}
+    </dl>
+  );
+}
 
 export const Route = createFileRoute("/servicios-publicos")({
   head: () => ({
@@ -147,19 +167,16 @@ function ServiciosPublicos() {
               <h3 className="font-display text-2xl font-extrabold leading-tight"><Text text="Punto Vuela" /></h3>
             </div>
             <p className="mt-3 opacity-90"><Text text="Servicio gratuito de apoyo digital para vecinos de todas las edades." /></p>
-            <dl className="mt-4 space-y-1 border-t border-primary-foreground/30 pt-4 text-sm">
-              <div className="flex gap-2"><dt className="font-bold"><Text text="Dónde" />:</dt><dd><Text text="C/ Cuatro Esquinas, 10" /></dd></div>
-              <div className="flex gap-2"><dt className="font-bold"><Text text="Horario" />:</dt><dd><Text text="Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00" /></dd></div>
-            </dl>
+            <PuntoVuelaInfo />
             <ul className="mt-5 flex flex-col gap-3 text-lg font-semibold sm:text-xl">
               {["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"].map((x) => (
                 <li key={x} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0" aria-hidden />{tr(x)}</li>
               ))}
             </ul>
             <p className="mt-4 bg-primary-foreground/15 p-3 text-sm font-semibold"><Text text="Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso." /></p>
-            <a href="tel:952456140" className="mt-5 inline-flex items-center gap-2 bg-primary-foreground px-5 py-3 text-sm font-bold text-primary">
-              <Phone className="h-4 w-4" aria-hidden /> <Text text="Llamar" /> 952 456 140
-            </a>
+            <Link to="/servicios/$slug" params={{ slug: PUNTO_VUELA_SLUG }} className="press mt-5 inline-flex items-center gap-2 bg-primary-foreground px-5 py-3 text-sm font-bold text-primary">
+              <Text text="Ver ficha de Punto Vuela" /> <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
           </div>
         </section>
 
