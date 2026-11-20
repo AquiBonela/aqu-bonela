@@ -48,7 +48,7 @@ export const TAG_LABEL: Record<TramiteTag, string> = {
 };
 
 export const CATEGORIAS: Categoria[] = [
-  { slug: "documentacion", icon: "doc", title: "Documentación e identificación", text: "NIE, TIE, DNI, certificado digital, Cl@ve y empadronamiento." },
+  { slug: "documentacion", icon: "doc", title: "Documentación personal", text: "NIE, TIE, DNI, certificado digital, Cl@ve y empadronamiento." },
   { slug: "salud", icon: "salud", title: "Salud", text: "Tarjeta sanitaria, médico de cabecera, tarjeta sanitaria europea y ClicSalud+." },
   { slug: "trabajo", icon: "trabajo", title: "Trabajo y Seguridad Social", text: "Número de Seguridad Social, demanda de empleo, vida laboral y prestaciones." },
   { slug: "familia", icon: "familia", title: "Familia y ayudas", text: "Dependencia, discapacidad, ayudas familiares, becas y ayudas al alquiler." },
@@ -60,7 +60,7 @@ const SEDE = "https://casarabonela.sedelectronica.es";
 
 export const TRAMITES: Tramite[] = [
   {
-    slug: "certificado-digital", cat: "documentacion", title: "Certificado Digital\nCómo obtenerlo en Casarabonela?",
+    slug: "certificado-digital", cat: "documentacion", title: "Certificado Digital",
     short: "El Certificado Digital es una identificación electrónica que te permite realizar trámites por Internet con las administraciones públicas, sin necesidad de desplazarte cada vez que necesites hacer una gestión.\n\n\nEn Casarabonela puedes completar el proceso utilizando el Ayuntamiento como oficina de acreditación de identidad.",
     tags: ["gratis", "online", "presencial"],
     para: ["Consultar y descargar tu vida laboral.", "Presentar la declaración de la renta.", "Consultar multas de tráfico.", "Realizar trámites con Hacienda y la Seguridad Social.", "Consultar y presentar solicitudes ante organismos públicos.", "Firmar documentos electrónicamente."],

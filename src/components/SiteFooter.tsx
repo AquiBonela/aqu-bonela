@@ -16,12 +16,12 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
         <p className="mt-2 text-xs leading-snug text-foreground/80">
           {t("footer.about")}
         </p>
-        <nav aria-label={t("footer.legalNav")} className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-semibold">
-          <Link to="/aviso-legal" className="underline-offset-4 hover:underline">{t("footer.aviso")}</Link>
+        <nav aria-label={t("footer.legalNav")} className="mt-3 flex flex-nowrap items-center justify-center gap-x-2 whitespace-nowrap text-[10px] font-semibold sm:gap-x-3 sm:text-xs">
+          <Link to="/aviso-legal" className="shrink-0 underline-offset-4 hover:underline">{t("footer.aviso")}</Link>
           <span aria-hidden>·</span>
-          <Link to="/privacidad" className="underline-offset-4 hover:underline">{t("footer.privacidad")}</Link>
+          <Link to="/privacidad" className="shrink-0 underline-offset-4 hover:underline">{t("footer.privacidad")}</Link>
           <span aria-hidden>·</span>
-          <Link to="/cookies" className="underline-offset-4 hover:underline">{t("footer.cookies")}</Link>
+          <Link to="/cookies" className="shrink-0 underline-offset-4 hover:underline">{t("footer.cookies")}</Link>
         </nav>
         <p className="mt-4 font-semibold">Groundwork · Casarabonela · {new Date().getFullYear()} ®</p>
       </div>
