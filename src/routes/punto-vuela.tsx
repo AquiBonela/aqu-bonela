@@ -47,9 +47,9 @@ function PuntoVuelaPage() {
           <div><dt className="inline font-bold">{tr("Correo")}: </dt><dd className="inline break-words"><a href="mailto:casarabonela@puntosvuela.es" className="inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2"><Mail className="h-4 w-4" aria-hidden />casarabonela@puntosvuela.es</a></dd></div>
         </dl>
 
-        <ul className="mt-6 space-y-3 text-lg font-semibold">
-          {["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"].map((item) => (
-            <li key={item} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden />{tr(item)}</li>
+        <ul className="mt-6 space-y-3 font-semibold text-[clamp(13px,4vw,1.25rem)] sm:text-xl">
+          {["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online", "Formación y competencias digitales"].map((item) => (
+            <li key={item} className="flex items-center gap-2 whitespace-nowrap sm:gap-3"><CheckCircle2 className="h-4 w-4 shrink-0 text-primary sm:h-5 sm:w-5" aria-hidden />{tr(item)}</li>
           ))}
         </ul>
         <p className="mt-6 bg-muted/50 p-4 text-sm font-semibold">{tr("Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.")}</p>

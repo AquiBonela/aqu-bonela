@@ -162,9 +162,9 @@ function ServiciosPublicos() {
             </div>
             <p className="mt-3 opacity-90"><Text text="Servicio gratuito de apoyo digital para vecinos de todas las edades." /></p>
             <PuntoVuelaInfo />
-            <ul className="mt-5 flex flex-col gap-3 text-lg font-semibold sm:text-xl">
-              {["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online con la Administración", "Formación y competencias digitales"].map((x) => (
-                <li key={x} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0" aria-hidden />{tr(x)}</li>
+            <ul className="mt-5 flex flex-col gap-3 font-semibold text-[clamp(13px,4vw,1.25rem)] sm:text-xl">
+              {["Asesoramiento y acompañamiento digital", "Ayuda con gestiones online", "Formación y competencias digitales"].map((x) => (
+                <li key={x} className="flex items-center gap-2 whitespace-nowrap sm:gap-3"><CheckCircle2 className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" aria-hidden />{tr(x)}</li>
               ))}
             </ul>
             <p className="mt-4 bg-primary-foreground/15 p-3 text-sm font-semibold"><Text text="Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso." /></p>

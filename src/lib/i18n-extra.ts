@@ -852,7 +852,7 @@ export const englishText: Record<string, string> = {
   "Calle Real, 12 (junto al Ayuntamiento)": "Calle Real, 12 (next to the Town Hall)",
   "Lunes a viernes, 9:00–14:00; martes y jueves, 17:00–20:00": "Monday to Friday, 9:00–14:00; Tuesday and Thursday, 17:00–20:00",
   "Asesoramiento y acompañamiento digital": "Digital advice and support",
-  "Ayuda con gestiones online con la Administración": "Help with online government procedures",
+  "Ayuda con gestiones online": "Help with online procedures",
   "Formación y competencias digitales": "Digital skills training",
   "Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso.": "If you're not comfortable with digital certificates, Cl@ve or online procedures, they'll help you step by step.",
   "Trámite gratuito": "Free procedure",
