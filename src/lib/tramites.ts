@@ -37,10 +37,10 @@ const SEDE = "https://casarabonela.sedelectronica.es";
 
 export const TRAMITES: Tramite[] = [
   {
-    slug: "certificado-digital", cat: "documentacion", title: "Obtener el certificado digital",
-    short: "Tu identificación por internet para hacer gestiones oficiales desde casa.",
+    slug: "certificado-digital", cat: "documentacion", title: "Certificado Digital\nCómo obtenerlo en Casarabonela?",
+    short: "El Certificado Digital es una identificación electrónica que te permite realizar trámites por Internet con las administraciones públicas, sin necesidad de desplazarte cada vez que necesites hacer una gestión.\n\n\nEn Casarabonela puedes completar el proceso utilizando el Ayuntamiento como oficina de acreditación de identidad.",
     tags: ["gratis", "online", "presencial"],
-    para: ["Consultar y descargar tu vida laboral.", "Presentar la declaración de la renta.", "Consultar multas de tráfico.", "Solicitar ayudas y subvenciones.", "Presentar solicitudes al Ayuntamiento.", "Firmar documentos electrónicamente."],
+    para: ["Consultar y descargar tu vida laboral.", "Presentar la declaración de la renta.", "Consultar multas de tráfico.", "Realizar trámites con Hacienda y la Seguridad Social.", "Consultar y presentar solicitudes ante organismos públicos.", "Firmar documentos electrónicamente."],
     quien: ["Cualquier persona mayor de edad o menor emancipado con DNI o NIE."],
     necesitas: ["DNI o NIE.", "Una dirección de correo electrónico.", "Un ordenador o móvil con conexión a internet."],
     pasos: [
