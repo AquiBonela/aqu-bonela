@@ -225,46 +225,88 @@ export type Database = {
           address: string | null
           created_at: string
           email: string | null
+          facebook: string | null
+          instagram: string | null
+          linkedin: string | null
           listing_id: string
           owner_contact: string | null
           owner_name: string | null
           phone: string | null
+          phone_2: string | null
           show_address: boolean
           show_email: boolean
+          show_facebook: boolean
+          show_instagram: boolean
+          show_linkedin: boolean
           show_phone: boolean
+          show_phone_2: boolean
+          show_tiktok: boolean
           show_whatsapp: boolean
+          show_x_twitter: boolean
+          show_youtube: boolean
+          tiktok: string | null
           updated_at: string
           whatsapp: string | null
+          x_twitter: string | null
+          youtube: string | null
         }
         Insert: {
           address?: string | null
           created_at?: string
           email?: string | null
+          facebook?: string | null
+          instagram?: string | null
+          linkedin?: string | null
           listing_id: string
           owner_contact?: string | null
           owner_name?: string | null
           phone?: string | null
+          phone_2?: string | null
           show_address?: boolean
           show_email?: boolean
+          show_facebook?: boolean
+          show_instagram?: boolean
+          show_linkedin?: boolean
           show_phone?: boolean
+          show_phone_2?: boolean
+          show_tiktok?: boolean
           show_whatsapp?: boolean
+          show_x_twitter?: boolean
+          show_youtube?: boolean
+          tiktok?: string | null
           updated_at?: string
           whatsapp?: string | null
+          x_twitter?: string | null
+          youtube?: string | null
         }
         Update: {
           address?: string | null
           created_at?: string
           email?: string | null
+          facebook?: string | null
+          instagram?: string | null
+          linkedin?: string | null
           listing_id?: string
           owner_contact?: string | null
           owner_name?: string | null
           phone?: string | null
+          phone_2?: string | null
           show_address?: boolean
           show_email?: boolean
+          show_facebook?: boolean
+          show_instagram?: boolean
+          show_linkedin?: boolean
           show_phone?: boolean
+          show_phone_2?: boolean
+          show_tiktok?: boolean
           show_whatsapp?: boolean
+          show_x_twitter?: boolean
+          show_youtube?: boolean
+          tiktok?: string | null
           updated_at?: string
           whatsapp?: string | null
+          x_twitter?: string | null
+          youtube?: string | null
         }
         Relationships: [
           {
@@ -436,9 +478,16 @@ export type Database = {
           name: string
           public_address: string | null
           public_email: string | null
+          public_facebook: string | null
+          public_instagram: string | null
+          public_linkedin: string | null
           public_phone: string | null
+          public_phone_2: string | null
+          public_tiktok: string | null
           public_website: string | null
           public_whatsapp: string | null
+          public_x_twitter: string | null
+          public_youtube: string | null
           published_at: string | null
           service_area: string
           short_description: string
@@ -465,9 +514,16 @@ export type Database = {
           name: string
           public_address?: string | null
           public_email?: string | null
+          public_facebook?: string | null
+          public_instagram?: string | null
+          public_linkedin?: string | null
           public_phone?: string | null
+          public_phone_2?: string | null
+          public_tiktok?: string | null
           public_website?: string | null
           public_whatsapp?: string | null
+          public_x_twitter?: string | null
+          public_youtube?: string | null
           published_at?: string | null
           service_area?: string
           short_description?: string
@@ -494,9 +550,16 @@ export type Database = {
           name?: string
           public_address?: string | null
           public_email?: string | null
+          public_facebook?: string | null
+          public_instagram?: string | null
+          public_linkedin?: string | null
           public_phone?: string | null
+          public_phone_2?: string | null
+          public_tiktok?: string | null
           public_website?: string | null
           public_whatsapp?: string | null
+          public_x_twitter?: string | null
+          public_youtube?: string | null
           published_at?: string | null
           service_area?: string
           short_description?: string

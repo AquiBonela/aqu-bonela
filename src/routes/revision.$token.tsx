@@ -124,17 +124,31 @@ function ReviewForm({
   const submit = useServerFn(submitReview);
   const [show, setShow] = useState({
     phone: contact?.show_phone ?? true,
+    phone_2: contact?.show_phone_2 ?? true,
     whatsapp: contact?.show_whatsapp ?? true,
     address: contact?.show_address ?? true,
     email: contact?.show_email ?? true,
+    linkedin: contact?.show_linkedin ?? true,
+    facebook: contact?.show_facebook ?? true,
+    youtube: contact?.show_youtube ?? true,
+    x_twitter: contact?.show_x_twitter ?? true,
+    instagram: contact?.show_instagram ?? true,
+    tiktok: contact?.show_tiktok ?? true,
     hours: !hoursHidden(listing.tags),
   });
   const preview: ListingDetail = {
     ...listing,
     public_phone: contact?.phone || null,
+    public_phone_2: contact?.phone_2 || null,
     public_whatsapp: contact?.whatsapp || null,
     public_address: contact?.address || null,
     public_email: contact?.email || null,
+    public_linkedin: contact?.linkedin || null,
+    public_facebook: contact?.facebook || null,
+    public_youtube: contact?.youtube || null,
+    public_x_twitter: contact?.x_twitter || null,
+    public_instagram: contact?.instagram || null,
+    public_tiktok: contact?.tiktok || null,
     hours,
   };
   const [comment, setComment] = useState("");
@@ -163,9 +177,16 @@ function ReviewForm({
         data: {
           token,
           show_phone: show.phone,
+          show_phone_2: show.phone_2,
           show_whatsapp: show.whatsapp,
           show_address: show.address,
           show_email: show.email,
+          show_linkedin: show.linkedin,
+          show_facebook: show.facebook,
+          show_youtube: show.youtube,
+          show_x_twitter: show.x_twitter,
+          show_instagram: show.instagram,
+          show_tiktok: show.tiktok,
           show_hours: show.hours,
         },
       });

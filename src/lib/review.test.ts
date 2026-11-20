@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { reviewMessage, TOKEN_RE, whatsappShareUrl } from "./review";
+import { authorizedContactFields, reviewMessage, TOKEN_RE, whatsappShareUrl, type ReviewVisibility } from "./review";
 
 describe("enlace de revisión", () => {
   it("el mensaje incluye el enlace y el nombre del titular", () => {
@@ -34,5 +34,38 @@ describe("plantilla configurable", () => {
   });
   it("sin nombre quita el hueco y añade el enlace si falta", () => {
     expect(reviewMessage(null, "https://x/r/1", "Hola {nombre}, revisa tu ficha")).toBe("Hola, revisa tu ficha https://x/r/1");
+  });
+});
+
+describe("visibilidad de contactos en la revisión", () => {
+  const hidden: ReviewVisibility = {
+    show_phone: false,
+    show_phone_2: false,
+    show_whatsapp: false,
+    show_address: false,
+    show_email: false,
+    show_linkedin: false,
+    show_facebook: false,
+    show_youtube: false,
+    show_x_twitter: false,
+    show_instagram: false,
+    show_tiktok: false,
+    show_hours: false,
+  };
+
+  it.each([
+    ["show_phone_2", "segundo teléfono"],
+    ["show_linkedin", "linkedin"],
+    ["show_facebook", "facebook"],
+    ["show_youtube", "youtube"],
+    ["show_x_twitter", "x_twitter"],
+    ["show_instagram", "instagram"],
+    ["show_tiktok", "tiktok"],
+  ] as const)("autoriza únicamente %s cuando su marcador está activo", (flag, label) => {
+    expect(authorizedContactFields({ ...hidden, [flag]: true })).toEqual([label]);
+  });
+
+  it("no autoriza ningún contacto cuando todos los marcadores están ocultos", () => {
+    expect(authorizedContactFields(hidden)).toEqual([]);
   });
 });

@@ -55,13 +55,27 @@ type Form = {
   description: string;
   tags: string;
   phone: string;
+  phone_2: string;
   whatsapp: string;
   address: string;
   email: string;
+  linkedin: string;
+  facebook: string;
+  youtube: string;
+  x_twitter: string;
+  instagram: string;
+  tiktok: string;
   show_email: boolean;
   show_phone: boolean;
+  show_phone_2: boolean;
   show_whatsapp: boolean;
   show_address: boolean;
+  show_linkedin: boolean;
+  show_facebook: boolean;
+  show_youtube: boolean;
+  show_x_twitter: boolean;
+  show_instagram: boolean;
+  show_tiktok: boolean;
   owner_name: string;
   owner_contact: string;
   collaborator: boolean;
@@ -74,7 +88,9 @@ type Form = {
 
 const empty: Form = {
   type: "comercio", category_id: "",  activity: "", extra_activities: [], website: "", home_service: false, service_area: "", labels: "", name: "", slug: "", short_description: "", description: "", tags: "",
-  phone: "", whatsapp: "", address: "", email: "", show_email: false, show_phone: false, show_whatsapp: false, show_address: false,
+  phone: "", phone_2: "", whatsapp: "", address: "", email: "", linkedin: "", facebook: "", youtube: "", x_twitter: "", instagram: "", tiktok: "",
+  show_email: false, show_phone: false, show_phone_2: false, show_whatsapp: false, show_address: false,
+  show_linkedin: false, show_facebook: false, show_youtube: false, show_x_twitter: false, show_instagram: false, show_tiktok: false,
   owner_name: "", owner_contact: "", collaborator: false, featured_until: null,
   urgent_24h: false, availability: [], status: "borrador", hours: [],
 };
@@ -129,8 +145,12 @@ function EditPage() {
       type: l.type, category_id: l.category_id ?? "", activity: l.activity ?? "", website: l.public_website ?? "", home_service: l.home_service, service_area: l.service_area ?? "",
       extra_activities: data.activityIds.filter((aid) => acts.find((a) => a.id === aid)?.name !== l.activity), labels: l.labels.join(", "),
       name: l.name, slug: l.slug, short_description: l.short_description ?? "", description: l.description, tags: searchTags(l.tags).join(", "),
-      phone: c?.phone ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "", email: c?.email ?? "", show_email: c?.show_email ?? false,
-      show_phone: c?.show_phone ?? false, show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
+      phone: c?.phone ?? "", phone_2: c?.phone_2 ?? "", whatsapp: c?.whatsapp ?? "", address: c?.address ?? "", email: c?.email ?? "",
+      linkedin: c?.linkedin ?? "", facebook: c?.facebook ?? "", youtube: c?.youtube ?? "", x_twitter: c?.x_twitter ?? "", instagram: c?.instagram ?? "", tiktok: c?.tiktok ?? "",
+      show_email: c?.show_email ?? false, show_phone: c?.show_phone ?? false, show_phone_2: c?.show_phone_2 ?? false,
+      show_whatsapp: c?.show_whatsapp ?? false, show_address: c?.show_address ?? false,
+      show_linkedin: c?.show_linkedin ?? false, show_facebook: c?.show_facebook ?? false, show_youtube: c?.show_youtube ?? false,
+      show_x_twitter: c?.show_x_twitter ?? false, show_instagram: c?.show_instagram ?? false, show_tiktok: c?.show_tiktok ?? false,
       owner_name: c?.owner_name ?? "", owner_contact: c?.owner_contact ?? "",
       collaborator: isFeatured(l), featured_until: l.featured_until, urgent_24h: l.urgent_24h,
       availability: reservedTags(l.tags),
@@ -167,8 +187,12 @@ function EditPage() {
         if (error) throw error;
       }
       const { error: cErr } = await supabase.from("listing_contacts").upsert({
-        listing_id: listingId, phone: f.phone || null, whatsapp: f.whatsapp || null, address: f.address || null, email: f.email || null, show_email: f.show_email,
-        show_phone: f.show_phone, show_whatsapp: f.show_whatsapp, show_address: f.show_address,
+        listing_id: listingId, phone: f.phone || null, phone_2: f.phone_2 || null, whatsapp: f.whatsapp || null, address: f.address || null, email: f.email || null,
+        linkedin: normalizeUrl(f.linkedin), facebook: normalizeUrl(f.facebook), youtube: normalizeUrl(f.youtube), x_twitter: normalizeUrl(f.x_twitter),
+        instagram: normalizeUrl(f.instagram), tiktok: normalizeUrl(f.tiktok), show_email: f.show_email,
+        show_phone: f.show_phone, show_phone_2: f.show_phone_2, show_whatsapp: f.show_whatsapp, show_address: f.show_address,
+        show_linkedin: f.show_linkedin, show_facebook: f.show_facebook, show_youtube: f.show_youtube,
+        show_x_twitter: f.show_x_twitter, show_instagram: f.show_instagram, show_tiktok: f.show_tiktok,
         owner_name: f.owner_name || null, owner_contact: f.owner_contact || null,
       });
       if (cErr) throw cErr;
@@ -329,10 +353,21 @@ function EditPage() {
       </Section>
 
       <Section title={tr("3. Contacto")} hint={tr("Solo se publica lo que marques como visible.")}>
-        <ContactRow label={tr("Teléfono")} value={f.phone} onValue={(v) => set("phone", v)} show={f.show_phone} onShow={(v) => set("show_phone", v)} />
-        <ContactRow label="WhatsApp" value={f.whatsapp} onValue={(v) => set("whatsapp", v)} show={f.show_whatsapp} onShow={(v) => set("show_whatsapp", v)} />
+        <ContactRow label={tr("Teléfono")} type="tel" value={f.phone} onValue={(v) => set("phone", v)} show={f.show_phone} onShow={(v) => set("show_phone", v)} />
+        <ContactRow label={tr("Segundo teléfono")} type="tel" value={f.phone_2} onValue={(v) => set("phone_2", v)} show={f.show_phone_2} onShow={(v) => set("show_phone_2", v)} />
+        <ContactRow label="WhatsApp" type="tel" value={f.whatsapp} onValue={(v) => set("whatsapp", v)} show={f.show_whatsapp} onShow={(v) => set("show_whatsapp", v)} />
         <ContactRow label={tr("Dirección")} value={f.address} onValue={(v) => set("address", v)} show={f.show_address} onShow={(v) => set("show_address", v)} />
-        <ContactRow label="Email" value={f.email} onValue={(v) => set("email", v)} show={f.show_email} onShow={(v) => set("show_email", v)} />
+        <ContactRow label="Email" type="email" value={f.email} onValue={(v) => set("email", v)} show={f.show_email} onShow={(v) => set("show_email", v)} />
+        <div className="border-t pt-3">
+          <h3 className="text-sm font-semibold"><Text text="Redes sociales" /></h3>
+          <p className="text-xs text-muted-foreground"><Text text="Pega el enlace completo del perfil o canal y marca si quieres mostrarlo." /></p>
+        </div>
+        <ContactRow label="LinkedIn" type="url" placeholder="https://www.linkedin.com/…" value={f.linkedin} onValue={(v) => set("linkedin", v)} show={f.show_linkedin} onShow={(v) => set("show_linkedin", v)} />
+        <ContactRow label="Facebook" type="url" placeholder="https://www.facebook.com/…" value={f.facebook} onValue={(v) => set("facebook", v)} show={f.show_facebook} onShow={(v) => set("show_facebook", v)} />
+        <ContactRow label="YouTube" type="url" placeholder="https://www.youtube.com/…" value={f.youtube} onValue={(v) => set("youtube", v)} show={f.show_youtube} onShow={(v) => set("show_youtube", v)} />
+        <ContactRow label="X (Twitter)" type="url" placeholder="https://x.com/…" value={f.x_twitter} onValue={(v) => set("x_twitter", v)} show={f.show_x_twitter} onShow={(v) => set("show_x_twitter", v)} />
+        <ContactRow label="Instagram" type="url" placeholder="https://www.instagram.com/…" value={f.instagram} onValue={(v) => set("instagram", v)} show={f.show_instagram} onShow={(v) => set("show_instagram", v)} />
+        <ContactRow label="TikTok" type="url" placeholder="https://www.tiktok.com/@…" value={f.tiktok} onValue={(v) => set("tiktok", v)} show={f.show_tiktok} onShow={(v) => set("show_tiktok", v)} />
         <div className="grid gap-3 border-t pt-3 sm:grid-cols-2">
           <Field label={tr("Titular (privado)")}><Input value={f.owner_name} onChange={(e) => set("owner_name", e.target.value)} /></Field>
           <Field label={tr("Contacto del titular (privado)")} hint={tr("Para enviarle el enlace de revisión")}><Input value={f.owner_contact} onChange={(e) => set("owner_contact", e.target.value)} /></Field>
@@ -476,12 +511,13 @@ function Toggle({ label, hint, checked, onChange }: { label: string; hint?: stri
   );
 }
 
-function ContactRow({ label, value, onValue, show, onShow }: { label: string; value: string; onValue: (v: string) => void; show: boolean; onShow: (v: boolean) => void }) {
+function ContactRow({ label, value, onValue, show, onShow, type = "text", placeholder }: { label: string; value: string; onValue: (v: string) => void; show: boolean; onShow: (v: boolean) => void; type?: "text" | "tel" | "email" | "url"; placeholder?: string }) {
+  const { tr } = useI18n();
   return (
     <div className="flex items-end gap-3">
-      <div className="flex-1"><Field label={label}><Input value={value} onChange={(e) => onValue(e.target.value)} /></Field></div>
-      <label className="flex h-10 items-center gap-2 text-xs">
-        <Switch checked={show} onCheckedChange={onShow} />  <Text text="Visible" /> </label>
+      <div className="min-w-0 flex-1"><Field label={label}><Input type={type} inputMode={type === "url" ? "url" : undefined} placeholder={placeholder} value={value} onChange={(e) => onValue(e.target.value)} /></Field></div>
+      <label className="flex h-10 shrink-0 items-center gap-2 text-xs">
+        <Switch aria-label={`${tr("Visible")}: ${label}`} checked={show} onCheckedChange={onShow} />  <Text text="Visible" /> </label>
     </div>
   );
 }

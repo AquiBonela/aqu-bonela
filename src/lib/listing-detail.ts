@@ -14,6 +14,13 @@ export type ListingDetail = Listing & {
   photos: { url: string; alt: string }[];
   public_email: string | null;
   public_website: string | null;
+  public_phone_2: string | null;
+  public_linkedin: string | null;
+  public_facebook: string | null;
+  public_youtube: string | null;
+  public_x_twitter: string | null;
+  public_instagram: string | null;
+  public_tiktok: string | null;
 };
 
 export const listingDetailQuery = (type: Listing["type"], slug: string) =>
@@ -23,7 +30,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const { data, error } = await supabase
         .from("listings")
         .select(
-          "id,slug,type,name,short_description,description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,public_email,public_website,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
+          "id,slug,type,name,short_description,description,category_id,featured,featured_until,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
         )
         .eq("status", "publicada")
         .eq("type", type)
@@ -51,6 +58,13 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
         ...(rest as unknown as Listing),
         public_email: (rest as { public_email?: string | null }).public_email ?? null,
         public_website: (rest as { public_website?: string | null }).public_website ?? null,
+        public_phone_2: rest.public_phone_2 ?? null,
+        public_linkedin: rest.public_linkedin ?? null,
+        public_facebook: rest.public_facebook ?? null,
+        public_youtube: rest.public_youtube ?? null,
+        public_x_twitter: rest.public_x_twitter ?? null,
+        public_instagram: rest.public_instagram ?? null,
+        public_tiktok: rest.public_tiktok ?? null,
         cover_url,
         categoryName: categories?.name ?? null,
         categorySlug: categories?.slug ?? null,

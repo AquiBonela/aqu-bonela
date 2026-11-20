@@ -29,15 +29,52 @@ export type ReviewListing = {
 
 export type ReviewContact = {
   phone: string | null;
+  phone_2: string | null;
   whatsapp: string | null;
   address: string | null;
+  email: string | null;
+  linkedin: string | null;
+  facebook: string | null;
+  youtube: string | null;
+  x_twitter: string | null;
+  instagram: string | null;
+  tiktok: string | null;
   show_phone: boolean;
+  show_phone_2: boolean;
   show_whatsapp: boolean;
   show_address: boolean;
-  email: string | null;
   show_email: boolean;
+  show_linkedin: boolean;
+  show_facebook: boolean;
+  show_youtube: boolean;
+  show_x_twitter: boolean;
+  show_instagram: boolean;
+  show_tiktok: boolean;
   owner_name: string | null;
 };
+
+export type ReviewVisibility = Pick<ReviewContact,
+  "show_phone" | "show_phone_2" | "show_whatsapp" | "show_address" | "show_email" |
+  "show_linkedin" | "show_facebook" | "show_youtube" | "show_x_twitter" | "show_instagram" | "show_tiktok"
+> & { show_hours: boolean };
+
+/** Campos que quedan registrados en el consentimiento del titular. */
+export function authorizedContactFields(show: ReviewVisibility) {
+  return [
+    show.show_phone ? "teléfono" : null,
+    show.show_phone_2 ? "segundo teléfono" : null,
+    show.show_whatsapp ? "whatsapp" : null,
+    show.show_address ? "dirección" : null,
+    show.show_email ? "email" : null,
+    show.show_linkedin ? "linkedin" : null,
+    show.show_facebook ? "facebook" : null,
+    show.show_youtube ? "youtube" : null,
+    show.show_x_twitter ? "x_twitter" : null,
+    show.show_instagram ? "instagram" : null,
+    show.show_tiktok ? "tiktok" : null,
+    show.show_hours ? "horario" : null,
+  ].filter((field): field is string => field !== null);
+}
 
 export type ReviewData =
   | { ok: false; reason: "invalid" | "expired" }

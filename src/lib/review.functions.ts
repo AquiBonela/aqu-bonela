@@ -3,7 +3,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { listingPath } from "@/lib/listing-detail";
 import { withHoursVisibility } from "@/lib/listing-availability";
-import { TOKEN_RE, type Hour, type ReviewContact, type ReviewData, type SubmitResult } from "./review";
+import { authorizedContactFields, TOKEN_RE, type Hour, type ReviewContact, type ReviewData, type SubmitResult } from "./review";
 
 const tokenInput = z.object({ token: z.string().min(1).max(200) });
 
@@ -38,7 +38,7 @@ export const getReview = createServerFn({ method: "GET" })
         .maybeSingle(),
       admin
         .from("listing_contacts")
-        .select("phone,whatsapp,address,email,show_phone,show_whatsapp,show_address,show_email,owner_name")
+        .select("phone,phone_2,whatsapp,address,email,linkedin,facebook,youtube,x_twitter,instagram,tiktok,show_phone,show_phone_2,show_whatsapp,show_address,show_email,show_linkedin,show_facebook,show_youtube,show_x_twitter,show_instagram,show_tiktok,owner_name")
         .eq("listing_id", row.listing_id)
         .maybeSingle(),
       admin.from("listing_hours").select("weekday,opens,closes").eq("listing_id", row.listing_id).order("weekday"),
@@ -87,9 +87,16 @@ export const submitReview = createServerFn({ method: "POST" })
       .object({
         token: z.string().regex(TOKEN_RE),
         show_phone: z.boolean(),
+        show_phone_2: z.boolean(),
         show_whatsapp: z.boolean(),
         show_address: z.boolean(),
         show_email: z.boolean(),
+        show_linkedin: z.boolean(),
+        show_facebook: z.boolean(),
+        show_youtube: z.boolean(),
+        show_x_twitter: z.boolean(),
+        show_instagram: z.boolean(),
+        show_tiktok: z.boolean(),
         show_hours: z.boolean().default(true),
         comment: z.string().max(1000).optional(),
       })
@@ -108,17 +115,18 @@ export const submitReview = createServerFn({ method: "POST" })
     await admin.from("listing_contacts").upsert({
       listing_id: l.id,
       show_phone: data.show_phone,
+      show_phone_2: data.show_phone_2,
       show_whatsapp: data.show_whatsapp,
       show_address: data.show_address,
       show_email: data.show_email,
+      show_linkedin: data.show_linkedin,
+      show_facebook: data.show_facebook,
+      show_youtube: data.show_youtube,
+      show_x_twitter: data.show_x_twitter,
+      show_instagram: data.show_instagram,
+      show_tiktok: data.show_tiktok,
     });
-    const authorized = [
-      data.show_phone ? "teléfono" : null,
-      data.show_whatsapp ? "whatsapp" : null,
-      data.show_address ? "dirección" : null,
-      data.show_email ? "email" : null,
-      data.show_hours ? "horario" : null,
-    ].filter(Boolean);
+    const authorized = authorizedContactFields(data);
     await admin.from("consents").insert({
       listing_id: l.id,
       request_id: row.request_id ?? null,

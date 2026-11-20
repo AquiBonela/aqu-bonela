@@ -3,7 +3,7 @@ import { useI18n , Text} from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Globe, Images, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, X } from "lucide-react";
+import { ArrowLeft, AtSign, ChevronLeft, ChevronRight, Clock, Facebook, Globe, Images, Instagram, Linkedin, Mail, MapPin, MessageCircle, Music2, Navigation, Phone, Share2, X, Youtube } from "lucide-react";
 import { isFeatured, whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, websiteUrl, type ListingDetail } from "@/lib/listing-detail";
 import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
@@ -12,7 +12,7 @@ import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availabili
 import { Switch } from "@/components/ui/switch";
 import { SiteHeader } from "@/components/SiteHeader";
 
-export type ReviewField = "address" | "phone" | "whatsapp" | "email" | "hours";
+export type ReviewField = "address" | "phone" | "phone_2" | "whatsapp" | "email" | "linkedin" | "facebook" | "youtube" | "x_twitter" | "instagram" | "tiktok" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
 
 function Toggle({ review, field, label }: { review: ReviewControls | undefined; field: ReviewField; label: string }) {
@@ -40,12 +40,19 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
   const gallery: GalleryPhoto[] = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  type C = { icon: typeof Phone; label: string; value: string; field?: ReviewField; href?: string };
+  type C = { icon: typeof Phone; label: string; value: string; text?: string; field?: ReviewField; href?: string };
   const contact: C[] = [];
   if (listing.public_phone) contact.push({ icon: Phone, label: "Teléfono", value: listing.public_phone, field: "phone" });
+  if (listing.public_phone_2) contact.push({ icon: Phone, label: "Segundo teléfono", value: listing.public_phone_2, field: "phone_2" });
   if (listing.public_whatsapp) contact.push({ icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp, field: "whatsapp" });
   if (listing.public_email) contact.push({ icon: Mail, label: "Email", value: listing.public_email, field: "email" });
   if (listing.public_website) contact.push({ icon: Globe, label: "Web", value: listing.public_website, href: websiteUrl(listing.public_website) });
+  if (listing.public_linkedin) contact.push({ icon: Linkedin, label: "LinkedIn", value: listing.public_linkedin, text: "LinkedIn", field: "linkedin", href: websiteUrl(listing.public_linkedin) });
+  if (listing.public_facebook) contact.push({ icon: Facebook, label: "Facebook", value: listing.public_facebook, text: "Facebook", field: "facebook", href: websiteUrl(listing.public_facebook) });
+  if (listing.public_youtube) contact.push({ icon: Youtube, label: "YouTube", value: listing.public_youtube, text: "YouTube", field: "youtube", href: websiteUrl(listing.public_youtube) });
+  if (listing.public_x_twitter) contact.push({ icon: AtSign, label: "X (Twitter)", value: listing.public_x_twitter, text: "X (Twitter)", field: "x_twitter", href: websiteUrl(listing.public_x_twitter) });
+  if (listing.public_instagram) contact.push({ icon: Instagram, label: "Instagram", value: listing.public_instagram, text: "Instagram", field: "instagram", href: websiteUrl(listing.public_instagram) });
+  if (listing.public_tiktok) contact.push({ icon: Music2, label: "TikTok", value: listing.public_tiktok, text: "TikTok", field: "tiktok", href: websiteUrl(listing.public_tiktok) });
 
   return (
     <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
@@ -109,9 +116,9 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
                       href={c.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="break-all font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary"
+                      className={`break-all font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary ${c.field ? dim(c.field) : ""}`}
                     >
-                      {c.value}
+                      {c.text ?? c.value}
                     </a>
                   ) : review ? (
                     <span className={c.field ? dim(c.field) : ""}>{c.value}</span>
