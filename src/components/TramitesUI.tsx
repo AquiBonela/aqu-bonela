@@ -26,7 +26,7 @@ export function TramiteCard({ t }: { t: Tramite }) {
   return (
     <Link to="/tramites/$categoria/$tramite" params={{ categoria: t.cat, tramite: t.slug }} className="press group flex flex-col gap-2 border bg-card p-4 transition-colors hover:border-primary">
       <h3 className="font-bold leading-snug">{tr(t.title)}</h3>
-      <p className="text-sm text-muted-foreground">{tr(t.short)}</p>
+      <p className="line-clamp-3 text-sm text-muted-foreground">{tr(t.summary ?? t.short)}</p>
       <Tags tags={t.tags} />
       <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-semibold text-primary">
         {tr(isCompleta(t) ? "Ver guía paso a paso" : "Ver información")} <ArrowRight className="h-4 w-4" aria-hidden />

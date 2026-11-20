@@ -30,3 +30,4 @@
 - [x] Ampliar la ficha del Certificado Digital con desplegables, acceso FNMT y traducciones; verificar móvil, escritorio e inglés.
 - [x] Quitar recuadros de las preguntas, subir etiquetas y enlazar Punto Vuela a su ficha; verificar móvil, escritorio e inglés.
 - [x] Renombrar categoría y Certificado Digital, y mantener los enlaces legales en una línea; verificado en móvil, escritorio e inglés.
+- [x] Mostrar un resumen de dos o tres líneas en las tarjetas de trámites, conservando la descripción completa en cada ficha; verificado en móvil, escritorio e inglés.

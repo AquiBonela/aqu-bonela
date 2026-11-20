@@ -739,6 +739,7 @@ export const englishText: Record<string, string> = {
   "Licencias de obras, instancias, certificados municipales y sede electrónica.": "Building permits, applications, town certificates and e-office.",
   "Obtener el certificado digital": "Get a digital certificate",
   "Certificado Digital": "Digital Certificate",
+  "Identificación electrónica para hacer trámites online con las administraciones públicas.": "Electronic ID for completing online procedures with public administrations.",
   "El Certificado Digital es una identificación electrónica que te permite realizar trámites por Internet con las administraciones públicas, sin necesidad de desplazarte cada vez que necesites hacer una gestión.\n\n\nEn Casarabonela puedes completar el proceso utilizando el Ayuntamiento como oficina de acreditación de identidad.": "The Digital Certificate is an electronic ID that allows you to carry out procedures online with public administrations, without having to travel every time you need to complete a formality.\n\n\nIn Casarabonela you can complete the process using the Town Hall as an identity verification office.",
   "Tu identificación por internet para hacer gestiones oficiales desde casa.": "Your online ID to handle official procedures from home.",
   "Consultar y descargar tu vida laboral.": "Check and download your employment history.",
