@@ -67,7 +67,7 @@ function Index() {
     ? filterListings(data.listings, data.categories, "", "", new Date(), "", "").filter(isEmergencyService)
     : filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo, data.activities);
   const browsingHome = !q && !cat && !tipo && !urg;
-  const collaborators = data.listings.filter((l) => isFeatured(l));
+  const highlightedListings = data.listings.filter((l) => isFeatured(l));
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,11 +174,11 @@ function Index() {
       </nav>
 
       <main className="mx-auto max-w-2xl px-4 py-6">
-        {browsingHome && collaborators.length > 0 && (
-          <section aria-label={tr("Colaboradores")} className="mb-6 border-b pb-6">
+        {browsingHome && highlightedListings.length > 0 && (
+          <section aria-label={tr("Fichas resaltadas")} className="mb-6 border-b pb-6">
             <div className="grid gap-4">
-              {collaborators.map((l) => (
-                <ListingCard key={l.id} listing={l} collaborator categoryName={catName.get(l.category_id ?? "")} />
+              {highlightedListings.map((l) => (
+                <ListingCard key={l.id} listing={l} highlighted categoryName={catName.get(l.category_id ?? "")} />
               ))}
             </div>
           </section>
@@ -209,7 +209,7 @@ function Index() {
                 <ListingCard
                   key={l.id}
                   listing={l}
-                  collaborator={!browsingHome && isFeatured(l)}
+                  highlighted={!browsingHome && isFeatured(l)}
                   categoryName={activeCat ? undefined : catName.get(l.category_id ?? "")}
                 />
               ))}

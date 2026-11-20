@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, AtSign, ChevronLeft, ChevronRight, Clock, Facebook, Globe, Images, Instagram, Linkedin, Mail, MapPin, MessageCircle, Music2, Navigation, Phone, Share2, X, Youtube } from "lucide-react";
-import { isFeatured, whatsappUrl } from "@/lib/directory";
+import { whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, websiteUrl, type ListingDetail } from "@/lib/listing-detail";
-import { CollaboratorBadge, TypeLabel, UrgentBadge } from "@/components/ListingCard";
+import { TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
 import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availability";
 import { Switch } from "@/components/ui/switch";
 import { SiteHeader } from "@/components/SiteHeader";
+import { MAX_GALLERY_PHOTOS } from "@/lib/listing-images";
 import { parseDescription } from "@/lib/description";
 
 export type ReviewField = "address" | "phone" | "phone_2" | "whatsapp" | "email" | "linkedin" | "facebook" | "youtube" | "x_twitter" | "instagram" | "tiktok" | "hours";
@@ -35,10 +36,9 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
   const { tr, locale } = useI18n();
   const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
   const showHours = review ? listing.hours.length > 0 : listing.hours.length > 0 && !hoursHidden(listing.tags);
-  const collaborator = isFeatured(listing);
   const hours = groupHours(listing.hours);
   const today = (new Date().getDay() + 6) % 7;
-  const gallery: GalleryPhoto[] = collaborator ? [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos] : [];
+  const gallery: GalleryPhoto[] = [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos].slice(0, MAX_GALLERY_PHOTOS);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
   type C = { icon: typeof Phone; label: string; value: string; text?: string; field?: ReviewField; href?: string };
@@ -79,7 +79,6 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
               </Link>
             ))}
             {listing.activity && <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{tr(listing.activity)}</span>}
-            {collaborator && <CollaboratorBadge />}
           </div>
           <div className="flex max-w-40 flex-col items-end gap-1.5 text-right">
             {listing.urgent_24h && <UrgentBadge />}

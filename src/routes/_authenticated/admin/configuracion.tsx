@@ -93,7 +93,7 @@ function GeneralSettings() {
         </label>
         <label className={lbl}><Text text="WhatsApp de administración" /> <Input value={f.admin_whatsapp} onChange={(e) => set("admin_whatsapp", e.target.value)} placeholder="+34 600 000 000" />
         </label>
-        <label className={lbl}><Text text="Duración de «Colaborador» (meses)" /> <Input type="number" min={1} max={24} value={f.collaborator_months} onChange={(e) => set("collaborator_months", Number(e.target.value))} />
+        <label className={lbl}><Text text="Duración de «Resaltado» (meses)" /> <Input type="number" min={1} max={24} value={f.collaborator_months} onChange={(e) => set("collaborator_months", Number(e.target.value))} />
         </label>
         <label className={lbl}><Text text="Mensaje de WhatsApp del enlace de revisión" /> <Textarea rows={4} value={f.whatsapp_template} onChange={(e) => set("whatsapp_template", e.target.value)} />
           <span className="text-xs font-normal text-muted-foreground"><Text text="Usa" /> {"{nombre}"}  <Text text="para el nombre del titular y" /> {"{enlace}"}  <Text text="para el enlace." /></span>

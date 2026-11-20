@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { fitSize, validateImage } from "./listing-images";
+import { fitSize, gallerySlots, validateImage } from "./listing-images";
 
 describe("imágenes de fichas", () => {
+  it("permite cinco fotos de galería y ninguna sexta, contando las antiguas", () => {
+    expect(gallerySlots(0)).toBe(5);
+    expect(gallerySlots(4)).toBe(1);
+    expect(gallerySlots(5)).toBe(0);
+    expect(gallerySlots(6)).toBe(0);
+  });
   it("rechaza formatos distintos de jpg/png/webp", () => {
     expect(validateImage({ type: "image/gif", size: 100 })).not.toBeNull();
     expect(validateImage({ type: "image/png", size: 100 })).toBeNull();

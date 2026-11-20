@@ -1,6 +1,8 @@
 - [x] Etiquetas sin iconos; urgencias y hashtags como la referencia.
 - [x] Guardia fin de semana y atención en festivos en el formulario y fichas.
-- [x] Colaborador visible y eliminación con confirmación en administración.
+- [x] Eliminación con confirmación en administración.
+- [x] Sustituir Colaborador por Resaltado sin etiqueta pública; habilitar cinco fotos para todas las fichas; pruebas de portada/galería y navegación pública verificadas.
+- [ ] Verificar carga de fotos y guardado de Resaltado en el panel: Supabase externo sin sesión de administrador disponible.
 - [x] Reparar enlaces de avisos usando el identificador de la ficha.
 - [x] Desplegables de categoría/oficio y filtro por tipo.
 - [x] Ejecutar pruebas y verificar la navegación pública.

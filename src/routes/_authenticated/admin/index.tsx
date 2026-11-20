@@ -9,7 +9,6 @@ import { isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
 import { changeAdminCategory, changeAdminType, emptyAdminFilters, filterAdminListings } from "@/lib/admin-listing-filters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CollaboratorBadge } from "@/components/ListingCard";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
@@ -117,7 +116,7 @@ function ListBody() {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="min-w-0 break-words font-medium">{l.name}</p>
-                  {isFeatured(l) && <CollaboratorBadge />}
+                  {isFeatured(l) && <span className="text-xs font-semibold text-primary"><Text text="Resaltado" /></span>}
                 </div>
                 <p className="truncate text-xs text-muted-foreground">
                   {tr(l.categories?.name ?? "Sin categoría")}{l.activity ? ` · ${tr(l.activity)}` : ""}

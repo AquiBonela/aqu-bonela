@@ -1,5 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export const MAX_GALLERY_PHOTOS = 5;
+export const gallerySlots = (existing: number) => Math.max(0, MAX_GALLERY_PHOTOS - existing);
+
 export const BUCKET = "listing-photos";
 export const MAX_INPUT_BYTES = 8 * 1024 * 1024;
 export const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];

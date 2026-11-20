@@ -78,7 +78,7 @@ type Form = {
   show_tiktok: boolean;
   owner_name: string;
   owner_contact: string;
-  collaborator: boolean;
+  highlighted: boolean;
   featured_until: string | null;
   urgent_24h: boolean;
   availability: string[];
@@ -91,7 +91,7 @@ const empty: Form = {
   phone: "", phone_2: "", whatsapp: "", address: "", email: "", linkedin: "", facebook: "", youtube: "", x_twitter: "", instagram: "", tiktok: "",
   show_email: false, show_phone: false, show_phone_2: false, show_whatsapp: false, show_address: false,
   show_linkedin: false, show_facebook: false, show_youtube: false, show_x_twitter: false, show_instagram: false, show_tiktok: false,
-  owner_name: "", owner_contact: "", collaborator: false, featured_until: null,
+  owner_name: "", owner_contact: "", highlighted: false, featured_until: null,
   urgent_24h: false, availability: [], status: "borrador", hours: [],
 };
 
@@ -152,7 +152,7 @@ function EditPage() {
       show_linkedin: c?.show_linkedin ?? false, show_facebook: c?.show_facebook ?? false, show_youtube: c?.show_youtube ?? false,
       show_x_twitter: c?.show_x_twitter ?? false, show_instagram: c?.show_instagram ?? false, show_tiktok: c?.show_tiktok ?? false,
       owner_name: c?.owner_name ?? "", owner_contact: c?.owner_contact ?? "",
-      collaborator: isFeatured(l), featured_until: l.featured_until, urgent_24h: l.urgent_24h,
+      highlighted: isFeatured(l), featured_until: l.featured_until, urgent_24h: l.urgent_24h,
       availability: reservedTags(l.tags),
       status: l.status, hours: data.hours.map((h) => ({ ...h, opens: h.opens.slice(0, 5), closes: h.closes.slice(0, 5) })),
     });
@@ -166,13 +166,13 @@ function EditPage() {
     if (labels.length > 3) { toast.error(tr("Máximo 3 etiquetas destacadas.")); return; }
     if (!f.category_id) { toast.error(tr("Elige una categoría.")); return; }
     setSaving(true);
-    const featured_until = f.collaborator
+    const featured_until = f.highlighted
       ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil(new Date(), months)
       : null;
     const row = {
       type: f.type, category_id: f.category_id, activity: f.activity || null, labels, name: f.name.trim(),
       slug: f.slug || slugify(f.name), short_description: f.short_description.trim(), description: f.description, tags: withAvailability(list(f.tags, /,/), f.availability),
-      featured: f.collaborator, featured_until,
+      featured: f.highlighted, featured_until,
       urgent_24h: f.urgent_24h, status: f.status,
       public_website: normalizeUrl(f.website), home_service: f.home_service, service_area: f.service_area.trim(),
     };
@@ -394,9 +394,9 @@ function EditPage() {
 
       <Section title={tr("5. Imágenes y distinciones")}>
         {isNew ? <p className="text-sm text-muted-foreground"><Text text="Guarda la ficha para poder subir imágenes." /></p> : <CoverPicker listingId={id} />}
-        <Toggle label={tr("Colaborador (1 mes)")} checked={f.collaborator} onChange={(v) => set("collaborator", v)}
-          hint={f.collaborator && f.featured_until && new Date(f.featured_until) > new Date() ? `${tr("Hasta el")} ${new Date(f.featured_until).toLocaleDateString(locale)}` : "Aparece en portada y con galería de fotos"} />
-        {f.collaborator && !isNew && <GalleryPicker listingId={id} />}
+        <Toggle label={tr("Resaltado")} checked={f.highlighted} onChange={(v) => set("highlighted", v)}
+          hint={f.highlighted && f.featured_until && new Date(f.featured_until) > new Date() ? `${tr("Hasta el")} ${new Date(f.featured_until).toLocaleDateString(locale)}` : tr("Muestra la imagen de portada en la tarjeta del directorio.")} />
+        {!isNew && <GalleryPicker listingId={id} />}
         <Toggle label={tr("Urgencias 24h")} checked={f.urgent_24h} onChange={(v) => set("urgent_24h", v)} hint={tr("Fontaneros, cerrajeros, electricistas…")} />
         {AVAILABILITY_OPTIONS.map((option) => <Toggle key={option} label={option}
           checked={f.availability.includes(option)}
