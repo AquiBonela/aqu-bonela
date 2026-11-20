@@ -1,5 +1,26 @@
 // Guía de trámites: datos navegables en 3 niveles (portada → categoría → ficha).
 export type TramiteTag = "gratis" | "online" | "presencial";
+export type TramiteLink = { label: string; url: string };
+export type TramiteGuide = {
+  quienIntro: string;
+  quienNota: string;
+  necesitasNota: string;
+  pasos: { t: string; d: string[]; link?: TramiteLink }[];
+  lugares: {
+    title: string;
+    subtitle: string;
+    description: string[];
+    details?: { label: string; value: string; href?: string }[];
+    note?: string;
+    link?: TramiteLink;
+  }[];
+  fuentes: TramiteLink[];
+  costeTitulo: string;
+  costeImporte: string;
+  costeTexto: string;
+  seguridad: string;
+  revision: string;
+};
 export type Tramite = {
   slug: string;
   cat: string;
@@ -11,10 +32,12 @@ export type Tramite = {
   quien?: string[];
   necesitas?: string[];
   pasos?: { t: string; d: string }[];
+  guia?: TramiteGuide;
+  primaryAction?: TramiteLink;
   coste?: string;
   donde?: string;
   ayuda?: string;
-  links: { label: string; url: string }[];
+  links: TramiteLink[];
 };
 export type Categoria = { slug: string; title: string; text: string; icon: "doc" | "salud" | "trabajo" | "familia" | "coche" | "muni" };
 
@@ -41,19 +64,69 @@ export const TRAMITES: Tramite[] = [
     short: "El Certificado Digital es una identificación electrónica que te permite realizar trámites por Internet con las administraciones públicas, sin necesidad de desplazarte cada vez que necesites hacer una gestión.\n\n\nEn Casarabonela puedes completar el proceso utilizando el Ayuntamiento como oficina de acreditación de identidad.",
     tags: ["gratis", "online", "presencial"],
     para: ["Consultar y descargar tu vida laboral.", "Presentar la declaración de la renta.", "Consultar multas de tráfico.", "Realizar trámites con Hacienda y la Seguridad Social.", "Consultar y presentar solicitudes ante organismos públicos.", "Firmar documentos electrónicamente."],
-    quien: ["Cualquier persona mayor de edad o menor emancipado con DNI o NIE."],
-    necesitas: ["DNI o NIE.", "Una dirección de correo electrónico.", "Un ordenador o móvil con conexión a internet."],
-    pasos: [
-      { t: "Entra en la página de la FNMT", d: "Elige «Certificado electrónico de Ciudadano» y la opción «Solicitar»." },
-      { t: "Rellena la solicitud", d: "Recibirás un código de solicitud por correo electrónico. Guárdalo." },
-      { t: "Acredita tu identidad", d: "Acude con tu DNI o NIE y el código a una oficina de acreditación. En Casarabonela puedes hacerlo en el Punto Vuela." },
-      { t: "Descarga el certificado", d: "Hazlo desde el mismo ordenador y navegador con los que lo solicitaste." },
-      { t: "Guarda una copia de seguridad", d: "Exporta el certificado con contraseña para recuperarlo si cambias de equipo." },
-    ],
-    coste: "Gratuito. La modalidad por videoidentificación tiene un coste adicional.",
-    donde: "Fábrica Nacional de Moneda y Timbre (FNMT). Acreditación presencial en el Punto Vuela de Casarabonela.",
-    ayuda: "En el Punto Vuela (C/ Cuatro Esquinas, 10 · 952 456 140) te acompañan en todo el proceso.",
-    links: [{ label: "Solicitar en la FNMT", url: "https://www.sede.fnmt.gob.es/certificados/persona-fisica" }],
+    quien: ["Ciudadanos españoles mayores de edad.", "Ciudadanos extranjeros mayores de edad que dispongan de NIE.", "Menores emancipados que cumplan los requisitos."],
+    necesitas: ["DNI o NIE en vigor.", "Pasaporte en vigor, para ciudadanos extranjeros.", "Una dirección de correo electrónico.", "Acceso a un ordenador para realizar la solicitud.", "El código de solicitud que recibirás por correo electrónico."],
+    primaryAction: { label: "Comenzar solicitud", url: "https://www.sede.fnmt.gob.es/certificados/persona-fisica/obtener-certificado-software/solicitar-certificado" },
+    guia: {
+      quienIntro: "Pueden solicitar el Certificado Digital de persona física:",
+      quienNota: "Es necesario disponer de un documento de identificación válido y acreditar personalmente la identidad.",
+      necesitasNota: "¿No sabes cómo hacerlo? Puedes acudir al Punto Vuela de Casarabonela para recibir ayuda y acompañamiento durante el proceso.",
+      pasos: [
+        {
+          t: "Solicita tu certificado por Internet.",
+          d: ["Accede a la FNMT y completa el formulario con tus datos personales.", "Recibirás un correo electrónico con un código de solicitud."],
+          link: { label: "Solicitar Certificado Digital", url: "https://www.sede.fnmt.gob.es/certificados/persona-fisica/obtener-certificado-software/solicitar-certificado" },
+        },
+        {
+          t: "Acude al Punto Vuela si necesitas ayuda.",
+          d: ["Si no sabes cómo realizar la solicitud, tienes dificultades con el ordenador o necesitas orientación, puedes acudir al Punto Vuela de Casarabonela.", "Allí pueden ayudarte a realizar gestiones digitales y orientarte durante el proceso.", "Recuerda llevar tu documento de identidad y el código de solicitud si ya lo has obtenido."],
+        },
+        {
+          t: "Acredita tu identidad en el Ayuntamiento.",
+          d: ["Una vez tengas el código de solicitud, acude al Ayuntamiento de Casarabonela para acreditar tu identidad.", "Lleva tu documento identificativo y el código recibido por correo electrónico.", "La acreditación debe realizarla personalmente el titular."],
+        },
+        {
+          t: "Descarga tu Certificado Digital.",
+          d: ["Una vez acreditada tu identidad, vuelve a la FNMT y descarga el certificado desde el mismo ordenador, usuario y navegador utilizados para solicitarlo."],
+          link: { label: "Descargar Certificado Digital", url: "https://www.sede.fnmt.gob.es/certificados/persona-fisica/obtener-certificado-software/descargar-certificado" },
+        },
+        {
+          t: "Guarda una copia de seguridad.",
+          d: ["Exporta el certificado y guárdalo en un lugar seguro, protegido mediante contraseña."],
+        },
+      ],
+      lugares: [
+        {
+          title: "Ayuntamiento de Casarabonela",
+          subtitle: "Oficina de acreditación de identidad",
+          description: ["Es el lugar donde debes acudir para verificar tu identidad y completar esta parte del procedimiento.", "Puedes acudir al Ayuntamiento para acreditar tu identidad una vez realizada la solicitud online."],
+          note: "Antes de desplazarte, consulta si es necesario solicitar cita previa y los horarios específicos de acreditación.",
+          link: { label: "Web del Ayuntamiento", url: "https://www.casarabonela.es/" },
+        },
+        {
+          title: "Punto Vuela Casarabonela",
+          subtitle: "Ayuda y acompañamiento digital",
+          description: ["Si necesitas ayuda para utilizar el ordenador, realizar la solicitud o descargar e instalar el certificado, puedes acudir a este centro."],
+          details: [
+            { label: "Dirección", value: "Calle Cuatro Esquinas, 10, Casarabonela (Málaga)." },
+            { label: "Teléfono", value: "952 456 140 / 652 805 763", href: "tel:952456140" },
+            { label: "Correo", value: "casarabonela@puntosvuela.es", href: "mailto:casarabonela@puntosvuela.es" },
+          ],
+          note: "Consulta los horarios y disponibilidad antes de acudir.",
+          link: { label: "Consultar información del Punto Vuela", url: "https://puntosvuela.es/centros" },
+        },
+      ],
+      fuentes: [
+        { label: "Fábrica Nacional de Moneda y Timbre (FNMT).", url: "https://www.sede.fnmt.gob.es/certificados/persona-fisica" },
+        { label: "Ayuntamiento de Casarabonela.", url: "https://www.casarabonela.es/" },
+      ],
+      costeTitulo: "Certificado Digital FNMT",
+      costeImporte: "0 €",
+      costeTexto: "La obtención mediante acreditación presencial es gratuita.",
+      seguridad: "No compartas tu certificado digital ni su contraseña. Permite realizar gestiones importantes en tu nombre, por lo que debes guardarlo en un lugar seguro.",
+      revision: "Información revisada: noviembre de 2026 · Fuente: FNMT y Administración General del Estado.",
+    },
+    links: [],
   },
   {
     slug: "empadronamiento", cat: "documentacion", title: "Empadronarse en Casarabonela",
@@ -92,7 +165,7 @@ export const DESTACADOS = ["empadronamiento", "nie", "tarjeta-sanitaria", "certi
 export const getCategoria = (slug: string) => CATEGORIAS.find((c) => c.slug === slug);
 export const getTramite = (cat: string, slug: string) => TRAMITES.find((t) => t.cat === cat && t.slug === slug);
 export const tramitesDe = (cat: string) => TRAMITES.filter((t) => t.cat === cat);
-export const isCompleta = (t: Tramite) => Boolean(t.pasos?.length);
+export const isCompleta = (t: Tramite) => Boolean(t.pasos?.length || t.guia?.pasos.length);
 export function buscarTramites(q: string, translate: (s: string) => string = (s) => s) {
   const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
   const n = norm(q.trim());

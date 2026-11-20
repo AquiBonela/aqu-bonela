@@ -27,3 +27,4 @@
 - [x] Poner Actualidad y Clasificados en gris y sin animación en la portada mientras no estén activos.
 - [x] Reordenar los horarios del autobús en Servicios Públicos: dos bloques (Hacia Málaga / Desde Málaga) con días y horas alineados; verificar en móvil y escritorio.
 - [x] Simplificar contactos locales, añadir Alozaina y explicar reciclaje; verificar móvil e inglés.
+- [x] Ampliar la ficha del Certificado Digital con desplegables, acceso FNMT y traducciones; verificar móvil, escritorio e inglés.
