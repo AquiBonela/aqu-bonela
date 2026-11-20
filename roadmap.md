@@ -36,4 +36,4 @@
 - [x] Actualizar Empadronamiento con la información aportada, desplegables y traducción al inglés; ficha y listado comprobados en móvil y escritorio.
 - [x] Limitar etiquetas de trámites a Gratuito, Online y Requiere acudir en persona, y crear la guía de Cl@ve; pruebas y navegación verificadas en español e inglés, móvil y escritorio.
 - [x] Crear TIE con el contenido aportado, traducciones y cita previa; verificados listado, siete desplegables, cinco pasos y acceso a Punto Vuela en móvil/escritorio y ambos idiomas.
-- [x] Añadir segundo teléfono y redes sociales con visibilidad individual en alta, revisión y ficha pública; 60 pruebas y sincronización de visibilidad verificadas.
+- [x] Añadir segundo teléfono y redes sociales con visibilidad individual en alta, revisión y ficha pública; 68 pruebas y sincronización de visibilidad verificadas.
