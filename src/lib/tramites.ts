@@ -109,18 +109,6 @@ export const TRAMITES: Tramite[] = [
           note: "Antes de desplazarte, consulta si es necesario solicitar cita previa y los horarios específicos de acreditación.",
           link: { label: "Web del Ayuntamiento", url: "https://www.casarabonela.es/" },
         },
-        {
-          title: "Punto Vuela Casarabonela",
-          subtitle: "Ayuda y acompañamiento digital",
-          description: ["Si necesitas ayuda para utilizar el ordenador, realizar la solicitud o descargar e instalar el certificado, puedes acudir a este centro."],
-          details: [
-            { label: "Dirección", value: "Calle Cuatro Esquinas, 10, Casarabonela (Málaga)." },
-            { label: "Teléfono", value: "952 456 140 / 652 805 763", href: "tel:952456140" },
-            { label: "Correo", value: "casarabonela@puntosvuela.es", href: "mailto:casarabonela@puntosvuela.es" },
-          ],
-          note: "Consulta los horarios y disponibilidad antes de acudir.",
-          link: { label: "Consultar información del Punto Vuela", url: "/punto-vuela" },
-        },
       ],
       fuentes: [
         { label: "Fábrica Nacional de Moneda y Timbre (FNMT).", url: "https://www.sede.fnmt.gob.es/certificados/persona-fisica" },
@@ -172,7 +160,7 @@ export const TRAMITES: Tramite[] = [
       "Justificante del motivo: documentación que explique por qué necesitas obtener el NIE.",
       "Tasa 790, código 012: justificante del pago correspondiente.",
     ],
-    primaryAction: { label: "Descargar formulario EX-15", url: "https://www.inclusion.gob.es/web/migraciones/modelos-generales" },
+    primaryAction: { label: "Solicitar cita previa", url: "https://icp.administracionelectronica.gob.es/icpplus/index.html" },
     guia: {
       quienIntro: "Pueden solicitarlo las personas extranjeras que necesiten identificarse en España por motivos:",
       quienNota: "Es necesario justificar el motivo de la solicitud. También puede solicitarse desde el país de origen a través del Consulado de España correspondiente. Si eres ciudadano de la Unión Europea y vas a residir en España durante más de tres meses, normalmente debes inscribirte en el Registro Central de Extranjeros; en ese procedimiento te asignarán un NIE.",
