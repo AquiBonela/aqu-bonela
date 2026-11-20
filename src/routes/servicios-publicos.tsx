@@ -6,24 +6,18 @@ import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
-import hero from "@/assets/servicios-publicos.jpg";
+import hero from "@/assets/plaza-buenavista-casarabonela.webp.asset.json";
 import { useQuery } from "@tanstack/react-query";
-import { listingDetailQuery, groupHours } from "@/lib/listing-detail";
+import { listingDetailQuery } from "@/lib/listing-detail";
 
 const PUNTO_VUELA_SLUG = "punto-vuela-casarabonela";
 
 function PuntoVuelaInfo() {
-  const { tr } = useI18n();
   const { data } = useQuery(listingDetailQuery("publico", PUNTO_VUELA_SLUG));
-  const days = data ? groupHours(data.hours).filter((d) => d.slots.length) : [];
   return (
     <dl className="mt-4 space-y-1 border-t border-primary-foreground/30 pt-4 text-sm">
       <div className="flex gap-2"><dt className="font-bold"><Text text="Dónde" />:</dt><dd>{data?.public_address ?? "Calle Cuatro Esquinas, 10"}</dd></div>
-      {days.length > 0 && (
-        <div className="flex gap-2"><dt className="font-bold"><Text text="Horario" />:</dt>
-          <dd className="space-y-0.5">{days.map((d) => <div key={d.day}>{tr(d.day)}: {d.slots.join(", ")}</div>)}</dd>
-        </div>
-      )}
+      <div className="flex gap-2"><dt className="font-bold"><Text text="Horario" />:</dt><dd><Text text="Consultar en ficha" /></dd></div>
     </dl>
   );
 }
@@ -60,7 +54,7 @@ function ServiciosPublicos() {
       <SiteHeader />
       <main>
         <section className="relative text-primary-foreground">
-          <img src={hero} alt={tr("Plaza del Ayuntamiento de Casarabonela")} width={1600} height={800} className="h-[40vh] min-h-64 w-full object-cover" />
+          <img src={hero.url} alt={tr("Plaza de la Buena Vista, Casarabonela")} width={1920} height={1280} className="h-[40vh] min-h-64 w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10">
             <h1 className="font-display text-4xl font-extrabold text-balance sm:text-5xl"><Text text="Servicios públicos" /></h1>

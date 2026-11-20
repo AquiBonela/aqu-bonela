@@ -1,5 +1,7 @@
 /** Complete interface and editorial translations; original values remain unchanged. */
 export const englishText: Record<string, string> = {
+  "Plaza de la Buena Vista, Casarabonela": "Buena Vista Square, Casarabonela",
+  "Consultar en ficha": "Check the listing",
   "TIE – Tarjeta de Identidad de Extranjero": "TIE – Foreigner Identity Card",
   "Tarjeta física que acredita tu identidad y tu autorización de residencia o estancia en España. Consulta los documentos, la cita previa y la toma de huellas.": "A physical card proving your identity and your residence or stay authorisation in Spain. Check the documents, appointment and fingerprinting requirements.",
   "¿Tienes autorización para residir en España? La Tarjeta de Identidad de Extranjero (TIE) es el documento físico que acredita tu situación administrativa en el país y contiene tus datos personales, fotografía, número NIE y tipo de autorización.\n\nImportante: la TIE y el NIE no son lo mismo. El NIE es un número de identificación personal, mientras que la TIE es la tarjeta que acredita tu situación legal en España.": "Do you have authorisation to live in Spain? The Foreigner Identity Card (TIE) is the physical document proving your administrative status in the country and contains your personal details, photograph, NIE number and authorisation type.\n\nImportant: the TIE and NIE are not the same. The NIE is a personal identification number, whereas the TIE is the card proving your legal status in Spain.",
