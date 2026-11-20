@@ -95,7 +95,16 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
         <div className="space-y-4">
-          {listing.description && <p className="whitespace-pre-line text-base text-pretty leading-relaxed">{tr(listing.description)}</p>}
+          {listing.description && (
+            <p className="whitespace-pre-line text-base text-pretty leading-relaxed">
+              {tr(listing.description).split("\n").map((line, index, lines) => (
+                <span key={`${index}-${line}`}>
+                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : line}
+                  {index < lines.length - 1 ? "\n" : null}
+                </span>
+              ))}
+            </p>
+          )}
           {listing.labels.length > 0 && (
             <ul className="flex flex-wrap gap-2" aria-label={tr("Etiquetas")}>
               {listing.labels.map((t) => (
