@@ -1,5 +1,9 @@
 import { externalTextUrl } from './description';
 
+export function hasPlaceDetail(detail: { value: string }): boolean {
+  return Boolean(detail.value.trim());
+}
+
 export function hasProcedureLink(value: unknown): value is { label: string; url: string } {
   if (!value || typeof value !== 'object') return false;
   const link = value as Record<string, unknown>;

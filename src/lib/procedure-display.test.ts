@@ -1,8 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { euroAmount, hasProcedureLink } from './procedure-display';
+import { euroAmount, hasProcedureLink, hasPlaceDetail } from './procedure-display';
 import { defaultVisibility, editableContent, procedureContentSchema, visibleContent } from './procedure-editor';
 
 describe('procedure presentation rules', () => {
+  it('omits blank place details while preserving actual contact data', () => {
+    expect(hasPlaceDetail({ value: '' })).toBe(false);
+    expect(hasPlaceDetail({ value: '   ' })).toBe(false);
+    expect(hasPlaceDetail({ value: '952 45 60 00' })).toBe(true);
+  });
   it.each(['12', '12,50', '0'])('adds euros to numeric amount %s', (value) => {
     expect(euroAmount(value)).toBe(`${value} €`);
   });

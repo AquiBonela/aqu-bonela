@@ -9,7 +9,7 @@ import { publicProceduresQuery, procedureTranslationMap } from '@/lib/public-pro
 import { type Tramite, type TramiteLink } from "@/lib/tramites";
 import { Tags } from "@/components/TramitesUI";
 import { ProcedureText } from "@/components/ProcedureText";
-import { euroAmount, hasProcedureLink } from '@/lib/procedure-display';
+import { euroAmount, hasProcedureLink, hasPlaceDetail } from '@/lib/procedure-display';
 
 export const Route = createFileRoute("/tramites/$categoria/$tramite")({
   loader: async ({ params, context }) => {
@@ -97,7 +97,7 @@ function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?:
   );
 }
 
-function DetailedGuide({ t }: { t: Tramite }) {
+export function DetailedGuide({ t }: { t: Tramite }) {
   const { tr } = useI18n();
   const guide = t.guia;
   if (!guide) return null;
@@ -158,11 +158,11 @@ function DetailedGuide({ t }: { t: Tramite }) {
                 <div className="mt-3 space-y-2 text-sm">
                   {place.description.map((paragraph) => <p key={paragraph}><PuntoVuelaText text={paragraph} /></p>)}
                 </div>
-                {place.details && (
+                {place.details?.some(hasPlaceDetail) && (
                   <dl className="mt-4 space-y-2 border-t pt-3 text-sm">
-                    {place.details.map((detail) => (
+                    {place.details.filter(hasPlaceDetail).map((detail) => (
                       <div key={detail.label}>
-                        <dt className="inline font-bold"><ProcedureText text={tr(detail.label)} />: </dt>
+                        {detail.label.trim() && <dt className="inline font-bold"><ProcedureText text={tr(detail.label)} />: </dt>}
                         <dd className="inline break-words">
                           {detail.href
                             ? <a href={detail.href} className="text-primary underline underline-offset-2"><ProcedureText text={tr(detail.value)} linkPuntoVuela={false} /></a>
