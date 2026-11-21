@@ -1,11 +1,12 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Laptop } from "lucide-react";
+import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin } from "lucide-react";
 import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
 import hero from "@/assets/plaza-buenavista-casarabonela.webp.asset.json";
+import puntoVuelaLogo from "@/assets/punto-vuela-logo.svg.asset.json";
 import { useQuery } from "@tanstack/react-query";
 import { listingDetailQuery } from "@/lib/listing-detail";
 
@@ -155,10 +156,9 @@ function ServiciosPublicos() {
         {/* Punto Vuela */}
         <section aria-labelledby="punto-vuela-title" className="mt-10 bg-vuela text-vuela-foreground">
           <div className="mx-auto max-w-5xl px-4 py-10">
-            <div className="flex items-center gap-3">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-vuela-action text-vuela-foreground"><Laptop className="h-6 w-6" aria-hidden /></span>
-              <h3 id="punto-vuela-title" className="font-vuela text-3xl font-normal leading-tight"><Text text="Punto Vuela" /></h3>
-            </div>
+            <h3 id="punto-vuela-title">
+              <img src={puntoVuelaLogo.url} alt="Punto Vuela" width={1619} height={528} className="block h-auto w-60 max-w-full" />
+            </h3>
             <p className="mt-3 opacity-90"><Text text="Servicio gratuito de apoyo digital para vecinos de todas las edades." /></p>
             <PuntoVuelaInfo />
             <ul className="mt-5 flex flex-col gap-3 font-semibold text-[clamp(13px,4vw,1.25rem)] sm:text-xl">
