@@ -36,6 +36,8 @@ export function parseDescription(text: string): DescriptionPart[] {
 export function externalTextUrl(value: string): string | null {
   if (!value || /[\s<>\\\u0000-\u001f\u007f]/.test(value) || value.startsWith("//")) return null;
   if (value.startsWith('/')) return value;
+  // Recognize only existing public route names, never arbitrary bare words.
+  if (/^(?:(?:servicios|comercios|profesionales|asociaciones|tramites|vida-diaria)(?:[/?#]|$)|punto-vuela(?:[/?#]|$)|servicios-publicos(?:[/?#]|$))/.test(value)) return `/${value}`;
   const hasScheme = /^[a-z][a-z\d+.-]*:/i.test(value);
   try {
     const url = new URL(hasScheme ? value : `https://${value}`);

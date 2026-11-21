@@ -2,6 +2,17 @@ import { describe, expect, it } from "vitest";
 import { parseDescription } from "./description";
 
 describe("description formatting", () => {
+  it.each([
+    ['servicios/punto-vuela-casarabonela', '/servicios/punto-vuela-casarabonela'],
+    ['punto-vuela', '/punto-vuela'],
+    ['tramites/documentacion/nie', '/tramites/documentacion/nie'],
+  ])('recognizes the internal path %s without a leading slash', (input, href) => {
+    expect(parseDescription(`*** Punto Vuela (${input}) ***`)).toEqual([{ text: 'Punto Vuela', bold: false, italic: false, href }]);
+  });
+  it('does not guess arbitrary words as internal routes', () => {
+    const text = '*** Centro (centro-inventado) ***';
+    expect(parseDescription(text)).toEqual([{ text, bold: false, italic: false }]);
+  });
   it('supports triple-asterisk local links without tying them to a domain', () => {
     expect(parseDescription('*** Centro médico (/servicios/consultorio-medico) ***')).toEqual([{ text: 'Centro médico', bold: false, italic: false, href: '/servicios/consultorio-medico' }]);
   });

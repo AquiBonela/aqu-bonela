@@ -88,7 +88,7 @@ function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?:
     ? "press mt-4 inline-flex min-h-11 items-center gap-2 bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
     : "mt-3 inline-flex items-center gap-1.5 font-semibold text-primary underline underline-offset-4";
   if (link.url === "/punto-vuela") {
-    return <Link to="/punto-vuela" className={className}><ProcedureText text={tr(link.label)} linkPuntoVuela={false} /> <ArrowRight className="h-4 w-4 shrink-0" aria-hidden /></Link>;
+    return <Link to="/servicios/$slug" params={{ slug: "punto-vuela-casarabonela" }} className={className}><ProcedureText text={tr(link.label)} linkPuntoVuela={false} /> <ArrowRight className="h-4 w-4 shrink-0" aria-hidden /></Link>;
   }
   return (
     <a href={link.url} target={link.url.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer" className={className}>

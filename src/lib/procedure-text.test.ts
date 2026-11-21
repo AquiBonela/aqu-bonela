@@ -17,10 +17,12 @@ describe("procedure text", () => {
       { text: "Lleva el original", bold: false, italic: true, puntoVuela: false },
     ]);
   });
-  it("preserves emphasis around the existing Punto Vuela link", () => {
+  it("does not create automatic links for Punto Vuela mentions", () => {
+    expect(parseProcedureText("Importante: el Punto Vuela ofrece apoyo")).toEqual([
+      { text: "Importante: el Punto Vuela ofrece apoyo", bold: false, italic: false, puntoVuela: false },
+    ]);
     expect(parseProcedureText("**Acude a Punto Vuela**")).toEqual([
-      { text: "Acude a ", bold: true, italic: false, puntoVuela: false },
-      { text: "Punto Vuela", bold: true, italic: false, puntoVuela: true },
+      { text: "Acude a Punto Vuela", bold: true, italic: false, puntoVuela: false },
     ]);
   });
   it("avoids creating nested links in link labels and directory cards", () => {

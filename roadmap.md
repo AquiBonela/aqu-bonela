@@ -66,3 +66,5 @@
 - [x] Corregir la reaparición de plantillas al eliminar trámites y recuperar Eliminar en guías sin guardar; 38 pruebas pasan y «Tarjeta Sanitaria Europea (TSE)» real abre sin errores ni cambios.
 - [ ] Verificar la eliminación real de «Tarjeta sanitaria europea» desde el panel: bloqueado por Supabase externo sin sesión de administrador disponible.
 - [x] Ocultar copias antiguas de borradores en todas las vistas públicas; 41 pruebas pasan y NIE, Cl@ve y TIE reales no aparecen en listado/búsqueda ni abren mediante enlace directo, en móvil y escritorio sin errores.
+
+- [x] Unificar Punto Vuela en su ficha, conservar redirección antigua y admitir enlaces internos sin barra, sin enlaces automáticos; 48 pruebas y navegación pública verificadas.
