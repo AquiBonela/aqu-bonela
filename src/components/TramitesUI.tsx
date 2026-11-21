@@ -1,3 +1,4 @@
+import { ProcedureText } from "@/components/ProcedureText";
 import { Link } from "@tanstack/react-router";
 import { FileText, HeartPulse, Briefcase, Users, Car, Landmark, ArrowRight, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -25,8 +26,8 @@ export function TramiteCard({ t }: { t: Tramite }) {
   const { tr } = useI18n();
   return (
     <Link to="/tramites/$categoria/$tramite" params={{ categoria: t.cat, tramite: t.slug }} className="press group flex flex-col gap-2 border bg-card p-4 transition-colors hover:border-primary">
-      <h3 className="font-bold leading-snug">{tr(t.title)}</h3>
-      <p className="line-clamp-3 text-sm text-muted-foreground">{tr(t.summary ?? t.short)}</p>
+      <h3 className="font-bold leading-snug"><ProcedureText text={tr(t.title)} linkPuntoVuela={false} /></h3>
+      <p className="line-clamp-3 text-sm text-muted-foreground"><ProcedureText text={tr(t.summary ?? t.short)} linkPuntoVuela={false} /></p>
       <Tags tags={t.tags} />
       <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-semibold text-primary">
         {tr(isCompleta(t) ? "Ver guía paso a paso" : "Ver información")} <ArrowRight className="h-4 w-4" aria-hidden />
@@ -41,8 +42,8 @@ export function Hero({ kicker, title, text }: { kicker?: string; title: string; 
     <section className="bg-primary px-4 py-12 text-primary-foreground">
       <div className="mx-auto max-w-5xl">
         {kicker && <p className="text-xs font-bold uppercase tracking-[0.15em] opacity-80">{tr(kicker)}</p>}
-        <h1 className="mt-1 font-display text-4xl font-extrabold text-balance sm:text-5xl">{tr(title)}</h1>
-        <p className="mt-3 max-w-2xl text-lg opacity-95">{tr(text)}</p>
+        <h1 className="mt-1 font-display text-4xl font-extrabold text-balance sm:text-5xl"><ProcedureText text={tr(title)} linkPuntoVuela={false} /></h1>
+        <p className="mt-3 max-w-2xl text-lg opacity-95"><ProcedureText text={tr(text)} /></p>
       </div>
     </section>
   );

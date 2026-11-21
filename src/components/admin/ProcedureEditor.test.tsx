@@ -41,9 +41,10 @@ describe("procedure editor form", () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: '¿Cómo hacerlo paso a paso?' }));
     fireEvent.click(screen.getByRole('button', { name: 'Añadir pasos' }));
-    fireEvent.change(screen.getByLabelText('Pasos 1 · Título del paso'), { target: { value: 'Presentar la solicitud' } });
+    fireEvent.change(screen.getByLabelText('Pasos 1 · Título del paso'), { target: { value: '**Presentar la solicitud** *original*' } });
     fireEvent.click(screen.getByRole('button', { name: 'Vista previa' }));
     expect(within(screen.getByRole('dialog')).getByText('Presentar la solicitud')).toBeInTheDocument();
+    expect(within(screen.getByRole('dialog')).getByText('original')).toBeInTheDocument();
   });
   it("keeps English and Spanish summaries separate", async () => {
     mount();

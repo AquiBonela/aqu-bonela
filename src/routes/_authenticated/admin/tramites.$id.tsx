@@ -3,6 +3,7 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useState } from "react";
 import { ArrowLeft, Save, Eye, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ProcedureText } from "@/components/ProcedureText";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ProcedureFields, SECTION_FIELDS } from "@/components/admin/ProcedureFields";
 import { Button } from "@/components/ui/button";
@@ -143,18 +144,18 @@ function ProcedurePreview({ content }: { content: Record<string, unknown> }) {
     return Boolean(value && typeof value === "object" && Object.values(value).some(hasContent));
   }
   function render(value: unknown): import("react").ReactNode {
-    if (typeof value === "string") return value ? <p className="whitespace-pre-line text-sm leading-relaxed">{value}</p> : null;
+    if (typeof value === "string") return value ? <p className="whitespace-pre-line text-sm leading-relaxed"><ProcedureText text={value} /></p> : null;
     if (Array.isArray(value)) return value.map((v, i) => <div key={i} className="space-y-2 py-1">{render(v)}</div>);
     if (value && typeof value === "object") {
       const fields = value as Record<string, unknown>;
-      if (typeof fields['url'] === "string" && typeof fields['label'] === "string" && fields['url']) return /^(https?:\/\/|tel:|\/[^/])/.test(fields['url']) ? <a className="text-sm text-primary underline" href={fields['url']} target="_blank" rel="noopener noreferrer">{fields['label']}</a> : null;
+      if (typeof fields['url'] === "string" && typeof fields['label'] === "string" && fields['url']) return /^(https?:\/\/|tel:|\/[^/])/.test(fields['url']) ? <a className="text-sm text-primary underline" href={fields['url']} target="_blank" rel="noopener noreferrer"><ProcedureText text={fields['label']} linkPuntoVuela={false} /></a> : null;
       return <div className="space-y-2">{Object.values(fields).map((v, i) => <div key={i}>{render(v)}</div>)}</div>;
     }
     return null;
   }
   return <article className="space-y-5">
     <div className="flex flex-wrap gap-2">{Array.isArray(content['tags']) && content['tags'].map((tag) => <span key={String(tag)} className="bg-muted px-2 py-1 text-xs">{tr(TAG_LABEL[tag as keyof typeof TAG_LABEL] ?? String(tag))}</span>)}</div>
-    <h2 className="font-display text-2xl font-bold">{String(content['title'] ?? "")}</h2>
+    <h2 className="font-display text-2xl font-bold"><ProcedureText text={String(content['title'] ?? "")} linkPuntoVuela={false} /></h2>
     {render(content['short'])}{render(content['primaryAction'])}
     {PROCEDURE_SECTIONS.filter((s) => !["short", "primaryAction", "tags"].includes(s.key)).map((s) => {
       const keys: Record<string, string[]> = { para: ["paraIntro", "paraNota"], quien: ["quienIntro", "quienNota"], necesitas: ["necesitasIntro", "necesitasNota"], coste: ["costeTitulo", "costeImporte", "costeTexto"] };

@@ -46,3 +46,4 @@
 - [ ] Verificar guardado real del editor de trámites desde el navegador: bloqueado por Supabase externo sin sesión de administrador disponible; formulario probado con respuestas simuladas y permisos reales verificados en transacción revertida.
 - [x] Simplificar la cabecera del admin a logo negro centrado y menú sin SOS/idioma; unificar el acceso como «Panel editor»; presentación comprobada en tres tamaños con sesión simulada.
 - [x] Mover Categorías y actividades desde Configuración a un botón desplegable en Fichas, conservando la gestión actual; apertura, tipos y ubicación comprobados con sesión simulada.
+- [x] Activar negrita y cursiva en textos, tarjetas y vista previa de trámites; 42 pruebas pasan; formato y enlaces comprobados en ES/EN y móvil/escritorio con acceso simulado, guía pública verificada sin errores; guardado real pendiente del acceso externo indicado arriba.
