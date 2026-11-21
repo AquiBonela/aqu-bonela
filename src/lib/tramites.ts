@@ -124,8 +124,8 @@ export const TRAMITES: Tramite[] = [
     links: [],
   },
   {
-    slug: "empadronamiento", cat: "documentacion", title: "Empadronamiento – Alta en el padrón municipal",
-    summary: "Inscríbete en el padrón de Casarabonela para acreditar tu domicilio habitual y realizar gestiones administrativas.",
+    slug: "empadronamiento", cat: "documentacion", title: "Empadronamiento",
+    summary: "Alta en el padrón municipal",
     short: "¿Vives en Casarabonela? Inscríbete en el padrón municipal.\n\nEmpadronarse consiste en inscribirse en el registro de habitantes del municipio donde resides habitualmente. Permite acreditar oficialmente tu domicilio y es necesario para realizar numerosas gestiones administrativas.\n\nImportante: debes empadronarte en el municipio donde resides habitualmente, independientemente de si eres propietario, inquilino o vives en una vivienda de otra persona. No necesitas tener nacionalidad española ni permiso de residencia para empadronarte.",
     tags: ["gratis", "presencial"],
     para: ["Realizar trámites relacionados con la residencia y extranjería.", "Escolarizar a tus hijos.", "Solicitar determinadas ayudas y servicios sociales.", "Realizar gestiones con la Seguridad Social.", "Acceder a determinados servicios municipales.", "Acreditar tu domicilio ante diferentes administraciones."],

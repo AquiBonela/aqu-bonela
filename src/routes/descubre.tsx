@@ -154,7 +154,7 @@ function Descubre() {
         <div ref={sentinel} aria-hidden className="h-0" />
         <nav
           aria-label={t("descubre.navLabel")}
-          className={`sticky top-0 z-20 border-y transition-all duration-200 ${
+          className={`sticky top-[3.75rem] z-20 border-y transition-all duration-200 ${
             stuck
               ? "border-border bg-background/95 backdrop-blur"
               : "border-border bg-background"

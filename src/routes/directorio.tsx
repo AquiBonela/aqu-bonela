@@ -126,7 +126,7 @@ function Index() {
         </div>
       </section>
 
-      <nav aria-label={tr("Filtros")} className="sticky top-0 z-10 mt-4 border-b bg-background/95 backdrop-blur">
+      <nav aria-label={tr("Filtros")} className="mt-4 border-b bg-background">
         <div className="mx-auto flex max-w-4xl flex-col gap-3 px-4 py-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <label className="min-w-0 sm:w-56">
             <select aria-label={tr("Tipo de ficha")} value={tipo} onChange={(e) => {

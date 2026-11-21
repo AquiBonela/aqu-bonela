@@ -21,9 +21,9 @@ export const Route = createFileRoute("/tramites/$categoria/$tramite")({
   head: ({ loaderData }) => ({
     meta: [
       { title: `${loaderData?.t.title ?? "Trámite"} — Aquí Bonela` },
-      { name: "description", content: loaderData?.t.short ?? "Guía de trámites de Aquí Bonela." },
+      { name: "description", content: loaderData?.t.summary ?? loaderData?.t.short ?? "Guía de trámites de Aquí Bonela." },
       { property: "og:title", content: loaderData?.t.title ?? "Trámite" },
-      { property: "og:description", content: loaderData?.t.short ?? "Guía de trámites." },
+      { property: "og:description", content: loaderData?.t.summary ?? loaderData?.t.short ?? "Guía de trámites." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -231,7 +231,8 @@ function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categor
         <Link to="/tramites/$categoria" params={{ categoria: c.slug }} className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" aria-hidden /><ProcedureText text={tr(c.title)} linkPuntoVuela={false} /></Link>
         <div className="mt-4"><Tags tags={t.tags} /></div>
         <h1 className="mt-3 whitespace-pre-line font-display text-3xl font-extrabold text-balance sm:text-4xl"><ProcedureText text={tr(t.title)} /></h1>
-        <p className="mt-2 whitespace-pre-line text-lg text-muted-foreground"><ProcedureText text={tr(t.short)} /></p>
+        <p className="mt-2 whitespace-pre-line text-lg text-muted-foreground"><ProcedureText text={tr(t.summary ?? t.short)} /></p>
+        {t.summary && t.short && t.summary !== t.short && <div className="mt-5 whitespace-pre-line text-base leading-relaxed"><ProcedureText text={tr(t.short)} /></div>}
 
         {t.primaryAction && (
           <a href={t.primaryAction.url} target="_blank" rel="noopener noreferrer" className="press mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-6 py-3 font-bold text-primary-foreground sm:w-auto">

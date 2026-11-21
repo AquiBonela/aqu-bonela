@@ -7,22 +7,22 @@ import { ProcedureEditor } from "@/routes/_authenticated/admin/tramites.$id";
 import type { ProcedureCategory } from "@/lib/admin-procedures";
 import { catalogContent, languagesToGenerate } from '@/lib/content-translations';
 
-const mocks = vi.hoisted(() => ({ insert: vi.fn(), navigate: vi.fn() }));
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), navigate: vi.fn(), generate: vi.fn() }));
 vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
 vi.mock("@tanstack/react-router", async (original) => ({ ...await original<typeof import("@tanstack/react-router")>(), useNavigate: () => mocks.navigate, Link: ({ children }: { children: ReactNode }) => <a>{children}</a> }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { from: () => ({ insert: mocks.insert }) } }));
 vi.mock('@/components/admin/useContentTranslations', () => ({ useContentTranslations: () => ({
-  translating: false, translationError: '',
-  generate: async (source: Record<string, unknown>, versions: import('@/lib/content-translations').Translations, update: (v: import('@/lib/content-translations').Translations) => void) => {
-    const next = { ...versions };
-    for (const lang of languagesToGenerate(versions, source)) next[lang] = { content: catalogContent(source, lang), source, manual: false };
-    update(next); return next;
-  },
+  translating: false, translationError: '', generate: mocks.generate,
 }) }));
 const categories: ProcedureCategory[] = [{ id: 'category-1', slug: 'documentacion', title: 'Documentación personal', description: '', title_en: '', description_en: '', visible: true, sort_order: 0, created_at: '', updated_at: '' }];
 function mount(id = "nuevo") {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   mocks.insert.mockReturnValue({ select: () => ({ single: async () => ({ data: { id: 'saved-id' }, error: null }) }) });
+  mocks.generate.mockImplementation(async (source: Record<string, unknown>, versions: import('@/lib/content-translations').Translations, update: (v: import('@/lib/content-translations').Translations) => void) => {
+    const next = { ...versions };
+    for (const lang of languagesToGenerate(versions, source)) next[lang] = { content: catalogContent(source, lang), source, manual: false };
+    update(next); return next;
+  });
   render(<QueryClientProvider client={qc}><I18nProvider><ProcedureEditor id={id} row={undefined} categories={categories} /></I18nProvider></QueryClientProvider>);
 }
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
@@ -35,10 +35,11 @@ describe("procedure editor form", () => {
   it("saves a new procedure as a draft with the selected category", async () => {
     mount();
     fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Solicitud de ejemplo' } });
-    fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'Resumen de prueba' } });
+    fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Resumen de prueba' } });
     fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     expect(mocks.insert.mock.calls[0]?.[0]).toMatchObject({ title: 'Solicitud de ejemplo', slug: 'solicitud-de-ejemplo', status: 'borrador', category_id: 'category-1', summary: 'Resumen de prueba' });
+    expect(mocks.generate).not.toHaveBeenCalled();
   });
   it("preserves an existing guide when a section is switched off and saved", async () => {
     mount('certificado-digital');
@@ -62,9 +63,9 @@ describe("procedure editor form", () => {
   it("keeps English and Spanish summaries separate", async () => {
     mount();
     fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Solicitud' } });
-    fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'Resumen español' } });
+    fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Resumen español' } });
     await chooseLanguage('English');
-    fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'English summary' } });
+    fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'English summary' } });
     fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     const saved = mocks.insert.mock.calls[0]?.[0];
@@ -74,9 +75,9 @@ describe("procedure editor form", () => {
   it('saves a Dutch correction without changing Spanish or English', async () => {
     mount('certificado-digital');
     await chooseLanguage('English');
-    const english = (screen.getByLabelText('Resumen para el listado') as HTMLTextAreaElement).value;
+    const english = (screen.getByLabelText('Subtítulo') as HTMLTextAreaElement).value;
     await chooseLanguage('Nederlands');
-    fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'Handmatig gecontroleerde Nederlandse tekst' } });
+    fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Handmatig gecontroleerde Nederlandse tekst' } });
     fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     const saved = mocks.insert.mock.calls[0]?.[0];

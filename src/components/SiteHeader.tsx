@@ -27,17 +27,11 @@ export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?:
   const { t, tr } = useI18n();
   const [sendOpen, setSendOpen] = useState(false);
   const brand = null;
-  const left = overlay ? (
-    <span className="[&_button]:!text-primary-foreground [&_svg]:!text-primary-foreground">
-      <WeatherNow />
-    </span>
-  ) : (
-    <WeatherNow />
-  );
+  const left = <WeatherNow />;
   return (
     <>
     {overlay && <SiteBanner />}
-    <div className={overlay ? "relative" : undefined}>
+    <div className={overlay ? "relative" : "contents"}>
     <AppHeader
       navLabel={t("menu.label")}
       footnote={<SiteFooter inMenu />}

@@ -69,7 +69,7 @@ function Page() {
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-background">
-      <header className="border-b px-4 py-3">
+      <header className="sticky top-0 z-40 border-b bg-background px-4 py-3">
         <div className="mx-auto flex max-w-2xl items-baseline justify-between">
           <span className="font-display text-lg font-bold">Aquí Bonela</span>
           <span className="text-xs uppercase tracking-widest text-foreground"><Text text="Revisión de ficha" /></span>

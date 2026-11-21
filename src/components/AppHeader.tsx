@@ -55,6 +55,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   const { tr, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { t } = useI18n();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const closeMenu = () => {
@@ -67,6 +68,14 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   const mainItems = items.filter((item) => item !== sendItem && item !== aboutItem);
 
   useEffect(() => setOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (!overlay) return;
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [overlay]);
 
   // Permite abrir el menú desde otras barras (p. ej., la barra fija de Descubre)
   useEffect(() => {
@@ -110,16 +119,20 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
 
   return (
     <>
-      <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
+      <header className={overlay
+        ? scrolled
+          ? "fixed inset-x-0 top-0 z-40 border-b bg-background text-foreground"
+          : "absolute inset-x-0 top-0 z-20 text-primary-foreground"
+        : "sticky top-0 z-40 border-b bg-background"}>
         <div className={admin ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2" : "mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-1 px-2 py-2 sm:gap-x-2 sm:px-4"}>
           <div className="flex min-w-0 items-center justify-start gap-1 sm:gap-5">
             {!admin && <EmergencyButton />}
-            {!admin && left}
+            {!admin && <span className={overlay && !scrolled ? "[&_button]:!text-primary-foreground [&_svg]:!text-primary-foreground" : undefined}>{left}</span>}
           </div>
           {admin && <div className="flex min-w-0 items-center justify-center">{brand}</div>}
           <div className="flex min-w-0 items-center justify-end gap-1">
             {!admin && brand}
-            {!admin && <LangSwitch className={overlay ? "[&_button]:!text-primary-foreground" : ""} />}
+            {!admin && <LangSwitch className={overlay && !scrolled ? "[&_button]:!text-primary-foreground" : ""} />}
             <Button variant="ghost" size="icon"
               type="button"
               onClick={() => setOpen(true)}
