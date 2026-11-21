@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { ArrowLeft, Save, Eye, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ProcedureText } from "@/components/ProcedureText";
+import { euroAmount, hasProcedureLink } from '@/lib/procedure-display';
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ProcedureFields, SECTION_FIELDS } from "@/components/admin/ProcedureFields";
 import { Button } from "@/components/ui/button";
@@ -170,7 +171,8 @@ function ProcedurePreview({ content }: { content: Record<string, unknown> }) {
     if (Array.isArray(value)) return value.map((v, i) => <div key={i} className="space-y-2 py-1">{render(v)}</div>);
     if (value && typeof value === "object") {
       const fields = value as Record<string, unknown>;
-      if (typeof fields['url'] === "string" && typeof fields['label'] === "string" && fields['url']) return /^(https?:\/\/|tel:|\/[^/])/.test(fields['url']) ? <a className="text-sm text-primary underline" href={fields['url']} target="_blank" rel="noopener noreferrer"><ProcedureText text={fields['label']} linkPuntoVuela={false} /></a> : null;
+      if ('url' in fields && 'label' in fields) return hasProcedureLink(fields) ? <a className="text-sm text-primary underline" href={fields.url} target={fields.url.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer"><ProcedureText text={fields.label} linkPuntoVuela={false} /></a> : null;
+      if (typeof fields['title'] === 'string' && Array.isArray(fields['requisitos'])) return <div className="space-y-2"><h4 className="font-semibold"><ProcedureText text={fields['title']} /></h4>{render(fields['requisitos'])}</div>;
       return <div className="space-y-2">{Object.values(fields).map((v, i) => <div key={i}>{render(v)}</div>)}</div>;
     }
     return null;
@@ -182,7 +184,7 @@ function ProcedurePreview({ content }: { content: Record<string, unknown> }) {
     {render(content['short'])}{render(content['primaryAction'])}
     {PROCEDURE_SECTIONS.filter((s) => !["short", "primaryAction", "tags"].includes(s.key)).map((s) => {
       const keys: Record<string, string[]> = { para: ["paraIntro", "paraNota"], quien: ["quienIntro", "quienNota"], necesitas: ["necesitasIntro", "necesitasNota"], coste: ["costeTitulo", "costeImporte", "costeTexto"] };
-      const parts = [content[s.key], ...(keys[s.key] ?? [s.key]).map((k) => guide[k])].filter(hasContent);
+      const parts = [content[s.key], ...(s.key === 'necesitas' ? [content['requisitosGrupos']] : []), ...(keys[s.key] ?? [s.key]).map((k) => k === 'costeImporte' && typeof guide[k] === 'string' ? euroAmount(guide[k]) : guide[k])].filter(hasContent);
       return parts.length ? <section key={s.key} className="space-y-2 border-t pt-4"><h3 className="font-semibold">{tr(s.title)}</h3>{parts.map((v, i) => <div key={i}>{render(v)}</div>)}</section> : null;
     })}
   </article>;

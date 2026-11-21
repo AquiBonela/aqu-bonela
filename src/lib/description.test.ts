@@ -2,6 +2,19 @@ import { describe, expect, it } from "vitest";
 import { parseDescription } from "./description";
 
 describe("description formatting", () => {
+  it('supports triple-asterisk local links without tying them to a domain', () => {
+    expect(parseDescription('*** Centro médico (/servicios/consultorio-medico) ***')).toEqual([{ text: 'Centro médico', bold: false, italic: false, href: '/servicios/consultorio-medico' }]);
+  });
+  it('supports triple-asterisk external links and URL parentheses', () => {
+    expect(parseDescription('***Web (https://example.org/info_(a))***')).toEqual([{ text: 'Web', bold: false, italic: false, href: 'https://example.org/info_(a)' }]);
+  });
+  it('does not confuse triple-asterisk links with bold and italic', () => {
+    expect(parseDescription('**Título** *** Centro (/punto-vuela) *** *Nota*').filter((p) => p.href || p.bold || p.italic)).toEqual([{ text: 'Título', bold: true, italic: false }, { text: 'Centro', bold: false, italic: false, href: '/punto-vuela' }, { text: 'Nota', bold: false, italic: true }]);
+  });
+  it.each(['javascript:alert(1)', '//evil.example', '/\\evil.example'])('rejects unsafe new-format links %s', (url) => {
+    const text = `*** Enlace (${url}) ***`;
+    expect(parseDescription(text)).toEqual([{ text, bold: false, italic: false }]);
+  });
   it("creates the requested ayuntamiento link from a bare website", () => {
     expect(parseDescription("/ayuntamiento*www.casarabonela.es/")).toEqual([
       { text: "ayuntamiento", bold: false, italic: false, href: "https://www.casarabonela.es/" },

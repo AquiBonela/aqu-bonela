@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TRAMITES, type Tramite } from "@/lib/tramites";
 import { englishText } from "@/lib/i18n-extra";
+import { hasProcedureLink } from './procedure-display';
 
 const url = z.string().refine((v) => !v || /^(https?:\/\/|tel:|\/[^/])/.test(v), "Enlace no válido");
 const link = z.object({ label: z.string(), url });
@@ -8,7 +9,7 @@ export const procedureContentSchema = z.object({
   title: z.string(), short: z.string(), summary: z.string().optional(),
   slug: z.string(), cat: z.string(), tags: z.array(z.enum(["gratis", "online", "presencial"])).optional(),
   primaryAction: link.optional(), para: z.array(z.string()).optional(), quien: z.array(z.string()).optional(),
-  necesitas: z.array(z.string()).optional(), pasos: z.array(z.object({ t: z.string(), d: z.string() })).optional(),
+  necesitas: z.array(z.string()).optional(), requisitosGrupos: z.array(z.object({ title: z.string(), requisitos: z.array(z.string()) })).optional(), pasos: z.array(z.object({ t: z.string(), d: z.string() })).optional(),
   coste: z.string().optional(), donde: z.string().optional(), ayuda: z.string().optional(), links: z.array(link),
   guia: z.object({
     paraIntro: z.string().optional(), paraNota: z.string().optional(), necesitasIntro: z.string().optional(),
@@ -54,7 +55,7 @@ export function editableContent(t?: Tramite): Record<string, unknown> {
   return {
     ...base, summary: base.summary ?? "", tags: base.tags ?? [],
     primaryAction: base.primaryAction ?? { label: "", url: "" },
-    para: base.para ?? [], quien: base.quien ?? [], necesitas: base.necesitas ?? [],
+    para: base.para ?? [], quien: base.quien ?? [], necesitas: base.necesitas ?? [], requisitosGrupos: base.requisitosGrupos ?? [],
     guia: {
       paraIntro: "", paraNota: "", quienIntro: "", quienNota: "", necesitasIntro: "", necesitasNota: "",
       pasos: base.pasos?.map((s) => ({ t: s.t, d: [s.d] })) ?? [],
@@ -95,5 +96,16 @@ export function visibleContent(input: Record<string, unknown>, visibility: Visib
       for (const field of guideKeys[key] ?? [key]) g[field] = Array.isArray(g[field]) ? [] : "";
     }
   }
-  return result;
+  if (visibility['necesitas'] === false) result['requisitosGrupos'] = [];
+  else if (Array.isArray(result['requisitosGrupos'])) result['requisitosGrupos'] = result['requisitosGrupos'].filter((group) => group && typeof group === 'object' && Array.isArray(group.requisitos) && group.requisitos.some((item: unknown) => typeof item === 'string' && item.trim()));
+  const prune = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(prune).filter((item) => item !== undefined);
+    if (value && typeof value === 'object') {
+      const fields = value as Record<string, unknown>;
+      if ('url' in fields && 'label' in fields && !hasProcedureLink(fields)) return undefined;
+      return Object.fromEntries(Object.entries(fields).map(([key, item]) => [key, prune(item)]).filter(([, item]) => item !== undefined));
+    }
+    return value;
+  };
+  return prune(result) as Record<string, unknown>;
 }

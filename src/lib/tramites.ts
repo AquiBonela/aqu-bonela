@@ -37,6 +37,7 @@ export type Tramite = {
   para?: string[];
   quien?: string[];
   necesitas?: string[];
+  requisitosGrupos?: { title: string; requisitos: string[] }[];
   pasos?: { t: string; d: string }[];
   guia?: TramiteGuide;
   primaryAction?: TramiteLink;

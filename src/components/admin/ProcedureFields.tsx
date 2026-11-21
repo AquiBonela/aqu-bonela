@@ -4,14 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/lib/i18n";
 
-export type Field = { key: string; label: string; multiline?: boolean; url?: boolean; items?: Field[]; object?: Field[] };
+export type Field = { key: string; label: string; multiline?: boolean; url?: boolean; euro?: boolean; items?: Field[]; object?: Field[] };
 const action: Field[] = [{ key: "label", label: "Texto del enlace" }, { key: "url", label: "Enlace", url: true }];
 export const SECTION_FIELDS: Record<string, Field[]> = {
   short: [{ key: "short", label: "Descripción completa", multiline: true }],
   primaryAction: [{ key: "primaryAction", label: "Botón principal", object: action }],
   para: [{ key: "guia.paraIntro", label: "Introducción", multiline: true }, { key: "para", label: "Usos", items: [{ key: "", label: "Texto", multiline: true }] }, { key: "guia.paraNota", label: "Nota final", multiline: true }],
   quien: [{ key: "guia.quienIntro", label: "Introducción", multiline: true }, { key: "quien", label: "Personas destinatarias", items: [{ key: "", label: "Texto", multiline: true }] }, { key: "guia.quienNota", label: "Nota final", multiline: true }],
-  necesitas: [{ key: "guia.necesitasIntro", label: "Introducción", multiline: true }, { key: "necesitas", label: "Requisitos y documentos", items: [{ key: "", label: "Texto", multiline: true }] }, { key: "guia.necesitasNota", label: "Nota final", multiline: true }],
+  necesitas: [{ key: "guia.necesitasIntro", label: "Introducción", multiline: true }, { key: "necesitas", label: "Requisitos y documentos", items: [{ key: "", label: "Texto", multiline: true }] }, { key: "requisitosGrupos", label: "Grupo de requisitos", items: [{ key: "title", label: "Título" }, { key: "requisitos", label: "Requisitos", items: [{ key: "", label: "Requisito", multiline: true }] }] }, { key: "guia.necesitasNota", label: "Nota final", multiline: true }],
   pasos: [{ key: "guia.pasos", label: "Pasos", items: [
     { key: "grupo", label: "Modalidad / grupo" }, { key: "t", label: "Título del paso" },
     { key: "d", label: "Explicación", items: [{ key: "", label: "Párrafo", multiline: true }] },
@@ -23,7 +23,7 @@ export const SECTION_FIELDS: Record<string, Field[]> = {
     { key: "details", label: "Datos de contacto", items: [{ key: "label", label: "Etiqueta del dato" }, { key: "value", label: "Valor" }, { key: "href", label: "Enlace", url: true }] },
     { key: "note", label: "Nota final", multiline: true }, { key: "link", label: "Enlace del lugar", object: action },
   ] }],
-  coste: [{ key: "guia.costeTitulo", label: "Título" }, { key: "guia.costeImporte", label: "Importe" }, { key: "guia.costeTexto", label: "Explicación", multiline: true }],
+  coste: [{ key: "guia.costeTitulo", label: "Título" }, { key: "guia.costeImporte", label: "Importe", euro: true }, { key: "guia.costeTexto", label: "Explicación", multiline: true }],
   ayuda: [{ key: "guia.ayuda", label: "Ayuda y acompañamiento", items: [{ key: "", label: "Párrafo", multiline: true }] }],
   aclaracion: [{ key: "guia.aclaracion", label: "Aclaración importante", object: [
     { key: "titulo", label: "Título" }, { key: "introduccion", label: "Introducción", multiline: true },
@@ -93,7 +93,7 @@ export function ProcedureFields({ fields, value, onChange, prefix = "" }: {
     }
     return <label key={field.key} className="block text-sm font-medium">
       <span className="mb-1 block">{tr(field.label)}</span>
-      {field.multiline ? <Textarea aria-label={label} value={typeof current === "string" ? current : ""} onChange={(e) => update(e.target.value)} className="min-h-24" /> :
+      {field.euro ? <div className="relative"><Input aria-label={label} className="pr-9" inputMode="decimal" value={typeof current === 'string' ? current : ''} onChange={(e) => update(e.target.value)} />{(!current || typeof current === 'string' && /^\d+(?:[.,]\d+)*$/.test(current.trim())) && <span aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>}</div> : field.multiline ? <Textarea aria-label={label} value={typeof current === "string" ? current : ""} onChange={(e) => update(e.target.value)} className="min-h-24" /> :
         <Input aria-label={label} value={typeof current === "string" ? current : ""} onChange={(e) => update(e.target.value)} inputMode={field.url ? "url" : "text"} />}
     </label>;
   })}</div>;

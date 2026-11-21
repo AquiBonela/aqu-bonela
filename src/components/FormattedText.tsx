@@ -3,7 +3,7 @@ import { parseDescription, type DescriptionPart } from "@/lib/description";
 
 export function FormattedTextPart({ part, linksEnabled = true, children }: { part: DescriptionPart; linksEnabled?: boolean; children?: ReactNode }) {
   const content = part.href && linksEnabled
-    ? <a href={part.href} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">{part.text}</a>
+    ? <a href={part.href} target={part.href.startsWith('/') ? undefined : '_blank'} rel={part.href.startsWith('/') ? undefined : 'noopener noreferrer'} className="text-primary underline underline-offset-2">{part.text}</a>
     : children ?? part.text;
   return part.bold ? <strong className="font-semibold">{content}</strong> : part.italic ? <em>{content}</em> : <>{content}</>;
 }

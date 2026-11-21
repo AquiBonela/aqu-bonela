@@ -9,6 +9,7 @@ import { publicProceduresQuery, procedureTranslationMap } from '@/lib/public-pro
 import { type Tramite, type TramiteLink } from "@/lib/tramites";
 import { Tags } from "@/components/TramitesUI";
 import { ProcedureText } from "@/components/ProcedureText";
+import { euroAmount, hasProcedureLink } from '@/lib/procedure-display';
 
 export const Route = createFileRoute("/tramites/$categoria/$tramite")({
   loader: async ({ params, context }) => {
@@ -82,6 +83,7 @@ function PuntoVuelaText({ text }: { text: string }) {
 
 function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?: boolean }) {
   const { tr } = useI18n();
+  if (!hasProcedureLink(link)) return null;
   const className = prominent
     ? "press mt-4 inline-flex min-h-11 items-center gap-2 bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
     : "mt-3 inline-flex items-center gap-1.5 font-semibold text-primary underline underline-offset-4";
@@ -89,7 +91,7 @@ function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?:
     return <Link to="/punto-vuela" className={className}><ProcedureText text={tr(link.label)} linkPuntoVuela={false} /> <ArrowRight className="h-4 w-4 shrink-0" aria-hidden /></Link>;
   }
   return (
-    <a href={link.url} target="_blank" rel="noopener noreferrer" className={className}>
+    <a href={link.url} target={link.url.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer" className={className}>
       <ProcedureText text={tr(link.label)} linkPuntoVuela={false} /> <ExternalLink className="h-4 w-4 shrink-0" aria-hidden />
     </a>
   );
@@ -99,6 +101,8 @@ function DetailedGuide({ t }: { t: Tramite }) {
   const { tr } = useI18n();
   const guide = t.guia;
   if (!guide) return null;
+  const sources = guide.fuentes.filter(hasProcedureLink);
+  const groups = t.requisitosGrupos?.filter((group) => group.requisitos.some((item) => item.trim())) ?? [];
 
   return (
     <>
@@ -115,10 +119,14 @@ function DetailedGuide({ t }: { t: Tramite }) {
           <p className="mt-4 border-l-4 border-primary bg-muted/50 p-3 text-sm"><ProcedureText text={tr(guide.quienNota)} /></p>
         </GuideSection> : null}
 
-        {(t.necesitas?.length || guide.necesitasIntro || guide.necesitasNota) ? <GuideSection value="necesitas" title="¿Qué necesitas?">
+        {(t.necesitas?.length || groups.length || guide.necesitasIntro || guide.necesitasNota) ? <GuideSection value="necesitas" title="¿Qué necesitas?">
           {guide.necesitasIntro && <p className="mb-4"><ProcedureText text={tr(guide.necesitasIntro)} /></p>}
           <GuideList items={t.necesitas} />
-          <p className="mt-4 bg-muted/50 p-3 text-sm font-semibold"><PuntoVuelaText text={guide.necesitasNota} /></p>
+          {groups.map((group, index) => <div key={index} className="mt-5 space-y-3">
+            {group.title.trim() && <h3 className="font-display text-lg font-bold"><ProcedureText text={tr(group.title)} /></h3>}
+            <GuideList items={group.requisitos.filter((item) => item.trim())} />
+          </div>)}
+          {guide.necesitasNota && <p className="mt-4 bg-muted/50 p-3 text-sm font-semibold"><PuntoVuelaText text={guide.necesitasNota} /></p>}
         </GuideSection> : null}
 
         {guide.pasos.length ? <GuideSection value="pasos" title="¿Cómo hacerlo paso a paso?">
@@ -141,7 +149,7 @@ function DetailedGuide({ t }: { t: Tramite }) {
           </ol>
         </GuideSection> : null}
 
-        {(guide.lugares.length || guide.fuentes.length) ? <GuideSection value="donde" title="¿Dónde puedo realizarlo?">
+        {(guide.lugares.length || sources.length) ? <GuideSection value="donde" title="¿Dónde puedo realizarlo?">
           <div className="space-y-4">
             {guide.lugares.map((place) => (
               <article key={place.title} className="border bg-muted/30 p-4">
@@ -164,23 +172,23 @@ function DetailedGuide({ t }: { t: Tramite }) {
                     ))}
                   </dl>
                 )}
-                {place.link && <div><GuideLink link={place.link} /></div>}
+                {hasProcedureLink(place.link) && <div><GuideLink link={place.link} /></div>}
                 {place.note && <p className="mt-3 text-sm text-muted-foreground"><ProcedureText text={tr(place.note)} /></p>}
               </article>
             ))}
           </div>
-          <div className="mt-5 border-t pt-4 text-sm">
+          {sources.length > 0 && <div className="mt-5 border-t pt-4 text-sm">
             <p className="font-semibold">{tr("También puedes consultar el procedimiento oficial en:")}</p>
             <ul className="mt-2 space-y-2">
-              {guide.fuentes.map((link) => <li key={link.url}><GuideLink link={link} /></li>)}
+              {sources.map((link) => <li key={link.url}><GuideLink link={link} /></li>)}
             </ul>
-          </div>
+          </div>}
         </GuideSection> : null}
 
         {(guide.costeTitulo || guide.costeImporte || guide.costeTexto) ? <GuideSection value="coste" title="¿Cuánto cuesta?">
           <div className="border-l-4 border-primary bg-muted/50 p-4">
             <p className="font-semibold"><ProcedureText text={tr(guide.costeTitulo)} /></p>
-            <p className="mt-1 font-display text-4xl font-extrabold text-primary"><ProcedureText text={tr(guide.costeImporte)} /></p>
+            {guide.costeImporte.trim() && <p className="mt-1 font-display text-4xl font-extrabold text-primary"><ProcedureText text={euroAmount(tr(guide.costeImporte))} /></p>}
             <p className="mt-2 text-sm"><ProcedureText text={tr(guide.costeTexto)} /></p>
           </div>
         </GuideSection> : null}
@@ -224,6 +232,7 @@ function TramitePage() {
 }
 function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categoria }) {
   const { tr } = useI18n();
+  const links = t.links.filter(hasProcedureLink);
   return (
     <div className="min-h-dvh bg-background">
       <SiteHeader />
@@ -234,8 +243,8 @@ function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categor
         <p className="mt-2 whitespace-pre-line text-lg text-muted-foreground"><ProcedureText text={tr(t.summary ?? t.short)} /></p>
         {t.summary && t.short && t.summary !== t.short && <div className="mt-5 whitespace-pre-line text-base leading-relaxed"><ProcedureText text={tr(t.short)} /></div>}
 
-        {t.primaryAction && (
-          <a href={t.primaryAction.url} target="_blank" rel="noopener noreferrer" className="press mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-6 py-3 font-bold text-primary-foreground sm:w-auto">
+        {hasProcedureLink(t.primaryAction) && (
+          <a href={t.primaryAction.url} target={t.primaryAction.url.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer" className="press mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-6 py-3 font-bold text-primary-foreground sm:w-auto">
             <ProcedureText text={tr(t.primaryAction.label)} linkPuntoVuela={false} /> <ExternalLink className="h-5 w-5" aria-hidden />
           </a>
         )}
@@ -269,10 +278,10 @@ function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categor
           <p className="mt-8 border bg-muted/50 p-5">{tr("Estamos preparando la guía paso a paso de este trámite. Mientras tanto, puedes consultar la información oficial.")}</p>
         )}
 
-        {t.links.length > 0 && (
+        {links.length > 0 && (
           <div className="mt-8 flex flex-wrap gap-3">
-            {t.links.map((l) => (
-              <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer" className="press inline-flex min-h-12 items-center gap-2 border-2 border-primary px-5 font-bold text-primary hover:bg-primary hover:text-primary-foreground">
+            {links.map((l) => (
+              <a key={l.url} href={l.url} target={l.url.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer" className="press inline-flex min-h-12 items-center gap-2 border-2 border-primary px-5 font-bold text-primary hover:bg-primary hover:text-primary-foreground">
                 <ProcedureText text={tr(l.label)} linkPuntoVuela={false} /> <ExternalLink className="h-4 w-4" aria-hidden />
               </a>
             ))}
