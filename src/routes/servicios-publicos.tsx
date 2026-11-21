@@ -14,7 +14,7 @@ const PUNTO_VUELA_SLUG = "punto-vuela-casarabonela";
 function PuntoVuelaInfo() {
   const { data } = useQuery(listingDetailQuery("publico", PUNTO_VUELA_SLUG));
   return (
-    <dl className="mt-4 space-y-1 border-t border-primary-foreground/30 pt-4 text-sm">
+    <dl className="mt-4 space-y-1 border-t border-vuela-foreground/25 pt-4 text-sm">
       <div className="flex gap-2"><dt className="font-bold"><Text text="Dónde" />:</dt><dd>{data?.public_address ?? "Calle Cuatro Esquinas, 10"}</dd></div>
       <div className="flex gap-2"><dt className="font-bold"><Text text="Horario" />:</dt><dd><Text text="Consultar en ficha" /></dd></div>
     </dl>
@@ -153,11 +153,11 @@ function ServiciosPublicos() {
 
 
         {/* Punto Vuela */}
-        <section className="mt-10 bg-primary text-primary-foreground">
+        <section aria-labelledby="punto-vuela-title" className="mt-10 bg-vuela text-vuela-foreground">
           <div className="mx-auto max-w-5xl px-4 py-10">
             <div className="flex items-center gap-3">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary"><Laptop className="h-6 w-6" aria-hidden /></span>
-              <h3 className="font-display text-2xl font-extrabold leading-tight"><Text text="Punto Vuela" /></h3>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-vuela-action text-vuela-foreground"><Laptop className="h-6 w-6" aria-hidden /></span>
+              <h3 id="punto-vuela-title" className="font-vuela text-3xl font-normal leading-tight"><Text text="Punto Vuela" /></h3>
             </div>
             <p className="mt-3 opacity-90"><Text text="Servicio gratuito de apoyo digital para vecinos de todas las edades." /></p>
             <PuntoVuelaInfo />
@@ -166,10 +166,12 @@ function ServiciosPublicos() {
                 <li key={x} className="flex items-center gap-2 whitespace-nowrap sm:gap-3"><CheckCircle2 className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" aria-hidden />{tr(x)}</li>
               ))}
             </ul>
-            <p className="mt-4 bg-primary-foreground/15 p-3 text-sm font-semibold"><Text text="Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso." /></p>
-            <Link to="/servicios/$slug" params={{ slug: PUNTO_VUELA_SLUG }} className="press mt-5 inline-flex items-center gap-2 bg-primary-foreground px-5 py-3 text-sm font-bold text-primary">
-              <Text text="Ver ficha de Punto Vuela" /> <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
+            <p className="mt-4 bg-vuela-surface p-3 text-sm font-semibold"><Text text="Si no te manejas con el certificado digital, Cl@ve o los trámites por internet, aquí te ayudan paso a paso." /></p>
+            <Button asChild variant="vuela" className="mt-5 min-h-12 px-5 font-bold">
+              <Link to="/servicios/$slug" params={{ slug: PUNTO_VUELA_SLUG }}>
+                <Text text="Ver ficha de Punto Vuela" /> <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </Button>
           </div>
         </section>
 

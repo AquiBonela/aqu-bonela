@@ -7,6 +7,12 @@ import ukText from "@/lib/locales/uk.json";
 import enSupplement from "@/lib/locales/en-supplement.json";
 import corrections from "@/lib/locales/corrections.json";
 import { reviewedTranslations } from "@/lib/i18n-overrides";
+import spanishFlag from "@/assets/flags/es.svg.asset.json";
+import englishFlag from "@/assets/flags/en.svg.asset.json";
+import germanFlag from "@/assets/flags/de.svg.asset.json";
+import dutchFlag from "@/assets/flags/nl.svg.asset.json";
+import frenchFlag from "@/assets/flags/fr.svg.asset.json";
+import ukrainianFlag from "@/assets/flags/uk.svg.asset.json";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
@@ -18,6 +24,10 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRad
  */
 export const LANGS = ["es", "en", "de", "nl", "fr", "uk"] as const;
 export type Lang = (typeof LANGS)[number];
+const LANGUAGE_FLAGS: Record<Lang, string> = {
+  es: spanishFlag.url, en: englishFlag.url, de: germanFlag.url,
+  nl: dutchFlag.url, fr: frenchFlag.url, uk: ukrainianFlag.url,
+};
 export const LANGUAGE_OPTIONS: Record<Lang, { name: string; flag: string; locale: string }> = {
   es: { name: "Español", flag: "🇪🇸", locale: "es-ES" },
   en: { name: "English", flag: "🇬🇧", locale: "en-GB" },
@@ -551,7 +561,7 @@ export function LangSwitch({ className = "" }: { className?: string }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" type="button" aria-label={`${t("lang.label")}: ${current.name}`} className="min-h-11 w-40 justify-between px-2 text-sm text-inherit hover:bg-transparent">
-            <span className="flex items-center gap-2"><span aria-hidden>{current.flag}</span><span lang={lang}>{current.name}</span></span>
+            <span className="flex items-center gap-2"><img src={LANGUAGE_FLAGS[lang]} alt="" aria-hidden width={24} height={16} className="h-4 w-6 shrink-0 object-cover" /><span lang={lang}>{current.name}</span></span>
             <ChevronDown className="h-4 w-4 shrink-0" aria-hidden />
           </Button>
         </DropdownMenuTrigger>
@@ -562,7 +572,7 @@ export function LangSwitch({ className = "" }: { className?: string }) {
           }}>
             {LANGS.map((language) => (
               <DropdownMenuRadioItem key={language} value={language} className="min-h-11 gap-2">
-                <span aria-hidden>{LANGUAGE_OPTIONS[language].flag}</span><span lang={language}>{LANGUAGE_OPTIONS[language].name}</span>
+                <img src={LANGUAGE_FLAGS[language]} alt="" aria-hidden width={24} height={16} className="h-4 w-6 shrink-0 object-cover" /><span lang={language}>{LANGUAGE_OPTIONS[language].name}</span>
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>

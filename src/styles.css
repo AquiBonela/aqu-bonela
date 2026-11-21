@@ -4,6 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Punto Vuela IvyMode";
+  src: url("/__l5e/assets-v1/dafd97e1-1c66-4b1c-97b7-3de45371eff6/punto-vuela-ivymode.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /*
  * Design system definition.
  *
@@ -21,6 +29,11 @@
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-vuela: "Punto Vuela IvyMode", Georgia, serif;
+  --color-vuela: var(--vuela);
+  --color-vuela-foreground: var(--vuela-foreground);
+  --color-vuela-surface: var(--vuela-surface);
+  --color-vuela-action: var(--vuela-action);
   --color-terracotta: var(--terracotta);
   --color-availability: var(--availability);
   --color-availability-foreground: var(--availability-foreground);
@@ -79,6 +92,11 @@
 }
 
 :root {
+  /* Punto Vuela official --main (#f3d54e), kept identical in both themes. */
+  --vuela: oklch(0.87457448 0.15273193 96.46065238);
+  --vuela-foreground: oklch(0 0 0);
+  --vuela-surface: oklch(0.973 0.036 96);
+  --vuela-action: oklch(1 0 0);
   --radius: 0rem;
   --availability: oklch(0.973 0.068 96);
   --availability-foreground: oklch(0.60 0.15 62);
@@ -128,6 +146,10 @@
 }
 
 .dark {
+  --vuela: oklch(0.87457448 0.15273193 96.46065238);
+  --vuela-foreground: oklch(0 0 0);
+  --vuela-surface: oklch(0.973 0.036 96);
+  --vuela-action: oklch(1 0 0);
   --availability: oklch(0.29 0.047 85);
   --availability-foreground: oklch(0.86 0.13 86);
   --availability-border: oklch(0.52 0.075 85);
