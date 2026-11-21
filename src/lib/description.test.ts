@@ -2,6 +2,32 @@ import { describe, expect, it } from "vitest";
 import { parseDescription } from "./description";
 
 describe("description formatting", () => {
+  it("creates the requested ayuntamiento link from a bare website", () => {
+    expect(parseDescription("/ayuntamiento*www.casarabonela.es/")).toEqual([
+      { text: "ayuntamiento", bold: false, italic: false, href: "https://www.casarabonela.es/" },
+    ]);
+  });
+  it("supports explicit HTTPS URLs with paths, query parameters and fragments", () => {
+    expect(parseDescription("/Solicitar cita*https://www.casarabonela.es/tramites/cita?q=nie#solicitud/")).toEqual([
+      { text: "Solicitar cita", bold: false, italic: false, href: "https://www.casarabonela.es/tramites/cita?q=nie#solicitud" },
+    ]);
+  });
+  it("keeps links separate from bold and italic text", () => {
+    expect(parseDescription("**Consulta** /ayuntamiento*www.casarabonela.es/ *oficial*")).toEqual([
+      { text: "Consulta", bold: true, italic: false },
+      { text: " ", bold: false, italic: false },
+      { text: "ayuntamiento", bold: false, italic: false, href: "https://www.casarabonela.es/" },
+      { text: " ", bold: false, italic: false },
+      { text: "oficial", bold: false, italic: true },
+    ]);
+  });
+  it.each(["javascript:alert(1)", "data:text/html,test", "//evil.example", "https://user:pass@example.com", "https://example.com/<script>"])("does not create an unsafe link to %s", (url) => {
+    const text = `/enlace*${url}/`;
+    expect(parseDescription(text)).toEqual([{ text, bold: false, italic: false }]);
+  });
+  it("parses multiple links without consuming the intervening text", () => {
+    expect(parseDescription("/Uno*www.casarabonela.es/ y /Dos*https://example.com/info/").filter((part) => part.href).map((part) => part.href)).toEqual(["https://www.casarabonela.es/", "https://example.com/info"]);
+  });
   it("marks text between paired double asterisks as bold", () => {
     expect(parseDescription("**Horario:** de 9:00 a 14:00. **Servicios** disponibles.")).toEqual([
       { text: "Horario:", bold: true, italic: false },

@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest";
 import { parseProcedureText } from "./procedure-text";
 
 describe("procedure text", () => {
+  it("respects a custom external link instead of replacing it with Punto Vuela", () => {
+    expect(parseProcedureText("/Punto Vuela*www.casarabonela.es/")).toEqual([
+      { text: "Punto Vuela", bold: false, italic: false, href: "https://www.casarabonela.es/", puntoVuela: false },
+    ]);
+  });
   it("uses double asterisks for bold in procedure text", () => {
     expect(parseProcedureText("**Documento obligatorio**")).toEqual([
       { text: "Documento obligatorio", bold: true, italic: false, puntoVuela: false },

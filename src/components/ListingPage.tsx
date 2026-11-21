@@ -12,7 +12,7 @@ import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availabili
 import { Switch } from "@/components/ui/switch";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MAX_GALLERY_PHOTOS } from "@/lib/listing-images";
-import { parseDescription } from "@/lib/description";
+import { FormattedText } from "@/components/FormattedText";
 
 export type ReviewField = "address" | "phone" | "phone_2" | "whatsapp" | "email" | "linkedin" | "facebook" | "youtube" | "x_twitter" | "instagram" | "tiktok" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
@@ -99,11 +99,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
             <p className="whitespace-pre-line text-base text-pretty leading-relaxed">
               {tr(listing.description).split("\n").map((line, index, lines) => (
                 <span key={`${index}-${line}`}>
-                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : parseDescription(line).map((part, partIndex) => {
-                    if (part.bold) return <strong key={partIndex} className="font-semibold">{part.italic ? <em>{part.text}</em> : part.text}</strong>;
-                    if (part.italic) return <em key={partIndex}>{part.text}</em>;
-                    return part.text;
-                  })}
+                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : <FormattedText text={line} />}
                   {index < lines.length - 1 ? "\n" : null}
                 </span>
               ))}

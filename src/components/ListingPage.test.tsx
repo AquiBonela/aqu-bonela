@@ -117,6 +117,10 @@ function renderWithDescription(description: string) {
 }
 
 describe("formato de la descripción en la ficha", () => {
+  it("enlaza la palabra ayuntamiento a la web indicada en la descripción compartida con revisión", () => {
+    renderWithDescription("Consulta /ayuntamiento*www.casarabonela.es/.");
+    expect(screen.getByRole("link", { name: "ayuntamiento" })).toHaveProperty("href", "https://www.casarabonela.es/");
+  });
   it("muestra en negrita el doble asterisco y en cursiva el asterisco simple", () => {
     renderWithDescription("**Cerrado** *por obras*");
     expect(screen.getByText("Cerrado").tagName).toBe("STRONG");

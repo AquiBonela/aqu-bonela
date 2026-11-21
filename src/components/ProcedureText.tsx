@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { FormattedTextPart } from "@/components/FormattedText";
 import { Link } from "@tanstack/react-router";
 import { parseProcedureText } from "@/lib/procedure-text";
 
@@ -8,6 +8,6 @@ export function ProcedureText({ text, linkPuntoVuela = true }: { text: string; l
     const content = part.puntoVuela
       ? <Link to="/punto-vuela" className="font-semibold text-primary underline underline-offset-2">{part.text}</Link>
       : part.text;
-    return <Fragment key={index}>{part.bold ? <strong className="font-semibold">{content}</strong> : part.italic ? <em>{content}</em> : content}</Fragment>;
+    return <FormattedTextPart key={index} part={part} linksEnabled={linkPuntoVuela}>{content}</FormattedTextPart>;
   })}</>;
 }
