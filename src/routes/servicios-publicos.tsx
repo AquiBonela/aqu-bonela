@@ -157,7 +157,7 @@ function ServiciosPublicos() {
         <section aria-labelledby="punto-vuela-title" className="mt-10 bg-vuela text-vuela-foreground">
           <div className="mx-auto max-w-5xl px-4 py-10">
             <h3 id="punto-vuela-title">
-              <img src={puntoVuelaLogo.url} alt="Punto Vuela" width={1619} height={528} className="block h-auto w-60 max-w-full" />
+              <img src={puntoVuelaLogo.url} alt="Punto Vuela" width={1619} height={528} className="block h-auto w-52 max-w-full" />
             </h3>
             <p className="mt-3 opacity-90"><Text text="Servicio gratuito de apoyo digital para vecinos de todas las edades." /></p>
             <PuntoVuelaInfo />

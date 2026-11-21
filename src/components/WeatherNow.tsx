@@ -50,10 +50,10 @@ export function WeatherNow() {
         className="inline-flex min-h-11 min-w-0 items-center gap-1 text-sm font-semibold"
         aria-label={`${tr("Ahora en Casarabonela")}: ${tr(label)}, ${w.temp}°. ${tr("Ver pronóstico")}`}
       >
-        <Icon className="h-5 w-5 shrink-0 text-accent-foreground/80" aria-hidden />
-        <span className="flex min-w-0 flex-col items-start leading-tight sm:flex-row sm:items-center sm:gap-1.5">
-          <span>{w.temp}°</span>
-          <span className="text-[10px] sm:text-xs">{tr(label)}</span>
+        <Icon className="h-4 w-4 shrink-0 text-accent-foreground/80 sm:h-5 sm:w-5" aria-hidden />
+        <span className="flex min-w-0 items-center gap-1.5 leading-tight">
+          <span className="shrink-0 tabular-nums">{w.temp}°</span>
+          <span className="hidden text-xs sm:inline">{tr(label)}</span>
         </span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-80 rounded-none">

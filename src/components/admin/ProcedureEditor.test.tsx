@@ -26,6 +26,10 @@ function mount(id = "nuevo") {
   render(<QueryClientProvider client={qc}><I18nProvider><ProcedureEditor id={id} row={undefined} categories={categories} /></I18nProvider></QueryClientProvider>);
 }
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
+async function chooseLanguage(name: string) {
+  fireEvent.keyDown(screen.getByRole('button', { name: 'Idioma del contenido' }), { key: 'Enter' });
+  fireEvent.click(await screen.findByRole('menuitemradio', { name }));
+}
 
 describe("procedure editor form", () => {
   it("saves a new procedure as a draft with the selected category", async () => {
@@ -59,7 +63,7 @@ describe("procedure editor form", () => {
     mount();
     fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Solicitud' } });
     fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'Resumen español' } });
-    fireEvent.click(screen.getByRole('button', { name: 'English' }));
+    await chooseLanguage('English');
     fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'English summary' } });
     fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
@@ -69,9 +73,9 @@ describe("procedure editor form", () => {
   });
   it('saves a Dutch correction without changing Spanish or English', async () => {
     mount('certificado-digital');
-    fireEvent.click(screen.getByRole('button', { name: 'English' }));
+    await chooseLanguage('English');
     const english = (screen.getByLabelText('Resumen para el listado') as HTMLTextAreaElement).value;
-    fireEvent.click(screen.getByRole('button', { name: 'Nederlands' }));
+    await chooseLanguage('Nederlands');
     fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'Handmatig gecontroleerde Nederlandse tekst' } });
     fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());

@@ -563,11 +563,11 @@ export function LangSwitch({ className = "" }: { className?: string }) {
   const { lang, setLang, t } = useI18n();
   const current = LANGUAGE_OPTIONS[lang];
   return (
-    <div className={`shrink-0 ${className}`}>
+    <div className={`w-36 min-w-0 sm:w-40 sm:shrink-0 ${className}`}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" type="button" aria-label={`${t("lang.label")}: ${current.name}`} className="min-h-11 w-40 justify-between px-2 text-sm text-inherit hover:bg-transparent">
-            <span className="flex items-center gap-2"><img src={LANGUAGE_FLAGS[lang]} alt="" aria-hidden width={24} height={16} className="h-4 w-6 shrink-0 object-cover" /><span lang={lang}>{current.name}</span></span>
+          <Button variant="ghost" type="button" aria-label={`${t("lang.label")}: ${current.name}`} className="min-h-11 w-full min-w-0 justify-between gap-1 px-1 text-xs text-inherit hover:bg-transparent sm:px-2 sm:text-sm">
+            <span className="flex min-w-0 items-center gap-1 sm:gap-2"><img src={LANGUAGE_FLAGS[lang]} alt="" aria-hidden width={24} height={16} className="h-4 w-6 shrink-0 object-cover" /><span lang={lang} className="truncate">{current.name}</span></span>
             <ChevronDown className="h-4 w-4 shrink-0" aria-hidden />
           </Button>
         </DropdownMenuTrigger>

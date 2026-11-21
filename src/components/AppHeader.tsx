@@ -111,13 +111,13 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   return (
     <>
       <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
-        <div className={admin ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2" : "mx-auto grid min-h-14 max-w-5xl grid-cols-1 items-center gap-x-2 px-4 py-2 min-[480px]:grid-cols-[auto_minmax(0,1fr)]"}>
-          <div className="flex min-w-0 items-center justify-start gap-3 sm:gap-5">
+        <div className={admin ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2" : "mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-1 px-2 py-2 sm:gap-x-2 sm:px-4"}>
+          <div className="flex min-w-0 items-center justify-start gap-1 sm:gap-5">
             {!admin && <EmergencyButton />}
             {!admin && left}
           </div>
           {admin && <div className="flex min-w-0 items-center justify-center">{brand}</div>}
-          <div className="flex shrink-0 items-center justify-end gap-1">
+          <div className="flex min-w-0 items-center justify-end gap-1">
             {!admin && brand}
             {!admin && <LangSwitch className={overlay ? "[&_button]:!text-primary-foreground" : ""} />}
             <Button variant="ghost" size="icon"

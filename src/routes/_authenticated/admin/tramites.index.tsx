@@ -56,10 +56,18 @@ function ProcedureList() {
         <Button variant="ghost" size="icon" title={tr("Editar categoría")} aria-label={`${tr("Editar categoría")} ${c.title}`} onClick={() => setEditing(c)}><Pencil /></Button>
       </li>)}</ul>
     </section>}
-    <div className="mt-5 grid gap-2 sm:grid-cols-3">
+    <div className="mt-5 grid gap-2 sm:grid-cols-2">
       <div className="relative"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input aria-label={tr("Buscar trámite")} placeholder={tr("Buscar trámite")} value={q} onChange={(e) => setQ(e.target.value)} className="pl-9" /></div>
       <select aria-label={tr("Categoría")} value={cat} onChange={(e) => setCat(e.target.value)} className="h-9 min-w-0 border bg-background px-3 text-sm"><option value="">{tr("Todas las categorías")}</option>{categories.map((c) => <option key={c.id} value={c.id}>{tr(c.title)}</option>)}</select>
-      <select aria-label={tr("Estado")} value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 border bg-background px-3 text-sm"><option value="">{tr("Todos los estados")}</option><option value="publicada">{tr("Publicado")}</option><option value="borrador">{tr("Borrador")}</option><option value="sin-guardar">{tr("Guía actual sin guardar")}</option></select>
+    </div>
+    <div role="group" aria-label={tr("Estado de trámite")} className="mt-3 flex gap-2 overflow-x-auto pb-1">
+      {[{ value: "", label: "Todos" }, { value: "publicada", label: "Publicado" }, { value: "borrador", label: "Borrador" }, { value: "sin-guardar", label: "Guía actual sin guardar" }].map((s) => {
+        const active = status === s.value;
+        const count = s.value ? all.filter((r) => r.status === s.value).length : all.length;
+        return <Button key={s.value || "all"} type="button" variant="outline" aria-pressed={active} onClick={() => setStatus(s.value)} className={`h-auto shrink-0 gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium shadow-none ${active ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "bg-background text-foreground"}`}>
+          {tr(s.label)}<span className={`rounded-full px-1.5 text-xs ${active ? "bg-background/20" : "bg-secondary"}`}>{count}</span>
+        </Button>;
+      })}
     </div>
     <p className="my-3 text-sm text-muted-foreground">{filtered.length} {tr("trámites")}</p>
     {!filtered.length && <p className="py-8 text-center text-muted-foreground">{tr("No hay trámites con estos filtros.")}</p>}
