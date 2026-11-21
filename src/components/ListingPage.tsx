@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MAX_GALLERY_PHOTOS } from "@/lib/listing-images";
 import { FormattedText } from "@/components/FormattedText";
+import { listingText } from '@/lib/content-translations';
 
 export type ReviewField = "address" | "phone" | "phone_2" | "whatsapp" | "email" | "linkedin" | "facebook" | "youtube" | "x_twitter" | "instagram" | "tiktok" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
@@ -33,7 +34,7 @@ function Toggle({ review, field, label }: { review: ReviewControls | undefined; 
 type GalleryPhoto = { url: string; alt: string };
 
 export function ListingPage({ listing, review }: { listing: ListingDetail; review?: ReviewControls | undefined }) {
-  const { tr, locale } = useI18n();
+  const { tr, locale, lang } = useI18n();
   const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
   const showHours = review ? listing.hours.length > 0 : listing.hours.length > 0 && !hoursHidden(listing.tags);
   const hours = groupHours(listing.hours);
@@ -97,7 +98,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
         <div className="space-y-4">
           {listing.description && (
             <p className="whitespace-pre-line text-base text-pretty leading-relaxed">
-              {tr(listing.description).split("\n").map((line, index, lines) => (
+              {listingText(listing, lang, 'description').split("\n").map((line, index, lines) => (
                 <span key={`${index}-${line}`}>
                   {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : <FormattedText text={line} />}
                   {index < lines.length - 1 ? "\n" : null}

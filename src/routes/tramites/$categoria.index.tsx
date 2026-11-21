@@ -2,12 +2,14 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
-import { getCategoria, tramitesDe } from "@/lib/tramites";
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { publicProceduresQuery } from '@/lib/public-procedures';
 import { Hero, TramiteCard } from "@/components/TramitesUI";
 
 export const Route = createFileRoute("/tramites/$categoria/")({
-  loader: ({ params }) => {
-    const c = getCategoria(params.categoria);
+  loader: async ({ params, context }) => {
+    const data = await context.queryClient.ensureQueryData(publicProceduresQuery);
+    const c = data.categories.find((c) => c.slug === params.categoria);
     if (!c) throw notFound();
     return c;
   },
@@ -32,9 +34,12 @@ function NotFoundMsg() {
 }
 
 function CategoriaPage() {
-  const c = Route.useLoaderData();
+  const { categoria } = Route.useParams();
+  const { data } = useSuspenseQuery(publicProceduresQuery);
+  const c = data.categories.find((c) => c.slug === categoria);
   const { tr } = useI18n();
-  const list = tramitesDe(c.slug);
+  if (!c) return <NotFoundMsg />;
+  const list = data.procedures.filter((t) => t.cat === c.slug);
   return (
     <div className="min-h-dvh bg-background">
       <SiteHeader />

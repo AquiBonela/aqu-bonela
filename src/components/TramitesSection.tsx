@@ -4,13 +4,19 @@ import { Search, ArrowRight, MessageSquarePlus } from "lucide-react";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import { CATEGORIAS, buscarTramites, tramitesDe } from "@/lib/tramites";
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { publicProceduresQuery, procedureTranslationMap } from '@/lib/public-procedures';
+import { normalize } from '@/lib/directory';
 import { TramiteCard } from "@/components/TramitesUI";
 
 export function TramitesSection() {
-  const { tr } = useI18n();
-  const [q, setQ] = useState("");
-  const results = buscarTramites(q, tr);
+  const { tr, lang } = useI18n();
+  const { data } = useSuspenseQuery(publicProceduresQuery);
+  const [q, setQ] = useState('');
+  const results = data.procedures.filter((t) => {
+    const map = procedureTranslationMap(t, lang);
+    return normalize([t.title, t.short, t.summary ?? '', map[t.title] ?? tr(t.title), map[t.short] ?? tr(t.short)].join(' ')).includes(normalize(q));
+  });
   return (
     <div>
       <label className="relative block">
@@ -29,11 +35,11 @@ export function TramitesSection() {
         </section>
       ) : (
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {CATEGORIAS.map((c) => (
+          {data.categories.map((c) => (
             <Link key={c.slug} to="/tramites/$categoria" params={{ categoria: c.slug }} className="press flex flex-col gap-2 border-l-4 border-primary bg-muted/50 p-5 transition-colors hover:bg-muted">
               <h3 className="font-display text-lg font-extrabold leading-tight">{tr(c.title)}</h3>
               <p className="text-sm text-muted-foreground">{tr(c.text)}</p>
-              <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-semibold text-primary">{tramitesDe(c.slug).length} {tr("trámites")} <ArrowRight className="h-4 w-4" aria-hidden /></span>
+              <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-semibold text-primary">{data.procedures.filter((t) => t.cat === c.slug).length} {tr("trámites")} <ArrowRight className="h-4 w-4" aria-hidden /></span>
             </Link>
           ))}
         </div>

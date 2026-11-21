@@ -1,4 +1,4 @@
-import { Text, useI18n } from "@/lib/i18n";
+import { Text, type Lang, LANGS, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -19,6 +19,10 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { AVAILABILITY_OPTIONS, reservedTags, searchTags, withAvailability } from "@/lib/listing-availability";
 import { deleteListing } from "@/lib/delete-listing";
+import type { Json } from '@/integrations/supabase/types';
+import { ContentLanguages } from '@/components/admin/ContentLanguages';
+import { useContentTranslations } from '@/components/admin/useContentTranslations';
+import { catalogContent, editTranslation, readTranslations, sourceChanged, type Translations } from '@/lib/content-translations';
 
 export const Route = createFileRoute("/_authenticated/admin/fichas/$id")({
   head: () => ({
@@ -115,6 +119,17 @@ function EditPage() {
   const months = settings?.collaborator_months ?? 1;
   const { data, isLoading } = useQuery({ ...adminListingQuery(id), enabled: !isNew });
   const [f, setF] = useState<Form>(empty);
+  const [language, setLanguage] = useState<Lang>('es');
+  const [translations, setTranslations] = useState<Translations>({});
+  const { generate, translating, translationError } = useContentTranslations();
+  const source = { short_description: f.short_description, description: f.description };
+  const selected = language === 'es' ? source : translations[language]?.content ?? { short_description: '', description: '' };
+  const shortText = typeof selected['short_description'] === 'string' ? selected['short_description'] : '';
+  const longText = typeof selected['description'] === 'string' ? selected['description'] : '';
+  const setTranslatedField = (field: 'short_description' | 'description', value: string) => {
+    if (language === 'es') setF((p) => ({ ...p, [field]: value }));
+    else setTranslations((p) => editTranslation(p, language, { ...selected, [field]: value }, source));
+  };
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -141,6 +156,13 @@ function EditPage() {
   useEffect(() => {
     if (!data?.listing) return;
     const l = data.listing, c = data.contact;
+    const saved = readTranslations(l.translations);
+    const source = { short_description: l.short_description ?? '', description: l.description };
+    for (const lang of LANGS) if (lang !== 'es' && !saved[lang]) {
+      const translated = catalogContent(source, lang);
+      if (translated['description'] !== source.description && translated['short_description'] !== source.short_description) saved[lang] = { content: translated, source, manual: false };
+    }
+    setTranslations(saved);
     setF({
       type: l.type, category_id: l.category_id ?? "", activity: l.activity ?? "", website: l.public_website ?? "", home_service: l.home_service, service_area: l.service_area ?? "",
       extra_activities: data.activityIds.filter((aid) => acts.find((a) => a.id === aid)?.name !== l.activity), labels: l.labels.join(", "),
@@ -165,6 +187,9 @@ function EditPage() {
     const labels = list(f.labels, /,/);
     if (labels.length > 3) { toast.error(tr("Máximo 3 etiquetas destacadas.")); return; }
     if (!f.category_id) { toast.error(tr("Elige una categoría.")); return; }
+    if (saving || translating) return;
+    const prepared = await generate(source, translations, setTranslations);
+    if (!prepared) return;
     setSaving(true);
     const featured_until = f.highlighted
       ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil(new Date(), months)
@@ -172,6 +197,7 @@ function EditPage() {
     const row = {
       type: f.type, category_id: f.category_id, activity: f.activity || null, labels, name: f.name.trim(),
       slug: f.slug || slugify(f.name), short_description: f.short_description.trim(), description: f.description, tags: withAvailability(list(f.tags, /,/), f.availability),
+      translations: prepared as unknown as Json,
       featured: f.highlighted, featured_until,
       urgent_24h: f.urgent_24h, status: f.status,
       public_website: normalizeUrl(f.website), home_service: f.home_service, service_area: f.service_area.trim(),
@@ -212,6 +238,7 @@ function EditPage() {
       }
       await qc.invalidateQueries({ queryKey: ["admin"] });
       qc.invalidateQueries({ queryKey: ["directory"] });
+      qc.invalidateQueries({ queryKey: ["listing"] });
       toast.success(tr("Ficha guardada"));
       if (isNew) navigate({ to: "/admin/fichas/$id", params: { id: listingId } });
     } catch (err) {
@@ -341,11 +368,13 @@ function EditPage() {
         <Field label={tr("Dirección web")} hint={`aquibonela…${listingPath(f.type, f.slug || "…")}`}>
           <Input value={f.slug} onChange={(e) => { setSlugTouched(true); set("slug", slugify(e.target.value)); }} />
         </Field>
-        <Field label={tr("Descripción corta")} hint={`${tr("Se ve en la tarjeta del directorio.")} ${f.short_description.length}/140`}>
-          <Input maxLength={140} value={f.short_description} onChange={(e) => set("short_description", e.target.value)} />
+        <ContentLanguages value={language} onChange={setLanguage} busy={saving || translating} onGenerate={() => void generate(source, translations, setTranslations, true)} stale={Boolean(language !== 'es' && translations[language]?.manual && sourceChanged(translations[language], source))} />
+        {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
+        <Field label={tr("Descripción corta")} hint={`${tr("Se ve en la tarjeta del directorio.")} ${shortText.length}/140`}>
+          <Input aria-label="Descripción corta" maxLength={140} disabled={translating} value={shortText} onChange={(e) => setTranslatedField("short_description", e.target.value)} />
         </Field>
         <Field label={tr("Descripción extensa")} hint={tr("Se ve en la página de la ficha.")}>
-          <Textarea rows={7} value={f.description} onChange={(e) => set("description", e.target.value)} />
+          <Textarea aria-label="Descripción extensa" rows={7} disabled={translating} value={longText} onChange={(e) => setTranslatedField("description", e.target.value)} />
         </Field>
         <Field label={tr("Palabras de búsqueda (no visibles)")} hint={tr("Separadas por comas. Ej.: bollería, tartas, pan integral")}>
           <Input value={f.tags} onChange={(e) => set("tags", e.target.value)} />
@@ -458,7 +487,7 @@ function EditPage() {
       <div className="fixed inset-x-0 bottom-0 border-t bg-background">
         <div className="mx-auto flex max-w-5xl justify-end gap-2 px-4 py-3">
           <Link to="/admin" className="inline-flex h-11 items-center border px-4 text-sm"><Text text="Cancelar" /></Link>
-          <Button type="submit" disabled={saving || deleting} className="h-11 bg-primary px-6 text-sm font-medium text-primary-foreground shadow-none disabled:opacity-60">
+          <Button type="submit" disabled={saving || deleting || translating} className="h-11 bg-primary px-6 text-sm font-medium text-primary-foreground shadow-none disabled:opacity-60">
             {tr(saving ? "Guardando…" : "Guardar ficha")}
           </Button>
         </div>

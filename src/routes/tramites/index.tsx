@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TramitesSection } from "@/components/TramitesSection";
 import { Hero } from "@/components/TramitesUI";
+import { publicProceduresQuery } from "@/lib/public-procedures";
 
 export const Route = createFileRoute("/tramites/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publicProceduresQuery),
   head: () => ({
     meta: [
       { title: "Trámites y gestiones — Aquí Bonela" },

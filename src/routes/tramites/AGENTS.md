@@ -1,1 +1,1 @@
-- Procedures guide data lives in `src/lib/tramites.ts` and renders its search/categories on `/tramites` → `/tramites/$categoria` → `/tramites/$categoria/$tramite`; procedures without `pasos` show an official-link placeholder. Why: shareable URLs per procedure, adding one is a data entry.
+- Procedure pages share publicProceduresQuery on `/tramites` → `/tramites/$categoria` → `/tramites/$categoria/$tramite`, combining published saved guides with unsaved legacy templates. Why: editor versions and category changes must reach every public view without losing existing guides.

@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import type { Listing } from "@/lib/directory";
 import { cn } from "@/lib/utils";
 import { availabilityTags } from "@/lib/listing-availability";
+import { listingText } from '@/lib/content-translations';
 
 export const typeLabel = (t: Listing["type"]) =>
   t === "profesional" ? "Profesional" : t === "publico" ? "Servicio público" : t === "asociacion" ? "Asociación" : "Comercio";
@@ -48,7 +49,7 @@ export function ListingCard({
   categoryName?: string | undefined;
   highlighted: boolean;
 }) {
-  const { tr, locale } = useI18n();
+  const { tr, locale, lang } = useI18n();
   const theme = typeTheme(listing.type);
   const subtitle = [categoryName, listing.activity].filter((value): value is string => Boolean(value)).map(tr).join(" · ");
   const marks = [...(listing.urgent_24h ? ["Urgencias 24h"] : []), ...availabilityTags(listing.tags)];
@@ -72,7 +73,7 @@ export function ListingCard({
           </Link>
         </h3>
         {subtitle && <p className={cn("mt-1 text-base font-bold", theme.text)}>{tr(subtitle)}</p>}
-        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{tr(listing.short_description || listing.description)}</p>
+        <p className="mt-2 line-clamp-3 text-[17px] leading-relaxed text-pretty text-foreground">{listingText(listing, lang, 'short_description') || listingText(listing, lang, 'description')}</p>
         <p className={cn("mt-3 text-base font-bold", theme.text)} aria-hidden>
           {actionText(listing, tr)}
         </p>

@@ -3,15 +3,18 @@ import { ArrowLeft, ArrowRight, ExternalLink, CheckCircle2, LifeBuoy, ShieldChec
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useI18n } from "@/lib/i18n";
-import { getCategoria, getTramite, type Tramite, type TramiteLink } from "@/lib/tramites";
+import { ContentTranslationProvider, useI18n } from "@/lib/i18n";
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { publicProceduresQuery, procedureTranslationMap } from '@/lib/public-procedures';
+import { type Tramite, type TramiteLink } from "@/lib/tramites";
 import { Tags } from "@/components/TramitesUI";
 import { ProcedureText } from "@/components/ProcedureText";
 
 export const Route = createFileRoute("/tramites/$categoria/$tramite")({
-  loader: ({ params }) => {
-    const t = getTramite(params.categoria, params.tramite);
-    const c = getCategoria(params.categoria);
+  loader: async ({ params, context }) => {
+    const data = await context.queryClient.ensureQueryData(publicProceduresQuery);
+    const t = data.procedures.find((t) => t.cat === params.categoria && t.slug === params.tramite);
+    const c = data.categories.find((c) => c.slug === params.categoria);
     if (!t || !c) throw notFound();
     return { t, c };
   },
@@ -100,25 +103,25 @@ function DetailedGuide({ t }: { t: Tramite }) {
   return (
     <>
       <Accordion type="multiple" className="mt-8">
-        <GuideSection value="para" title="¿Para qué sirve?">
+        {(t.para?.length || guide.paraIntro || guide.paraNota) ? <GuideSection value="para" title="¿Para qué sirve?">
           {guide.paraIntro && <p className="mb-4"><ProcedureText text={tr(guide.paraIntro)} /></p>}
           <GuideList items={t.para} />
           {guide.paraNota && <p className="mt-4"><ProcedureText text={tr(guide.paraNota)} /></p>}
-        </GuideSection>
+        </GuideSection> : null}
 
-        <GuideSection value="quien" title="¿Quién puede solicitarlo?">
+        {(t.quien?.length || guide.quienIntro || guide.quienNota) ? <GuideSection value="quien" title="¿Quién puede solicitarlo?">
           <p className="mb-4"><ProcedureText text={tr(guide.quienIntro)} /></p>
           <GuideList items={t.quien} />
           <p className="mt-4 border-l-4 border-primary bg-muted/50 p-3 text-sm"><ProcedureText text={tr(guide.quienNota)} /></p>
-        </GuideSection>
+        </GuideSection> : null}
 
-        <GuideSection value="necesitas" title="¿Qué necesitas?">
+        {(t.necesitas?.length || guide.necesitasIntro || guide.necesitasNota) ? <GuideSection value="necesitas" title="¿Qué necesitas?">
           {guide.necesitasIntro && <p className="mb-4"><ProcedureText text={tr(guide.necesitasIntro)} /></p>}
           <GuideList items={t.necesitas} />
           <p className="mt-4 bg-muted/50 p-3 text-sm font-semibold"><PuntoVuelaText text={guide.necesitasNota} /></p>
-        </GuideSection>
+        </GuideSection> : null}
 
-        <GuideSection value="pasos" title="¿Cómo hacerlo paso a paso?">
+        {guide.pasos.length ? <GuideSection value="pasos" title="¿Cómo hacerlo paso a paso?">
           <ol className="space-y-5">
             {guide.pasos.map((step, index) => (
               <li key={step.t}>
@@ -136,9 +139,9 @@ function DetailedGuide({ t }: { t: Tramite }) {
               </li>
             ))}
           </ol>
-        </GuideSection>
+        </GuideSection> : null}
 
-        <GuideSection value="donde" title="¿Dónde puedo realizarlo?">
+        {(guide.lugares.length || guide.fuentes.length) ? <GuideSection value="donde" title="¿Dónde puedo realizarlo?">
           <div className="space-y-4">
             {guide.lugares.map((place) => (
               <article key={place.title} className="border bg-muted/30 p-4">
@@ -172,15 +175,15 @@ function DetailedGuide({ t }: { t: Tramite }) {
               {guide.fuentes.map((link) => <li key={link.url}><GuideLink link={link} /></li>)}
             </ul>
           </div>
-        </GuideSection>
+        </GuideSection> : null}
 
-        <GuideSection value="coste" title="¿Cuánto cuesta?">
+        {(guide.costeTitulo || guide.costeImporte || guide.costeTexto) ? <GuideSection value="coste" title="¿Cuánto cuesta?">
           <div className="border-l-4 border-primary bg-muted/50 p-4">
             <p className="font-semibold"><ProcedureText text={tr(guide.costeTitulo)} /></p>
             <p className="mt-1 font-display text-4xl font-extrabold text-primary"><ProcedureText text={tr(guide.costeImporte)} /></p>
             <p className="mt-2 text-sm"><ProcedureText text={tr(guide.costeTexto)} /></p>
           </div>
-        </GuideSection>
+        </GuideSection> : null}
 
         {guide.ayuda?.length ? (
           <GuideSection value="ayuda" title="¿Necesitas ayuda?">
@@ -211,7 +214,15 @@ function DetailedGuide({ t }: { t: Tramite }) {
 }
 
 function TramitePage() {
-  const { t, c } = Route.useLoaderData();
+  const { categoria, tramite } = Route.useParams();
+  const { data } = useSuspenseQuery(publicProceduresQuery);
+  const { lang } = useI18n();
+  const t = data.procedures.find((t) => t.cat === categoria && t.slug === tramite);
+  const c = data.categories.find((c) => c.slug === categoria);
+  if (!t || !c) return <Missing />;
+  return <ContentTranslationProvider translations={procedureTranslationMap(t, lang)}><TramiteBody t={t} c={c} /></ContentTranslationProvider>;
+}
+function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categoria }) {
   const { tr } = useI18n();
   return (
     <div className="min-h-dvh bg-background">

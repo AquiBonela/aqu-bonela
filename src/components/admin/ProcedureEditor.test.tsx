@@ -5,11 +5,20 @@ import type { ReactNode } from "react";
 import { I18nProvider } from "@/lib/i18n";
 import { ProcedureEditor } from "@/routes/_authenticated/admin/tramites.$id";
 import type { ProcedureCategory } from "@/lib/admin-procedures";
+import { catalogContent, languagesToGenerate } from '@/lib/content-translations';
 
 const mocks = vi.hoisted(() => ({ insert: vi.fn(), navigate: vi.fn() }));
 vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
 vi.mock("@tanstack/react-router", async (original) => ({ ...await original<typeof import("@tanstack/react-router")>(), useNavigate: () => mocks.navigate, Link: ({ children }: { children: ReactNode }) => <a>{children}</a> }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { from: () => ({ insert: mocks.insert }) } }));
+vi.mock('@/components/admin/useContentTranslations', () => ({ useContentTranslations: () => ({
+  translating: false, translationError: '',
+  generate: async (source: Record<string, unknown>, versions: import('@/lib/content-translations').Translations, update: (v: import('@/lib/content-translations').Translations) => void) => {
+    const next = { ...versions };
+    for (const lang of languagesToGenerate(versions, source)) next[lang] = { content: catalogContent(source, lang), source, manual: false };
+    update(next); return next;
+  },
+}) }));
 const categories: ProcedureCategory[] = [{ id: 'category-1', slug: 'documentacion', title: 'Documentación personal', description: '', title_en: '', description_en: '', visible: true, sort_order: 0, created_at: '', updated_at: '' }];
 function mount(id = "nuevo") {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -57,5 +66,20 @@ describe("procedure editor form", () => {
     const saved = mocks.insert.mock.calls[0]?.[0];
     expect(saved.content.summary).toBe('Resumen español');
     expect(saved.content_en.summary).toBe('English summary');
+  });
+  it('saves a Dutch correction without changing Spanish or English', async () => {
+    mount('certificado-digital');
+    fireEvent.click(screen.getByRole('button', { name: 'English' }));
+    const english = (screen.getByLabelText('Resumen para el listado') as HTMLTextAreaElement).value;
+    fireEvent.click(screen.getByRole('button', { name: 'Nederlands' }));
+    fireEvent.change(screen.getByLabelText('Resumen para el listado'), { target: { value: 'Handmatig gecontroleerde Nederlandse tekst' } });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
+    const saved = mocks.insert.mock.calls[0]?.[0];
+    expect(saved.translations.nl.content.summary).toBe('Handmatig gecontroleerde Nederlandse tekst');
+    expect(saved.translations.nl.manual).toBe(true);
+    expect(saved.content_en.summary).toBe(english);
+    expect(saved.content.summary).not.toBe('Handmatig gecontroleerde Nederlandse tekst');
+    expect(Object.keys(saved.translations).sort()).toEqual(['de', 'en', 'fr', 'nl', 'uk']);
   });
 });

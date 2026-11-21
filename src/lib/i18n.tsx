@@ -24,7 +24,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRad
  */
 export const LANGS = ["es", "en", "de", "nl", "fr", "uk"] as const;
 export type Lang = (typeof LANGS)[number];
-const LANGUAGE_FLAGS: Record<Lang, string> = {
+export const LANGUAGE_FLAGS: Record<Lang, string> = {
   es: spanishFlag.url, en: englishFlag.url, de: germanFlag.url,
   nl: dutchFlag.url, fr: frenchFlag.url, uk: ukrainianFlag.url,
 };
@@ -547,6 +547,12 @@ export function I18nProvider({ children, fixedLanguage }: { children: ReactNode;
 }
 
 export const useI18n = () => useContext(I18nContext);
+
+/** Saved editorial versions take precedence over the legacy source-text catalog. */
+export function ContentTranslationProvider({ translations, children }: { translations: Record<string, string>; children: ReactNode }) {
+  const parent = useI18n();
+  return <I18nContext.Provider value={{ ...parent, tr: (text) => Object.hasOwn(translations, text) ? translations[text] ?? text : parent.tr(text) }}>{children}</I18nContext.Provider>;
+}
 
 export function Text({ text }: { text: string }) {
   const { tr } = useI18n();

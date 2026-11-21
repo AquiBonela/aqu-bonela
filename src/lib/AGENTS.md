@@ -1,3 +1,4 @@
 - Language selection uses the shared registry and Radix dropdown; locale persistence is separate from translation coverage. Why: new locales must not accidentally display English translations.
 - Public translations use stored source-text locale catalogs, coverage tests and reviewed terminology overrides; preserve paragraphs and original business data. Why: visits must not trigger translation calls or alter source records.
 - Keep administration in Spanish independently of the persisted public locale. Why: editing content languages must not change the panel's interface language.
+- Editable translations store independent content/source/manual entries; generate only missing or stale automatic versions through admin-authorized server functions. Why: preserve corrections and avoid translation charges on visits or unchanged saves.

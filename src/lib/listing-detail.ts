@@ -30,7 +30,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const { data, error } = await supabase
         .from("listings")
         .select(
-          "id,slug,type,name,short_description,description,category_id,featured,featured_until,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
+          "id,slug,type,name,short_description,description,translations,category_id,featured,featured_until,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
         )
         .eq("status", "publicada")
         .eq("type", type)

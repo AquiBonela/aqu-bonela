@@ -494,6 +494,7 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["listing_status"]
           tags: string[]
+          translations: Json
           type: Database["public"]["Enums"]["listing_type"]
           updated_at: string
           urgent_24h: boolean
@@ -530,6 +531,7 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["listing_status"]
           tags?: string[]
+          translations?: Json
           type: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
           urgent_24h?: boolean
@@ -566,6 +568,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["listing_status"]
           tags?: string[]
+          translations?: Json
           type?: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
           urgent_24h?: boolean
@@ -632,6 +635,7 @@ export type Database = {
           status: string
           summary: string
           title: string
+          translations: Json
           updated_at: string
           visibility: Json
         }
@@ -647,6 +651,7 @@ export type Database = {
           status?: string
           summary?: string
           title: string
+          translations?: Json
           updated_at?: string
           visibility?: Json
         }
@@ -662,6 +667,7 @@ export type Database = {
           status?: string
           summary?: string
           title?: string
+          translations?: Json
           updated_at?: string
           visibility?: Json
         }
@@ -753,6 +759,27 @@ export type Database = {
           id?: string
           message?: string
           name?: string
+        }
+        Relationships: []
+      }
+      translation_gateway_state: {
+        Row: {
+          blocked: boolean
+          id: boolean
+          reason: string
+          updated_at: string
+        }
+        Insert: {
+          blocked?: boolean
+          id?: boolean
+          reason?: string
+          updated_at?: string
+        }
+        Update: {
+          blocked?: boolean
+          id?: boolean
+          reason?: string
+          updated_at?: string
         }
         Relationships: []
       }

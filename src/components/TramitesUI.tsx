@@ -1,8 +1,10 @@
 import { ProcedureText } from "@/components/ProcedureText";
 import { Link } from "@tanstack/react-router";
 import { FileText, HeartPulse, Briefcase, Users, Car, Landmark, ArrowRight, type LucideIcon } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { ContentTranslationProvider, useI18n } from "@/lib/i18n";
 import { TAG_LABEL, isCompleta, type Categoria, type Tramite, type TramiteTag } from "@/lib/tramites";
+
+import { procedureTranslationMap, type PublicProcedure } from '@/lib/public-procedures';
 
 export const CAT_ICON: Record<Categoria["icon"], LucideIcon> = { doc: FileText, salud: HeartPulse, trabajo: Briefcase, familia: Users, coche: Car, muni: Landmark };
 
@@ -22,7 +24,11 @@ export function Tags({ tags }: { tags?: TramiteTag[] | undefined }) {
   );
 }
 
-export function TramiteCard({ t }: { t: Tramite }) {
+export function TramiteCard({ t }: { t: PublicProcedure }) {
+  const { lang } = useI18n();
+  return <ContentTranslationProvider translations={procedureTranslationMap(t, lang)}><TramiteCardBody t={t} /></ContentTranslationProvider>;
+}
+function TramiteCardBody({ t }: { t: Tramite }) {
   const { tr } = useI18n();
   return (
     <Link to="/tramites/$categoria/$tramite" params={{ categoria: t.cat, tramite: t.slug }} className="press group flex flex-col gap-2 border bg-card p-4 transition-colors hover:border-primary">

@@ -20,6 +20,7 @@ export type Listing = {
   name: string;
   description: string;
   short_description: string;
+  translations?: unknown;
   category_id: string | null;
   featured: boolean;
   featured_until: string | null;
@@ -45,7 +46,7 @@ export const directoryQuery = queryOptions({
       supabase
         .from("listings")
         .select(
-          "id,slug,type,name,description,short_description,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
+          "id,slug,type,name,description,short_description,translations,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
         )
         .eq("status", "publicada")
         .order("name"),
@@ -112,7 +113,11 @@ export function filterListings(
     if (!words.length) return true;
     const fields = [l.name, l.short_description, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" "),
       synonyms.get(`${l.category_id}|${normalize(l.activity ?? "")}`) ?? ""];
-    const hay = normalize([...fields, ...fields.map(translate)].join(" "));
+    const stored = l.translations && typeof l.translations === 'object' ? Object.values(l.translations).flatMap((entry) => {
+      const content = entry && typeof entry === 'object' && 'content' in entry ? entry.content : {};
+      return content && typeof content === 'object' ? Object.values(content).filter((v): v is string => typeof v === 'string') : [];
+    }) : [];
+    const hay = normalize([...fields, ...fields.map(translate), ...stored].join(" "));
     return words.every((w) => hay.includes(w));
   });
   return result.sort(

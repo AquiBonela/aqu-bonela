@@ -13,7 +13,10 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { useI18n } from "@/lib/i18n";
+import { LANGS, LANGUAGE_OPTIONS, type Lang, useI18n } from "@/lib/i18n";
+import { ContentLanguages } from '@/components/admin/ContentLanguages';
+import { useContentTranslations } from '@/components/admin/useContentTranslations';
+import { catalogContent, editTranslation, mapContent, readTranslations, record, sourceChanged, type Content, type Translations } from '@/lib/content-translations';
 import { slugify } from "@/lib/admin";
 import { TAG_LABEL } from "@/lib/tramites";
 import { adminProceduresQuery, procedureCategoriesQuery, type ProcedureRow } from "@/lib/admin-procedures";
@@ -51,11 +54,18 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
     const parsed = procedureContentSchema.safeParse(row?.content);
     return parsed.success ? parsed.data : editableContent(template);
   });
-  const [english, setEnglish] = useState<Record<string, unknown>>(() => {
+  const [translations, setTranslations] = useState<Translations>(() => {
+    const saved = readTranslations(row?.translations);
+    if (template && !row) {
+      const source = editableContent(template);
+      for (const lang of LANGS) if (lang !== 'es' && !saved[lang]) saved[lang] = { source, content: catalogContent(source, lang), manual: false };
+    }
     const parsed = procedureContentSchema.safeParse(row?.content_en);
-    return parsed.success ? parsed.data : translateContent(editableContent(template)) as Record<string, unknown>;
+    if (parsed.success && !saved.en) saved.en = { content: parsed.data, source: content, manual: true };
+    return saved;
   });
-  const [language, setLanguage] = useState<"es" | "en">("es");
+  const [language, setLanguage] = useState<Lang>('es');
+  const { generate, translating, translationError } = useContentTranslations();
   const [title, setTitle] = useState(row?.title ?? template?.title ?? "");
   const [slug, setSlug] = useState(row?.slug ?? template?.slug ?? "");
   const [category, setCategory] = useState(row?.category_id ?? categories.find((c) => c.slug === template?.cat)?.id ?? categories[0]?.id ?? "");
@@ -66,25 +76,30 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const selected = language === "es" ? content : english;
-  const update = language === "es" ? setContent : setEnglish;
   const currentCategory = categories.find((c) => c.id === category);
+  const source: Content = { ...content, title: title.trim(), slug, cat: currentCategory?.slug ?? '' };
+  const selected = language === 'es' ? content : translations[language]?.content ?? record(mapContent(source, () => ''));
+  const update = (value: Content) => language === 'es' ? setContent(value) : setTranslations((p) => editTranslation(p, language, value, source));
 
   async function save() {
     setError("");
     if (!title.trim() || !category || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) { setError(tr("Completa el título y un identificador válido.")); return; }
-    const full = { ...content, title: title.trim(), slug, cat: currentCategory?.slug ?? "" };
-    const fullEn = { ...english, slug, cat: currentCategory?.slug ?? "" };
+    if (busy || translating) return;
+    const full = source;
+    const prepared = await generate(full, translations, setTranslations);
+    if (!prepared) return;
+    const fullEn = { ...prepared.en?.content, slug, cat: currentCategory?.slug ?? '' };
     const validated = procedureContentSchema.safeParse(full);
     const validatedEn = procedureContentSchema.safeParse(fullEn);
     if (!validated.success || !validatedEn.success) { setError(tr("Revisa los enlaces y campos del trámite.")); return; }
     setBusy(true);
     try {
       const payload = { category_id: category, title: title.trim(), slug, summary: typeof content['summary'] === "string" ? content['summary'] : "", status,
-        content: full as Json, content_en: fullEn as Json, visibility, sort_order: order, source_key: row?.source_key ?? (template ? sourceKey(template) : null) };
+        content: full as Json, content_en: fullEn as Json, translations: prepared as unknown as Json, visibility, sort_order: order, source_key: row?.source_key ?? (template ? sourceKey(template) : null) };
       const result = row ? await supabase.from("procedures").update(payload).eq("id", row.id).select("id").single() : await supabase.from("procedures").insert(payload).select("id").single();
       if (result.error || !result.data) throw result.error ?? new Error("Missing saved row");
       await qc.invalidateQueries({ queryKey: adminProceduresQuery.queryKey });
+      await qc.invalidateQueries({ queryKey: ['public-procedures'] });
       toast.success(tr("Trámite guardado"));
       await navigate({ to: "/admin/tramites/$id", params: { id: result.data.id } });
     } catch { setError(tr("No se pudo guardar. Revisa los datos y tus permisos.")); } finally { setBusy(false); }
@@ -96,16 +111,17 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
       const result = await supabase.from("procedures").delete().eq("id", row.id).select("id").single();
       if (result.error) throw result.error;
       await qc.invalidateQueries({ queryKey: adminProceduresQuery.queryKey });
+      await qc.invalidateQueries({ queryKey: ['public-procedures'] });
       toast.success(tr("Trámite eliminado"));
       await navigate({ to: "/admin/tramites" });
     } catch { setError(tr("No se pudo eliminar el trámite.")); } finally { setBusy(false); }
   }
-  const previewContent = visibleContent(language === "es" ? { ...content, title } : english, visibility);
+  const previewContent = visibleContent(language === "es" ? { ...content, title } : selected, visibility);
   return <>
     <Link to="/admin/tramites" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" />{tr("Trámites")}</Link>
     <form onSubmit={(e) => { e.preventDefault(); void save(); }}>
-      <div className="my-5 flex flex-wrap items-center justify-between gap-3"><h1 className="font-display text-2xl font-bold">{tr(id === "nuevo" ? "Nuevo trámite" : "Editar trámite")}</h1><div className="flex gap-2"><Button type="button" variant="outline" onClick={() => setPreview(true)}><Eye />{tr("Vista previa")}</Button><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button></div></div>
-      <fieldset disabled={busy} className="min-w-0 space-y-5">
+      <div className="my-5 flex flex-wrap items-center justify-between gap-3"><h1 className="font-display text-2xl font-bold">{tr(id === "nuevo" ? "Nuevo trámite" : "Editar trámite")}</h1><div className="flex gap-2"><Button type="button" variant="outline" onClick={() => setPreview(true)}><Eye />{tr("Vista previa")}</Button><Button disabled={busy || translating}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button></div></div>
+      <fieldset disabled={busy || translating} className="min-w-0 space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium">{tr("Título")}<Input required value={title} onChange={(e) => { setTitle(e.target.value); if (!row && slug === slugify(title)) setSlug(slugify(e.target.value)); }} /></label>
           <label className="block text-sm font-medium">{tr("Identificador del enlace")}<Input required pattern="[a-z0-9]+(-[a-z0-9]+)*" value={slug} onChange={(e) => setSlug(e.target.value)} /></label>
@@ -113,25 +129,26 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
           <label className="block text-sm font-medium">{tr("Estado")}<select value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 w-full border bg-background px-3 text-sm"><option value="borrador">{tr("Borrador")}</option><option value="publicada">{tr("Publicado")}</option></select></label>
           <label className="block text-sm font-medium">{tr("Orden")}<Input type="number" step="1" value={order} onChange={(e) => setOrder(Number(e.target.value))} /></label>
         </div>
-        <div role="group" aria-label={tr("Idioma del contenido")} className="flex gap-2 border-t pt-5"><Button type="button" variant={language === "es" ? "default" : "outline"} aria-pressed={language === "es"} onClick={() => setLanguage("es")}>Español</Button><Button type="button" variant={language === "en" ? "default" : "outline"} aria-pressed={language === "en"} onClick={() => setLanguage("en")}>English</Button></div>
-        {language === "en" && <label className="block text-sm font-medium">{tr("Nombre en inglés")}<Input value={typeof english['title'] === "string" ? english['title'] : ""} onChange={(e) => setEnglish({ ...english, title: e.target.value })} /></label>}
-        <label className="block text-sm font-medium">{tr("Resumen para el listado")}<Textarea value={typeof selected['summary'] === "string" ? selected['summary'] : ""} onChange={(e) => update({ ...selected, summary: e.target.value })} /></label>
+        <ContentLanguages value={language} onChange={setLanguage} busy={busy || translating} onGenerate={() => void generate(source, translations, setTranslations, true)} stale={Boolean(language !== 'es' && translations[language]?.manual && sourceChanged(translations[language], source))} />
+        {language !== 'es' && <label className="block text-sm font-medium">{`Título · ${LANGUAGE_OPTIONS[language].name}`}<Input value={typeof selected['title'] === 'string' ? selected['title'] : ''} onChange={(e) => update({ ...selected, title: e.target.value })} /></label>}
+        <label className="block text-sm font-medium">{tr("Resumen para el listado")}<Textarea aria-label="Resumen para el listado" value={typeof selected['summary'] === "string" ? selected['summary'] : ""} onChange={(e) => update({ ...selected, summary: e.target.value })} /></label>
         <Accordion type="multiple" className="border-t">{PROCEDURE_SECTIONS.map((section) => <AccordionItem key={section.key} value={section.key} className="border-b">
           <div className="flex items-center gap-4"><AccordionTrigger className="min-w-0 flex-1 text-left">{tr(section.title)}</AccordionTrigger><Switch aria-label={`${tr("Mostrar")} ${tr(section.title)}`} checked={visibility[section.key] !== false} onCheckedChange={(v) => setVisibility((p) => ({ ...p, [section.key]: v }))} /></div>
           <AccordionContent className="px-1 pb-5">{section.key === "tags" ? <div className="flex flex-wrap gap-4">{(["gratis", "online", "presencial"] as const).map((tag) => {
             const tags = Array.isArray(content['tags']) ? content['tags'] : [];
             return <label key={tag} className="flex items-center gap-2 text-sm"><Checkbox checked={tags.includes(tag)} onCheckedChange={(v) => {
               const next = v ? [...tags.filter((t) => t !== tag), tag] : tags.filter((t) => t !== tag);
-              setContent((p) => ({ ...p, tags: next })); setEnglish((p) => ({ ...p, tags: next }));
+              setContent((p) => ({ ...p, tags: next }));
             }} />{tr(TAG_LABEL[tag])}</label>;
           })}</div> : <ProcedureFields fields={SECTION_FIELDS[section.key] ?? []} value={selected} onChange={update} />}</AccordionContent>
         </AccordionItem>)}</Accordion>
+        {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-        <div className="flex items-center justify-between gap-3"><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button>{row && <Button type="button" variant="ghost" onClick={() => setDeleting(true)} className="text-destructive"><Trash2 />{tr("Eliminar trámite")}</Button>}</div>
+        <div className="flex items-center justify-between gap-3"><Button disabled={busy || translating}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button>{row && <Button type="button" variant="ghost" onClick={() => setDeleting(true)} className="text-destructive"><Trash2 />{tr("Eliminar trámite")}</Button>}</div>
       </fieldset>
     </form>
     <Dialog open={preview} onOpenChange={setPreview}><DialogContent className="max-h-[90dvh] max-w-3xl overflow-y-auto"><DialogHeader><DialogTitle>{tr("Vista previa")}</DialogTitle></DialogHeader><ProcedurePreview content={previewContent} /></DialogContent></Dialog>
-    <Dialog open={deleting} onOpenChange={setDeleting}><DialogContent><DialogHeader><DialogTitle>{tr("Eliminar trámite")}</DialogTitle></DialogHeader><p>{tr("¿Eliminar este trámite del panel?")}</p><div className="flex justify-end gap-2"><Button variant="outline" disabled={busy} onClick={() => setDeleting(false)}>{tr("Cancelar")}</Button><Button variant="destructive" disabled={busy} onClick={() => void remove()}><Trash2 />{tr("Eliminar")}</Button></div></DialogContent></Dialog>
+    <Dialog open={deleting} onOpenChange={setDeleting}><DialogContent><DialogHeader><DialogTitle>{tr("Eliminar trámite")}</DialogTitle></DialogHeader><p>{tr("¿Eliminar este trámite del panel?")}</p><div className="flex justify-end gap-2"><Button variant="outline" disabled={busy || translating} onClick={() => setDeleting(false)}>{tr("Cancelar")}</Button><Button variant="destructive" disabled={busy || translating} onClick={() => void remove()}><Trash2 />{tr("Eliminar")}</Button></div></DialogContent></Dialog>
   </>;
 }
 
