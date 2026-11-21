@@ -1,5 +1,6 @@
 /** Complete interface and editorial translations; original values remain unchanged. */
 export const englishText: Record<string, string> = {
+  "Explorar guía de trámites": "Explore the procedures guide",
   "Plaza de la Buena Vista, Casarabonela": "Buena Vista Square, Casarabonela",
   "Consultar en ficha": "Check the listing",
   "TIE – Tarjeta de Identidad de Extranjero": "TIE – Foreigner Identity Card",

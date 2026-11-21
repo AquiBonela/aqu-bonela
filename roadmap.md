@@ -41,3 +41,4 @@
 - [x] Añadir segundo teléfono y redes sociales con visibilidad individual en alta, revisión y ficha pública; 68 pruebas y sincronización de visibilidad verificadas.
 - [x] Poner cada línea de Punto Vuela en una sola línea, acortando «Ayuda con gestiones online» y agrandando la letra; verificado en móvil (320–480), escritorio, ambos idiomas y los dos temas.
 - [x] Habilitar negrita con doble asterisco en las descripciones compartidas por fichas y revisión; 11 pruebas pasan y presentación verificada en móvil y escritorio con respuesta de lectura interceptada, sin alterar datos guardados.
+- [x] Fase 1: página propia de Trámites con buscador y categorías; sección 03 compacta; búsqueda, fichas, regreso y sugerencias verificados en móvil/escritorio y ES/EN; 80 pruebas pasan.

@@ -28,7 +28,7 @@ export const Route = createFileRoute("/tramites/$categoria/")({
 
 function NotFoundMsg() {
   const { tr } = useI18n();
-  return <div className="p-10 text-center"><p>{tr("Esta categoría no existe.")}</p><Link to="/servicios-publicos" hash="tramites" className="mt-4 inline-block font-semibold text-primary underline">{tr("Volver a Trámites")}</Link></div>;
+  return <div className="p-10 text-center"><p>{tr("Esta categoría no existe.")}</p><Link to="/tramites" className="mt-4 inline-block font-semibold text-primary underline">{tr("Volver a Trámites")}</Link></div>;
 }
 
 function CategoriaPage() {
@@ -41,7 +41,7 @@ function CategoriaPage() {
       <main>
         <Hero kicker="Trámites" title={c.title} text={c.text} />
         <div className="mx-auto max-w-5xl px-4 py-10">
-          <Link to="/servicios-publicos" hash="tramites" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" aria-hidden />{tr("Todos los trámites")}</Link>
+          <Link to="/tramites" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" aria-hidden />{tr("Todos los trámites")}</Link>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">{list.map((t) => <TramiteCard key={t.slug} t={t} />)}</div>
         </div>
       </main>

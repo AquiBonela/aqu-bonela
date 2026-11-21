@@ -1,6 +1,5 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { TramitesSection } from "@/components/TramitesSection";
 import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Laptop } from "lucide-react";
 import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -177,7 +176,9 @@ function ServiciosPublicos() {
         {/* 3. Trámites */}
         <section id="tramites" className="scroll-mt-24 mx-auto max-w-5xl px-4 py-14">
           <SectionTitle n="03" title="Trámites y gestiones" text="Información útil para realizar algunas de las gestiones más habituales en Casarabonela." />
-          <TramitesSection />
+          <Button asChild className="min-h-12">
+            <Link to="/tramites"><Text text="Explorar guía de trámites" /><ArrowRight className="h-4 w-4" aria-hidden /></Link>
+          </Button>
         </section>
       </main>
     </div>
