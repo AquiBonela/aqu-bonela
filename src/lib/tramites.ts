@@ -354,14 +354,6 @@ export const TRAMITES: Tramite[] = [
   },
   { slug: "tarjeta-sanitaria", cat: "salud", title: "Solicitar la tarjeta sanitaria", short: "Acceso a la sanidad pública andaluza y asignación de médico.", tags: ["gratis", "presencial"], links: [{ label: "ClicSalud+", url: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud" }] },
   { slug: "tarjeta-europea", cat: "salud", title: "Tarjeta sanitaria europea", short: "Asistencia sanitaria en viajes por la Unión Europea.", tags: ["gratis", "online"], links: [{ label: "Seguridad Social", url: "https://sede.seg-social.gob.es" }] },
-  { slug: "vida-laboral", cat: "trabajo", title: "Consultar la vida laboral", short: "Informe con todos los periodos que has cotizado.", tags: ["gratis", "online"], links: [{ label: "Seguridad Social", url: "https://sede.seg-social.gob.es" }] },
-  { slug: "demanda-empleo", cat: "trabajo", title: "Inscribirse como demandante de empleo", short: "Alta en el Servicio Andaluz de Empleo.", tags: ["gratis", "online"], links: [{ label: "SAE", url: "https://www.juntadeandalucia.es/servicioandaluzdeempleo" }] },
-  { slug: "dependencia", cat: "familia", title: "Solicitar la dependencia", short: "Ayudas para personas que necesitan apoyo en su día a día.", tags: ["gratis", "presencial"], links: [{ label: "Junta de Andalucía", url: "https://www.juntadeandalucia.es" }] },
-  { slug: "ayuda-alquiler", cat: "familia", title: "Ayudas al alquiler", short: "Convocatorias para jóvenes y familias con alquiler.", tags: ["gratis", "online"], links: [{ label: "Junta de Andalucía", url: "https://www.juntadeandalucia.es" }] },
-  { slug: "carnet-conducir", cat: "vehiculos", title: "Renovar el carnet de conducir", short: "Renovación tras el reconocimiento médico.", tags: ["online"], links: [{ label: "DGT", url: "https://sede.dgt.gob.es" }] },
-  { slug: "multas", cat: "vehiculos", title: "Consultar y pagar multas", short: "Consulta tus sanciones de tráfico y págalas con descuento.", tags: ["online"], links: [{ label: "DGT", url: "https://sede.dgt.gob.es" }] },
-  { slug: "licencia-obras", cat: "municipales", title: "Licencia de obras", short: "Permiso municipal para reformas y construcciones.", tags: ["online", "presencial"], links: [{ label: "Sede Electrónica", url: SEDE }] },
-  { slug: "instancia-general", cat: "municipales", title: "Instancia general", short: "Cualquier solicitud o escrito dirigido al Ayuntamiento.", tags: ["gratis", "online"], links: [{ label: "Sede Electrónica", url: SEDE }] },
 ];
 
 export const DESTACADOS = ["empadronamiento", "nie", "tarjeta-sanitaria", "certificado-digital"];
