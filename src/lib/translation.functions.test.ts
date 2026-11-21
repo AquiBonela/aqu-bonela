@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const mocks = vi.hoisted(() => ({ rpc: vi.fn(), maybeSingle: vi.fn(), upsert: vi.fn(), translate: vi.fn() }));
+const mocks = vi.hoisted(() => ({ rpc: vi.fn(), maybeSingle: vi.fn(), upsert: vi.fn(), translate: vi.fn(), rows: vi.fn() }));
 vi.mock('@/integrations/supabase/auth-middleware', () => ({ requireSupabaseAuth: {} }));
 vi.mock('@/lib/translate.server', () => ({ translateSource: mocks.translate }));
 vi.mock('@tanstack/react-start', () => ({ createServerFn: () => {
@@ -8,7 +8,7 @@ vi.mock('@tanstack/react-start', () => ({ createServerFn: () => {
     middleware: () => chain,
     inputValidator: () => chain,
     handler: (handler: (ctx: unknown) => unknown) => (input: { data: unknown }) => handler({ data: input.data, context: {
-      userId: 'test-user', supabase: { rpc: mocks.rpc, from: () => ({ select: () => ({ eq: () => ({ maybeSingle: mocks.maybeSingle }) }), upsert: mocks.upsert }) },
+      userId: 'test-user', supabase: { rpc: mocks.rpc, from: (table: string) => ({ select: () => ({ range: (offset: number) => mocks.rows(table, offset), eq: () => ({ maybeSingle: mocks.maybeSingle }) }), upsert: mocks.upsert }) },
     } }),
   };
   return chain;
@@ -21,8 +21,19 @@ function allowed() {
   mocks.rpc.mockResolvedValue({ data: true, error: null });
   mocks.maybeSingle.mockResolvedValue({ data: null, error: null });
   mocks.upsert.mockResolvedValue({ error: null });
+  mocks.rows.mockResolvedValue({ data: [], error: null });
 }
 describe('authorized translation requests', () => {
+  it('reuses a phrase corrected in a listing when translating a procedure in the same language', async () => {
+    allowed();
+    const preference = { source: 'cita previa', target: 'попередній запис', updatedAt: 2 };
+    mocks.rows.mockImplementation(async (table: string) => ({ data: table === 'listings' ? [{ translations: { uk: { content: { description: 'попередній запис' }, source: { description: 'cita previa' }, manual: true, glossary: [preference] } } }] : [], error: null }));
+    mocks.translate.mockResolvedValue({ description: 'попередній запис' });
+    await generateTranslation({ data: { source: { description: 'Solicita cita previa' }, lang: 'uk' } });
+    expect(mocks.rows).toHaveBeenCalledWith('listings', 0);
+    expect(mocks.rows).toHaveBeenCalledWith('procedures', 0);
+    expect(mocks.translate).toHaveBeenCalledWith({ description: 'Solicita cita previa' }, 'uk', 'unit-test-placeholder', undefined, [preference]);
+  });
   it('denies ordinary accounts before making a billed translation call', async () => {
     mocks.rpc.mockResolvedValue({ data: false, error: null });
     await expect(generateTranslation({ data })).rejects.toThrow('Solo los administradores');

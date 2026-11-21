@@ -1,7 +1,8 @@
 import { LANGS, translateText, type Lang } from "@/lib/i18n";
 
 export type Content = Record<string, unknown>;
-export type Translation = { content: Content; source: Content; manual: boolean };
+export type GlossaryEntry = { source: string; target: string; updatedAt: number };
+export type Translation = { content: Content; source: Content; manual: boolean; manualFields?: string[]; glossary?: GlossaryEntry[] };
 export type Translations = Partial<Record<Lang, Translation>>;
 export const TARGET_LANGS = LANGS.filter((l) => l !== "es");
 export function record(value: unknown): Content {
@@ -12,7 +13,10 @@ export function readTranslations(value: unknown): Translations {
   return Object.fromEntries(TARGET_LANGS.flatMap((lang) => {
     const entry = record(data[lang]);
     return entry['content'] && typeof entry['content'] === 'object'
-      ? [[lang, { content: record(entry['content']), source: record(entry['source']), manual: entry['manual'] === true }]] : [];
+      ? [[lang, { content: record(entry['content']), source: record(entry['source']), manual: entry['manual'] === true,
+        ...(Array.isArray(entry['manualFields']) ? { manualFields: entry['manualFields'].filter((v): v is string => typeof v === 'string') } : {}),
+        glossary: readGlossary(entry['glossary']),
+      }]] : [];
   }));
 }
 const preservedKeys = new Set(['slug', 'cat', 'url', 'href', 'tags', 'id', 'name']);
@@ -27,19 +31,77 @@ export function catalogContent(source: Content, lang: Lang): Content {
   return record(mapContent(source, (s) => translateText(s, lang)));
 }
 export function sourceChanged(entry: Translation, source: Content) {
-  // jsonb reorders object keys when reading a saved version back from Supabase.
-  function canonical(value: unknown): unknown {
-    if (Array.isArray(value)) return value.map(canonical);
-    if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(record(value)[key])]));
-    return value;
-  }
-  return JSON.stringify(canonical(entry.source)) !== JSON.stringify(canonical(source));
+  return !sameContent(contentUnits(entry.source), contentUnits(source));
 }
 export function languagesToGenerate(translations: Translations, source: Content): Lang[] {
-  return TARGET_LANGS.filter((lang) => !translations[lang] || (!translations[lang]?.manual && sourceChanged(translations[lang], source)));
+  return TARGET_LANGS.filter((lang) => {
+    const entry = translations[lang];
+    return !entry || sourceChanged(entry, source) || Object.entries(contentUnits(source)).some(([path, value]) => hasMissingText(value, contentUnits(entry.content)[path]));
+  });
+}
+export function hasMissingText(source: unknown, target: unknown): boolean {
+  let original = 0, translated = 0;
+  mapContent(source, () => { original++; return ''; });
+  mapContent(target, () => { translated++; return ''; });
+  return original > translated;
 }
 export function editTranslation(translations: Translations, lang: Lang, content: Content, source: Content): Translations {
-  return { ...translations, [lang]: { content, source: translations[lang]?.source ?? structuredClone(source), manual: true } };
+  const previous = translations[lang];
+  const previousUnits = contentUnits(previous?.content ?? record(mapContent(source, () => '')));
+  const changed = Object.entries(contentUnits(content)).filter(([path, value]) => !sameContent(value, previousUnits[path])).map(([path]) => path);
+  const manualFields = [...new Set([...correctedFields(previous), ...changed])];
+  // Keep the Spanish baseline until a contextual refresh succeeds.
+  let baseline = previous?.source ?? structuredClone(source);
+  for (const path of changed) baseline = setContentUnit(baseline, path, contentUnits(source)[path]);
+  const pairs: GlossaryEntry[] = changed.flatMap((path) => {
+    const original = contentUnits(baseline)[path], target = contentUnits(content)[path];
+    return typeof original === 'string' && original.trim() && typeof target === 'string' && target.trim()
+      ? [{ source: original, target, updatedAt: Date.now() }] : [];
+  });
+  return { ...translations, [lang]: { ...previous, content, source: baseline, manual: true, manualFields, glossary: mergeGlossary([...(previous?.glossary ?? []), ...pairs]) } };
+}
+
+export function sameContent(a: unknown, b: unknown): boolean {
+  const canonical = (v: unknown): unknown => Array.isArray(v) ? v.map(canonical) : v && typeof v === 'object'
+    ? Object.fromEntries(Object.keys(v).sort().map((key) => [key, canonical(record(v)[key])])) : v;
+  return JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
+}
+/** Arrays are an atomic block: item insertions/reorders must never reuse a translation by index. */
+export function contentUnits(value: Content, prefix = ''): Content {
+  return Object.fromEntries(Object.entries(value).flatMap(([key, item]) => {
+    if (preservedKeys.has(key)) return [];
+    const path = prefix ? `${prefix}.${key}` : key;
+    return item && typeof item === 'object' && !Array.isArray(item) ? Object.entries(contentUnits(record(item), path)) : [[path, item]];
+  }));
+}
+export function setContentUnit(value: Content, path: string, item: unknown): Content {
+  const [key, ...rest] = path.split('.');
+  if (!key) return value;
+  return { ...value, [key]: rest.length ? setContentUnit(record(value[key]), rest.join('.'), item) : item };
+}
+export function correctedFields(entry: Translation | undefined): string[] {
+  return entry?.manualFields ?? (entry?.manual ? Object.keys(contentUnits(entry.content)) : []);
+}
+export function readGlossary(value: unknown): GlossaryEntry[] {
+  return Array.isArray(value) ? value.flatMap((v) => {
+    const entry = record(v);
+    return typeof entry['source'] === 'string' && typeof entry['target'] === 'string' && entry['source'].trim() && entry['target'].trim()
+      ? [{ source: entry['source'], target: entry['target'], updatedAt: typeof entry['updatedAt'] === 'number' ? entry['updatedAt'] : 0 }] : [];
+  }) : [];
+}
+export function mergeGlossary(entries: GlossaryEntry[]): GlossaryEntry[] {
+  const latest = new Map<string, GlossaryEntry>();
+  for (const entry of entries) if ((latest.get(entry.source)?.updatedAt ?? -1) <= entry.updatedAt) latest.set(entry.source, entry);
+  return [...latest.values()];
+}
+export function resetTranslationField(versions: Translations, lang: Lang, path: string): Translations {
+  const entry = versions[lang];
+  if (!entry) return versions;
+  const fields = correctedFields(entry).filter((field) => field !== path);
+  const original = contentUnits(entry.source)[path];
+  return { ...versions, [lang]: { ...entry, source: setContentUnit(entry.source, path, null), manualFields: fields, manual: fields.length > 0,
+    glossary: (entry.glossary ?? []).filter((pair) => pair.source !== original),
+  } };
 }
 export function translationMap(source: unknown, target: unknown): Record<string, string> {
   const result: Record<string, string> = {};

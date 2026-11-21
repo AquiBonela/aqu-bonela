@@ -16,7 +16,8 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { LANGS, LANGUAGE_OPTIONS, type Lang, useI18n } from "@/lib/i18n";
 import { ContentLanguages } from '@/components/admin/ContentLanguages';
 import { useContentTranslations } from '@/components/admin/useContentTranslations';
-import { catalogContent, editTranslation, mapContent, readTranslations, record, sourceChanged, type Content, type Translations } from '@/lib/content-translations';
+import { TranslationSaveDialog } from '@/components/admin/TranslationSaveDialog';
+import { catalogContent, editTranslation, languagesToGenerate, mapContent, readTranslations, record, sourceChanged, type Content, type Translations } from '@/lib/content-translations';
 import { slugify } from "@/lib/admin";
 import { TAG_LABEL } from "@/lib/tramites";
 import { adminProceduresQuery, procedureCategoriesQuery, type ProcedureRow } from "@/lib/admin-procedures";
@@ -73,6 +74,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   const [order, setOrder] = useState(row?.sort_order ?? 0);
   const [visibility, setVisibility] = useState(() => readVisibility(row?.visibility));
   const [busy, setBusy] = useState(false);
+  const [confirmTranslations, setConfirmTranslations] = useState(false);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -81,19 +83,23 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   const selected = language === 'es' ? content : translations[language]?.content ?? record(mapContent(source, () => ''));
   const update = (value: Content) => language === 'es' ? setContent(value) : setTranslations((p) => editTranslation(p, language, value, source));
 
-  async function save() {
+  async function save(choice?: boolean) {
     setError("");
     if (!title.trim() || !category || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) { setError(tr("Completa el título y un identificador válido.")); return; }
-    if (busy) return;
+    if (busy || translating) return;
+    if (choice === undefined && languagesToGenerate(translations, source).length) { setConfirmTranslations(true); return; }
+    const prepared = choice ? await generate(source, translations, setTranslations, true) : translations;
+    if (!prepared) { setConfirmTranslations(false); return; }
+    setConfirmTranslations(false);
     const full = source;
-    const fullEn = { ...translations.en?.content, slug, cat: currentCategory?.slug ?? '' };
+    const fullEn = { ...prepared.en?.content, slug, cat: currentCategory?.slug ?? '' };
     const validated = procedureContentSchema.safeParse(full);
     const validatedEn = procedureContentSchema.safeParse(fullEn);
     if (!validated.success) { setError(tr("Revisa los enlaces y campos del trámite.")); return; }
     setBusy(true);
     try {
       const payload = { category_id: category, title: title.trim(), slug, summary: typeof content['summary'] === "string" ? content['summary'] : "", status,
-        content: full as Json, content_en: (validatedEn.success ? fullEn : {}) as Json, translations: translations as unknown as Json, visibility, sort_order: order, source_key: row?.source_key ?? (template ? sourceKey(template) : null) };
+        content: full as Json, content_en: (validatedEn.success ? fullEn : {}) as Json, translations: prepared as unknown as Json, visibility, sort_order: order, source_key: row?.source_key ?? (template ? sourceKey(template) : null) };
       const result = row ? await supabase.from("procedures").update(payload).eq("id", row.id).select("id").single() : await supabase.from("procedures").insert(payload).select("id").single();
       if (result.error || !result.data) throw result.error ?? new Error("Missing saved row");
       await qc.invalidateQueries({ queryKey: adminProceduresQuery.queryKey });
@@ -119,7 +125,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
     <Link to="/admin/tramites" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" />{tr("Trámites")}</Link>
     <form onSubmit={(e) => { e.preventDefault(); void save(); }}>
       <div className="my-5 flex flex-wrap items-center justify-between gap-3"><h1 className="font-display text-2xl font-bold">{tr(id === "nuevo" ? "Nuevo trámite" : "Editar trámite")}</h1><div className="flex gap-2"><Button type="button" variant="outline" onClick={() => setPreview(true)}><Eye />{tr("Vista previa")}</Button><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button></div></div>
-      <fieldset disabled={busy} className="min-w-0 space-y-5">
+      <fieldset disabled={busy || translating} className="min-w-0 space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium">{tr("Título")}<Input required value={title} onChange={(e) => { setTitle(e.target.value); if (!row && slug === slugify(title)) setSlug(slugify(e.target.value)); }} /></label>
           <label className="block text-sm font-medium">{tr("Identificador del enlace")}<Input required pattern="[a-z0-9]+(-[a-z0-9]+)*" value={slug} onChange={(e) => setSlug(e.target.value)} /></label>
@@ -127,7 +133,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
           <label className="block text-sm font-medium">{tr("Estado")}<select value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 w-full border bg-background px-3 text-sm"><option value="borrador">{tr("Borrador")}</option><option value="publicada">{tr("Publicado")}</option></select></label>
           <label className="block text-sm font-medium">{tr("Orden")}<Input type="number" step="1" value={order} onChange={(e) => setOrder(Number(e.target.value))} /></label>
         </div>
-        <ContentLanguages value={language} onChange={setLanguage} busy={busy || translating} onGenerate={() => void generate(source, translations, setTranslations, true)} stale={Boolean(language !== 'es' && translations[language]?.manual && sourceChanged(translations[language], source))} />
+        <ContentLanguages value={language} onChange={setLanguage} busy={busy || translating} onGenerate={() => void generate(source, translations, setTranslations, true)} stale={Boolean(language !== 'es' && translations[language] && sourceChanged(translations[language], source))} translations={translations} onVersionsChange={setTranslations} />
         {language !== 'es' && <label className="block text-sm font-medium">{`Título · ${LANGUAGE_OPTIONS[language].name}`}<Input value={typeof selected['title'] === 'string' ? selected['title'] : ''} onChange={(e) => update({ ...selected, title: e.target.value })} /></label>}
         <label className="block text-sm font-medium">{tr("Subtítulo")}<Textarea aria-label="Subtítulo" value={typeof selected['summary'] === "string" ? selected['summary'] : ""} onChange={(e) => update({ ...selected, summary: e.target.value })} /></label>
         <Accordion type="multiple" className="border-t">{PROCEDURE_SECTIONS.map((section) => <AccordionItem key={section.key} value={section.key} className="border-b">
@@ -145,6 +151,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
         <div className="flex items-center justify-between gap-3"><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button>{row && <Button type="button" variant="ghost" onClick={() => setDeleting(true)} className="text-destructive"><Trash2 />{tr("Eliminar trámite")}</Button>}</div>
       </fieldset>
     </form>
+    <TranslationSaveDialog open={confirmTranslations} onOpenChange={setConfirmTranslations} source={source} translations={translations} busy={busy || translating} onSave={(choice) => void save(choice)} />
     <Dialog open={preview} onOpenChange={setPreview}><DialogContent className="max-h-[90dvh] max-w-3xl overflow-y-auto"><DialogHeader><DialogTitle>{tr("Vista previa")}</DialogTitle></DialogHeader><ProcedurePreview content={previewContent} /></DialogContent></Dialog>
     <Dialog open={deleting} onOpenChange={setDeleting}><DialogContent><DialogHeader><DialogTitle>{tr("Eliminar trámite")}</DialogTitle></DialogHeader><p>{tr("¿Eliminar este trámite del panel?")}</p><div className="flex justify-end gap-2"><Button variant="outline" disabled={busy} onClick={() => setDeleting(false)}>{tr("Cancelar")}</Button><Button variant="destructive" disabled={busy} onClick={() => void remove()}><Trash2 />{tr("Eliminar")}</Button></div></DialogContent></Dialog>
   </>;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { generateTranslation } from '@/lib/translation.functions';
-import { languagesToGenerate, record, type Content, type Translations } from '@/lib/content-translations';
+import { correctedFields, languagesToGenerate, record, type Content, type Translations } from '@/lib/content-translations';
 
 export function useContentTranslations() {
   const call = useServerFn(generateTranslation);
@@ -17,9 +17,11 @@ export function useContentTranslations() {
     try {
       for (const lang of targets) {
         if (lang === 'es') continue;
-        const result = await call({ data: { source, lang, resume: explicit } });
+        const previous = versions[lang];
+        const result = await call({ data: { source, lang, resume: explicit, ...(previous ? { previous } : {}) } });
         if (!result.ok) throw new Error(result.message);
-        next = { ...next, [lang]: { content: record(JSON.parse(result.contentJson)), source: structuredClone(source), manual: false } };
+        const fields = correctedFields(previous);
+        next = { ...next, [lang]: { ...previous, content: record(JSON.parse(result.contentJson)), source: structuredClone(source), manual: fields.length > 0, manualFields: fields } };
         onProgress(next);
       }
       if (explicit) toast.success('Traducciones preparadas.');

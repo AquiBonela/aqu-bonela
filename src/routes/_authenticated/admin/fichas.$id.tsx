@@ -22,7 +22,8 @@ import { deleteListing } from "@/lib/delete-listing";
 import type { Json } from '@/integrations/supabase/types';
 import { ContentLanguages } from '@/components/admin/ContentLanguages';
 import { useContentTranslations } from '@/components/admin/useContentTranslations';
-import { catalogContent, editTranslation, readTranslations, sourceChanged, type Translations } from '@/lib/content-translations';
+import { TranslationSaveDialog } from '@/components/admin/TranslationSaveDialog';
+import { catalogContent, editTranslation, languagesToGenerate, readTranslations, sourceChanged, type Translations } from '@/lib/content-translations';
 
 export const Route = createFileRoute("/_authenticated/admin/fichas/$id")({
   head: () => ({
@@ -132,6 +133,7 @@ function EditPage() {
   };
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const [confirmTranslations, setConfirmTranslations] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [reviewLink, setReviewLink] = useState<{ url: string; expiresAt: string } | null>(null);
   const [linkBusy, setLinkBusy] = useState(false);
@@ -182,14 +184,15 @@ function EditPage() {
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
 
-  async function save(e: React.FormEvent): Promise<void> {
-    e.preventDefault();
+  async function save(choice?: boolean): Promise<void> {
     const labels = list(f.labels, /,/);
     if (labels.length > 3) { toast.error(tr("Máximo 3 etiquetas destacadas.")); return; }
     if (!f.category_id) { toast.error(tr("Elige una categoría.")); return; }
     if (saving || translating) return;
-    const prepared = await generate(source, translations, setTranslations);
-    if (!prepared) return;
+    if (choice === undefined && languagesToGenerate(translations, source).length) { setConfirmTranslations(true); return; }
+    const prepared = choice ? await generate(source, translations, setTranslations, true) : translations;
+    if (!prepared) { setConfirmTranslations(false); return; }
+    setConfirmTranslations(false);
     setSaving(true);
     const featured_until = f.highlighted
       ? f.featured_until && new Date(f.featured_until) > new Date() ? f.featured_until : collaboratorUntil(new Date(), months)
@@ -271,7 +274,7 @@ function EditPage() {
   if (!isNew && !data?.listing) return <p><Text text="Ficha no encontrada." /></p>;
 
   return (
-    <form onSubmit={save} className="space-y-6 pb-24">
+    <form onSubmit={(e) => { e.preventDefault(); void save(); }} className="space-y-6 pb-24">
       <div className="flex items-center gap-3">
         <Link to="/admin" className="text-muted-foreground hover:text-foreground" aria-label="Volver">
           <ArrowLeft className="h-5 w-5" />
@@ -368,7 +371,7 @@ function EditPage() {
         <Field label={tr("Dirección web")} hint={`aquibonela…${listingPath(f.type, f.slug || "…")}`}>
           <Input value={f.slug} onChange={(e) => { setSlugTouched(true); set("slug", slugify(e.target.value)); }} />
         </Field>
-        <ContentLanguages value={language} onChange={setLanguage} busy={saving || translating} onGenerate={() => void generate(source, translations, setTranslations, true)} stale={Boolean(language !== 'es' && translations[language]?.manual && sourceChanged(translations[language], source))} />
+        <ContentLanguages value={language} onChange={setLanguage} busy={saving || translating} onGenerate={() => void generate(source, translations, setTranslations, true)} stale={Boolean(language !== 'es' && translations[language] && sourceChanged(translations[language], source))} translations={translations} onVersionsChange={setTranslations} />
         {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
         <Field label={tr("Descripción corta")} hint={`${tr("Se ve en la tarjeta del directorio.")} ${shortText.length}/140`}>
           <Input aria-label="Descripción corta" maxLength={140} disabled={translating} value={shortText} onChange={(e) => setTranslatedField("short_description", e.target.value)} />
@@ -484,6 +487,7 @@ function EditPage() {
         </Button>
       </div>}
 
+      <TranslationSaveDialog open={confirmTranslations} onOpenChange={setConfirmTranslations} source={source} translations={translations} busy={saving || translating} onSave={(choice) => void save(choice)} />
       <div className="fixed inset-x-0 bottom-0 border-t bg-background">
         <div className="mx-auto flex max-w-5xl justify-end gap-2 px-4 py-3">
           <Link to="/admin" className="inline-flex h-11 items-center border px-4 text-sm"><Text text="Cancelar" /></Link>

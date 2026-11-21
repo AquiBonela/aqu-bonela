@@ -30,13 +30,48 @@ async function chooseLanguage(name: string) {
   fireEvent.keyDown(screen.getByRole('button', { name: 'Idioma del contenido' }), { key: 'Enter' });
   fireEvent.click(await screen.findByRole('menuitemradio', { name }));
 }
+async function saveWithoutTranslation() {
+  fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+  const skip = screen.queryByRole('button', { name: 'Guardar sin actualizar traducciones' });
+  if (skip) fireEvent.click(skip);
+}
 
 describe("procedure editor form", () => {
+  it('asks before translating changed Spanish and does not write until a choice is made', async () => {
+    mount('certificado-digital');
+    fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Nuevo requisito municipal' } });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    expect(mocks.generate).not.toHaveBeenCalled();
+    expect(mocks.insert).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Actualizar traducciones y guardar' }));
+    await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
+    expect(mocks.generate).toHaveBeenCalledTimes(1);
+    expect(mocks.insert.mock.calls[0]?.[0].translations.uk.source.summary).toBe('Nuevo requisito municipal');
+  });
+  it('cancels the confirmation without saving or translating', () => {
+    mount('certificado-digital');
+    fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Cambio pendiente' } });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }));
+    expect(mocks.insert).not.toHaveBeenCalled();
+    expect(mocks.generate).not.toHaveBeenCalled();
+  });
+  it('does not save after a failed translation and permits a subsequent save without translating', async () => {
+    mount('certificado-digital');
+    mocks.generate.mockResolvedValue(null);
+    fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Cambio pendiente' } });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    fireEvent.click(screen.getByRole('button', { name: 'Actualizar traducciones y guardar' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(mocks.insert).not.toHaveBeenCalled();
+    await saveWithoutTranslation();
+    await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
+  });
   it("saves a new procedure as a draft with the selected category", async () => {
     mount();
     fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Solicitud de ejemplo' } });
     fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Resumen de prueba' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    await saveWithoutTranslation();
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     expect(mocks.insert.mock.calls[0]?.[0]).toMatchObject({ title: 'Solicitud de ejemplo', slug: 'solicitud-de-ejemplo', status: 'borrador', category_id: 'category-1', summary: 'Resumen de prueba' });
     expect(mocks.generate).not.toHaveBeenCalled();
@@ -44,7 +79,7 @@ describe("procedure editor form", () => {
   it("preserves an existing guide when a section is switched off and saved", async () => {
     mount('certificado-digital');
     fireEvent.click(screen.getByRole('switch', { name: 'Mostrar ¿Cómo hacerlo paso a paso?' }));
-    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    await saveWithoutTranslation();
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     const saved = mocks.insert.mock.calls[0]?.[0];
     expect(saved.visibility.pasos).toBe(false);
@@ -66,7 +101,7 @@ describe("procedure editor form", () => {
     fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Resumen español' } });
     await chooseLanguage('English');
     fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'English summary' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    await saveWithoutTranslation();
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     const saved = mocks.insert.mock.calls[0]?.[0];
     expect(saved.content.summary).toBe('Resumen español');
@@ -78,7 +113,7 @@ describe("procedure editor form", () => {
     const english = (screen.getByLabelText('Subtítulo') as HTMLTextAreaElement).value;
     await chooseLanguage('Nederlands');
     fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Handmatig gecontroleerde Nederlandse tekst' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    await saveWithoutTranslation();
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     const saved = mocks.insert.mock.calls[0]?.[0];
     expect(saved.translations.nl.content.summary).toBe('Handmatig gecontroleerde Nederlandse tekst');

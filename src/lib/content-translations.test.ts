@@ -8,13 +8,13 @@ describe('independent saved content languages', () => {
     expect(languagesToGenerate({}, source)).toEqual(['en', 'de', 'nl', 'fr', 'uk']);
   });
   it('does not regenerate saved versions on a visit or unchanged save', () => {
-    const versions: Translations = Object.fromEntries(['en', 'de', 'nl', 'fr', 'uk'].map((lang) => [lang, { source, content: { description: lang }, manual: false }]));
+    const versions: Translations = Object.fromEntries(['en', 'de', 'nl', 'fr', 'uk'].map((lang) => [lang, { source, content: { description: lang, short_description: lang }, manual: false }]));
     expect(languagesToGenerate(versions, source)).toEqual([]);
   });
   it('does not charge for regenerating unchanged content after jsonb reorders its keys', () => {
     const savedSource = { description: 'Texto original', short_description: 'Resumen original' };
     const nextSource = { short_description: 'Resumen original', description: 'Texto original' };
-    const versions: Translations = Object.fromEntries(['en', 'de', 'nl', 'fr', 'uk'].map((lang) => [lang, { source: savedSource, content: { description: lang }, manual: false }]));
+    const versions: Translations = Object.fromEntries(['en', 'de', 'nl', 'fr', 'uk'].map((lang) => [lang, { source: savedSource, content: { description: lang, short_description: lang }, manual: false }]));
     expect(languagesToGenerate(versions, nextSource)).toEqual([]);
   });
   it('preserves Dutch corrections after Spanish changes', () => {
@@ -22,7 +22,7 @@ describe('independent saved content languages', () => {
     const edited = editTranslation(original, 'nl', { description: 'Nederlands correct' }, source);
     expect(edited.en?.content['description']).toBe('English');
     expect(source.description).toBe('Texto original');
-    expect(languagesToGenerate(edited, { ...source, description: 'Español actualizado' })).toEqual(['en', 'de', 'fr', 'uk']);
+    expect(languagesToGenerate(edited, { ...source, description: 'Español actualizado' })).toEqual(['en', 'de', 'nl', 'fr', 'uk']);
     expect(edited.nl?.content['description']).toBe('Nederlands correct');
   });
   it('gives saved manual versions priority over the legacy dictionary', () => {
