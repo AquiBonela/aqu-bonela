@@ -436,6 +436,7 @@ export const englishText: Record<string, string> = {
   "Menú principal": "Main menu",
   "Menú de administración": "Administration menu",
   "Panel de fichas": "Listing dashboard",
+  "Panel editor": "Editor panel",
   "Configuración": "Settings",
   "Ver web": "View website",
   "Salir": "Sign out",

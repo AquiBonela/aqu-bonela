@@ -40,6 +40,8 @@ type AppHeaderProps = {
   left?: ReactNode;
   /** Modo superpuesto: la barra flota sobre el hero de la portada, con textos en blanco. */
   overlay?: boolean;
+  /** Administración: logo centrado y menú, sin controles públicos. */
+  admin?: boolean;
 };
 
 const SMALL_CLASS = "block text-xl font-bold hover:text-beige";
@@ -49,7 +51,7 @@ const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hov
  * Cabecera compartida: menú siempre visible en escritorio y,
  * en móvil, menú a pantalla completa sobre fondo verde principal.
  */
-export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left, overlay = false }: AppHeaderProps) {
+export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left, overlay = false, admin = false }: AppHeaderProps) {
   const { tr, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -109,14 +111,15 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   return (
     <>
       <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
-        <div className="mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 px-4 py-2">
+        <div className={admin ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2" : "mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 px-4 py-2"}>
           <div className="flex min-w-0 items-center justify-start gap-3 sm:gap-5">
-            <EmergencyButton />
-            {left}
+            {!admin && <EmergencyButton />}
+            {!admin && left}
           </div>
+          {admin && <div className="flex min-w-0 items-center justify-center">{brand}</div>}
           <div className="flex shrink-0 items-center justify-end gap-1">
-            {brand}
-            <LangSwitch className={overlay ? "[&_button]:!text-primary-foreground" : ""} />
+            {!admin && brand}
+            {!admin && <LangSwitch className={overlay ? "[&_button]:!text-primary-foreground" : ""} />}
             <Button variant="ghost" size="icon"
               type="button"
               onClick={() => setOpen(true)}
@@ -136,7 +139,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground`}>
           <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
             <div className="flex justify-start">
-              <LangSwitch className="[&_button]:!text-primary-foreground" />
+              {!admin && <LangSwitch className="[&_button]:!text-primary-foreground" />}
             </div>
             <div />
             <div className="flex justify-end">

@@ -44,3 +44,5 @@
 - [x] Fase 1: página propia de Trámites con buscador y categorías; sección 03 compacta; búsqueda, fichas, regreso y sugerencias verificados en móvil/escritorio y ES/EN; 80 pruebas pasan.
 - [x] Fase 2: gestión de categorías y editor completo en /admin/tramites, visibilidad por apartado, ES/EN, borrador/publicado y guardado protegido; 103 pruebas y regresión de permisos anon/usuario/admin pasan; guías públicas intactas.
 - [ ] Verificar guardado real del editor de trámites desde el navegador: bloqueado por Supabase externo sin sesión de administrador disponible; formulario probado con respuestas simuladas y permisos reales verificados en transacción revertida.
+- [x] Simplificar la cabecera del admin a logo negro centrado y menú sin SOS/idioma; unificar el acceso como «Panel editor»; presentación comprobada en tres tamaños con sesión simulada.
+- [x] Mover Categorías y actividades desde Configuración a un botón desplegable en Fichas, conservando la gestión actual; apertura, tipos y ubicación comprobados con sesión simulada.

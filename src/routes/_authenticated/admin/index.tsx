@@ -2,8 +2,9 @@ import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Search, X } from "lucide-react";
+import { Plus, FolderCog, Search, X } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ListingCategories } from "@/components/admin/ListingCategories";
 import { adminListingsQuery, categoriesQuery, STATUSES } from "@/lib/admin";
 import { isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
 import { changeAdminCategory, changeAdminType, emptyAdminFilters, filterAdminListings } from "@/lib/admin-listing-filters";
@@ -48,6 +49,7 @@ function ListBody() {
   const { data = [], isLoading } = useQuery(adminListingsQuery);
   const { data: categories = [] } = useQuery(categoriesQuery);
   const [filters, setFilters] = useState(emptyAdminFilters);
+  const [showCategories, setShowCategories] = useState(false);
   const rows = filterAdminListings(data, filters);
   const availableCategories = categories.filter((c) => data.some((l) => l.category_id === c.id && (!filters.type || l.type === filters.type)));
   const activities = [...new Set(data.filter((l) => l.category_id === filters.category && (!filters.type || l.type === filters.type)).flatMap((l) => l.activity ? [l.activity] : []))].sort((a, b) => a.localeCompare(b, "es"));
@@ -56,13 +58,12 @@ function ListBody() {
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold"><Text text="Fichas" /></h1>
-        <Link
-          to="/admin/fichas/$id"
-          params={{ id: "nueva" }}
-          className="inline-flex h-10 items-center gap-2 bg-terracotta px-4 text-sm font-medium text-terracotta-foreground"
-        >
-          <Plus className="h-4 w-4" />  <Text text="Nueva ficha" /> </Link>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setShowCategories((v) => !v)} aria-expanded={showCategories} aria-controls="listing-categories"><FolderCog /><Text text="Categorías" /></Button>
+          <Button asChild className="bg-terracotta text-terracotta-foreground hover:bg-terracotta/90"><Link to="/admin/fichas/$id" params={{ id: "nueva" }}><Plus className="h-4 w-4" /><Text text="Nueva ficha" /></Link></Button>
+        </div>
       </div>
+      {showCategories && <ListingCategories />}
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

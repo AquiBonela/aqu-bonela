@@ -8,8 +8,7 @@ import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import logo from "@/assets/logo-2.webp";
 
 const ADMIN_ITEMS: HeaderItem[] = [
-  { to: "/admin", label: "Panel de fichas" },
-  { to: "/admin/tramites", label: "Trámites" },
+  { to: "/admin", label: "Panel editor" },
   { to: "/admin/configuracion", label: "Configuración" },
   { to: "/", search: { q: "", cat: "", of: "" }, label: "Ver web" },
 ];
@@ -63,12 +62,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader
+        admin
         navLabel={tr("Menú de administración")}
         footnote={tr("Administración del directorio Aquí Bonela")}
         brand={
-          <Link to="/admin" className="inline-flex items-center gap-3 font-display text-lg font-medium">
-            <img src={logo} alt="Aquí Bonela" className="h-9 w-auto" />
-            <span className="hidden sm:inline"><Text text="Administración" /></span>
+          <Link to="/admin" className="inline-flex min-w-0 items-center justify-center">
+            <img src={logo} alt="Aquí Bonela" className="h-9 max-w-full object-contain brightness-0" />
           </Link>
         }
         items={items.map((item) => ({ ...item, label: tr(item.label) }))}
