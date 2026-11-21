@@ -51,3 +51,5 @@
 - [x] Primera fase de idiomas: selector desplegable público con seis idiomas y persistencia; campos ingleses de categorías retirados sin borrar traducciones existentes; 11 pruebas y selector público comprobados en 320, 548 y 1280 px, sin errores; comprobación del diálogo autenticado pendiente del acceso externo ya indicado.
 - [x] Completar diccionarios públicos en alemán, neerlandés, francés y ucraniano, ampliar inglés y conservar nombres, datos y enlaces; cobertura y 148 pruebas verificadas; navegación principal, búsqueda real y formularios comprobados en seis idiomas, sin llamadas de traducción por visita.
 - [x] Mostrar banderas independientes del sistema junto a los seis idiomas y aplicar el amarillo y las letras oficiales a Punto Vuela; 26 pruebas pasan, banderas, tipografía y enlace verificados en 320, 548 y 1280 px, sin errores.
+- [ ] Unificar los editores de fichas y trámites con seis idiomas, traducciones guardadas independientes y generación desde español sin sobrescribir correcciones.
+- [ ] Conectar las traducciones editadas a las páginas públicas y comprobar aislamiento, persistencia y presentación.
