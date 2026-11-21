@@ -16,7 +16,8 @@ export type HeaderRoute =
   | "/admin"
   | "/admin/avisos"
   | "/admin/sugerencias"
-  | "/admin/configuracion";
+  | "/admin/configuracion"
+  | "/admin/tramites";
 
 export type HeaderItem = {
   label: string;

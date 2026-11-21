@@ -9,6 +9,7 @@ import logo from "@/assets/logo-2.webp";
 
 const ADMIN_ITEMS: HeaderItem[] = [
   { to: "/admin", label: "Panel de fichas" },
+  { to: "/admin/tramites", label: "Trámites" },
   { to: "/admin/configuracion", label: "Configuración" },
   { to: "/", search: { q: "", cat: "", of: "" }, label: "Ver web" },
 ];
@@ -19,11 +20,12 @@ function AdminTabs() {
   const { data: suggestions = [] } = useQuery(adminSuggestionsQuery);
   const tabs = [
     { to: "/admin" as const, label: "Fichas", count: 0, exact: true },
+    { to: "/admin/tramites" as const, label: "Trámites", count: 0, exact: false },
     { to: "/admin/avisos" as const, label: "Avisos", count: reports.filter((r) => !r.resolved).length, exact: false },
     { to: "/admin/sugerencias" as const, label: "Sugerencias", count: suggestions.filter((s) => !s.handled).length, exact: false },
   ];
   return (
-    <nav aria-label={tr("Secciones de administración")} className="mb-5 grid grid-cols-3 gap-1 rounded-full border bg-secondary/40 p-1">
+    <nav aria-label={tr("Secciones de administración")} className="mb-5 grid grid-cols-4 gap-1 rounded-full border bg-secondary/40 p-1">
       {tabs.map((t) => (
         <Link
           key={t.to}

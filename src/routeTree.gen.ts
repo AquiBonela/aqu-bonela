@@ -36,6 +36,8 @@ import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_aut
 import { Route as TramitesCategoriaIndexRouteImport } from './routes/tramites/$categoria.index'
 import { Route as TramitesCategoriaTramiteRouteImport } from './routes/tramites/$categoria.$tramite'
 import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
+import { Route as AuthenticatedAdminTramitesIndexRouteImport } from './routes/_authenticated/admin/tramites.index'
+import { Route as AuthenticatedAdminTramitesIdRouteImport } from './routes/_authenticated/admin/tramites.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -176,6 +178,18 @@ const AuthenticatedAdminFichasIdRoute =
     path: '/admin/fichas/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminTramitesIndexRoute =
+  AuthenticatedAdminTramitesIndexRouteImport.update({
+    id: '/admin/tramites/',
+    path: '/admin/tramites/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminTramitesIdRoute =
+  AuthenticatedAdminTramitesIdRouteImport.update({
+    id: '/admin/tramites/$id',
+    path: '/admin/tramites/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -204,6 +218,8 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
+  '/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/admin/tramites/': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -232,6 +248,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria': typeof TramitesCategoriaIndexRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
+  '/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/admin/tramites': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -262,6 +280,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
   '/_authenticated/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
+  '/_authenticated/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/_authenticated/admin/tramites/': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -292,6 +312,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/tramites/$categoria/'
     | '/admin/fichas/$id'
+    | '/admin/tramites/$id'
+    | '/admin/tramites/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -320,6 +342,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/tramites/$categoria'
     | '/admin/fichas/$id'
+    | '/admin/tramites/$id'
+    | '/admin/tramites'
   id:
     | '__root__'
     | '/'
@@ -349,6 +373,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/tramites/$categoria/'
     | '/_authenticated/admin/fichas/$id'
+    | '/_authenticated/admin/tramites/$id'
+    | '/_authenticated/admin/tramites/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -566,6 +592,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFichasIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/tramites/': {
+      id: '/_authenticated/admin/tramites/'
+      path: '/admin/tramites'
+      fullPath: '/admin/tramites/'
+      preLoaderRoute: typeof AuthenticatedAdminTramitesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/tramites/$id': {
+      id: '/_authenticated/admin/tramites/$id'
+      path: '/admin/tramites/$id'
+      fullPath: '/admin/tramites/$id'
+      preLoaderRoute: typeof AuthenticatedAdminTramitesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -575,6 +615,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminSugerenciasRoute: typeof AuthenticatedAdminSugerenciasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminFichasIdRoute: typeof AuthenticatedAdminFichasIdRoute
+  AuthenticatedAdminTramitesIdRoute: typeof AuthenticatedAdminTramitesIdRoute
+  AuthenticatedAdminTramitesIndexRoute: typeof AuthenticatedAdminTramitesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -583,6 +625,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminSugerenciasRoute: AuthenticatedAdminSugerenciasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminFichasIdRoute: AuthenticatedAdminFichasIdRoute,
+  AuthenticatedAdminTramitesIdRoute: AuthenticatedAdminTramitesIdRoute,
+  AuthenticatedAdminTramitesIndexRoute: AuthenticatedAdminTramitesIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

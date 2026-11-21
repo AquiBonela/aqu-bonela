@@ -628,6 +628,7 @@ export type Database = {
           id: string
           slug: string
           sort_order: number
+          source_key: string | null
           status: string
           summary: string
           title: string
@@ -642,6 +643,7 @@ export type Database = {
           id?: string
           slug: string
           sort_order?: number
+          source_key?: string | null
           status?: string
           summary?: string
           title: string
@@ -656,6 +658,7 @@ export type Database = {
           id?: string
           slug?: string
           sort_order?: number
+          source_key?: string | null
           status?: string
           summary?: string
           title?: string

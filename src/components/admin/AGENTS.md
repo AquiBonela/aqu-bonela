@@ -1,0 +1,2 @@
+- Procedure editing uses structured repeatable fields and separate Spanish/English content plus non-destructive visibility switches; save through the browser Supabase client under admin RLS. Why: match existing listing administration without exposing privileged credentials.
+- Current procedure guides appear as unsaved templates until explicitly saved, while public pages remain static until the connection phase. Why: preserve existing content and separate the approved implementation phases.
