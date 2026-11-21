@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIAS, TRAMITES, type Tramite, type Categoria } from './tramites';
-import { procedureContentSchema, readVisibility, visibleContent, sourceKey } from './procedure-editor';
+import { procedureContentSchema, readVisibility, visibleContent, matchesProcedureSource, isDeletedProcedure } from './procedure-editor';
 import { readTranslations, translationMap, type Translations } from './content-translations';
 import type { Lang } from './i18n';
 import type { ProcedureCategory, ProcedureRow } from './admin-procedures';
@@ -9,7 +9,7 @@ import type { ProcedureCategory, ProcedureRow } from './admin-procedures';
 export type PublicProcedure = Tramite & { translations?: Translations };
 export function publicProcedureList(rows: ProcedureRow[], categories: ProcedureCategory[]) {
   const cats: Categoria[] = categories.filter((c) => c.visible).map((c) => ({ slug: c.slug, title: c.title, text: c.description, icon: CATEGORIAS.find((v) => v.slug === c.slug)?.icon ?? 'doc' }));
-  const saved: PublicProcedure[] = rows.filter((r) => r.status === 'publicada').flatMap((r) => {
+  const saved: PublicProcedure[] = rows.filter((r) => r.status === 'publicada' && !isDeletedProcedure(r)).flatMap((r) => {
     const category = categories.find((c) => c.id === r.category_id && c.visible);
     const parsed = procedureContentSchema.safeParse(r.content);
     if (!category || !parsed.success) return [];
@@ -20,7 +20,7 @@ export function publicProcedureList(rows: ProcedureRow[], categories: ProcedureC
     return [{ ...content, links: Array.isArray(content['links']) ? content['links'] : [], translations } as PublicProcedure];
   });
   // Unsaved legacy guides remain available until an administrator publishes their saved replacement.
-  const legacy = TRAMITES.filter((t) => cats.some((c) => c.slug === t.cat) && !rows.some((r) => r.status === 'publicada' && (r.source_key === sourceKey(t) || (r.slug === t.slug && categories.find((c) => c.id === r.category_id)?.slug === t.cat))));
+  const legacy = TRAMITES.filter((t) => cats.some((c) => c.slug === t.cat) && !rows.some((r) => r.status === 'publicada' && matchesProcedureSource(r, t, categories)));
   return { categories: cats, procedures: [...legacy, ...saved].sort((a, b) => {
     const order = (t: Tramite) => rows.find((r) => r.slug === t.slug && categories.find((c) => c.id === r.category_id)?.slug === t.cat)?.sort_order ?? 0;
     return order(a) - order(b) || a.title.localeCompare(b.title, 'es');

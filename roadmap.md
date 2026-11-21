@@ -63,3 +63,5 @@
 - [x] Ocultar botones, fuentes oficiales y contenedores de enlaces vacíos en trámites y vista previa; pruebas de filtrado y vista previa verificadas.
 - [x] Mostrar automáticamente € para importes numéricos sin duplicarlo ni alterar importes descriptivos; valores 12, 12,50 y 0 comprobados.
 - [x] Añadir grupos repetibles de título y requisitos, conservando la lista existente y traducciones; 195 pruebas pasan y editor/vista previa verificados en móvil y escritorio con guardado y lectura aislados; guardado real sigue pendiente de la sesión externa indicada arriba.
+- [x] Corregir la reaparición de plantillas al eliminar trámites y recuperar Eliminar en guías sin guardar; 38 pruebas pasan y «Tarjeta Sanitaria Europea (TSE)» real abre sin errores ni cambios.
+- [ ] Verificar la eliminación real de «Tarjeta sanitaria europea» desde el panel: bloqueado por Supabase externo sin sesión de administrador disponible.

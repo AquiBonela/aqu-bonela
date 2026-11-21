@@ -4,26 +4,27 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 import { I18nProvider } from "@/lib/i18n";
 import { ProcedureEditor } from "@/routes/_authenticated/admin/tramites.$id";
-import type { ProcedureCategory } from "@/lib/admin-procedures";
+import type { ProcedureCategory, ProcedureRow } from "@/lib/admin-procedures";
 import { catalogContent, languagesToGenerate } from '@/lib/content-translations';
 
-const mocks = vi.hoisted(() => ({ insert: vi.fn(), navigate: vi.fn(), generate: vi.fn() }));
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), navigate: vi.fn(), generate: vi.fn() }));
 vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
 vi.mock("@tanstack/react-router", async (original) => ({ ...await original<typeof import("@tanstack/react-router")>(), useNavigate: () => mocks.navigate, Link: ({ children }: { children: ReactNode }) => <a>{children}</a> }));
-vi.mock("@/integrations/supabase/client", () => ({ supabase: { from: () => ({ insert: mocks.insert }) } }));
+vi.mock("@/integrations/supabase/client", () => ({ supabase: { from: () => ({ insert: mocks.insert, update: mocks.update, delete: mocks.delete }) } }));
 vi.mock('@/components/admin/useContentTranslations', () => ({ useContentTranslations: () => ({
   translating: false, translationError: '', generate: mocks.generate,
 }) }));
 const categories: ProcedureCategory[] = [{ id: 'category-1', slug: 'documentacion', title: 'Documentación personal', description: '', title_en: '', description_en: '', visible: true, sort_order: 0, created_at: '', updated_at: '' }];
-function mount(id = "nuevo") {
+function mount(id = "nuevo", editorCategories = categories, row?: ProcedureRow) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   mocks.insert.mockReturnValue({ select: () => ({ single: async () => ({ data: { id: 'saved-id' }, error: null }) }) });
+  for (const mutation of [mocks.update, mocks.delete]) mutation.mockReturnValue({ eq: () => ({ select: () => ({ single: async () => ({ data: { id }, error: null }) }) }) });
   mocks.generate.mockImplementation(async (source: Record<string, unknown>, versions: import('@/lib/content-translations').Translations, update: (v: import('@/lib/content-translations').Translations) => void) => {
     const next = { ...versions };
     for (const lang of languagesToGenerate(versions, source)) next[lang] = { content: catalogContent(source, lang), source, manual: false };
     update(next); return next;
   });
-  render(<QueryClientProvider client={qc}><I18nProvider><ProcedureEditor id={id} row={undefined} categories={categories} /></I18nProvider></QueryClientProvider>);
+  render(<QueryClientProvider client={qc}><I18nProvider><ProcedureEditor id={id} row={row} categories={editorCategories} /></I18nProvider></QueryClientProvider>);
 }
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 async function chooseLanguage(name: string) {
@@ -37,6 +38,45 @@ async function saveWithoutTranslation() {
 }
 
 describe("procedure editor form", () => {
+  const saved: ProcedureRow = { id: 'saved', category_id: 'category-1', slug: 'certificado-digital', title: 'Certificado', summary: '', status: 'publicada', source_key: 'documentacion/certificado-digital', sort_order: 0, content: {}, content_en: {}, translations: {}, visibility: {}, created_at: '', updated_at: '' };
+  it('marks a saved legacy guide as deleted instead of restoring its template', async () => {
+    mount(saved.id, categories, saved);
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar trámite' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /^Eliminar$/ }));
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledWith({ to: '/admin/tramites' }));
+    expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ source_key: 'documentacion/certificado-digital', visibility: { deleted: true } }));
+    expect(mocks.delete).not.toHaveBeenCalled();
+  });
+  it('deletes an independently created guide normally', async () => {
+    mount(saved.id, categories, { ...saved, source_key: null, slug: 'guia-nueva' });
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar trámite' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /^Eliminar$/ }));
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledWith({ to: '/admin/tramites' }));
+    expect(mocks.delete).toHaveBeenCalledTimes(1);
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it('deletes the unsaved European health card template only after confirmation', async () => {
+    const health = { ...categories[0], id: 'health', slug: 'salud' } as ProcedureCategory;
+    const qc = new QueryClient();
+    mocks.insert.mockReturnValue({ select: () => ({ single: async () => ({ data: { id: 'deleted-marker' }, error: null }) }) });
+    render(<QueryClientProvider client={qc}><I18nProvider><ProcedureEditor id="tarjeta-europea" row={undefined} categories={[health]} /></I18nProvider></QueryClientProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar trámite' }));
+    expect(mocks.insert).not.toHaveBeenCalled();
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /^Eliminar$/ }));
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledWith({ to: '/admin/tramites' }));
+    expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({
+      category_id: 'health', slug: 'tarjeta-europea', source_key: 'salud/tarjeta-europea', visibility: { deleted: true }, content: {}, translations: {},
+    }));
+  });
+  it('keeps the template available when deletion fails', async () => {
+    const health = { ...categories[0], id: 'health', slug: 'salud' } as ProcedureCategory;
+    mount('tarjeta-europea', [health]);
+    mocks.insert.mockReturnValue({ select: () => ({ single: async () => ({ data: null, error: new Error('Denied') }) }) });
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar trámite' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /^Eliminar$/ }));
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('No se pudo eliminar el trámite.'));
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
   it('asks before translating changed Spanish and does not write until a choice is made', async () => {
     mount('certificado-digital');
     fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Nuevo requisito municipal' } });

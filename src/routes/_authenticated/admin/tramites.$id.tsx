@@ -20,9 +20,9 @@ import { useContentTranslations } from '@/components/admin/useContentTranslation
 import { TranslationSaveDialog } from '@/components/admin/TranslationSaveDialog';
 import { catalogContent, editTranslation, languagesToGenerate, mapContent, readTranslations, record, sourceChanged, type Content, type Translations } from '@/lib/content-translations';
 import { slugify } from "@/lib/admin";
-import { TAG_LABEL } from "@/lib/tramites";
-import { adminProceduresQuery, procedureCategoriesQuery, type ProcedureRow } from "@/lib/admin-procedures";
-import { PROCEDURE_SECTIONS, editableContent, existingProcedure, procedureContentSchema, readVisibility, sourceKey, translateContent, visibleContent } from "@/lib/procedure-editor";
+import { TAG_LABEL, TRAMITES } from "@/lib/tramites";
+import { adminProceduresQuery, procedureCategoriesQuery, procedureDeletionMarker, type ProcedureRow } from "@/lib/admin-procedures";
+import { PROCEDURE_SECTIONS, editableContent, existingProcedure, procedureContentSchema, readVisibility, sourceKey, translateContent, visibleContent, isDeletedProcedure, matchesProcedureSource } from "@/lib/procedure-editor";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -43,6 +43,7 @@ function EditorLoader({ id }: { id: string }) {
   const { tr } = useI18n();
   const row = rows.find((r) => r.id === id);
   const template = existingProcedure(id);
+  if ((row && isDeletedProcedure(row)) || (template && rows.some((r) => isDeletedProcedure(r) && matchesProcedureSource(r, template, categories)))) return <p>{tr("Este trámite no existe.")}</p>;
   if (!row && !template && id !== "nuevo") return <p>{tr("Este trámite no existe.")}</p>;
   return <ProcedureEditor id={id} row={row} categories={categories} />;
 }
@@ -110,11 +111,20 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
     } catch { setError(tr("No se pudo guardar. Revisa los datos y tus permisos.")); } finally { setBusy(false); }
   }
   async function remove() {
-    if (!row) return;
+    if (busy || translating) return;
+    const legacy = row ? TRAMITES.find((t) => matchesProcedureSource(row, t, categories)) : template;
+    if (!row && !legacy) return;
     setBusy(true); setError("");
     try {
-      const result = await supabase.from("procedures").delete().eq("id", row.id).select("id").single();
-      if (result.error) throw result.error;
+      const categoryId = categories.find((c) => c.slug === legacy?.cat)?.id;
+      if (legacy && !row && !categoryId) throw new Error("Missing template category");
+      const marker = legacy ? procedureDeletionMarker(legacy, categoryId ?? '', row) : null;
+      const mutation = row
+        ? marker ? supabase.from("procedures").update(marker).eq("id", row.id) : supabase.from("procedures").delete().eq("id", row.id)
+        : marker ? supabase.from("procedures").insert(marker) : null;
+      if (!mutation) throw new Error("Missing deletion target");
+      const result = await mutation.select("id").single();
+      if (result.error || !result.data) throw result.error ?? new Error("Missing deleted row");
       await qc.invalidateQueries({ queryKey: adminProceduresQuery.queryKey });
       await qc.invalidateQueries({ queryKey: ['public-procedures'] });
       toast.success(tr("Trámite eliminado"));
@@ -149,12 +159,12 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
         </AccordionItem>)}</Accordion>
         {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-        <div className="flex items-center justify-between gap-3"><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button>{row && <Button type="button" variant="ghost" onClick={() => setDeleting(true)} className="text-destructive"><Trash2 />{tr("Eliminar trámite")}</Button>}</div>
+        <div className="flex items-center justify-between gap-3"><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button>{(row || template) && <Button type="button" variant="ghost" onClick={() => setDeleting(true)} className="text-destructive"><Trash2 />{tr("Eliminar trámite")}</Button>}</div>
       </fieldset>
     </form>
     <TranslationSaveDialog open={confirmTranslations} onOpenChange={setConfirmTranslations} source={source} translations={translations} busy={busy || translating} onSave={(choice) => void save(choice)} />
     <Dialog open={preview} onOpenChange={setPreview}><DialogContent className="max-h-[90dvh] max-w-3xl overflow-y-auto"><DialogHeader><DialogTitle>{tr("Vista previa")}</DialogTitle></DialogHeader><ProcedurePreview content={previewContent} /></DialogContent></Dialog>
-    <Dialog open={deleting} onOpenChange={setDeleting}><DialogContent><DialogHeader><DialogTitle>{tr("Eliminar trámite")}</DialogTitle></DialogHeader><p>{tr("¿Eliminar este trámite del panel?")}</p><div className="flex justify-end gap-2"><Button variant="outline" disabled={busy} onClick={() => setDeleting(false)}>{tr("Cancelar")}</Button><Button variant="destructive" disabled={busy} onClick={() => void remove()}><Trash2 />{tr("Eliminar")}</Button></div></DialogContent></Dialog>
+    <Dialog open={deleting} onOpenChange={(open) => { if (!busy) setDeleting(open); }}><DialogContent><DialogHeader><DialogTitle>{tr("Eliminar trámite")}</DialogTitle></DialogHeader><p>{tr("¿Eliminar este trámite del panel?")}</p>{error && <p role="alert" className="text-sm text-destructive">{error}</p>}<div className="flex justify-end gap-2"><Button variant="outline" disabled={busy} onClick={() => setDeleting(false)}>{tr("Cancelar")}</Button><Button variant="destructive" disabled={busy || translating} onClick={() => void remove()}><Trash2 />{tr("Eliminar")}</Button></div></DialogContent></Dialog>
   </>;
 }
 

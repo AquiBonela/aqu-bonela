@@ -76,6 +76,12 @@ export function translateContent(value: unknown, key = ""): unknown {
 }
 export function sourceKey(t: Tramite) { return `${t.cat}/${t.slug}`; }
 export const existingProcedure = (key: string) => TRAMITES.find((t) => sourceKey(t) === key || t.slug === key);
+export function isDeletedProcedure(row: { visibility: unknown }) {
+  return readVisibility(row.visibility)['deleted'] === true;
+}
+export function matchesProcedureSource(row: { source_key: string | null; slug: string; category_id: string }, template: Tramite, categories: { id: string; slug: string }[]) {
+  return row.source_key === sourceKey(template) || (!row.source_key && row.slug === template.slug && categories.find((c) => c.id === row.category_id)?.slug === template.cat);
+}
 
 /** A switch hides content in preview without deleting the administrator's text. */
 export function visibleContent(input: Record<string, unknown>, visibility: Visibility): Record<string, unknown> {
