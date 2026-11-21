@@ -159,10 +159,9 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
                 ))}
               </ul>
             </div>
-            {aboutItem && <div className="flex flex-col items-center pb-5">
+            {aboutItem && <div className={`mx-auto w-fit px-3 pb-2 ${sendItem ? "mb-2 border-b border-primary-foreground/15" : "mb-4"}`}>
               {renderItem(aboutItem, false)}
             </div>}
-            {aboutItem && sendItem && <div className="mb-5 border-t border-primary-foreground/15" />}
             {sendItem && <div className="flex flex-col items-center pb-6">
               {renderItem(sendItem, false)}
               {sendItem.description && <p className="mt-2 max-w-xs whitespace-pre-line text-xs leading-snug text-primary-foreground/80">{sendItem.description}</p>}

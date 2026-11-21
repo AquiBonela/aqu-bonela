@@ -9,11 +9,11 @@ import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 const menuItems = (t: ReturnType<typeof useI18n>["t"], tr: ReturnType<typeof useI18n>["tr"], onSend: () => void): HeaderItem[] => [
   { to: "/", label: "Aquí Bonela", activeOptions: { exact: true } },
   { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
-  { to: "/servicios-publicos", label: t("menu.servicios") },
-  { to: "/tramites", label: tr("Trámites y gestiones") },
   { to: "/descubre", label: t("menu.descubre") },
   { label: t("menu.actualidad"), soon: true },
   { label: t("menu.clasificados"), soon: true },
+  { to: "/servicios-publicos", label: t("menu.servicios") },
+  { to: "/tramites", label: tr("Trámites y gestiones") },
   { to: "/sobre", label: t("menu.sobre") },
 
   {
