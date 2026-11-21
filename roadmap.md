@@ -65,3 +65,4 @@
 - [x] Añadir grupos repetibles de título y requisitos, conservando la lista existente y traducciones; 195 pruebas pasan y editor/vista previa verificados en móvil y escritorio con guardado y lectura aislados; guardado real sigue pendiente de la sesión externa indicada arriba.
 - [x] Corregir la reaparición de plantillas al eliminar trámites y recuperar Eliminar en guías sin guardar; 38 pruebas pasan y «Tarjeta Sanitaria Europea (TSE)» real abre sin errores ni cambios.
 - [ ] Verificar la eliminación real de «Tarjeta sanitaria europea» desde el panel: bloqueado por Supabase externo sin sesión de administrador disponible.
+- [x] Ocultar copias antiguas de borradores en todas las vistas públicas; 41 pruebas pasan y NIE, Cl@ve y TIE reales no aparecen en listado/búsqueda ni abren mediante enlace directo, en móvil y escritorio sin errores.

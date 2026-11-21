@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CATEGORIAS, TRAMITES, type Tramite, type Categoria } from './tramites';
-import { procedureContentSchema, readVisibility, visibleContent, matchesProcedureSource, isDeletedProcedure } from './procedure-editor';
+import { CATEGORIAS, type Tramite, type Categoria } from './tramites';
+import { procedureContentSchema, readVisibility, visibleContent, isDeletedProcedure } from './procedure-editor';
 import { readTranslations, translationMap, type Translations } from './content-translations';
 import type { Lang } from './i18n';
 import type { ProcedureCategory, ProcedureRow } from './admin-procedures';
@@ -19,9 +19,8 @@ export function publicProcedureList(rows: ProcedureRow[], categories: ProcedureC
     if (en.success && !translations.en) translations.en = { content: en.data, source: parsed.data, manual: true };
     return [{ ...content, links: Array.isArray(content['links']) ? content['links'] : [], translations } as PublicProcedure];
   });
-  // Unsaved legacy guides remain available until an administrator publishes their saved replacement.
-  const legacy = TRAMITES.filter((t) => cats.some((c) => c.slug === t.cat) && !rows.some((r) => r.status === 'publicada' && matchesProcedureSource(r, t, categories)));
-  return { categories: cats, procedures: [...legacy, ...saved].sort((a, b) => {
+  // Public visibility comes only from stored published guides; templates belong to the editor.
+  return { categories: cats, procedures: saved.sort((a, b) => {
     const order = (t: Tramite) => rows.find((r) => r.slug === t.slug && categories.find((c) => c.id === r.category_id)?.slug === t.cat)?.sort_order ?? 0;
     return order(a) - order(b) || a.title.localeCompare(b.title, 'es');
   }) };

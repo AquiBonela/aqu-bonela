@@ -1,1 +1,1 @@
-- Procedure pages share publicProceduresQuery on `/tramites` → `/tramites/$categoria` → `/tramites/$categoria/$tramite`, combining published saved guides with unsaved legacy templates. Why: editor versions and category changes must reach every public view without losing existing guides.
+- Procedure pages share publicProceduresQuery on `/tramites` → `/tramites/$categoria` → `/tramites/$categoria/$tramite` and show only stored published guides; legacy templates stay in the editor. Why: anonymous RLS omits drafts, so public template fallbacks would resurrect hidden guides.

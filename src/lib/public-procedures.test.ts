@@ -46,6 +46,18 @@ describe('public saved procedures', () => {
   it('excludes drafts from public results', () => {
     expect(publicProcedureList([{ ...row, status: 'borrador' }], [category]).procedures.some((t) => t.slug === 'solicitud')).toBe(false);
   });
+  it('never restores legacy copies of NIE, Cl@ve or TIE when saved guides are drafts', () => {
+    const drafts = ['nie', 'clave', 'tie'].map((slug) => ({ ...row, id: slug, slug, source_key: `documentacion/${slug}`, status: 'borrador' }));
+    expect(publicProcedureList(drafts, [category]).procedures).toEqual([]);
+  });
+  it('does not restore templates when RLS omits drafts from an anonymous read', () => {
+    expect(publicProcedureList([], [category]).procedures).toEqual([]);
+  });
+  it('shows only the published guide alongside legacy drafts', () => {
+    const published = { ...row, slug: 'certificado-digital', source_key: 'documentacion/certificado-digital' };
+    const draft = { ...row, slug: 'nie', status: 'borrador', source_key: 'documentacion/nie' };
+    expect(publicProcedureList([published, draft], [category]).procedures.map((t) => t.slug)).toEqual(['certificado-digital']);
+  });
   it('excludes procedures from hidden categories', () => {
     expect(publicProcedureList([row], [{ ...category, visible: false }]).procedures).toEqual([]);
   });
