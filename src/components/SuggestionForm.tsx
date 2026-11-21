@@ -36,7 +36,7 @@ export function SuggestionForm({ business = false }: { business?: boolean }) {
                 maxLength={120}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={business ? "Nombre de tu comercio o actividad" : "Un comercio, un lugar, un evento…"}
+                placeholder={tr(business ? "Nombre de tu comercio o actividad" : "Un comercio, un lugar, un evento…")}
                 className="h-11 border bg-background px-2 text-base font-normal"
               />
             </label>

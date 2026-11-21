@@ -98,6 +98,7 @@ export function filterListings(
   activity = "",
   type: Listing["type"] | "" = "",
   activities: Activity[] = [],
+  translate: (text: string) => string = (text) => text,
 ) {
   const cat = categories.find((c) => c.slug === catSlug);
   const words = normalize(q).split(/\s+/).filter(Boolean);
@@ -109,10 +110,9 @@ export function filterListings(
     if (cat && l.category_id !== cat.id) return false;
     if (cat && activity && normalize(l.activity ?? "") !== normalize(activity)) return false;
     if (!words.length) return true;
-    const hay = normalize(
-      [l.name, l.short_description, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" "),
-        synonyms.get(`${l.category_id}|${normalize(l.activity ?? "")}`) ?? ""].join(" "),
-    );
+    const fields = [l.name, l.short_description, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" "),
+      synonyms.get(`${l.category_id}|${normalize(l.activity ?? "")}`) ?? ""];
+    const hay = normalize([...fields, ...fields.map(translate)].join(" "));
     return words.every((w) => hay.includes(w));
   });
   return result.sort(

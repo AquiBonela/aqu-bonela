@@ -65,7 +65,7 @@ function Index() {
   const activities = activitiesFor(data.listings.filter((l) => !tipo || l.type === tipo), activeCat?.id);
   const results = urg
     ? filterListings(data.listings, data.categories, "", "", new Date(), "", "").filter(isEmergencyService)
-    : filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo, data.activities);
+    : filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo, data.activities, tr);
   const browsingHome = !q && !cat && !tipo && !urg;
   const highlightedListings = data.listings.filter((l) => isFeatured(l));
 
@@ -83,7 +83,7 @@ function Index() {
         <div className="relative h-[24rem] w-full sm:h-[30rem]">
           <img
             src={heroImg}
-            alt="Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves"
+            alt={tr("Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves")}
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />

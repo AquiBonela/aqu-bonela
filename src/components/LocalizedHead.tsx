@@ -10,17 +10,17 @@ export function LocalizedHead() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   useEffect(() => {
     const translate = () => {
-      document.head.querySelectorAll('title, meta[name="description"], meta[property="og:title"], meta[property="og:description"]').forEach((element) => {
+      document.head.querySelectorAll('title, meta[name="description"], meta[property="og:title"], meta[property="og:description"], meta[name="twitter:title"], meta[name="twitter:description"]').forEach((element) => {
         const title = element.tagName === "TITLE";
         const current = title ? element.textContent ?? "" : element.getAttribute("content") ?? "";
         const previous = originals.get(element);
         const source = previous?.rendered === current ? previous.source : current;
         let rendered = tr(source);
         const suffix = " — Aquí Bonela";
-        if (lang === "en" && rendered === source && source.endsWith(suffix)) {
+        if (lang !== "es" && rendered === source && source.endsWith(suffix)) {
           const base = source.slice(0, -suffix.length);
           const listing = base.match(/^(.*) en Casarabonela$/);
-          rendered = `${listing ? `${tr(listing[1] ?? "")} in Casarabonela` : tr(base)}${suffix}`;
+          rendered = `${listing ? `${tr(listing[1] ?? "")} ${tr("en Casarabonela")}` : tr(base)}${suffix}`;
         }
         originals.set(element, { source, rendered });
         if (current === rendered) return;

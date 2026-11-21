@@ -7,6 +7,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -136,10 +137,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const adminPage = useRouterState({ select: (state) => state.location.pathname.startsWith("/admin") });
 
   return (
     <QueryClientProvider client={queryClient}>
-      <I18nProvider>
+      <I18nProvider {...(adminPage ? { fixedLanguage: "es" as const } : {})}>
         <LocalizedHead />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />

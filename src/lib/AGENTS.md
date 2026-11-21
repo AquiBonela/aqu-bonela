@@ -1,2 +1,3 @@
 - Language selection uses the shared registry and Radix dropdown; locale persistence is separate from translation coverage. Why: new locales must not accidentally display English translations.
-- During phased localization, new locale dictionaries fall back to Spanish until their coverage is implemented. Why: the selector is infrastructure, not a claim of completed translation.
+- Public translations use stored source-text locale catalogs, coverage tests and reviewed terminology overrides; preserve paragraphs and original business data. Why: visits must not trigger translation calls or alter source records.
+- Keep administration in Spanish independently of the persisted public locale. Why: editing content languages must not change the panel's interface language.

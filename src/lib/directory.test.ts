@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { activitiesFor, filterListings, isFeatured, type Category, type Listing } from "./directory";
+import { translateText } from "./i18n";
 
 const now = new Date("2026-10-24T00:00:00Z");
 const cats: Category[] = [
@@ -14,6 +15,14 @@ const items: Listing[] = [
 ];
 
 describe("directorio", () => {
+  it.each([
+    ["en", "bakery"], ["de", "bäckerei"], ["nl", "bakkerij"], ["fr", "boulangerie"], ["uk", "пекарня"],
+  ] as const)("finds Spanish entries with a %s search without changing their classification", (lang, query) => {
+    const result = filterListings(items, cats, query, "alimentacion", now, "", "", [], (text) => translateText(text, lang));
+    expect(result.map((listing) => listing.id)).toEqual(["1"]);
+    expect(result[0]?.category_id).toBe("c1");
+    expect(items[0]?.name).toBe("Panadería");
+  });
   it("el destacado caduca al pasar su fecha", () => {
     const active = items[1], expired = items[2];
     if (!active || !expired) throw new Error("Missing fixture");

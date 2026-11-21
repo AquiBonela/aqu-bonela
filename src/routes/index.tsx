@@ -48,8 +48,8 @@ function Home() {
   const typed = text.trim().length >= 2;
   const { data } = useQuery({ ...directoryQuery, enabled: typed });
   const suggestions = useMemo(
-    () => (typed && data ? filterListings(data.listings, data.categories, text, "", new Date(), "", "", data.activities).slice(0, 5) : []),
-    [typed, data, text],
+    () => (typed && data ? filterListings(data.listings, data.categories, text, "", new Date(), "", "", data.activities, tr).slice(0, 5) : []),
+    [typed, data, text, tr],
   );
   const goListing = (l: Listing) => {
     const to = l.type === "profesional" ? "/profesionales/$slug" : l.type === "publico" ? "/servicios/$slug" : l.type === "asociacion" ? "/asociaciones/$slug" : "/comercios/$slug";

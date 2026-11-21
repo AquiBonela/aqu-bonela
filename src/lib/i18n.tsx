@@ -1,5 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { englishText } from "@/lib/i18n-extra";
+import deText from "@/lib/locales/de.json";
+import nlText from "@/lib/locales/nl.json";
+import frText from "@/lib/locales/fr.json";
+import ukText from "@/lib/locales/uk.json";
+import enSupplement from "@/lib/locales/en-supplement.json";
+import corrections from "@/lib/locales/corrections.json";
+import { reviewedTranslations } from "@/lib/i18n-overrides";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
@@ -438,20 +445,50 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.endBtn": "Explore the directory",
 };
 
-// New language dictionaries are completed in the next implementation phase.
-const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en, de: {}, nl: {}, fr: {}, uk: {} };
 const STORAGE_KEY = "aquibonela-lang";
 
-const originalTranslations = new Map(Object.entries(es).map(([key, value]) => [value.replace(/\s+/g, " ").trim(), en[key as TKey] ?? value]));
-const extraTranslations = new Map(Object.entries(englishText).map(([key, value]) => [key.replace(/\s+/g, " ").trim(), value]));
+const normalizedText = (text: string) => text.replace(/\s+/g, " ").trim();
+const originalEnglish = Object.fromEntries(Object.entries(es).map(([key, value]) => [value, en[key as TKey] ?? value]));
+const rawTexts: Record<Exclude<Lang, "es">, Record<string, string>> = {
+  en: { ...originalEnglish, ...englishText, ...enSupplement },
+  de: deText, nl: nlText, fr: frText, uk: ukText,
+};
+const correctedTexts: Record<string, Record<string, string>> = corrections;
+const textMaps = new Map(Object.entries(rawTexts).map(([language, dictionary]) => [language,
+  new Map(Object.entries({ ...dictionary, ...correctedTexts[language], ...reviewedTranslations[language] })
+    .map(([source, target]) => [normalizedText(source), target])),
+]));
+
+/** Coverage is separate from fallback so missing translations can be tested before publishing. */
+export function hasTranslation(text: string, lang: Lang): boolean {
+  return lang === "es" || textMaps.get(lang)?.has(normalizedText(text)) === true;
+}
 
 export function translateText(text: string, lang: Lang): string {
-  if (lang !== "en") return text;
-  const normalized = text.replace(/\s+/g, " ").trim();
-  const translated = extraTranslations.get(normalized) ?? originalTranslations.get(normalized);
-  if (translated) return translated;
+  if (lang === "es" || !text.trim()) return text;
+  // Keep paragraphs and list entries intact, even when a full description is in the catalog.
   if (text.includes("\n")) return text.split("\n").map((line) => translateText(line, lang)).join("\n");
-  if (text.includes(" · ")) return text.split(" · ").map((part) => translateText(part, lang)).join(" · ");
+  const normalized = normalizedText(text);
+  const translated = textMaps.get(lang)?.get(normalized);
+  if (translated) return `${text.match(/^\s*/)?.[0] ?? ""}${translated.trim()}${text.match(/\s*$/)?.[0] ?? ""}`;
+  for (const separator of [" · ", " — ", " | "]) {
+    if (text.includes(separator)) return text.split(separator).map((part) => translateText(part, lang)).join(separator);
+  }
+  const placeTitle = normalized.match(/^(.*?) (en Casarabonela|en Aquí Bonela)$/);
+  if (placeTitle) return `${translateText(placeTitle[1] ?? "", lang)} ${translateText(placeTitle[2] ?? "", lang)}`;
+  const count = normalized.match(/^(\d+) (fichas|trámites)$/);
+  if (count) return `${count[1]} ${translateText(count[2] ?? "", lang)}`;
+  const until = normalized.match(/^Hasta el (.+)$/);
+  if (until) {
+    const prefixes: Record<Lang, string> = { es: "Hasta el", en: "Until", de: "Bis", nl: "Tot", fr: "Jusqu’au", uk: "До" };
+    return `${prefixes[lang]} ${until[1]}`;
+  }
+  // Route metadata may truncate a published description before translating it.
+  if (normalized.length >= 80 && normalized.length <= 160) {
+    const complete = [...(textMaps.get(lang)?.entries() ?? [])].find(([source]) => source.startsWith(normalized));
+    if (complete) return complete[1].slice(0, 160);
+  }
+  if (lang !== "en") return text;
   const patterns: [RegExp, (match: RegExpMatchArray) => string][] = [
     [/^(\d+) fichas$/, (m) => `${m[1]} listings`],
     [/^(\d+) sin atender$/, (m) => `${m[1]} unhandled`],
@@ -473,8 +510,9 @@ export function translateText(text: string, lang: Lang): string {
 type Ctx = { lang: Lang; locale: string; setLang: (l: Lang) => void; t: (k: TKey) => string; tr: (text: string) => string };
 const I18nContext = createContext<Ctx>({ lang: "es", locale: "es-ES", setLang: () => {}, t: (k) => es[k], tr: (text) => text });
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("es");
+export function I18nProvider({ children, fixedLanguage }: { children: ReactNode; fixedLanguage?: Lang }) {
+  const [selectedLanguage, setLangState] = useState<Lang>("es");
+  const lang = fixedLanguage ?? selectedLanguage;
 
   useEffect(() => {
     try {
@@ -492,7 +530,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     try { window.localStorage.setItem(STORAGE_KEY, l); } catch { /* Keep the current selection in memory. */ }
   }, []);
 
-  const t = useCallback((k: TKey) => DICTS[lang][k] ?? es[k], [lang]);
+  const t = useCallback((k: TKey) => lang === "es" ? es[k] : lang === "en" ? en[k] ?? es[k] : translateText(es[k], lang), [lang]);
   const tr = useCallback((text: string) => translateText(text, lang), [lang]);
 
   return <I18nContext.Provider value={{ lang, locale: LANGUAGE_OPTIONS[lang].locale, setLang, t, tr }}>{children}</I18nContext.Provider>;

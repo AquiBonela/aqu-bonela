@@ -108,7 +108,7 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
           {listing.labels.length > 0 && (
             <ul className="flex flex-wrap gap-2" aria-label={tr("Etiquetas")}>
               {listing.labels.map((t) => (
-                <li key={t} className="bg-hashtag px-2 py-0.5 text-xs font-semibold text-hashtag-foreground">{hashtag(t)}</li>
+                <li key={t} className="bg-hashtag px-2 py-0.5 text-xs font-semibold text-hashtag-foreground">{hashtag(tr(t))}</li>
               ))}
             </ul>
           )}
