@@ -61,13 +61,14 @@ export function editableContent(t?: Tramite): Record<string, unknown> {
       lugares: base.donde ? [{ title: base.donde, subtitle: "", description: [] }] : [],
       fuentes: [], costeTitulo: "", costeImporte: base.coste ?? "", costeTexto: "",
       ayuda: base.ayuda ? [base.ayuda] : [], seguridad: "", revision: "",
+      aclaracion: { titulo: "", introduccion: "", puntos: [], nota: "" },
       ...base.guia,
     },
   };
 }
 
 export function translateContent(value: unknown, key = ""): unknown {
-  if (typeof value === "string") return ["slug", "cat", "url", "href"].includes(key) ? value : englishText[value] ?? value;
+  if (typeof value === "string") return ["slug", "cat", "url", "href", "tags"].includes(key) ? value : englishText[value] ?? value;
   if (Array.isArray(value)) return value.map((v) => translateContent(v, key));
   if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, translateContent(v, k)]));
   return value;

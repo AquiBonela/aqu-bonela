@@ -41,7 +41,7 @@ function EditorLoader({ id }: { id: string }) {
   return <ProcedureEditor id={id} row={row} categories={categories} />;
 }
 
-function ProcedureEditor({ id, row, categories }: { id: string; row: ProcedureRow | undefined; categories: import("@/lib/admin-procedures").ProcedureCategory[] }) {
+export function ProcedureEditor({ id, row, categories }: { id: string; row: ProcedureRow | undefined; categories: import("@/lib/admin-procedures").ProcedureCategory[] }) {
   const { tr } = useI18n();
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ function ProcedureEditor({ id, row, categories }: { id: string; row: ProcedureRo
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium">{tr("Título")}<Input required value={title} onChange={(e) => { setTitle(e.target.value); if (!row && slug === slugify(title)) setSlug(slugify(e.target.value)); }} /></label>
           <label className="block text-sm font-medium">{tr("Identificador del enlace")}<Input required pattern="[a-z0-9]+(-[a-z0-9]+)*" value={slug} onChange={(e) => setSlug(e.target.value)} /></label>
-          <label className="block text-sm font-medium">{tr("Categoría")}<select required value={category} onChange={(e) => setCategory(e.target.value)} className="h-9 w-full border bg-background px-3 text-sm"><option value="">{tr("Selecciona categoría")}</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
+          <label className="block text-sm font-medium">{tr("Categoría")}<select required value={category} onChange={(e) => setCategory(e.target.value)} className="h-9 w-full border bg-background px-3 text-sm"><option value="">{tr("Selecciona categoría")}</option>{categories.map((c) => <option key={c.id} value={c.id}>{tr(c.title)}</option>)}</select></label>
           <label className="block text-sm font-medium">{tr("Estado")}<select value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 w-full border bg-background px-3 text-sm"><option value="borrador">{tr("Borrador")}</option><option value="publicada">{tr("Publicado")}</option></select></label>
           <label className="block text-sm font-medium">{tr("Orden")}<Input type="number" step="1" value={order} onChange={(e) => setOrder(Number(e.target.value))} /></label>
         </div>
@@ -118,8 +118,11 @@ function ProcedureEditor({ id, row, categories }: { id: string; row: ProcedureRo
         <Accordion type="multiple" className="border-t">{PROCEDURE_SECTIONS.map((section) => <AccordionItem key={section.key} value={section.key} className="border-b">
           <div className="flex items-center gap-4"><AccordionTrigger className="min-w-0 flex-1 text-left">{tr(section.title)}</AccordionTrigger><Switch aria-label={`${tr("Mostrar")} ${tr(section.title)}`} checked={visibility[section.key] !== false} onCheckedChange={(v) => setVisibility((p) => ({ ...p, [section.key]: v }))} /></div>
           <AccordionContent className="px-1 pb-5">{section.key === "tags" ? <div className="flex flex-wrap gap-4">{(["gratis", "online", "presencial"] as const).map((tag) => {
-            const tags = Array.isArray(selected['tags']) ? selected['tags'] : [];
-            return <label key={tag} className="flex items-center gap-2 text-sm"><Checkbox checked={tags.includes(tag)} onCheckedChange={(v) => update({ ...selected, tags: v ? [...tags.filter((t) => t !== tag), tag] : tags.filter((t) => t !== tag) })} />{tr(TAG_LABEL[tag])}</label>;
+            const tags = Array.isArray(content['tags']) ? content['tags'] : [];
+            return <label key={tag} className="flex items-center gap-2 text-sm"><Checkbox checked={tags.includes(tag)} onCheckedChange={(v) => {
+              const next = v ? [...tags.filter((t) => t !== tag), tag] : tags.filter((t) => t !== tag);
+              setContent((p) => ({ ...p, tags: next })); setEnglish((p) => ({ ...p, tags: next }));
+            }} />{tr(TAG_LABEL[tag])}</label>;
           })}</div> : <ProcedureFields fields={SECTION_FIELDS[section.key] ?? []} value={selected} onChange={update} />}</AccordionContent>
         </AccordionItem>)}</Accordion>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
@@ -134,12 +137,17 @@ function ProcedureEditor({ id, row, categories }: { id: string; row: ProcedureRo
 function ProcedurePreview({ content }: { content: Record<string, unknown> }) {
   const { tr } = useI18n();
   const guide = content['guia'] && typeof content['guia'] === "object" ? content['guia'] as Record<string, unknown> : {};
+  function hasContent(value: unknown): boolean {
+    if (typeof value === "string") return Boolean(value.trim());
+    if (Array.isArray(value)) return value.some(hasContent);
+    return Boolean(value && typeof value === "object" && Object.values(value).some(hasContent));
+  }
   function render(value: unknown): import("react").ReactNode {
     if (typeof value === "string") return value ? <p className="whitespace-pre-line text-sm leading-relaxed">{value}</p> : null;
     if (Array.isArray(value)) return value.map((v, i) => <div key={i} className="space-y-2 py-1">{render(v)}</div>);
     if (value && typeof value === "object") {
       const fields = value as Record<string, unknown>;
-      if (typeof fields['url'] === "string" && typeof fields['label'] === "string" && fields['url']) return <a className="text-sm text-primary underline" href={fields['url']} target="_blank" rel="noopener noreferrer">{fields['label']}</a>;
+      if (typeof fields['url'] === "string" && typeof fields['label'] === "string" && fields['url']) return /^(https?:\/\/|tel:|\/[^/])/.test(fields['url']) ? <a className="text-sm text-primary underline" href={fields['url']} target="_blank" rel="noopener noreferrer">{fields['label']}</a> : null;
       return <div className="space-y-2">{Object.values(fields).map((v, i) => <div key={i}>{render(v)}</div>)}</div>;
     }
     return null;
@@ -150,7 +158,7 @@ function ProcedurePreview({ content }: { content: Record<string, unknown> }) {
     {render(content['short'])}{render(content['primaryAction'])}
     {PROCEDURE_SECTIONS.filter((s) => !["short", "primaryAction", "tags"].includes(s.key)).map((s) => {
       const keys: Record<string, string[]> = { para: ["paraIntro", "paraNota"], quien: ["quienIntro", "quienNota"], necesitas: ["necesitasIntro", "necesitasNota"], coste: ["costeTitulo", "costeImporte", "costeTexto"] };
-      const parts = [content[s.key], ...(keys[s.key] ?? [s.key]).map((k) => guide[k])].filter((v) => v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0));
+      const parts = [content[s.key], ...(keys[s.key] ?? [s.key]).map((k) => guide[k])].filter(hasContent);
       return parts.length ? <section key={s.key} className="space-y-2 border-t pt-4"><h3 className="font-semibold">{tr(s.title)}</h3>{parts.map((v, i) => <div key={i}>{render(v)}</div>)}</section> : null;
     })}
   </article>;

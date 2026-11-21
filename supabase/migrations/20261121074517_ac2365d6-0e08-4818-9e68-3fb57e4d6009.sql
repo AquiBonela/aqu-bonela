@@ -1,0 +1,14 @@
+DROP POLICY "Admins manage procedure categories" ON public.procedure_categories;
+DROP POLICY "Public reads visible procedure categories" ON public.procedure_categories;
+CREATE POLICY "Visitors read visible procedure categories" ON public.procedure_categories FOR SELECT TO anon USING (visible);
+CREATE POLICY "Authenticated read procedure categories" ON public.procedure_categories FOR SELECT TO authenticated USING (visible OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Admins create procedure categories" ON public.procedure_categories FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Admins update procedure categories" ON public.procedure_categories FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Admins delete procedure categories" ON public.procedure_categories FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+DROP POLICY "Admins manage procedures" ON public.procedures;
+DROP POLICY "Public reads published procedures in visible categories" ON public.procedures;
+CREATE POLICY "Visitors read published procedures" ON public.procedures FOR SELECT TO anon USING (status = 'publicada' AND EXISTS (SELECT 1 FROM public.procedure_categories c WHERE c.id = procedures.category_id AND c.visible));
+CREATE POLICY "Authenticated read procedures" ON public.procedures FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin') OR (status = 'publicada' AND EXISTS (SELECT 1 FROM public.procedure_categories c WHERE c.id = procedures.category_id AND c.visible)));
+CREATE POLICY "Admins create procedures" ON public.procedures FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Admins update procedures" ON public.procedures FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Admins delete procedures" ON public.procedures FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'admin'));

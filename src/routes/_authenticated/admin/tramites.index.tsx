@@ -47,23 +47,24 @@ function ProcedureList() {
         <Button asChild><Link to="/admin/tramites/$id" params={{ id: "nuevo" }}><Plus />{tr("Nuevo trámite")}</Link></Button>
       </div>
     </div>
+    <p className="mt-4 border-l-4 border-terracotta bg-muted p-3 text-sm">{tr("Los cambios del panel aún no se muestran en la guía pública: conexión pendiente.")}</p>
     {showCategories && <section className="mt-5 border-y py-5">
       <div className="flex items-center justify-between gap-2"><h2 className="font-semibold">{tr("Categorías de trámites")}</h2><Button size="sm" variant="outline" onClick={() => setEditing("new")}><Plus />{tr("Nueva categoría")}</Button></div>
       <ul className="mt-3 divide-y">{categories.map((c) => <li key={c.id} className="flex items-center gap-3 py-3">
         <span className="text-xs text-muted-foreground">{c.sort_order}</span>
-        <div className="min-w-0 flex-1"><p className="break-words font-medium">{c.title}</p><p className="text-xs text-muted-foreground">{c.slug} · {tr(c.visible ? "Visible" : "Oculta")}</p></div>
+        <div className="min-w-0 flex-1"><p className="break-words font-medium">{tr(c.title)}</p><p className="text-xs text-muted-foreground">{c.slug} · {tr(c.visible ? "Visible" : "Oculta")}</p></div>
         <Button variant="ghost" size="icon" title={tr("Editar categoría")} aria-label={`${tr("Editar categoría")} ${c.title}`} onClick={() => setEditing(c)}><Pencil /></Button>
       </li>)}</ul>
     </section>}
     <div className="mt-5 grid gap-2 sm:grid-cols-3">
       <div className="relative"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input aria-label={tr("Buscar trámite")} placeholder={tr("Buscar trámite")} value={q} onChange={(e) => setQ(e.target.value)} className="pl-9" /></div>
-      <select aria-label={tr("Categoría")} value={cat} onChange={(e) => setCat(e.target.value)} className="h-9 min-w-0 border bg-background px-3 text-sm"><option value="">{tr("Todas las categorías")}</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}</select>
+      <select aria-label={tr("Categoría")} value={cat} onChange={(e) => setCat(e.target.value)} className="h-9 min-w-0 border bg-background px-3 text-sm"><option value="">{tr("Todas las categorías")}</option>{categories.map((c) => <option key={c.id} value={c.id}>{tr(c.title)}</option>)}</select>
       <select aria-label={tr("Estado")} value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 border bg-background px-3 text-sm"><option value="">{tr("Todos los estados")}</option><option value="publicada">{tr("Publicado")}</option><option value="borrador">{tr("Borrador")}</option><option value="sin-guardar">{tr("Guía actual sin guardar")}</option></select>
     </div>
     <p className="my-3 text-sm text-muted-foreground">{filtered.length} {tr("trámites")}</p>
     {!filtered.length && <p className="py-8 text-center text-muted-foreground">{tr("No hay trámites con estos filtros.")}</p>}
     <ul className="divide-y border">{filtered.map((r) => <li key={r.id}><Link to="/admin/tramites/$id" params={{ id: r.id }} className="flex items-center gap-3 p-4 hover:bg-muted">
-      <div className="min-w-0 flex-1"><p className="break-words font-semibold">{r.title}</p><p className="text-xs text-muted-foreground">{categories.find((c) => c.id === r.cat)?.title}</p></div>
+      <div className="min-w-0 flex-1"><p className="break-words font-semibold">{tr(r.title)}</p><p className="text-xs text-muted-foreground">{tr(categories.find((c) => c.id === r.cat)?.title ?? "")}</p></div>
       <span className="shrink-0 text-xs text-muted-foreground">{tr(r.status === "sin-guardar" ? "Guía actual sin guardar" : r.status === "publicada" ? "Publicado" : "Borrador")}</span><Pencil className="h-4 w-4 shrink-0" />
     </Link></li>)}</ul>
     {editing && <CategoryDialog key={editing === "new" ? "new" : editing.id} category={editing === "new" ? null : editing} close={() => setEditing(null)} />}
