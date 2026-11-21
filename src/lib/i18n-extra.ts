@@ -11,7 +11,6 @@ export const englishText: Record<string, string> = {
   "Estado": "Status",
   "Publicado": "Published",
   "Categoría guardada": "Category saved",
-  "Visible": "Visible",
   "Vista previa": "Preview",
   "Selecciona categoría": "Select a category",
   "Los cambios del panel aún no se muestran en la guía pública: conexión pendiente.": "Admin changes are not yet shown in the public guide: connection pending.",
