@@ -1,0 +1,2 @@
+- Language selection uses the shared registry and Radix dropdown; locale persistence is separate from translation coverage. Why: new locales must not accidentally display English translations.
+- During phased localization, new locale dictionaries fall back to Spanish until their coverage is implemented. Why: the selector is infrastructure, not a claim of completed translation.

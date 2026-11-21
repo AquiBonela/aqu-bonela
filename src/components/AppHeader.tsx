@@ -111,7 +111,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   return (
     <>
       <header className={overlay ? "absolute inset-x-0 top-0 z-20 text-primary-foreground" : "border-b bg-background"}>
-        <div className={admin ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2" : "mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 px-4 py-2"}>
+        <div className={admin ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2" : "mx-auto grid min-h-14 max-w-5xl grid-cols-1 items-center gap-x-2 px-4 py-2 min-[480px]:grid-cols-[auto_minmax(0,1fr)]"}>
           <div className="flex min-w-0 items-center justify-start gap-3 sm:gap-5">
             {!admin && <EmergencyButton />}
             {!admin && left}
@@ -137,7 +137,7 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
           if (!(event.target instanceof Element) || event.target.closest("a, button, [role='group'], footer, img, li")) return;
           closeMenu();
         }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground`}>
-          <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[5.5rem_1fr_5.5rem] items-center px-4 py-2">
+          <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[auto_minmax(0,1fr)_2.75rem] items-center px-4 py-2">
             <div className="flex justify-start">
               {!admin && <LangSwitch className="[&_button]:!text-primary-foreground" />}
             </div>

@@ -1,14 +1,24 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { englishText } from "@/lib/i18n-extra";
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 
 /**
  * Sistema de idiomas. Español es el idioma original y por defecto.
  * Para añadir un idioma (p. ej. alemán "de" o neerlandés "nl"):
  * 1) añadirlo a LANGS, 2) crear su diccionario (puede ser parcial: lo que falte se muestra en español).
  */
-export const LANGS = ["es", "en"] as const;
+export const LANGS = ["es", "en", "de", "nl", "fr", "uk"] as const;
 export type Lang = (typeof LANGS)[number];
+export const LANGUAGE_OPTIONS: Record<Lang, { name: string; flag: string; locale: string }> = {
+  es: { name: "Español", flag: "🇪🇸", locale: "es-ES" },
+  en: { name: "English", flag: "🇬🇧", locale: "en-GB" },
+  de: { name: "Deutsch", flag: "🇩🇪", locale: "de-DE" },
+  nl: { name: "Nederlands", flag: "🇳🇱", locale: "nl-NL" },
+  fr: { name: "Français", flag: "🇫🇷", locale: "fr-FR" },
+  uk: { name: "Українська", flag: "🇺🇦", locale: "uk-UA" },
+};
 
 const es = {
   "menu.label": "Menú principal",
@@ -428,14 +438,15 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.endBtn": "Explore the directory",
 };
 
-const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en };
+// New language dictionaries are completed in the next implementation phase.
+const DICTS: Record<Lang, Partial<Record<TKey, string>>> = { es, en, de: {}, nl: {}, fr: {}, uk: {} };
 const STORAGE_KEY = "aquibonela-lang";
 
 const originalTranslations = new Map(Object.entries(es).map(([key, value]) => [value.replace(/\s+/g, " ").trim(), en[key as TKey] ?? value]));
 const extraTranslations = new Map(Object.entries(englishText).map(([key, value]) => [key.replace(/\s+/g, " ").trim(), value]));
 
 export function translateText(text: string, lang: Lang): string {
-  if (lang === "es") return text;
+  if (lang !== "en") return text;
   const normalized = text.replace(/\s+/g, " ").trim();
   const translated = extraTranslations.get(normalized) ?? originalTranslations.get(normalized);
   if (translated) return translated;
@@ -484,7 +495,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const t = useCallback((k: TKey) => DICTS[lang][k] ?? es[k], [lang]);
   const tr = useCallback((text: string) => translateText(text, lang), [lang]);
 
-  return <I18nContext.Provider value={{ lang, locale: lang === "en" ? "en-GB" : "es-ES", setLang, t, tr }}>{children}</I18nContext.Provider>;
+  return <I18nContext.Provider value={{ lang, locale: LANGUAGE_OPTIONS[lang].locale, setLang, t, tr }}>{children}</I18nContext.Provider>;
 }
 
 export const useI18n = () => useContext(I18nContext);
@@ -496,21 +507,29 @@ export function Text({ text }: { text: string }) {
 
 export function LangSwitch({ className = "" }: { className?: string }) {
   const { lang, setLang, t } = useI18n();
+  const current = LANGUAGE_OPTIONS[lang];
   return (
-    <div role="group" aria-label={t("lang.label")} className={`flex items-center text-xs font-bold ${className}`}>
-      {LANGS.map((l, i) => (
-        <span key={l} className="flex items-center">
-          {i > 0 && <span aria-hidden className="px-0.5 opacity-40">|</span>}
-          <Button variant="ghost"
-            type="button"
-            onClick={() => setLang(l)}
-            aria-pressed={lang === l}
-            className={`min-h-11 px-1 uppercase ${lang === l ? "text-primary underline underline-offset-4" : "opacity-60 hover:opacity-100"}`}
-          >
-            {l}
+    <div className={`shrink-0 ${className}`}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" type="button" aria-label={`${t("lang.label")}: ${current.name}`} className="min-h-11 w-40 justify-between px-2 text-sm text-inherit hover:bg-transparent">
+            <span className="flex items-center gap-2"><span aria-hidden>{current.flag}</span><span lang={lang}>{current.name}</span></span>
+            <ChevronDown className="h-4 w-4 shrink-0" aria-hidden />
           </Button>
-        </span>
-      ))}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="z-[60] w-52">
+          <DropdownMenuRadioGroup value={lang} onValueChange={(value) => {
+            const selected = LANGS.find((language) => language === value);
+            if (selected) setLang(selected);
+          }}>
+            {LANGS.map((language) => (
+              <DropdownMenuRadioItem key={language} value={language} className="min-h-11 gap-2">
+                <span aria-hidden>{LANGUAGE_OPTIONS[language].flag}</span><span lang={language}>{LANGUAGE_OPTIONS[language].name}</span>
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

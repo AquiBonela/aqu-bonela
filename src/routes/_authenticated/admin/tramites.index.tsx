@@ -74,7 +74,7 @@ function ProcedureList() {
 function CategoryDialog({ category, close }: { category: ProcedureCategory | null; close: () => void }) {
   const { tr } = useI18n();
   const qc = useQueryClient();
-  const [f, setF] = useState({ title: category?.title ?? "", slug: category?.slug ?? "", description: category?.description ?? "", title_en: category?.title_en ?? "", description_en: category?.description_en ?? "", visible: category?.visible ?? true, sort_order: category?.sort_order ?? 0 });
+  const [f, setF] = useState({ title: category?.title ?? "", slug: category?.slug ?? "", description: category?.description ?? "", visible: category?.visible ?? true, sort_order: category?.sort_order ?? 0 });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function save() {
@@ -92,8 +92,6 @@ function CategoryDialog({ category, close }: { category: ProcedureCategory | nul
       <label className="block text-sm">{tr("Nombre")}<Input required value={f.title} onChange={(e) => setF((p) => ({ ...p, title: e.target.value, slug: category || p.slug !== slugify(p.title) ? p.slug : slugify(e.target.value) }))} /></label>
       <label className="block text-sm">{tr("Identificador del enlace")}<Input required pattern="[a-z0-9]+(-[a-z0-9]+)*" value={f.slug} onChange={(e) => setF({ ...f, slug: e.target.value })} /></label>
       <label className="block text-sm">{tr("Descripción")}<Textarea value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></label>
-      <label className="block text-sm">{tr("Nombre en inglés")}<Input value={f.title_en} onChange={(e) => setF({ ...f, title_en: e.target.value })} /></label>
-      <label className="block text-sm">{tr("Descripción en inglés")}<Textarea value={f.description_en} onChange={(e) => setF({ ...f, description_en: e.target.value })} /></label>
       <label className="block text-sm">{tr("Orden")}<Input type="number" step="1" value={f.sort_order} onChange={(e) => setF({ ...f, sort_order: Number(e.target.value) })} /></label>
       <label className="flex items-center justify-between text-sm">{tr("Visible")}<Switch checked={f.visible} onCheckedChange={(v) => setF({ ...f, visible: v })} /></label>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
