@@ -6,10 +6,11 @@ import { useState } from "react";
 import { SiteBanner } from "@/components/SiteBanner";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 
-const menuItems = (t: ReturnType<typeof useI18n>["t"], onSend: () => void): HeaderItem[] => [
+const menuItems = (t: ReturnType<typeof useI18n>["t"], tr: ReturnType<typeof useI18n>["tr"], onSend: () => void): HeaderItem[] => [
   { to: "/", label: "Aquí Bonela", activeOptions: { exact: true } },
   { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
   { to: "/servicios-publicos", label: t("menu.servicios") },
+  { to: "/tramites", label: tr("Trámites y gestiones") },
   { to: "/descubre", label: t("menu.descubre") },
   { label: t("menu.actualidad"), soon: true },
   { label: t("menu.clasificados"), soon: true },
@@ -23,7 +24,7 @@ const menuItems = (t: ReturnType<typeof useI18n>["t"], onSend: () => void): Head
 ];
 
 export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?: boolean; overlay?: boolean } = {}) {
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const [sendOpen, setSendOpen] = useState(false);
   const brand = null;
   const left = overlay ? (
@@ -43,7 +44,7 @@ export function SiteHeader({ hideBrand = false, overlay = false }: { hideBrand?:
       left={left}
       overlay={overlay}
       brand={brand}
-      items={menuItems(t, () => setSendOpen(true))}
+      items={menuItems(t, tr, () => setSendOpen(true))}
     />
     </div>
     {!overlay && <SiteBanner />}

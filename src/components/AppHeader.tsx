@@ -11,6 +11,7 @@ export type HeaderRoute =
   | "/sobre"
   | "/descubre"
   | "/servicios-publicos"
+  | "/tramites"
   | "/sugerir"
   | "/admin"
   | "/admin/avisos"
@@ -40,7 +41,7 @@ type AppHeaderProps = {
   overlay?: boolean;
 };
 
-const SMALL_CLASS = "hover:text-beige";
+const SMALL_CLASS = "block text-xl font-bold hover:text-beige";
 const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hover:text-beige";
 
 /**
@@ -59,7 +60,8 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
     window.setTimeout(() => { setOpen(false); setClosing(false); }, 160);
   };
   const sendItem = items.find((item) => item.label === t("menu.enviar"));
-  const mainItems = items.filter((item) => item !== sendItem);
+  const aboutItem = items.find((item) => item.to === "/sobre");
+  const mainItems = items.filter((item) => item !== sendItem && item !== aboutItem);
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -157,8 +159,12 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
                 ))}
               </ul>
             </div>
-            {sendItem && <div className="flex flex-col items-center pb-6 [&_button]:text-xl [&_button]:font-bold">
-              {renderItem(sendItem, true)}
+            {aboutItem && <div className="flex flex-col items-center pb-5">
+              {renderItem(aboutItem, false)}
+            </div>}
+            {aboutItem && sendItem && <div className="mb-5 border-t border-primary-foreground/15" />}
+            {sendItem && <div className="flex flex-col items-center pb-6">
+              {renderItem(sendItem, false)}
               {sendItem.description && <p className="mt-2 max-w-xs whitespace-pre-line text-xs leading-snug text-primary-foreground/80">{sendItem.description}</p>}
             </div>}
             {footnote && (
