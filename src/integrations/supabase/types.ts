@@ -580,6 +580,98 @@ export type Database = {
           },
         ]
       }
+      procedure_categories: {
+        Row: {
+          created_at: string
+          description: string
+          description_en: string
+          id: string
+          slug: string
+          sort_order: number
+          title: string
+          title_en: string
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          description_en?: string
+          id?: string
+          slug: string
+          sort_order?: number
+          title: string
+          title_en?: string
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          description_en?: string
+          id?: string
+          slug?: string
+          sort_order?: number
+          title?: string
+          title_en?: string
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      procedures: {
+        Row: {
+          category_id: string
+          content: Json
+          content_en: Json
+          created_at: string
+          id: string
+          slug: string
+          sort_order: number
+          status: string
+          summary: string
+          title: string
+          updated_at: string
+          visibility: Json
+        }
+        Insert: {
+          category_id: string
+          content?: Json
+          content_en?: Json
+          created_at?: string
+          id?: string
+          slug: string
+          sort_order?: number
+          status?: string
+          summary?: string
+          title: string
+          updated_at?: string
+          visibility?: Json
+        }
+        Update: {
+          category_id?: string
+          content?: Json
+          content_en?: Json
+          created_at?: string
+          id?: string
+          slug?: string
+          sort_order?: number
+          status?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+          visibility?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procedures_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "procedure_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           admin_whatsapp: string
