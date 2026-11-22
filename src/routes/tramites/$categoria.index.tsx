@@ -15,7 +15,7 @@ export const Route = createFileRoute("/tramites/$categoria/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.title ?? "Trámites"} — Trámites | Aquí Bonela` },
+      { title: `${loaderData?.title ?? "Trámites"} — Guía de trámites | Aquí Bonela` },
       { name: "description", content: loaderData?.text ?? "Guía de trámites de Aquí Bonela." },
       { property: "og:title", content: `${loaderData?.title ?? "Trámites"} — Aquí Bonela` },
       { property: "og:description", content: loaderData?.text ?? "Guía de trámites." },
@@ -44,7 +44,7 @@ function CategoriaPage() {
     <div className="min-h-dvh bg-background">
       <SiteHeader />
       <main>
-        <Hero kicker="Trámites" title={c.title} text={c.text} />
+        <Hero kicker="Guía de trámites" title={c.title} text={c.text} />
         <div className="mx-auto max-w-5xl px-4 py-10">
           <Link to="/tramites" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" aria-hidden />{tr("Todos los trámites")}</Link>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">{list.map((t) => <TramiteCard key={t.slug} t={t} />)}</div>

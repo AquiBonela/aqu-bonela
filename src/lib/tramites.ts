@@ -60,12 +60,12 @@ export const TAG_LABEL: Record<TramiteTag, string> = {
 };
 
 export const CATEGORIAS: Categoria[] = [
-  { slug: "documentacion", icon: "doc", title: "Documentación personal", text: "Encuentra guías para obtener tus documentos de identidad, acreditar tu residencia y acceder a los servicios y trámites de las administraciones públicas." },
-  { slug: "salud", icon: "salud", title: "Salud", text: "Tarjeta sanitaria, médico de cabecera, tarjeta sanitaria europea y ClicSalud+." },
-  { slug: "trabajo", icon: "trabajo", title: "Trabajo y Seguridad Social", text: "Número de Seguridad Social, demanda de empleo, vida laboral y prestaciones." },
-  { slug: "familia", icon: "familia", title: "Familia y ayudas", text: "Dependencia, discapacidad, ayudas familiares, becas y ayudas al alquiler." },
-  { slug: "vehiculos", icon: "coche", title: "Vehículos y transporte", text: "Renovación del carnet, cambio de titularidad, multas y documentación del vehículo." },
-  { slug: "municipales", icon: "muni", title: "Gestiones municipales", text: "Licencias de obras, instancias, certificados municipales y sede electrónica." },
+  { slug: "documentacion", icon: "doc", title: "Documentación e identidad", text: "Encuentra guías para obtener tus documentos de identidad, acreditar tu residencia y acceder a los servicios y trámites de las administraciones públicas." },
+  { slug: "salud", icon: "salud", title: "Salud y asistencia sanitaria", text: "Conoce cómo acceder a la sanidad pública y realizar gestiones relacionadas con tu atención médica." },
+  { slug: "trabajo", icon: "trabajo", title: "Trabajo y Seguridad Social", text: "Encuentra información para realizar gestiones relacionadas con tu situación laboral y tus derechos como trabajador." },
+  { slug: "familia", icon: "familia", title: "Familia, ayudas y prestaciones", text: "Infórmate sobre los recursos, ayudas y prestaciones disponibles para ti y tu familia en materia de dependencia, discapacidad o apoyo familiar." },
+  { slug: "vehiculos", icon: "coche", title: "Vehículos y conducción", text: "Consulta cómo realizar las gestiones más habituales relacionadas con tu vehículo y tu permiso de conducir." },
+  { slug: "municipales", icon: "muni", title: "Solicitudes y trámites municipales", text: "Conoce cómo realizar las gestiones administrativas relacionadas con el Ayuntamiento de Casarabonela." },
 ];
 
 const SEDE = "https://casarabonela.sedelectronica.es";
