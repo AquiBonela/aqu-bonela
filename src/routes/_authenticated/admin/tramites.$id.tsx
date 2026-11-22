@@ -7,6 +7,9 @@ import { ProcedureText } from "@/components/ProcedureText";
 import { euroAmount, hasProcedureLink } from '@/lib/procedure-display';
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ProcedureFields, SECTION_FIELDS } from "@/components/admin/ProcedureFields";
+import { ProcedureSectionsEditor } from '@/components/admin/ProcedureSectionsEditor';
+import { ProcedureSections } from '@/components/ProcedureSections';
+import { modularContent, alignedModuleContent } from '@/lib/procedure-sections';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { LANGS, LANGUAGE_OPTIONS, type Lang, useI18n } from "@/lib/i18n";
+import { LANGS, LANGUAGE_OPTIONS, translateText, type Lang, useI18n } from "@/lib/i18n";
 import { ContentLanguages } from '@/components/admin/ContentLanguages';
 import { useContentTranslations } from '@/components/admin/useContentTranslations';
 import { TranslationSaveDialog } from '@/components/admin/TranslationSaveDialog';
@@ -55,7 +58,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   const template = existingProcedure(id);
   const [content, setContent] = useState<Record<string, unknown>>(() => {
     const parsed = procedureContentSchema.safeParse(row?.content);
-    return parsed.success ? parsed.data : editableContent(template);
+    return modularContent(parsed.success ? parsed.data : editableContent(template), readVisibility(row?.visibility));
   });
   const [translations, setTranslations] = useState<Translations>(() => {
     const saved = readTranslations(row?.translations);
@@ -65,6 +68,10 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
     }
     const parsed = procedureContentSchema.safeParse(row?.content_en);
     if (parsed.success && !saved.en) saved.en = { content: parsed.data, source: content, manual: true };
+    for (const lang of LANGS) {
+      const version = saved[lang];
+      if (version) saved[lang] = { ...version, content: modularContent(version.content, readVisibility(row?.visibility), (s) => translateText(s, lang)), source: modularContent(version.source, readVisibility(row?.visibility)) };
+    }
     return saved;
   });
   const [language, setLanguage] = useState<Lang>('es');
@@ -82,7 +89,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   const [deleting, setDeleting] = useState(false);
   const currentCategory = categories.find((c) => c.id === category);
   const source: Content = { ...content, title: title.trim(), slug, cat: currentCategory?.slug ?? '' };
-  const selected = language === 'es' ? content : translations[language]?.content ?? record(mapContent(source, () => ''));
+  const selected = language === 'es' ? content : alignedModuleContent(source, translations[language]?.content ?? record(mapContent(source, () => '')));
   const update = (value: Content) => language === 'es' ? setContent(value) : setTranslations((p) => editTranslation(p, language, value, source));
 
   async function save(choice?: boolean) {
@@ -147,7 +154,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
         <ContentLanguages value={language} onChange={setLanguage} busy={busy || translating} onGenerate={() => void generate(source, translations, setTranslations, true)} stale={Boolean(language !== 'es' && translations[language] && sourceChanged(translations[language], source))} translations={translations} onVersionsChange={setTranslations} />
         {language !== 'es' && <label className="block text-sm font-medium">{`Título · ${LANGUAGE_OPTIONS[language].name}`}<Input value={typeof selected['title'] === 'string' ? selected['title'] : ''} onChange={(e) => update({ ...selected, title: e.target.value })} /></label>}
         <label className="block text-sm font-medium">{tr("Subtítulo")}<Textarea aria-label="Subtítulo" value={typeof selected['summary'] === "string" ? selected['summary'] : ""} onChange={(e) => update({ ...selected, summary: e.target.value })} /></label>
-        <Accordion type="multiple" className="border-t">{PROCEDURE_SECTIONS.map((section) => <AccordionItem key={section.key} value={section.key} className="border-b">
+        <Accordion type="multiple" className="border-t">{PROCEDURE_SECTIONS.filter((section) => ['short', 'primaryAction', 'tags'].includes(section.key)).map((section) => <AccordionItem key={section.key} value={section.key} className="border-b">
           <div className="flex items-center gap-4"><AccordionTrigger className="min-w-0 flex-1 text-left">{tr(section.title)}</AccordionTrigger><Switch aria-label={`${tr("Mostrar")} ${tr(section.title)}`} checked={visibility[section.key] !== false} onCheckedChange={(v) => setVisibility((p) => ({ ...p, [section.key]: v }))} /></div>
           <AccordionContent className="px-1 pb-5">{section.key === "tags" ? <div className="flex flex-wrap gap-4">{(["gratis", "online", "presencial"] as const).map((tag) => {
             const tags = Array.isArray(content['tags']) ? content['tags'] : [];
@@ -157,6 +164,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
             }} />{tr(TAG_LABEL[tag])}</label>;
           })}</div> : <ProcedureFields fields={SECTION_FIELDS[section.key] ?? []} value={selected} onChange={update} />}</AccordionContent>
         </AccordionItem>)}</Accordion>
+        <ProcedureSectionsEditor value={selected} onChange={update} structureEditable={language === 'es'} />
         {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <div className="flex items-center justify-between gap-3"><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button>{(row || template) && <Button type="button" variant="ghost" onClick={() => setDeleting(true)} className="text-destructive"><Trash2 />{tr("Eliminar trámite")}</Button>}</div>
@@ -192,7 +200,7 @@ function ProcedurePreview({ content }: { content: Record<string, unknown> }) {
     <h2 className="font-display text-2xl font-bold"><ProcedureText text={String(content['title'] ?? "")} linkPuntoVuela={false} /></h2>
     {typeof content['summary'] === 'string' && content['summary'] && <p className="text-lg text-muted-foreground"><ProcedureText text={content['summary']} linkPuntoVuela={false} /></p>}
     {render(content['short'])}{render(content['primaryAction'])}
-    {PROCEDURE_SECTIONS.filter((s) => !["short", "primaryAction", "tags"].includes(s.key)).map((s) => {
+    {Array.isArray(content['sections']) ? <ProcedureSections sections={content['sections']} notes={typeof content['notes'] === 'string' ? content['notes'] : ''} /> : PROCEDURE_SECTIONS.filter((s) => !["short", "primaryAction", "tags"].includes(s.key)).map((s) => {
       const keys: Record<string, string[]> = { para: ["paraIntro", "paraNota"], quien: ["quienIntro", "quienNota"], necesitas: ["necesitasIntro", "necesitasNota"], coste: ["costeTitulo", "costeImporte", "costeTexto"] };
       const parts = [content[s.key], ...(s.key === 'necesitas' ? [content['requisitosGrupos']] : []), ...(keys[s.key] ?? [s.key]).map((k) => k === 'costeImporte' && typeof guide[k] === 'string' ? euroAmount(guide[k]) : guide[k])].filter(hasContent);
       return parts.length ? <section key={s.key} className="space-y-2 border-t pt-4"><h3 className="font-semibold">{tr(s.title)}</h3>{parts.map((v, i) => <div key={i}>{render(v)}</div>)}</section> : null;

@@ -19,7 +19,7 @@ export function readTranslations(value: unknown): Translations {
       }]] : [];
   }));
 }
-const preservedKeys = new Set(['slug', 'cat', 'url', 'href', 'tags', 'id', 'name']);
+const preservedKeys = new Set(['slug', 'cat', 'url', 'href', 'tags', 'id', 'name', 'kind']);
 export function mapContent(value: unknown, translate: (text: string) => string, key = ''): unknown {
   if (preservedKeys.has(key)) return value;
   if (typeof value === 'string') return value.trim() ? translate(value) : value;

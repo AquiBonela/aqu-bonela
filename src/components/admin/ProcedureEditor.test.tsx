@@ -116,22 +116,68 @@ describe("procedure editor form", () => {
     expect(mocks.insert.mock.calls[0]?.[0]).toMatchObject({ title: 'Solicitud de ejemplo', slug: 'solicitud-de-ejemplo', status: 'borrador', category_id: 'category-1', summary: 'Resumen de prueba' });
     expect(mocks.generate).not.toHaveBeenCalled();
   });
+  it('saves all eight element kinds and optional notes in the chosen order', async () => {
+    mount();
+    fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Solicitud modular' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Añadir sección' }));
+    fireEvent.change(screen.getByLabelText('Título de la sección 1'), { target: { value: 'Información de la solicitud' } });
+    for (const name of ['Cuadro de texto', 'Listado', 'Pasos', 'Lugares', 'Valor', 'Fuentes / enlaces', 'Aviso destacado', 'Plazos y vigencia']) {
+      fireEvent.keyDown(screen.getByRole('button', { name: 'Añadir elemento' }), { key: 'Enter' });
+      fireEvent.click(await screen.findByRole('menuitem', { name }));
+    }
+    fireEvent.change(screen.getByLabelText('Sección 1 · Elemento 1 · Texto'), { target: { value: 'Primera línea\nSegunda línea' } });
+    fireEvent.change(screen.getByLabelText('Sección 1 · Elemento 5 · Importe'), { target: { value: '12,50' } });
+    fireEvent.change(screen.getByLabelText('Sección 1 · Elemento 8 · Tiempo de resolución'), { target: { value: '15 días hábiles' } });
+    fireEvent.change(screen.getByLabelText('Sección 1 · Elemento 8 · Vigencia / validez'), { target: { value: '2 años' } });
+    fireEvent.change(screen.getByLabelText('Notas finales (opcional)'), { target: { value: 'Lleva los originales.' } });
+    await saveWithoutTranslation();
+    await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
+    const stored = mocks.insert.mock.calls[0]?.[0].content;
+    expect(stored.sections[0].elements.map((e: { kind: string }) => e.kind)).toEqual(['text', 'list', 'steps', 'places', 'value', 'sources', 'notice', 'timing']);
+    expect(stored.sections[0].elements[0].text).toBe('Primera línea\nSegunda línea');
+    expect(stored.sections[0].elements[4].amount).toBe('12,50');
+    expect(stored.sections[0].elements[7]).toMatchObject({ resolution: '15 días hábiles', validity: '2 años' });
+    expect(stored.notes).toBe('Lleva los originales.');
+  });
+  it('reorders sections and removes one only after confirmation', async () => {
+    mount();
+    fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Orden de solicitud' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Añadir sección' }));
+    fireEvent.change(screen.getByLabelText('Título de la sección 1'), { target: { value: 'Requisitos' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Añadir sección' }));
+    fireEvent.change(screen.getByLabelText('Título de la sección 2'), { target: { value: 'Solicitud' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Subir sección 2' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar sección 2' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }));
+    await saveWithoutTranslation();
+    await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
+    expect(mocks.insert.mock.calls[0]?.[0].content.sections.map((s: { title: string }) => s.title)).toEqual(['Solicitud', 'Requisitos']);
+    fireEvent.click(screen.getByRole('button', { name: 'Eliminar sección 2' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Eliminar' }));
+    await saveWithoutTranslation();
+    await waitFor(() => expect(mocks.insert).toHaveBeenCalledTimes(2));
+    expect(mocks.insert.mock.calls[1]?.[0].content.sections.map((s: { title: string }) => s.title)).toEqual(['Solicitud']);
+  });
   it("preserves an existing guide when a section is switched off and saved", async () => {
     mount('certificado-digital');
-    fireEvent.click(screen.getByRole('switch', { name: 'Mostrar ¿Cómo hacerlo paso a paso?' }));
+    fireEvent.click(screen.getByRole('switch', { name: 'Mostrar sección 4' }));
     await saveWithoutTranslation();
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     const saved = mocks.insert.mock.calls[0]?.[0];
-    expect(saved.visibility.pasos).toBe(false);
+    expect(saved.content.sections.find((s: { id: string }) => s.id === 'legacy-pasos').visible).toBe(false);
     expect(saved.content.guia.pasos.length).toBeGreaterThan(0);
     expect(saved.source_key).toBe('documentacion/certificado-digital');
   });
   it("lets an administrator add a structured step and reads it back in preview", () => {
     mount();
-    fireEvent.click(screen.getByRole('button', { name: '¿Cómo hacerlo paso a paso?' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Añadir sección' }));
+    fireEvent.change(screen.getByLabelText('Título de la sección 1'), { target: { value: 'Solicitud' } });
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Añadir elemento' }), { key: 'Enter' });
+    fireEvent.click(screen.getByRole('menuitem', { name: /^Pasos$/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Añadir pasos' }));
-    fireEvent.change(screen.getByLabelText('Pasos 1 · Título del paso'), { target: { value: '**Presentar la solicitud** *original*' } });
+    fireEvent.change(screen.getByLabelText('Sección 1 · Elemento 1 · Pasos 1 · Título del paso'), { target: { value: '**Presentar la solicitud** *original*' } });
     fireEvent.click(screen.getByRole('button', { name: 'Vista previa' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Solicitud' }));
     expect(within(screen.getByRole('dialog')).getByText('Presentar la solicitud')).toBeInTheDocument();
     expect(within(screen.getByRole('dialog')).getByText('original')).toBeInTheDocument();
   });

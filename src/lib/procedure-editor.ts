@@ -2,11 +2,13 @@ import { z } from "zod";
 import { TRAMITES, type Tramite } from "@/lib/tramites";
 import { englishText } from "@/lib/i18n-extra";
 import { hasProcedureLink } from './procedure-display';
+import { procedureSectionSchema } from './procedure-sections';
 
 const url = z.string().refine((v) => !v || /^(https?:\/\/|tel:|\/[^/])/.test(v), "Enlace no válido");
 const link = z.object({ label: z.string(), url });
 export const procedureContentSchema = z.object({
   title: z.string(), short: z.string(), summary: z.string().optional(),
+  sections: z.array(procedureSectionSchema).optional(), notes: z.string().optional(),
   slug: z.string(), cat: z.string(), tags: z.array(z.enum(["gratis", "online", "presencial"])).optional(),
   primaryAction: link.optional(), para: z.array(z.string()).optional(), quien: z.array(z.string()).optional(),
   necesitas: z.array(z.string()).optional(), requisitosGrupos: z.array(z.object({ title: z.string(), requisitos: z.array(z.string()) })).optional(), pasos: z.array(z.object({ t: z.string(), d: z.string() })).optional(),

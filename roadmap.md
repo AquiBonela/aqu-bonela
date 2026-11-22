@@ -74,3 +74,6 @@
 - [x] Aviso móvil de instalación tras 12 segundos, descarte durante 30 días, guía iPhone y acceso desde menú, sin modo sin conexión; 233 pruebas pasan y guía, descarte, menú, Android (evento simulado), modo instalado y escritorio comprobados sin errores; instalación del sistema pendiente de probar en un móvil real tras publicar.
 - [x] Identificar el email de avisos en Configuración reutilizando el contacto de administración; comprobación con datos aislados, guardado real pendiente de sesión de administrador en Supabase externo.
 - [ ] Activar y comprobar avisos de todos los formularios sin quitar su copia del panel: pendiente de configurar y verificar un dominio de correo propio.
+- [x] Constructor modular de trámites: ocho elementos, secciones ordenables y notas finales, preservando contenido y traducciones existentes.
+- [x] Comprobar editor modular, guardado y lectura posterior con datos aislados, vista previa y página pública en móvil/escritorio; 247 pruebas pasan y sin errores visibles.
+- [ ] Verificar guardado modular con una sesión real de administrador: bloqueado por Supabase externo sin sesión disponible; los datos reales no se han modificado.

@@ -5,6 +5,7 @@ import { procedureContentSchema, readVisibility, visibleContent, isDeletedProced
 import { readTranslations, translationMap, type Translations } from './content-translations';
 import type { Lang } from './i18n';
 import type { ProcedureCategory, ProcedureRow } from './admin-procedures';
+import { alignedModuleContent } from './procedure-sections';
 
 export type PublicProcedure = Tramite & { translations?: Translations };
 export function publicProcedureList(rows: ProcedureRow[], categories: ProcedureCategory[]) {
@@ -37,5 +38,6 @@ export const publicProceduresQuery = queryOptions({
   },
 });
 export function procedureTranslationMap(t: PublicProcedure, lang: Lang) {
-  return lang === 'es' ? {} : translationMap(t, t.translations?.[lang]?.content);
+  const target = t.translations?.[lang]?.content;
+  return lang === 'es' ? {} : translationMap(t, t.sections && target ? alignedModuleContent(t, target) : target);
 }

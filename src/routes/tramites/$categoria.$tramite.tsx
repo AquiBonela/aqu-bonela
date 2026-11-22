@@ -9,6 +9,7 @@ import { publicProceduresQuery, procedureTranslationMap } from '@/lib/public-pro
 import { type Tramite, type TramiteLink } from "@/lib/tramites";
 import { Tags } from "@/components/TramitesUI";
 import { ProcedureText } from "@/components/ProcedureText";
+import { ProcedureSections } from '@/components/ProcedureSections';
 import { euroAmount, hasProcedureLink, hasPlaceDetail } from '@/lib/procedure-display';
 
 export const Route = createFileRoute("/tramites/$categoria/$tramite")({
@@ -249,7 +250,7 @@ function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categor
           </a>
         )}
 
-        {t.guia ? <DetailedGuide t={t} /> : t.pasos?.length ? (
+        {t.sections ? <ProcedureSections sections={t.sections} notes={t.notes} /> : t.guia ? <DetailedGuide t={t} /> : t.pasos?.length ? (
           <>
             <Block title="¿Para qué sirve?" items={t.para} />
             <Block title="¿Quién puede solicitarlo?" items={t.quien} />
@@ -278,7 +279,7 @@ function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categor
           <p className="mt-8 border bg-muted/50 p-5">{tr("Estamos preparando la guía paso a paso de este trámite. Mientras tanto, puedes consultar la información oficial.")}</p>
         )}
 
-        {links.length > 0 && (
+        {!t.sections && links.length > 0 && (
           <div className="mt-8 flex flex-wrap gap-3">
             {links.map((l) => (
               <a key={l.url} href={l.url} target={l.url.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer" className="press inline-flex min-h-12 items-center gap-2 border-2 border-primary px-5 font-bold text-primary hover:bg-primary hover:text-primary-foreground">

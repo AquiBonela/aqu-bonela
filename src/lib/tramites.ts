@@ -27,6 +27,8 @@ export type TramiteGuide = {
   revision: string;
 };
 export type Tramite = {
+  sections?: import('./procedure-sections').ProcedureSection[];
+  notes?: string;
   slug: string;
   cat: string;
   title: string;

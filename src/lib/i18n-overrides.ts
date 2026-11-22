@@ -1,6 +1,8 @@
 /** Reviewed civic terminology and compact public labels, keyed by original Spanish. */
 export const reviewedTranslations: Record<string, Record<string, string>> = {
   de: {
+    "Tiempo de resolución": "Bearbeitungszeit",
+    "Vigencia / validez": "Gültigkeitsdauer",
     "Panadería": "Bäckerei",
     "Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves": "Panoramablick auf das weiße Dorf Casarabonela und die Sierra de las Nieves",
     "Seguridad y emergencias": "Sicherheit und Notfälle",
@@ -25,6 +27,8 @@ export const reviewedTranslations: Record<string, Record<string, string>> = {
     " y ": " und ",
   },
   nl: {
+    "Tiempo de resolución": "Behandelingstermijn",
+    "Vigencia / validez": "Geldigheidsduur",
     "Panadería": "Bakkerij",
     "Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves": "Panorama van het witte dorp Casarabonela en de Sierra de las Nieves",
     "Seguridad y emergencias": "Veiligheid en noodgevallen",
@@ -49,6 +53,8 @@ export const reviewedTranslations: Record<string, Record<string, string>> = {
     " y ": " en ",
   },
   fr: {
+    "Tiempo de resolución": "Délai de traitement",
+    "Vigencia / validez": "Durée de validité",
     "Certificado de empadronamiento": "Certificat d’inscription au registre municipal des habitants",
     "Panadería": "Boulangerie",
     "Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves": "Vue panoramique du village blanc de Casarabonela et de la Sierra de las Nieves",
@@ -74,6 +80,8 @@ export const reviewedTranslations: Record<string, Record<string, string>> = {
     " y ": " et ",
   },
   uk: {
+    "Tiempo de resolución": "Строк розгляду",
+    "Vigencia / validez": "Строк дії",
     "Aviso legal": "Правова інформація",
     "Política de privacidad": "Конфіденційність",
     "Urgencias": "Екстрено",
@@ -101,6 +109,8 @@ export const reviewedTranslations: Record<string, Record<string, string>> = {
     " y ": " і ",
   },
   en: {
+    "Tiempo de resolución": "Processing time",
+    "Vigencia / validez": "Validity period",
     "Panadería": "Bakery",
     "Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves": "Panoramic view of the white village of Casarabonela and the Sierra de las Nieves",
     "Seguridad y emergencias": "Safety and emergencies",
