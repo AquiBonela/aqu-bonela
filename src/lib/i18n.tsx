@@ -464,8 +464,15 @@ const rawTexts: Record<Exclude<Lang, "es">, Record<string, string>> = {
   de: deText, nl: nlText, fr: frText, uk: ukText,
 };
 const correctedTexts: Record<string, Record<string, string>> = corrections;
+const consentTexts: Record<string, Record<string, string>> = {
+  en: { "He leído y acepto la política de privacidad": "I have read and accept the privacy policy" },
+  de: { "He leído y acepto la política de privacidad": "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie" },
+  nl: { "He leído y acepto la política de privacidad": "Ik heb het privacybeleid gelezen en ga ermee akkoord" },
+  fr: { "He leído y acepto la política de privacidad": "J’ai lu et j’accepte la politique de confidentialité" },
+  uk: { "He leído y acepto la política de privacidad": "Я прочитав(-ла) та приймаю політику конфіденційності" },
+};
 const textMaps = new Map(Object.entries(rawTexts).map(([language, dictionary]) => [language,
-  new Map(Object.entries({ ...dictionary, ...correctedTexts[language], ...reviewedTranslations[language] })
+  new Map(Object.entries({ ...dictionary, ...correctedTexts[language], ...reviewedTranslations[language], ...consentTexts[language] })
     .map(([source, target]) => [normalizedText(source), target])),
 ]));
 

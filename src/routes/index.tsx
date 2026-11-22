@@ -68,10 +68,10 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative">
+      <div className="relative z-10">
         <SiteHeader overlay />
 
-        <section className="relative overflow-hidden">
+        <section className="relative">
           <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/40 to-foreground/85" />
           <div className="relative mx-auto flex min-h-[36rem] max-w-3xl flex-col items-center justify-center px-4 pb-14 pt-24 text-center">

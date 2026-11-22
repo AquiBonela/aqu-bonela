@@ -8,6 +8,7 @@ export function listingHead(loaderData: ListingDetail | undefined) {
   const url = SITE_URL + listingPath(l.type, l.slug);
   const title = `${l.name}${l.categoryName ? ` · ${l.categoryName}` : ""} en Casarabonela — Aquí Bonela`;
   const description = (l.description || `${l.name} en Casarabonela.`).slice(0, 155);
+  const image = listingShareImage(l.cover_url);
   return {
     meta: [
       { title },
@@ -16,8 +17,32 @@ export function listingHead(loaderData: ListingDetail | undefined) {
       { property: "og:description", content: description },
       { property: "og:type", content: "business.business" },
       { property: "og:url", content: url },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: image ? "summary_large_image" : "summary" },
+      ...(image ? [
+        { property: "og:image", content: image },
+        { name: "twitter:image", content: image },
+        { property: "og:image:alt", content: l.name },
+      ] : []),
     ],
     links: [{ rel: "canonical", href: url }],
   };
+}
+
+/** Uploaded covers are already resized WebP; size legacy remote photos for sharing. */
+export function listingShareImage(cover: string | null): string | null {
+  if (!cover) return null;
+  try {
+    const url = new URL(cover);
+    if (url.protocol !== "https:") return null;
+    if (url.hostname === "images.unsplash.com") {
+      url.searchParams.set("w", "1200");
+      url.searchParams.set("h", "630");
+      url.searchParams.set("fit", "crop");
+      url.searchParams.set("auto", "format");
+      url.searchParams.set("q", "80");
+    }
+    return url.href;
+  } catch {
+    return null;
+  }
 }

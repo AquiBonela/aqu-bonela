@@ -68,3 +68,6 @@
 - [x] Ocultar copias antiguas de borradores en todas las vistas públicas; 41 pruebas pasan y NIE, Cl@ve y TIE reales no aparecen en listado/búsqueda ni abren mediante enlace directo, en móvil y escritorio sin errores.
 
 - [x] Unificar Punto Vuela en su ficha, conservar redirección antigua y admitir enlaces internos sin barra, sin enlaces automáticos; 48 pruebas y navegación pública verificadas.
+- [x] Evitar que los paneles de portada tapen las sugerencias del buscador; comprobado en 390, 602 y 1280 px.
+- [x] Incluir la portada de cada ficha en los avisos de compartir cuando tenga imagen; foto real accesible y etiquetas presentes en HTML inicial; requiere publicar para WhatsApp.
+- [x] Exigir aceptación de la política antes de enviar información o avisos desde ventanas; bloqueo y desbloqueo comprobados sin enviar datos de prueba reales, 227 pruebas pasan.

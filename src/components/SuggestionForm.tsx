@@ -2,16 +2,19 @@ import { Text, useI18n } from "@/lib/i18n";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { PrivacyAcceptance } from "@/components/PrivacyAcceptance";
 
 export function SuggestionForm({ business = false }: { business?: boolean }) {
   const { tr, locale } = useI18n();
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [message, setMessage] = useState("");
+  const [accepted, setAccepted] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!accepted) return;
     setState("sending");
     const { error } = await supabase
       .from("suggestions")
@@ -61,12 +64,13 @@ export function SuggestionForm({ business = false }: { business?: boolean }) {
                 className="border bg-background p-2 text-base font-normal"
               />
             </label>
+            <PrivacyAcceptance accepted={accepted} onChange={setAccepted} />
             {state === "error" && (
               <p className="text-sm text-destructive"><Text text="No se ha podido enviar. Inténtalo de nuevo." /></p>
             )}
             <Button
               type="submit"
-              disabled={state === "sending"}
+              disabled={state === "sending" || !accepted}
               className="min-h-12 bg-primary font-semibold text-primary-foreground disabled:opacity-60"
             >
               {tr(state === "sending" ? "Enviando…" : "Enviar información")}

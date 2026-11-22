@@ -31,7 +31,7 @@
 - Mount one shared Sonner notification host in the root layout; emit confirmations only after success and never for cancelled sharing. Why: consistent feedback without duplicate or misleading notices.
 - Keep brief press and list-entry effects in shared CSS and respect reduced-motion preferences. Why: consistent feedback without layout shifts or scroll effects.
 
-- Signup/information dialogs and the suggestion page reuse SuggestionForm. Why: one submission flow.
+- Public forms share PrivacyAcceptance; suggestions reuse SuggestionForm. Why: consistent consent.
 - Mount BackToTop once in root; public ListingPage uses SiteHeader, not embedded reviews. Why: consistent navigation.
 - Reuse EmergencyPhonesList with mainOnly for the public-services emergency banner. Why: the 112 presentation stays consistent with SOS without duplicating the full helpline list.
 - Vida diaria categories live in `src/lib/vida-diaria.ts`, shown as cards in `/servicios-publicos#vida-diaria` (`/vida-diaria` redirects there); each opens `/vida-diaria/$categoria` with its items. Why: mirrors the Trámites pattern with shareable URLs.

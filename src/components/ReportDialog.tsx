@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Flag, X, PencilLine, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { PrivacyAcceptance } from "@/components/PrivacyAcceptance";
 
 const REASONS = ["Horario incorrecto", "Teléfono erróneo", "Cerrado / Mudado", "Otro motivo"] as const;
 
@@ -14,6 +15,7 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
   const [reason, setReason] = useState<string>(REASONS[0]);
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("");
+  const [accepted, setAccepted] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim().length < 5) return;
+    if (!accepted || message.trim().length < 5) return;
     setState("sending");
     const { error } = await supabase.from("listing_reports").insert({
       listing_id: listingId,
@@ -45,6 +47,7 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
 
   const [closing, setClosing] = useState(false);
   function close() {
+    setAccepted(false);
     setClosing(true);
     window.setTimeout(() => { setOpen(false); setClosing(false); }, 160);
     if (state === "sent") {
@@ -105,9 +108,10 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
                     className="h-14 w-full rounded-xl border-2 bg-background px-3 text-lg font-normal focus:border-primary focus:outline-none" />
                 </label>
 
+                <PrivacyAcceptance accepted={accepted} onChange={setAccepted} />
                 {state === "error" && <p className="text-base font-medium text-destructive"><Text text="No se ha podido enviar. Inténtalo de nuevo." /></p>}
 
-                <Button type="submit" disabled={state === "sending"} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
+                <Button type="submit" disabled={state === "sending" || !accepted} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
                   <Send className="h-5 w-5" aria-hidden /> {tr(state === "sending" ? "Enviando…" : "Enviar aviso")}
                 </Button>
                 <p className="border-t pt-4 text-center text-base text-muted-foreground">
