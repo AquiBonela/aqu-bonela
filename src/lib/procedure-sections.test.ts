@@ -6,14 +6,22 @@ import { TRAMITES } from './tramites';
 import { euroAmount } from './procedure-display';
 
 describe('modular procedures', () => {
+  it('keeps uploaded images shared across languages while translating captions', () => {
+    const image = { id: 'photo', kind: 'image', storagePath: 'photo/new.webp', alt: 'Centro médico', caption: 'Entrada principal' };
+    const source = { sections: [{ id: 's', title: 'Ubicación', elements: [image] }] };
+    const target = { sections: [{ id: 's', title: 'Location', elements: [{ ...image, storagePath: 'photo/old.webp', alt: 'Medical centre', caption: 'Main entrance' }] }] };
+    expect(readSections(alignedModuleContent(source, target)['sections'])[0]?.elements[0]).toEqual({ ...image, alt: 'Medical centre', caption: 'Main entrance' });
+    expect(readSections(catalogContent(source, 'en')['sections'])[0]?.elements[0]).toMatchObject({ storagePath: 'photo/new.webp' });
+    expect(elementHasContent({ id: 'empty', kind: 'image', storagePath: '', alt: 'Sin imagen', caption: 'Texto' })).toBe(false);
+  });
   it('starts a new guide without predefined sections and with optional final notes', () => {
     const content = modularContent(editableContent());
     expect(content['sections']).toEqual([]);
     expect(content['notes']).toBe('');
   });
-  it('supports all eight element kinds without requiring filled optional fields', () => {
+  it('supports all nine element kinds without requiring filled optional fields', () => {
     const elements = Object.keys(ELEMENT_LABELS).map((kind) => newElement(kind as keyof typeof ELEMENT_LABELS, kind));
-    expect(elements.map((v) => v.kind)).toEqual(['text', 'list', 'steps', 'places', 'value', 'sources', 'notice', 'timing']);
+    expect(elements.map((v) => v.kind)).toEqual(['text', 'list', 'steps', 'places', 'value', 'sources', 'notice', 'timing', 'image']);
     expect(procedureContentSchema.safeParse({ ...editableContent(), sections: [{ id: 'section', title: '¿Para qué sirve?', elements }] }).success).toBe(true);
     expect(elements.every((v) => !elementHasContent(v))).toBe(true);
   });

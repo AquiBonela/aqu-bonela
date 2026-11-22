@@ -27,7 +27,9 @@ export async function toWebp(file: File): Promise<Blob> {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
-  canvas.getContext("2d")!.drawImage(bmp, 0, 0, width, height);
+  const context = canvas.getContext("2d");
+  if (!context) { bmp.close(); throw new Error("No se pudo convertir la imagen"); }
+  context.drawImage(bmp, 0, 0, width, height);
   bmp.close();
   return new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error("No se pudo convertir la imagen"))), "image/webp", 0.8));
 }

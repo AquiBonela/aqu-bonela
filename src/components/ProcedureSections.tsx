@@ -1,6 +1,7 @@
 import { CheckCircle2, ExternalLink, Info, Clock } from 'lucide-react';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { ProcedureText } from './ProcedureText';
+import { ProcedureImage } from './ProcedureImage';
 import { useI18n } from '@/lib/i18n';
 import { euroAmount, hasProcedureLink, hasPlaceDetail } from '@/lib/procedure-display';
 import { readSections, elementHasContent, type ProcedureElement } from '@/lib/procedure-sections';
@@ -18,6 +19,7 @@ function Element({ element }: { element: ProcedureElement }) {
   if (!elementHasContent(element)) return null;
   switch (element.kind) {
     case 'text': return <p><Text value={element.text} /></p>;
+    case 'image': return <ProcedureImage {...element} />;
     case 'list': return <div className="space-y-3">
       {element.title.trim() && <h3 className="font-display text-lg font-bold"><Text value={element.title} /></h3>}
       <ul className="space-y-3">{element.items.filter((v) => v.title.trim() || v.description.trim()).map((item, i) => <li key={i} className="flex gap-2"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden /><div className="min-w-0"><Text value={item.title} />{item.description.trim() && <p className="mt-1 text-sm text-muted-foreground"><Text value={item.description} /></p>}</div></li>)}</ul>

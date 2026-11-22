@@ -7,7 +7,8 @@ import { ProcedureEditor } from "@/routes/_authenticated/admin/tramites.$id";
 import type { ProcedureCategory, ProcedureRow } from "@/lib/admin-procedures";
 import { catalogContent, languagesToGenerate } from '@/lib/content-translations';
 
-const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), navigate: vi.fn(), generate: vi.fn() }));
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), navigate: vi.fn(), generate: vi.fn(), uploadImage: vi.fn() }));
+vi.mock('@/lib/procedure-images', () => ({ uploadProcedureImage: mocks.uploadImage, procedureImageUrl: async () => 'https://example.com/photo.webp' }));
 vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
 vi.mock("@tanstack/react-router", async (original) => ({ ...await original<typeof import("@tanstack/react-router")>(), useNavigate: () => mocks.navigate, Link: ({ children }: { children: ReactNode }) => <a>{children}</a> }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { from: () => ({ insert: mocks.insert, update: mocks.update, delete: mocks.delete }) } }));
@@ -38,6 +39,24 @@ async function saveWithoutTranslation() {
 }
 
 describe("procedure editor form", () => {
+  it('waits for an image upload before saving and persists only its storage path', async () => {
+    let finish: ((path: string) => void) | undefined;
+    mocks.uploadImage.mockImplementation(() => new Promise<string>((resolve) => { finish = resolve; }));
+    mount();
+    fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Guía con imagen' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Añadir sección' }));
+    fireEvent.keyDown(screen.getByRole('button', { name: 'Añadir elemento' }), { key: 'Enter' });
+    fireEvent.click(await screen.findByRole('menuitem', { name: /^Imagen$/ }));
+    fireEvent.change(screen.getByLabelText('Archivo de imagen'), { target: { files: [new File(['x'], 'foto.png', { type: 'image/png' })] } });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Guardar' })[0] ?? screen.getByText('missing'));
+    expect(mocks.insert).not.toHaveBeenCalled();
+    expect(mocks.generate).not.toHaveBeenCalled();
+    finish?.('element/photo.webp');
+    await screen.findByRole('button', { name: 'Reemplazar imagen' });
+    await saveWithoutTranslation();
+    await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
+    expect(mocks.insert.mock.calls[0]?.[0].content.sections[0].elements[0]).toMatchObject({ kind: 'image', storagePath: 'element/photo.webp' });
+  });
   const saved: ProcedureRow = { id: 'saved', category_id: 'category-1', slug: 'certificado-digital', title: 'Certificado', summary: '', status: 'publicada', source_key: 'documentacion/certificado-digital', sort_order: 0, content: {}, content_en: {}, translations: {}, visibility: {}, created_at: '', updated_at: '' };
   it('marks a saved legacy guide as deleted instead of restoring its template', async () => {
     mount(saved.id, categories, saved);

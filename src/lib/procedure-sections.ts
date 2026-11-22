@@ -13,12 +13,13 @@ export const procedureElementSchema = z.discriminatedUnion('kind', [
   z.object({ ...base, kind: z.literal('sources'), items: z.array(link) }),
   z.object({ ...base, kind: z.literal('notice'), title: z.string(), text: z.string() }),
   z.object({ ...base, kind: z.literal('timing'), title: z.string(), resolution: z.string(), validity: z.string(), explanation: z.string() }),
+  z.object({ ...base, kind: z.literal('image'), storagePath: z.string().refine((v) => !v || /^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.webp$/.test(v), 'Imagen no válida'), alt: z.string(), caption: z.string() }),
 ]);
 export const procedureSectionSchema = z.object({ id: z.string(), title: z.string(), visible: z.boolean().optional(), elements: z.array(procedureElementSchema) });
 export type ProcedureElement = z.infer<typeof procedureElementSchema>;
 export type ProcedureSection = z.infer<typeof procedureSectionSchema>;
 export type ElementKind = ProcedureElement['kind'];
-export const ELEMENT_LABELS: Record<ElementKind, string> = { text: 'Cuadro de texto', list: 'Listado', steps: 'Pasos', places: 'Lugares', value: 'Valor', sources: 'Fuentes / enlaces', notice: 'Aviso destacado', timing: 'Plazos y vigencia' };
+export const ELEMENT_LABELS: Record<ElementKind, string> = { text: 'Cuadro de texto', list: 'Listado', steps: 'Pasos', places: 'Lugares', value: 'Valor', sources: 'Fuentes / enlaces', notice: 'Aviso destacado', timing: 'Plazos y vigencia', image: 'Imagen' };
 export function newElement(kind: ElementKind, id: string = crypto.randomUUID()): ProcedureElement {
   switch (kind) {
     case 'text': return { id, kind, text: '' };
@@ -27,6 +28,7 @@ export function newElement(kind: ElementKind, id: string = crypto.randomUUID()):
     case 'value': return { id, kind, title: '', amount: '', explanation: '' };
     case 'notice': return { id, kind, title: '', text: '' };
     case 'timing': return { id, kind, title: '', resolution: '', validity: '', explanation: '' };
+    case 'image': return { id, kind, storagePath: '', alt: '', caption: '' };
   }
 }
 export function readSections(value: unknown): ProcedureSection[] {
@@ -48,6 +50,7 @@ export function elementHasContent(element: ProcedureElement): boolean {
     case 'sources': return element.items.some((v) => Boolean(v.label.trim() && v.url.trim()));
     case 'notice': return filled(element.title, element.text);
     case 'timing': return filled(element.title, element.resolution, element.validity, element.explanation);
+    case 'image': return filled(element.storagePath);
   }
 }
 
@@ -88,6 +91,7 @@ export function alignedModuleContent(source: Content, target: Content): Content 
     const match = translated.find((v) => v.id === section.id);
     return { ...section, title: match?.title ?? '', elements: section.elements.map((element) => {
       const version = match?.elements.find((v) => v.id === element.id && v.kind === element.kind);
+      if (element.kind === 'image') return { ...element, alt: version?.kind === 'image' ? version.alt : '', caption: version?.kind === 'image' ? version.caption : '' };
       return version ?? mapContent(element, () => '');
     }) };
   }), notes: text(target['notes']) };

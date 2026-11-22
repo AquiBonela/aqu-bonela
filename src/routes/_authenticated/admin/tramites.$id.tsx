@@ -83,6 +83,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   const [order, setOrder] = useState(row?.sort_order ?? 0);
   const [visibility, setVisibility] = useState(() => readVisibility(row?.visibility));
   const [busy, setBusy] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [confirmTranslations, setConfirmTranslations] = useState(false);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(false);
@@ -95,7 +96,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   async function save(choice?: boolean) {
     setError("");
     if (!title.trim() || !category || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) { setError(tr("Completa el título y un identificador válido.")); return; }
-    if (busy || translating) return;
+    if (busy || translating || imageUploading) return;
     if (choice === undefined && languagesToGenerate(translations, source).length) { setConfirmTranslations(true); return; }
     const prepared = choice ? await generate(source, translations, setTranslations, true) : translations;
     if (!prepared) { setConfirmTranslations(false); return; }
@@ -118,7 +119,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
     } catch { setError(tr("No se pudo guardar. Revisa los datos y tus permisos.")); } finally { setBusy(false); }
   }
   async function remove() {
-    if (busy || translating) return;
+    if (busy || translating || imageUploading) return;
     const legacy = row ? TRAMITES.find((t) => matchesProcedureSource(row, t, categories)) : template;
     if (!row && !legacy) return;
     setBusy(true); setError("");
@@ -142,8 +143,8 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
   return <>
     <Link to="/admin/tramites" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><ArrowLeft className="h-4 w-4" />{tr("Trámites")}</Link>
     <form onSubmit={(e) => { e.preventDefault(); void save(); }}>
-      <div className="my-5 flex flex-wrap items-center justify-between gap-3"><h1 className="font-display text-2xl font-bold">{tr(id === "nuevo" ? "Nuevo trámite" : "Editar trámite")}</h1><div className="flex gap-2"><Button type="button" variant="outline" onClick={() => setPreview(true)}><Eye />{tr("Vista previa")}</Button><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button></div></div>
-      <fieldset disabled={busy || translating} className="min-w-0 space-y-5">
+      <div className="my-5 flex flex-wrap items-center justify-between gap-3"><h1 className="font-display text-2xl font-bold">{tr(id === "nuevo" ? "Nuevo trámite" : "Editar trámite")}</h1><div className="flex gap-2"><Button type="button" variant="outline" disabled={imageUploading} onClick={() => setPreview(true)}><Eye />{tr("Vista previa")}</Button><Button disabled={busy || imageUploading}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button></div></div>
+      <fieldset disabled={busy || translating || imageUploading} className="min-w-0 space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium">{tr("Título")}<Input required value={title} onChange={(e) => { setTitle(e.target.value); if (!row && slug === slugify(title)) setSlug(slugify(e.target.value)); }} /></label>
           <label className="block text-sm font-medium">{tr("Identificador del enlace")}<Input required pattern="[a-z0-9]+(-[a-z0-9]+)*" value={slug} onChange={(e) => setSlug(e.target.value)} /></label>
@@ -165,7 +166,7 @@ export function ProcedureEditor({ id, row, categories }: { id: string; row: Proc
             }} />{tr(TAG_LABEL[tag])}</label>;
           })}</div> : <ProcedureFields fields={SECTION_FIELDS[section.key] ?? []} value={selected} onChange={update} />}</AccordionContent>
         </AccordionItem>)}</Accordion>
-        <ProcedureSectionsEditor value={selected} onChange={update} structureEditable={language === 'es'} />
+        <ProcedureSectionsEditor value={selected} onChange={update} structureEditable={language === 'es'} onUploadingChange={setImageUploading} />
         {translationError && <p role="alert" className="text-sm text-destructive">{translationError}</p>}
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <div className="flex items-center justify-between gap-3"><Button disabled={busy}><Save />{tr(busy ? "Guardando…" : "Guardar")}</Button>{(row || template) && <Button type="button" variant="ghost" onClick={() => setDeleting(true)} className="text-destructive"><Trash2 />{tr("Eliminar trámite")}</Button>}</div>

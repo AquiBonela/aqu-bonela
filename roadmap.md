@@ -77,3 +77,5 @@
 - [x] Constructor modular de trámites: ocho elementos, secciones ordenables y notas finales, preservando contenido y traducciones existentes.
 - [x] Comprobar editor modular, guardado y lectura posterior con datos aislados, vista previa y página pública en móvil/escritorio; 247 pruebas pasan y sin errores visibles.
 - [ ] Verificar guardado modular con una sesión real de administrador: bloqueado por Supabase externo sin sesión disponible; los datos reales no se han modificado.
+- [x] Añadir elemento Imagen con subida privada, pie opcional, imagen compartida por idiomas y presentación uniforme sin recortar.
+- [ ] Verificar subida real de imágenes de trámites desde admin: Supabase externo sin sesión disponible.

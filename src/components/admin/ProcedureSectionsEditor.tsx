@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Trash2, ArrowUp, ArrowDown, Type, ListChecks, ListOrdered, MapPin, Euro, Link, Info, Clock } from 'lucide-react';
+import { Plus, Trash2, ArrowUp, ArrowDown, Type, ListChecks, ListOrdered, MapPin, Euro, Link, Info, Clock, Image } from 'lucide-react';
+import { ProcedureImagePicker } from './ProcedureImagePicker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -21,8 +22,9 @@ const ELEMENT_FIELDS: Record<ElementKind, Field[]> = {
   sources: [{ key: 'items', label: 'Enlaces', items: action }],
   notice: [{ key: 'title', label: 'Título (opcional)' }, { key: 'text', label: 'Aviso o consejo', multiline: true }],
   timing: [{ key: 'title', label: 'Título (opcional)' }, { key: 'resolution', label: 'Tiempo de resolución' }, { key: 'validity', label: 'Vigencia / validez' }, { key: 'explanation', label: 'Explicación (opcional)', multiline: true }],
+  image: [{ key: 'alt', label: 'Descripción de la imagen (opcional)' }, { key: 'caption', label: 'Pie de imagen (opcional)', multiline: true }],
 };
-const ICONS = { text: Type, list: ListChecks, steps: ListOrdered, places: MapPin, value: Euro, sources: Link, notice: Info, timing: Clock };
+const ICONS = { text: Type, list: ListChecks, steps: ListOrdered, places: MapPin, value: Euro, sources: Link, notice: Info, timing: Clock, image: Image };
 function reordered<T>(items: T[], index: number, direction: number): T[] {
   const target = index + direction;
   if (target < 0 || target >= items.length) return items;
@@ -33,7 +35,7 @@ function reordered<T>(items: T[], index: number, direction: number): T[] {
   return next;
 }
 
-export function ProcedureSectionsEditor({ value, onChange, structureEditable }: { value: Content; onChange: (v: Content) => void; structureEditable: boolean }) {
+export function ProcedureSectionsEditor({ value, onChange, structureEditable, onUploadingChange }: { value: Content; onChange: (v: Content) => void; structureEditable: boolean; onUploadingChange?: ((busy: boolean) => void) | undefined }) {
   const sections = readSections(value['sections']);
   const [openSections, setOpenSections] = useState<string[]>([]);
   const [deletion, setDeletion] = useState<{ section: string; element?: string } | null>(null);
@@ -65,6 +67,7 @@ export function ProcedureSectionsEditor({ value, onChange, structureEditable }: 
                 <Button type="button" variant="ghost" size="icon" aria-label={`Eliminar elemento ${position + 1} de sección ${index + 1}`} title="Eliminar elemento" onClick={() => setDeletion({ section: section.id, element: element.id })}><Trash2 /></Button>
               </div>}
             </div>
+            {element.kind === 'image' && <ProcedureImagePicker element={element} editable={structureEditable} onUploadingChange={onUploadingChange} onChange={(next) => changeSection(section.id, { ...section, elements: section.elements.map((v) => v.id === element.id ? next : v) })} />}
             <ProcedureFields fields={ELEMENT_FIELDS[element.kind]} value={element} onChange={(next) => changeSection(section.id, { ...section, elements: section.elements.map((v) => v.id === element.id ? { ...v, ...next } as typeof element : v) })} prefix={`Sección ${index + 1} · Elemento ${position + 1} · `} />
           </fieldset>;
         })}
