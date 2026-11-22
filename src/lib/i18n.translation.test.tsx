@@ -32,6 +32,12 @@ describe("public translation coverage", () => {
     expect(translateText("Consulta nuestras guías paso a paso para conocer los requisitos, la documentación necesaria, dónde realizar cada gestión y cómo solicitarla.", lang)).not.toBe("Consulta nuestras guías paso a paso para conocer los requisitos, la documentación necesaria, dónde realizar cada gestión y cómo solicitarla.");
   });
 
+  it.each(LANGS.filter((lang) => lang !== "es"))("translates the trámites page header in %s", (lang) => {
+    expect(translateText("Guías de trámites", lang)).not.toBe("Guías de trámites");
+    expect(translateText("¿Qué trámite necesitas consultar?", lang)).not.toBe("¿Qué trámite necesitas consultar?");
+    expect(translateText("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.", lang)).not.toBe("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.");
+  });
+
   it("keeps administration Spanish without overwriting the saved public language", async () => {
     localStorage.setItem("aquibonela-lang", "nl");
     function State() { const { lang } = useI18n(); return <output>{lang}</output>; }

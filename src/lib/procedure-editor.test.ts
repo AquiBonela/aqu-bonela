@@ -21,7 +21,7 @@ describe("procedure editor", () => {
     expect(procedureContentSchema.safeParse({ ...editableContent(), primaryAction: { label: 'Open', url: 'javascript:alert(1)' } }).success).toBe(false);
   });
   it("translates text but preserves URLs and identifiers", () => {
-    expect(translateContent({ title: 'Trámites y gestiones', slug: 'tramites', url: 'https://example.org', cat: 'documentacion' })).toEqual({ title: 'Procedures and paperwork', slug: 'tramites', url: 'https://example.org', cat: 'documentacion' });
+    expect(translateContent({ title: 'Guías de trámites', slug: 'tramites', url: 'https://example.org', cat: 'documentacion' })).toEqual({ title: 'Procedure guides', slug: 'tramites', url: 'https://example.org', cat: 'documentacion' });
   });
   const rules: Record<string, { root?: string; guide?: string; value: unknown }> = {
     short: { root: 'short', value: 'Descripción' }, primaryAction: { root: 'primaryAction', value: { label: 'Open', url: 'https://example.org' } },

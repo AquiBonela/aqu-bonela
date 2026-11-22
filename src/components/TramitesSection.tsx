@@ -20,9 +20,9 @@ export function TramitesSection() {
   return (
     <div>
       <label className="relative block">
-        <span className="sr-only">{tr("¿Qué trámite necesitas realizar?")}</span>
+        <span className="sr-only">{tr("¿Qué trámite necesitas consultar?")}</span>
         <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("¿Qué trámite necesitas realizar?")} className="h-14 w-full border bg-card pl-12 pr-4 text-base outline-none focus:border-primary" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("¿Qué trámite necesitas consultar?")} className="h-14 w-full border bg-card pl-12 pr-4 text-base outline-none focus:border-primary" />
       </label>
       {q.trim() ? (
         <section className="mt-6">
