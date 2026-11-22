@@ -33,7 +33,7 @@ describe("public translation coverage", () => {
   });
 
   it.each(LANGS.filter((lang) => lang !== "es"))("translates the trámites page header in %s", (lang) => {
-    expect(translateText("Guías de trámites", lang)).not.toBe("Guías de trámites");
+    expect(translateText("Guía de trámites", lang)).not.toBe("Guía de trámites");
     expect(translateText("¿Qué trámite necesitas consultar?", lang)).not.toBe("¿Qué trámite necesitas consultar?");
     expect(translateText("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.", lang)).not.toBe("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.");
   });

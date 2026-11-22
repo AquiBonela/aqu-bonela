@@ -13,7 +13,7 @@ const menuItems = (t: ReturnType<typeof useI18n>["t"], tr: ReturnType<typeof use
   { label: t("menu.actualidad"), soon: true },
   { label: t("menu.clasificados"), soon: true },
   { to: "/servicios-publicos", label: t("menu.servicios") },
-  { to: "/tramites", label: tr("Guías de trámites") },
+  { to: "/tramites", label: tr("Guía de trámites") },
   { to: "/sobre", label: t("menu.sobre") },
 
   {

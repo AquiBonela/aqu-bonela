@@ -177,7 +177,7 @@ function ServiciosPublicos() {
 
         {/* 3. Trámites */}
         <section id="tramites" className="scroll-mt-24 mx-auto max-w-5xl px-4 py-14">
-          <SectionTitle n="03" title="Guías de trámites" text="¿Necesitas realizar un trámite y no sabes por dónde empezar?" />
+          <SectionTitle n="03" title="Guía de trámites" text="¿Necesitas realizar un trámite y no sabes por dónde empezar?" />
           <p className="max-w-2xl"><Text text="Consulta nuestras guías paso a paso para conocer los requisitos, la documentación necesaria, dónde realizar cada gestión y cómo solicitarla." /></p>
           <div className="mt-5 flex max-w-2xl items-start gap-3 border-l-4 border-primary bg-muted p-4">
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />

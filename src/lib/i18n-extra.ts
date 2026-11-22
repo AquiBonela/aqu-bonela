@@ -913,7 +913,7 @@ export const englishText: Record<string, string> = {
   "Urgencias en el Centro de Salud de Pizarra (24 h) o llama al 112.": "Emergency care at Pizarra Health Centre (24 h) or call 112.",
   "Vida diaria en el pueblo": "Daily life in the village",
   "Información práctica para organizarte y usar los servicios municipales.": "Practical information to get organised and use municipal services.",
-  "Guías de trámites": "Procedure guides",
+  "Guía de trámites": "Procedure guide",
   "Encuentra cómo realizar tus gestiones paso a paso. Te explicamos qué necesitas, qué documentación preparar y dónde debes solicitar cada trámite.": "Find out how to complete your procedures step by step. We explain what you need, which documents to prepare and where to request each one.",
   "Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.": "Aquí Bonela is an information guide. We do not carry out procedures or handle documentation on behalf of users.",
   "Información útil para realizar algunas de las gestiones más habituales en Casarabonela.": "Useful information for the most common procedures in Casarabonela.",
