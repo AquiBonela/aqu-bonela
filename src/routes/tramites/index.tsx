@@ -26,11 +26,11 @@ function TramitesPage() {
     <div className="min-h-dvh bg-background">
       <SiteHeader />
       <main>
-        <Hero image={heroImage} title="Guía de trámites" text="Encuentra cómo realizar tus gestiones paso a paso. Te explicamos qué necesitas, qué documentación preparar y dónde debes solicitar cada trámite." />
+        <Hero image={heroImage} title="Guía de trámites" text="¿Necesitas realizar una gestión y no sabes por dónde empezar? Encuentra guías sencillas para conocer los requisitos, preparar la documentación y saber dónde y cómo solicitar cada trámite." />
         <div className="mx-auto max-w-5xl px-4 pt-6">
           <div className="flex max-w-2xl items-start gap-3 border-l-4 border-primary bg-muted p-4">
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-            <p className="text-sm">Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.</p>
+            <p className="text-sm">Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales.</p>
           </div>
         </div>
         <div className="mx-auto max-w-5xl px-4 py-10">

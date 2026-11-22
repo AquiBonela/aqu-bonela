@@ -35,7 +35,7 @@ describe("public translation coverage", () => {
   it.each(LANGS.filter((lang) => lang !== "es"))("translates the trámites page header in %s", (lang) => {
     expect(translateText("Guía de trámites", lang)).not.toBe("Guía de trámites");
     expect(translateText("¿Qué trámite necesitas consultar?", lang)).not.toBe("¿Qué trámite necesitas consultar?");
-    expect(translateText("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.", lang)).not.toBe("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.");
+    expect(translateText("Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales.", lang)).not.toBe("Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales.");
   });
 
   it.each(LANGS.filter((lang) => lang !== "es"))("translates the Con tasa tag in %s", (lang) => {
