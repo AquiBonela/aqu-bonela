@@ -26,6 +26,12 @@ describe("public translation coverage", () => {
     expect(translateText(original, lang)).toBe(original);
   });
 
+  it.each(LANGS)("translates the procedures block in servicios públicos in %s", (lang) => {
+    expect(translateText("¿Necesitas realizar un trámite y no sabes por dónde empezar?", lang)).not.toBe("¿Necesitas realizar un trámite y no sabes por dónde empezar?");
+    expect(translateText("Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales.", lang)).not.toBe("Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales.");
+    expect(translateText("Consulta nuestras guías paso a paso para conocer los requisitos, la documentación necesaria, dónde realizar cada gestión y cómo solicitarla.", lang)).not.toBe("Consulta nuestras guías paso a paso para conocer los requisitos, la documentación necesaria, dónde realizar cada gestión y cómo solicitarla.");
+  });
+
   it("keeps administration Spanish without overwriting the saved public language", async () => {
     localStorage.setItem("aquibonela-lang", "nl");
     function State() { const { lang } = useI18n(); return <output>{lang}</output>; }

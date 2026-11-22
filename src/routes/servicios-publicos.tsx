@@ -1,6 +1,6 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin } from "lucide-react";
+import { CheckCircle2, Phone, ExternalLink, Lightbulb, Stethoscope, ArrowRight, MapPin, Info } from "lucide-react";
 import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -177,8 +177,13 @@ function ServiciosPublicos() {
 
         {/* 3. Trámites */}
         <section id="tramites" className="scroll-mt-24 mx-auto max-w-5xl px-4 py-14">
-          <SectionTitle n="03" title="Trámites y gestiones" text="Información útil para realizar algunas de las gestiones más habituales en Casarabonela." />
-          <Button asChild className="min-h-12">
+          <SectionTitle n="03" title="Trámites y gestiones" text="¿Necesitas realizar un trámite y no sabes por dónde empezar?" />
+          <p className="max-w-2xl"><Text text="Consulta nuestras guías paso a paso para conocer los requisitos, la documentación necesaria, dónde realizar cada gestión y cómo solicitarla." /></p>
+          <div className="mt-5 flex max-w-2xl items-start gap-3 border-l-4 border-primary bg-muted p-4">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+            <p className="text-sm"><Text text="Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales." /></p>
+          </div>
+          <Button asChild className="mt-6 min-h-12">
             <Link to="/tramites"><Text text="Explorar guía de trámites" /><ArrowRight className="h-4 w-4" aria-hidden /></Link>
           </Button>
         </section>
