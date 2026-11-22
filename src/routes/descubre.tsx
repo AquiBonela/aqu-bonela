@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, Menu, type LucideIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { LangSwitch, useI18n } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import calles from "@/assets/descubre/calles.jpg";
 import castillo from "@/assets/descubre/castillo.jpg";
 import cactus from "@/assets/descubre/cactus.jpg";
@@ -104,8 +104,6 @@ function DirLink({ q, children }: { q: string; children: React.ReactNode }) {
 function Descubre() {
   const { t } = useI18n();
   const [active, setActive] = useState<string>("");
-  const [stuck, setStuck] = useState(false);
-  const sentinel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const onScroll = () => {
       let cur = "";
@@ -114,8 +112,6 @@ function Descubre() {
         if (el && el.getBoundingClientRect().top <= 140) cur = id;
       }
       setActive(cur);
-      const s = sentinel.current;
-      setStuck(!!s && s.getBoundingClientRect().bottom <= 0);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -151,45 +147,23 @@ function Descubre() {
           <Closing>{t("descubre.introClosing")}</Closing>
         </section>
 
-        <div ref={sentinel} aria-hidden className="h-0" />
         <nav
           aria-label={t("descubre.navLabel")}
-          className={`sticky top-[3.75rem] z-20 border-y transition-all duration-200 ${
-            stuck
-              ? "border-border bg-background/95 backdrop-blur"
-              : "border-border bg-background"
-          }`}
+          className="sticky top-[3.75rem] z-20 border-y border-border bg-background/95 backdrop-blur"
         >
-          <div className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-1 pl-2 pr-2 sm:pl-4">
-            <div className="relative min-w-0">
-              <div className="flex gap-1 overflow-x-auto py-2 pr-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {NAV.map(([id, key]) => (
-                  <a
-                    key={id}
-                    href={`#${id}`}
-                    data-nav={id}
-                    aria-current={active === id ? "location" : undefined}
-                    className={`shrink-0 rounded-full px-3 py-2 text-sm font-semibold transition-colors sm:px-4 ${active === id ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-                  >
-                    {t(key)}
-                  </a>
-                ))}
-              </div>
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" aria-hidden />
-            </div>
-            <div
-              aria-hidden={!stuck}
-              className={`flex shrink-0 items-center gap-1 border-l pl-1 transition-opacity duration-200 ${stuck ? "opacity-100" : "pointer-events-none invisible opacity-0"}`}
-            >
-              <LangSwitch />
-              <button
-                type="button"
-                onClick={() => window.dispatchEvent(new Event("open-site-menu"))}
-                aria-label={t("menu.open")}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-primary"
-              >
-                <Menu className="h-6 w-6" aria-hidden />
-              </button>
+          <div className="mx-auto max-w-5xl px-2 sm:px-4">
+            <div className="flex gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {NAV.map(([id, key]) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  data-nav={id}
+                  aria-current={active === id ? "location" : undefined}
+                  className={`shrink-0 rounded-full px-3 py-2 text-sm font-semibold transition-colors sm:px-4 ${active === id ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                >
+                  {t(key)}
+                </a>
+              ))}
             </div>
           </div>
         </nav>
