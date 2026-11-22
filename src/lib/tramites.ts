@@ -60,7 +60,7 @@ export const TAG_LABEL: Record<TramiteTag, string> = {
 };
 
 export const CATEGORIAS: Categoria[] = [
-  { slug: "documentacion", icon: "doc", title: "Documentación personal", text: "NIE, TIE, DNI, certificado digital, Cl@ve y empadronamiento." },
+  { slug: "documentacion", icon: "doc", title: "Documentación personal", text: "Encuentra guías para obtener tus documentos de identidad, acreditar tu residencia y acceder a los servicios y trámites de las administraciones públicas." },
   { slug: "salud", icon: "salud", title: "Salud", text: "Tarjeta sanitaria, médico de cabecera, tarjeta sanitaria europea y ClicSalud+." },
   { slug: "trabajo", icon: "trabajo", title: "Trabajo y Seguridad Social", text: "Número de Seguridad Social, demanda de empleo, vida laboral y prestaciones." },
   { slug: "familia", icon: "familia", title: "Familia y ayudas", text: "Dependencia, discapacidad, ayudas familiares, becas y ayudas al alquiler." },

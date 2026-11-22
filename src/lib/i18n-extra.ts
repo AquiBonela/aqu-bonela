@@ -930,7 +930,7 @@ export const englishText: Record<string, string> = {
   "Requiere acudir en persona": "Requires going in person",
   "Con tasa": "Official fee",
   "Documentación personal": "Personal documentation",
-  "NIE, TIE, DNI, certificado digital, Cl@ve y empadronamiento.": "NIE, TIE, DNI, digital certificate, Cl@ve and town registration.",
+  "Encuentra guías para obtener tus documentos de identidad, acreditar tu residencia y acceder a los servicios y trámites de las administraciones públicas.": "Find guides to obtain your identity documents, prove your residence and access public administration services and procedures.",
   "Tarjeta sanitaria, médico de cabecera, tarjeta sanitaria europea y ClicSalud+.": "Health card, GP, European health card and ClicSalud+.",
   "Trabajo y Seguridad Social": "Work and Social Security",
   "Número de Seguridad Social, demanda de empleo, vida laboral y prestaciones.": "Social Security number, job seeker registration, employment history and benefits.",
