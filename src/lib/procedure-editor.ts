@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TRAMITES, type Tramite } from "@/lib/tramites";
+import { TRAMITES, TRAMITE_TAGS, type Tramite } from "@/lib/tramites";
 import { englishText } from "@/lib/i18n-extra";
 import { hasProcedureLink } from './procedure-display';
 import { procedureSectionSchema } from './procedure-sections';
@@ -9,7 +9,7 @@ const link = z.object({ label: z.string(), url });
 export const procedureContentSchema = z.object({
   title: z.string(), short: z.string(), summary: z.string().optional(), cardDescription: z.string().optional(),
   sections: z.array(procedureSectionSchema).optional(), notes: z.string().optional(),
-  slug: z.string(), cat: z.string(), tags: z.array(z.enum(["gratis", "online", "presencial"])).optional(),
+  slug: z.string(), cat: z.string(), tags: z.array(z.enum(TRAMITE_TAGS)).optional(),
   primaryAction: link.optional(), para: z.array(z.string()).optional(), quien: z.array(z.string()).optional(),
   necesitas: z.array(z.string()).optional(), requisitosGrupos: z.array(z.object({ title: z.string(), requisitos: z.array(z.string()) })).optional(), pasos: z.array(z.object({ t: z.string(), d: z.string() })).optional(),
   coste: z.string().optional(), donde: z.string().optional(), ayuda: z.string().optional(), links: z.array(link),

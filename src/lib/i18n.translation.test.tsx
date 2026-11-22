@@ -38,6 +38,10 @@ describe("public translation coverage", () => {
     expect(translateText("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.", lang)).not.toBe("Aquí Bonela es una guía informativa. No realizamos trámites ni gestionamos documentación en nombre de los usuarios.");
   });
 
+  it.each(LANGS.filter((lang) => lang !== "es"))("translates the Con tasa tag in %s", (lang) => {
+    expect(translateText("Con tasa", lang)).not.toBe("Con tasa");
+  });
+
   it("keeps administration Spanish without overwriting the saved public language", async () => {
     localStorage.setItem("aquibonela-lang", "nl");
     function State() { const { lang } = useI18n(); return <output>{lang}</output>; }

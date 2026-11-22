@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buscarTramites, CATEGORIAS, DESTACADOS, TRAMITES, TAG_LABEL, getTramite } from "./tramites";
+import { buscarTramites, CATEGORIAS, DESTACADOS, TRAMITES, TRAMITE_TAGS, TAG_LABEL, getTramite } from "./tramites";
 
 describe("guía de trámites", () => {
   it("la TIE requiere tasa y combina cita online con asistencia presencial", () => {
@@ -10,10 +10,11 @@ describe("guía de trámites", () => {
     expect(tramite?.guia?.pasos).toHaveLength(5);
     expect(tramite?.necesitas).toContain("Formulario EX-17: cumplimentado y firmado.");
   });
-  it("solo admite etiquetas de gratuidad y modalidad, nunca de lugar o de pago", () => {
-    expect(Object.keys(TAG_LABEL).sort()).toEqual(["gratis", "online", "presencial"]);
+  it("solo admite etiquetas de gratuidad, tasa y modalidad, nunca de lugar", () => {
+    expect(Object.keys(TAG_LABEL).sort()).toEqual(["gratis", "online", "presencial", "tasa"]);
+    expect(TAG_LABEL.tasa).toBe("Con tasa");
     for (const tramite of TRAMITES) {
-      for (const tag of tramite.tags ?? []) expect(["gratis", "online", "presencial"]).toContain(tag);
+      for (const tag of tramite.tags ?? []) expect(TRAMITE_TAGS).toContain(tag);
     }
     expect(getTramite("documentacion", "nie")?.tags).toEqual(["presencial"]);
     expect(getTramite("documentacion", "empadronamiento")?.tags).toEqual(["gratis", "presencial"]);

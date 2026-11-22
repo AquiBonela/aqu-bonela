@@ -928,6 +928,7 @@ export const englishText: Record<string, string> = {
   "Trámite gratuito": "Free procedure",
   "Se puede hacer online": "Can be done online",
   "Requiere acudir en persona": "Requires going in person",
+  "Con tasa": "Official fee",
   "Documentación personal": "Personal documentation",
   "NIE, TIE, DNI, certificado digital, Cl@ve y empadronamiento.": "NIE, TIE, DNI, digital certificate, Cl@ve and town registration.",
   "Tarjeta sanitaria, médico de cabecera, tarjeta sanitaria europea y ClicSalud+.": "Health card, GP, European health card and ClicSalud+.",

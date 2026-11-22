@@ -1,5 +1,6 @@
 // Guía de trámites: datos navegables en 3 niveles (portada → categoría → ficha).
-export type TramiteTag = "gratis" | "online" | "presencial";
+export const TRAMITE_TAGS = ["gratis", "tasa", "online", "presencial"] as const;
+export type TramiteTag = typeof TRAMITE_TAGS[number];
 export type TramiteLink = { label: string; url: string };
 export type TramiteGuide = {
   paraIntro?: string;
@@ -53,6 +54,7 @@ export type Categoria = { slug: string; title: string; text: string; icon: "doc"
 
 export const TAG_LABEL: Record<TramiteTag, string> = {
   gratis: "Gratuito",
+  tasa: "Con tasa",
   online: "Online",
   presencial: "Requiere acudir en persona",
 };

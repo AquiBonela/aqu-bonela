@@ -11,6 +11,7 @@ export const CAT_ICON: Record<Categoria["icon"], LucideIcon> = { doc: FileText, 
 
 const TAG_CLASS: Record<TramiteTag, string> = {
   gratis: "bg-primary/10 text-primary",
+  tasa: "bg-civic-soft text-civic",
   online: "bg-secondary text-secondary-foreground",
   presencial: "bg-accent text-accent-foreground",
 };

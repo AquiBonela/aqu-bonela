@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { defaultVisibility, editableContent, procedureContentSchema, readVisibility, translateContent, visibleContent } from "./procedure-editor";
-import { TRAMITES } from "./tramites";
+import { TRAMITES, TRAMITE_TAGS } from "./tramites";
 
 describe("procedure editor", () => {
   it("preserves every existing guide and all its steps when preparing the editor", () => {
@@ -12,8 +12,8 @@ describe("procedure editor", () => {
       expect(prepared['title']).toBe(t.title);
     }
   });
-  it("only accepts Gratuito, Online and Requiere acudir en persona tags", () => {
-    for (const tag of ['gratis', 'online', 'presencial']) expect(procedureContentSchema.safeParse({ ...editableContent(), tags: [tag] }).success).toBe(true);
+  it("only accepts Gratuito, Con tasa, Online and Requiere acudir en persona tags", () => {
+    for (const tag of TRAMITE_TAGS) expect(procedureContentSchema.safeParse({ ...editableContent(), tags: [tag] }).success).toBe(true);
     expect(procedureContentSchema.safeParse({ ...editableContent(), tags: ['ayuntamiento'] }).success).toBe(false);
     expect(procedureContentSchema.safeParse({ ...editableContent(), tags: ['policia'] }).success).toBe(false);
   });
