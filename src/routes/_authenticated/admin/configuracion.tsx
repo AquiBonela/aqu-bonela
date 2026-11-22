@@ -86,9 +86,15 @@ function GeneralSettings() {
       </section>
 
       <section className={block}>
-        <h2 className="font-display text-lg font-bold"><Text text="Administración" /></h2>
-        <label className={lbl}><Text text="Email de contacto de administración" /> <Input type="email" value={f.contact_email} onChange={(e) => set("contact_email", e.target.value)} />
+        <h2 className="font-display text-lg font-bold"><Text text="Avisos de formularios" /></h2>
+        <label className={lbl}><Text text="Email de administración y avisos" /> <Input type="email" value={f.contact_email} onChange={(e) => set("contact_email", e.target.value)} />
         </label>
+        <p className="text-sm text-muted-foreground"><Text text="Este es también el email de contacto de administración." /></p>
+        <p role="status" className="text-sm text-muted-foreground"><Text text="Avisos por email pendientes de activar: falta configurar un dominio de correo. Los envíos siguen disponibles en el panel." /></p>
+      </section>
+
+      <section className={block}>
+        <h2 className="font-display text-lg font-bold"><Text text="Administración" /></h2>
         <label className={lbl}><Text text="WhatsApp de administración" /> <Input value={f.admin_whatsapp} onChange={(e) => set("admin_whatsapp", e.target.value)} placeholder="+34 600 000 000" />
         </label>
         <label className={lbl}><Text text="Duración de «Resaltado» (meses)" /> <Input type="number" min={1} max={24} value={f.collaborator_months} onChange={(e) => set("collaborator_months", Number(e.target.value))} />

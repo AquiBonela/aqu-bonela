@@ -72,3 +72,5 @@
 - [x] Incluir la portada de cada ficha en los avisos de compartir cuando tenga imagen; foto real accesible y etiquetas presentes en HTML inicial; requiere publicar para WhatsApp.
 - [x] Exigir aceptación de la política antes de enviar información o avisos desde ventanas; bloqueo y desbloqueo comprobados sin enviar datos de prueba reales, 227 pruebas pasan.
 - [x] Aviso móvil de instalación tras 12 segundos, descarte durante 30 días, guía iPhone y acceso desde menú, sin modo sin conexión; 233 pruebas pasan y guía, descarte, menú, Android (evento simulado), modo instalado y escritorio comprobados sin errores; instalación del sistema pendiente de probar en un móvil real tras publicar.
+- [x] Identificar el email de avisos en Configuración reutilizando el contacto de administración; comprobación con datos aislados, guardado real pendiente de sesión de administrador en Supabase externo.
+- [ ] Activar y comprobar avisos de todos los formularios sin quitar su copia del panel: pendiente de configurar y verificar un dominio de correo propio.
