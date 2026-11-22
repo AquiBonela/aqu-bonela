@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { TramitesSection } from "@/components/TramitesSection";
 import { Hero } from "@/components/TramitesUI";
 import { publicProceduresQuery } from "@/lib/public-procedures";
+import heroImage from "@/assets/hero-casarabonela.jpg";
 
 export const Route = createFileRoute("/tramites/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicProceduresQuery),
@@ -25,7 +26,7 @@ function TramitesPage() {
     <div className="min-h-dvh bg-background">
       <SiteHeader />
       <main>
-        <Hero title="Guía de trámites" text="Encuentra cómo realizar tus gestiones paso a paso. Te explicamos qué necesitas, qué documentación preparar y dónde debes solicitar cada trámite." />
+        <Hero image={heroImage} title="Guía de trámites" text="Encuentra cómo realizar tus gestiones paso a paso. Te explicamos qué necesitas, qué documentación preparar y dónde debes solicitar cada trámite." />
         <div className="mx-auto max-w-5xl px-4 pt-6">
           <div className="flex max-w-2xl items-start gap-3 border-l-4 border-primary bg-muted p-4">
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />

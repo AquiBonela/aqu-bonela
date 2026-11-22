@@ -44,10 +44,14 @@ function TramiteCardBody({ t }: { t: Tramite }) {
   );
 }
 
-export function Hero({ kicker, title, text }: { kicker?: string; title: string; text: string }) {
+export function Hero({ kicker, title, text, image }: { kicker?: string; title: string; text: string; image?: string }) {
   const { tr } = useI18n();
   return (
-    <section className="bg-primary px-4 py-12 text-primary-foreground">
+    <section className={`relative isolate bg-primary px-4 text-primary-foreground ${image ? 'py-8 sm:py-10' : 'py-12'}`}>
+      {image && <>
+        <img src={image} alt="" aria-hidden width={1220} height={768} fetchPriority="high" className="absolute inset-0 -z-20 h-full w-full object-cover" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-foreground/65" />
+      </>}
       <div className="mx-auto max-w-5xl">
         {kicker && <p className="text-xs font-bold uppercase tracking-[0.15em] opacity-80">{tr(kicker)}</p>}
         <h1 className="mt-1 font-display text-4xl font-extrabold text-balance sm:text-5xl"><ProcedureText text={tr(title)} linkPuntoVuela={false} /></h1>
