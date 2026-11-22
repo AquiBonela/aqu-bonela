@@ -1,8 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { euroAmount, hasProcedureLink, hasPlaceDetail } from './procedure-display';
+import { euroAmount, hasProcedureLink, hasPlaceDetail, procedureCardDescription } from './procedure-display';
 import { defaultVisibility, editableContent, procedureContentSchema, visibleContent } from './procedure-editor';
 
 describe('procedure presentation rules', () => {
+  it('uses the independent short description on cards, not the detail subtitle', () => {
+    expect(procedureCardDescription({ cardDescription: 'Resumen para la tarjeta', summary: 'Subtítulo de la ficha', short: 'Descripción completa' })).toBe('Resumen para la tarjeta');
+    expect(procedureCardDescription({ cardDescription: '', summary: 'Subtítulo de la ficha', short: 'Descripción completa' })).toBe('');
+  });
+  it('preserves existing card excerpts for guides without an independent short description', () => {
+    expect(procedureCardDescription({ summary: 'Resumen anterior', short: 'Texto completo' })).toBe('Resumen anterior');
+  });
   it('omits blank place details while preserving actual contact data', () => {
     expect(hasPlaceDetail({ value: '' })).toBe(false);
     expect(hasPlaceDetail({ value: '   ' })).toBe(false);

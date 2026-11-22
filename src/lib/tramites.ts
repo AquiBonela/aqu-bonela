@@ -34,6 +34,7 @@ export type Tramite = {
   title: string;
   short: string;
   summary?: string;
+  cardDescription?: string;
   tags?: TramiteTag[];
   // Ficha completa (opcional; sin ella se muestra «guía en preparación»)
   para?: string[];

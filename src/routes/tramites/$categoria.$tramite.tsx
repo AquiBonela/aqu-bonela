@@ -10,7 +10,7 @@ import { type Tramite, type TramiteLink } from "@/lib/tramites";
 import { Tags } from "@/components/TramitesUI";
 import { ProcedureText } from "@/components/ProcedureText";
 import { ProcedureSections } from '@/components/ProcedureSections';
-import { euroAmount, hasProcedureLink, hasPlaceDetail } from '@/lib/procedure-display';
+import { euroAmount, hasProcedureLink, hasPlaceDetail, procedureCardDescription } from '@/lib/procedure-display';
 
 export const Route = createFileRoute("/tramites/$categoria/$tramite")({
   loader: async ({ params, context }) => {
@@ -23,9 +23,9 @@ export const Route = createFileRoute("/tramites/$categoria/$tramite")({
   head: ({ loaderData }) => ({
     meta: [
       { title: `${loaderData?.t.title ?? "Trámite"} — Aquí Bonela` },
-      { name: "description", content: loaderData?.t.summary ?? loaderData?.t.short ?? "Guía de trámites de Aquí Bonela." },
+      { name: "description", content: loaderData ? procedureCardDescription(loaderData.t) : "Guía de trámites de Aquí Bonela." },
       { property: "og:title", content: loaderData?.t.title ?? "Trámite" },
-      { property: "og:description", content: loaderData?.t.summary ?? loaderData?.t.short ?? "Guía de trámites." },
+      { property: "og:description", content: loaderData ? procedureCardDescription(loaderData.t) : "Guía de trámites." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],

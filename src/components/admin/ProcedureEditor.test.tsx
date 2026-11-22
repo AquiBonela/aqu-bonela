@@ -111,9 +111,11 @@ describe("procedure editor form", () => {
     mount();
     fireEvent.change(screen.getByLabelText('Título', { exact: true }), { target: { value: 'Solicitud de ejemplo' } });
     fireEvent.change(screen.getByLabelText('Subtítulo'), { target: { value: 'Resumen de prueba' } });
+    fireEvent.change(screen.getByLabelText('Descripción corta'), { target: { value: 'Descripción para la tarjeta' } });
     await saveWithoutTranslation();
     await waitFor(() => expect(mocks.insert).toHaveBeenCalled());
     expect(mocks.insert.mock.calls[0]?.[0]).toMatchObject({ title: 'Solicitud de ejemplo', slug: 'solicitud-de-ejemplo', status: 'borrador', category_id: 'category-1', summary: 'Resumen de prueba' });
+    expect(mocks.insert.mock.calls[0]?.[0].content).toMatchObject({ summary: 'Resumen de prueba', cardDescription: 'Descripción para la tarjeta' });
     expect(mocks.generate).not.toHaveBeenCalled();
   });
   it('saves all eight element kinds and optional notes in the chosen order', async () => {

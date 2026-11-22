@@ -7,7 +7,7 @@ import { procedureSectionSchema } from './procedure-sections';
 const url = z.string().refine((v) => !v || /^(https?:\/\/|tel:|\/[^/])/.test(v), "Enlace no válido");
 const link = z.object({ label: z.string(), url });
 export const procedureContentSchema = z.object({
-  title: z.string(), short: z.string(), summary: z.string().optional(),
+  title: z.string(), short: z.string(), summary: z.string().optional(), cardDescription: z.string().optional(),
   sections: z.array(procedureSectionSchema).optional(), notes: z.string().optional(),
   slug: z.string(), cat: z.string(), tags: z.array(z.enum(["gratis", "online", "presencial"])).optional(),
   primaryAction: link.optional(), para: z.array(z.string()).optional(), quien: z.array(z.string()).optional(),

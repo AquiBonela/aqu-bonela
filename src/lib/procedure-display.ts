@@ -1,5 +1,10 @@
 import { externalTextUrl } from './description';
 
+/** Older guides retain their card excerpt until an independent description is entered. */
+export function procedureCardDescription(value: { cardDescription?: string; summary?: string; short: string }): string {
+  return value.cardDescription ?? value.summary ?? value.short;
+}
+
 export function hasPlaceDetail(detail: { value: string }): boolean {
   return Boolean(detail.value.trim());
 }

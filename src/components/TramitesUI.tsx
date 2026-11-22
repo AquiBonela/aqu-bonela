@@ -1,4 +1,5 @@
 import { ProcedureText } from "@/components/ProcedureText";
+import { procedureCardDescription } from '@/lib/procedure-display';
 import { Link } from "@tanstack/react-router";
 import { FileText, HeartPulse, Briefcase, Users, Car, Landmark, ArrowRight, type LucideIcon } from "lucide-react";
 import { ContentTranslationProvider, useI18n } from "@/lib/i18n";
@@ -33,7 +34,7 @@ function TramiteCardBody({ t }: { t: Tramite }) {
   return (
     <Link to="/tramites/$categoria/$tramite" params={{ categoria: t.cat, tramite: t.slug }} className="press group flex flex-col gap-2 border bg-card p-4 transition-colors hover:border-primary">
       <h3 className="font-bold leading-snug"><ProcedureText text={tr(t.title)} linkPuntoVuela={false} /></h3>
-      <p className="line-clamp-3 text-sm text-muted-foreground"><ProcedureText text={tr(t.summary ?? t.short)} linkPuntoVuela={false} /></p>
+      <p className="line-clamp-3 text-sm text-muted-foreground"><ProcedureText text={tr(procedureCardDescription(t))} linkPuntoVuela={false} /></p>
       <Tags tags={t.tags} />
       <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-semibold text-primary">
         {tr(isCompleta(t) ? "Ver guía paso a paso" : "Ver información")} <ArrowRight className="h-4 w-4" aria-hidden />

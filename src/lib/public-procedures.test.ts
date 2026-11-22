@@ -10,6 +10,16 @@ const category: ProcedureCategory = { id: 'cat', slug: 'documentacion', title: '
 const content = { ...editableContent(), title: 'Solicitud', short: 'Texto original', slug: 'solicitud', cat: 'documentacion' };
 const row: ProcedureRow = { id: 'procedure', category_id: 'cat', slug: 'solicitud', title: 'Solicitud', summary: '', status: 'publicada', sort_order: 10, source_key: null, content: content as Json, content_en: {}, translations: { nl: { source: content as Json, content: { ...content, title: 'Aanvraag', short: 'Nederlandse correctie' } as Json, manual: true } }, visibility: {}, created_at: '', updated_at: '' };
 describe('public saved procedures', () => {
+  it('keeps short card descriptions and detail subtitles independent in stored translations', () => {
+    const spanish = { ...content, summary: 'Subtítulo de la ficha', cardDescription: 'Resumen de la tarjeta' };
+    const english = { ...spanish, summary: 'Detail subtitle', cardDescription: 'Card excerpt' };
+    const procedure = publicProcedureList([{ ...row, content: spanish as Json, translations: { en: { source: spanish as Json, content: english as Json, manual: false } } }], [category]).procedures[0];
+    if (!procedure) throw new Error('Missing procedure');
+    expect(procedure.summary).toBe('Subtítulo de la ficha');
+    expect(procedure.cardDescription).toBe('Resumen de la tarjeta');
+    expect(procedureTranslationMap(procedure, 'en')['Resumen de la tarjeta']).toBe('Card excerpt');
+    expect(procedureTranslationMap(procedure, 'en')['Subtítulo de la ficha']).toBe('Detail subtitle');
+  });
   it('removes the old European health card from admin and public lists without removing TSE', () => {
     const health = { ...category, id: 'health', slug: 'salud' };
     const template = TRAMITES.find((t) => t.slug === 'tarjeta-europea');
