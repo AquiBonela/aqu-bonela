@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { Download, Menu, X } from "lucide-react";
+import { useInstallPrompt } from "@/components/InstallPrompt";
 import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { EmergencyButton } from "@/components/EmergencyPhones";
@@ -54,6 +55,7 @@ const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hov
 export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left, overlay = false, admin = false }: AppHeaderProps) {
   const { tr, locale } = useI18n();
   const [open, setOpen] = useState(false);
+  const installation = useInstallPrompt();
   const [closing, setClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t } = useI18n();
@@ -176,6 +178,11 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
                 ))}
               </ul>
             </div>
+            {!admin && installation.available && <div className="flex justify-center pb-5">
+              <Button variant="ghost" onClick={() => { setOpen(false); installation.show(); }} className="h-auto whitespace-normal text-primary-foreground hover:bg-transparent hover:text-beige">
+                <Download className="h-4 w-4 shrink-0" aria-hidden />{tr("Instalar en el móvil")}
+              </Button>
+            </div>}
             {aboutItem && <div className={`mx-auto w-fit px-3 pb-2 ${sendItem ? "mb-2 border-b border-primary-foreground/15" : "mb-4"}`}>
               {renderItem(aboutItem, false)}
             </div>}

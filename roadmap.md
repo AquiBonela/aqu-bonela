@@ -71,3 +71,4 @@
 - [x] Evitar que los paneles de portada tapen las sugerencias del buscador; comprobado en 390, 602 y 1280 px.
 - [x] Incluir la portada de cada ficha en los avisos de compartir cuando tenga imagen; foto real accesible y etiquetas presentes en HTML inicial; requiere publicar para WhatsApp.
 - [x] Exigir aceptación de la política antes de enviar información o avisos desde ventanas; bloqueo y desbloqueo comprobados sin enviar datos de prueba reales, 227 pruebas pasan.
+- [x] Aviso móvil de instalación tras 12 segundos, descarte durante 30 días, guía iPhone y acceso desde menú, sin modo sin conexión; 233 pruebas pasan y guía, descarte, menú, Android (evento simulado), modo instalado y escritorio comprobados sin errores; instalación del sistema pendiente de probar en un móvil real tras publicar.
