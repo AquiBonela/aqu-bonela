@@ -23,3 +23,10 @@ describe("trusted client IP", () => {
     expect(getTrustedClientIp(new Headers({ "cf-connecting-ip": "garbage" }))).toBeNull();
   });
 });
+
+describe("turnstile hostname allowlist", () => {
+  it("rejects an empty token without calling Cloudflare", async () => {
+    const { verifyTurnstile } = await import("./antispam.server");
+    expect((await verifyTurnstile("", "suggestion", "localhost", null)).ok).toBe(false);
+  });
+});

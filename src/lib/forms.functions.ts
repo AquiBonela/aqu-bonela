@@ -49,7 +49,8 @@ async function guard(
   for (const s of subjects) if (!(await a.checkRateLimit("form", s, 10, 60))) return { ok: false, error: "rate_limited" };
 
   const host = new URL(request.url).hostname;
-  if (!(await a.verifyTurnstile(input.turnstileToken, action, host, ip))) return { ok: false, error: "verification" };
+  const ts = await a.verifyTurnstile(input.turnstileToken, action, host, ip);
+  if (!ts.ok) return { ok: false, error: "verification" };
 
   for (const s of subjects) if (!(await a.checkRateLimit(scope, s, maxSubmissions, 600))) return { ok: false, error: "rate_limited" };
   return { ok: true };

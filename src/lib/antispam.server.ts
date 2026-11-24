@@ -92,17 +92,27 @@ export async function checkRateLimit(scope: string, subject: Subject, max: numbe
 
 // ---- Turnstile Siteverify ----
 // Reuse detection on Cloudflare's side is eventually consistent; our own rate limits remain mandatory.
-export async function verifyTurnstile(token: string, expectedAction: string, expectedHost: string, ip: string | null): Promise<boolean> {
-  if (!token || token.length > 2048) return false;
+function allowedHostnames(): Set<string> {
+  return new Set((process.env["TURNSTILE_ALLOWED_HOSTNAMES"] ?? "").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean));
+}
+
+type TurnstileDiag = { success?: boolean; hostname?: string; action?: string; errorCodes?: string[]; requestHost: string };
+
+/** Hostname is checked against the fixed server-side allowlist, never against browser-supplied values. */
+export async function verifyTurnstile(token: string, expectedAction: string, requestHost: string, ip: string | null): Promise<{ ok: boolean; diag: TurnstileDiag }> {
+  const diag: TurnstileDiag = { requestHost };
+  if (!token || token.length > 2048) return { ok: false, diag };
   const body = new URLSearchParams({ secret: requireEnv("TURNSTILE_SECRET_KEY"), response: token, idempotency_key: crypto.randomUUID() });
   if (ip) body.set("remoteip", ip);
   try {
     const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body });
-    if (!res.ok) return false;
-    const r = (await res.json()) as { success?: boolean; action?: string; hostname?: string };
-    return r.success === true && r.action === expectedAction && typeof r.hostname === "string" && r.hostname.toLowerCase() === expectedHost.toLowerCase();
+    if (!res.ok) return { ok: false, diag };
+    const r = (await res.json()) as { success?: boolean; action?: string; hostname?: string; "error-codes"?: string[] };
+    Object.assign(diag, { success: r.success, hostname: r.hostname, action: r.action, errorCodes: r["error-codes"] });
+    const ok = r.success === true && r.action === expectedAction && typeof r.hostname === "string" && allowedHostnames().has(r.hostname.toLowerCase());
+    return { ok, diag };
   } catch {
     console.error("[antispam] turnstile verification unavailable");
-    return false;
+    return { ok: false, diag };
   }
 }
