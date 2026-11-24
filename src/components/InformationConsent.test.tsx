@@ -4,9 +4,17 @@ import { SuggestionForm } from "./SuggestionForm";
 import { ReportDialog } from "./ReportDialog";
 
 const { insert } = vi.hoisted(() => ({ insert: vi.fn() }));
-vi.mock("@/integrations/supabase/client", () => ({ supabase: { from: () => ({ insert }) } }));
+vi.mock("@tanstack/react-start", () => ({ useServerFn: () => (args: { data: unknown }) => insert(args.data) }));
+vi.mock("@/lib/forms.functions", () => ({
+  submitSuggestion: {}, submitReport: {},
+  REPORT_REASONS: ["Horario incorrecto", "Teléfono erróneo", "Cerrado / Mudado", "Otro motivo"],
+}));
+vi.mock("@/components/FormProtection", () => ({
+  useFormProtection: () => ({ fields: null, ready: true, payload: { session: "s", turnstileToken: "t", website: "" }, reset: () => {} }),
+}));
+const P = { session: "s", turnstileToken: "t", website: "" };
 vi.mock("@tanstack/react-router", () => ({ Link: ({ to, children, ...props }: { to: string; children: React.ReactNode }) => <a href={to} {...props}>{children}</a> }));
-beforeEach(() => { insert.mockReset(); insert.mockResolvedValue({ error: null }); });
+beforeEach(() => { insert.mockReset(); insert.mockResolvedValue({ ok: true }); });
 afterEach(cleanup);
 
 describe("aceptación obligatoria antes de enviar información", () => {
@@ -23,7 +31,7 @@ describe("aceptación obligatoria antes de enviar información", () => {
     fireEvent.click(accepted);
     fireEvent.submit(form);
     await waitFor(() => expect(insert).toHaveBeenCalledOnce());
-    expect(insert).toHaveBeenCalledWith({ name: "Biblioteca", contact: null, message: "Información actualizada de horarios" });
+    expect(insert).toHaveBeenCalledWith({ ...P, name: "Biblioteca", contact: undefined, message: "Información actualizada de horarios" });
   });
   it("bloquea avisos de fichas sin aceptar y permite enviarlos tras aceptar", async () => {
     const { container } = render(<ReportDialog listingId="listing-1" listingName="Biblioteca" />);
@@ -36,6 +44,6 @@ describe("aceptación obligatoria antes de enviar información", () => {
     fireEvent.click(screen.getByRole("checkbox"));
     fireEvent.submit(form);
     await waitFor(() => expect(insert).toHaveBeenCalledOnce());
-    expect(insert).toHaveBeenCalledWith({ listing_id: "listing-1", message: "[Horario incorrecto] Abre a las nueve", contact: null });
+    expect(insert).toHaveBeenCalledWith({ ...P, listingId: "listing-1", reason: "Horario incorrecto", message: "Abre a las nueve", contact: undefined });
   });
 });
