@@ -5,9 +5,10 @@ import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
 import { SiteBanner } from "@/components/SiteBanner";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
+import { getMunicipality } from "@/config/municipality";
 
 const menuItems = (t: ReturnType<typeof useI18n>["t"], tr: ReturnType<typeof useI18n>["tr"], onSend: () => void): HeaderItem[] => [
-  { to: "/", label: "Aquí Bonela", activeOptions: { exact: true } },
+  { to: "/", label: getMunicipality().appName, activeOptions: { exact: true } },
   { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
   { to: "/descubre", label: t("menu.descubre") },
   { label: t("menu.actualidad"), soon: true },

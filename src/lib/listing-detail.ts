@@ -2,8 +2,9 @@ import { queryOptions } from "@tanstack/react-query";
 import { notFound } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import type { Listing } from "@/lib/directory";
+import { getMunicipality } from "@/config/municipality";
 
-export const SITE_URL = "https://bonela-local-finds.lovable.app";
+export const SITE_URL = getMunicipality().siteUrl;
 export const WEEKDAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
 export type Hour = { weekday: number; opens: string; closes: string };

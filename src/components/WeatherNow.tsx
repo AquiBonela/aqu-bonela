@@ -2,12 +2,16 @@ import { Text, useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudRain, CloudSnow, CloudSun, Sun, type LucideIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getMunicipality } from "@/config/municipality";
 
 type Weather = { temp: number; code: number };
 
-// Coordenadas de Casarabonela
+// Coordenadas y zona horaria del municipio configurado
+const { lat, lng, timezone } = getMunicipality().coordinates;
+const PLACE = `latitude=${lat}&longitude=${lng}`;
+const TZ = encodeURIComponent(timezone);
 const URL =
-  "https://api.open-meteo.com/v1/forecast?latitude=36.786&longitude=-4.843&current=temperature_2m,weather_code&timezone=Europe%2FMadrid";
+  `https://api.open-meteo.com/v1/forecast?${PLACE}&current=temperature_2m,weather_code&timezone=${TZ}`;
 
 function iconFor(code: number): { Icon: LucideIcon; label: string } {
   if (code === 0) return { Icon: Sun, label: "Despejado" };
@@ -69,7 +73,7 @@ export function WeatherNow() {
 type Day = { date: string; code: number; max: number; min: number; rain: number };
 
 const FORECAST_URL =
-  "https://api.open-meteo.com/v1/forecast?latitude=36.786&longitude=-4.843&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FMadrid&forecast_days=7";
+  `https://api.open-meteo.com/v1/forecast?${PLACE}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${TZ}&forecast_days=7`;
 
 function dayName(date: string, i: number, locale: string) {
   if (i === 0) return "Hoy";
