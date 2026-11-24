@@ -7,7 +7,7 @@ export interface MunicipalityConfig {
   id: string;
   name: string;
   appName: string;
-  demonym: string;
+  demonym: { masculine: string; feminine: string };
   province: string;
   region: string;
   autonomousCommunity: string;
@@ -34,7 +34,7 @@ const casarabonela: MunicipalityConfig = {
   id: "casarabonela",
   name: "Casarabonela",
   appName: "Aquí Bonela",
-  demonym: "casarabonelense",
+  demonym: { masculine: "morisco", feminine: "morisca" },
   province: "Málaga",
   region: "Sierra de las Nieves",
   autonomousCommunity: "Andalucía",
@@ -42,7 +42,7 @@ const casarabonela: MunicipalityConfig = {
   coordinates: { lat: 36.786, lng: -4.843, timezone: "Europe/Madrid" },
   institutional: {
     townHallName: "Ayuntamiento de Casarabonela",
-    address: "Plaza de Casarabonela",
+    address: "Plaza de Buenavista, 1, 29566 Casarabonela (Málaga)",
     phone: "952456561",
     website: "https://www.casarabonela.es/",
   },
