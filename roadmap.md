@@ -82,3 +82,5 @@
 - [x] Presentar el bloque 03 «Trámites y gestiones» de Servicios públicos con pregunta de apertura, guía explicativa, caja de descargo («Aquí Bonela no realiza trámites…») y botón a la guía; 261 pruebas pasan y presentación verificada en 390 y 1280 px con las tres frases traducidas a los cinco idiomas.
 - [ ] Anti-spam fase 4: retirar INSERT directo de anon/authenticated y policies públicas en suggestions y listing_reports — tras autorizar dominios en Turnstile y publicar.
 - [ ] Cambiar siteUrl de Casarabonela a https://aquibonela.es en la configuración municipal: pendiente de que el dominio esté conectado y operativo.
+- [x] Plantilla de instalación limpia en supabase/template (esquema, semilla, configuración, verificación) probada en PostgreSQL local.
+- [ ] Ejecutar la plantilla en un proyecto Supabase real nuevo y pasar 04_verify.sql: pendiente de crear ese proyecto.
