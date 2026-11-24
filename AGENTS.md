@@ -40,4 +40,3 @@
 - Listing descriptions interpret paired double asterisks (bold) and paired single asterisks (italic) through a browser-safe text parser in the shared public/review ListingPage, never raw HTML. Why: admins can emphasize arbitrary phrases without enabling HTML injection or changing stored descriptions.
 
 - Highlighting keeps DB fields. Why: reuse.
-- `supabase/template/` is a clean-install snapshot generated from the production catalog (schema, universal seed, per-instance init, role-based verify); `supabase/migrations/` stays Casarabonela's history. Any schema change must also be reflected in the template and pass `04_verify.sql`. Why: new municipalities must install from zero without inheriting local data or drifting from production security.
