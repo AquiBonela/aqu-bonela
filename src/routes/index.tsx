@@ -7,13 +7,14 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n, type TKey } from "@/lib/i18n";
-import logoWhite from "@/assets/logo-menu.webp";
 import imgDir from "@/assets/descubre/calles.jpg";
 import imgServ from "@/assets/descubre/fuentes.jpg";
 import imgDesc from "@/assets/descubre/castillo.jpg";
 import imgAct from "@/assets/descubre/molino.jpg";
 import imgClas from "@/assets/descubre/cactus.jpg";
-import heroImg from "@/assets/hero-casarabonela.jpg";
+import { getMunicipality } from "@/config/municipality";
+
+const { logoHome: logoWhite, heroImage: heroImg } = getMunicipality().assets;
 
 export const Route = createFileRoute("/")({
   head: () => ({

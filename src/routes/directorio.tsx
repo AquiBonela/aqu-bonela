@@ -10,7 +10,7 @@ import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
-import heroImg from "@/assets/hero-casarabonela.jpg";
+import { getMunicipality } from "@/config/municipality";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -82,7 +82,7 @@ function Index() {
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[24rem] w-full sm:h-[30rem]">
           <img
-            src={heroImg}
+            src={getMunicipality().assets.heroImage}
             alt={tr("Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves")}
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
