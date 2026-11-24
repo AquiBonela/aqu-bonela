@@ -51,7 +51,7 @@ export function ListingCard({
 }) {
   const { tr, locale, lang } = useI18n();
   const theme = typeTheme(listing.type);
-  const subtitle = [categoryName, listing.activity].filter((value): value is string => Boolean(value)).map(tr).join(" · ");
+  const subtitle = [categoryName, listing.activity].filter((value): value is string => Boolean(value)).map((x) => tr(x)).join(" · ");
   const marks = [...(listing.urgent_24h ? ["Urgencias 24h"] : []), ...availabilityTags(listing.tags)];
   return (
     <article className={cn("relative flex overflow-hidden rounded-soft transition-transform duration-200 hover:scale-[1.03] motion-reduce:transition-none motion-reduce:hover:scale-100 border border-l-[6px] bg-card text-card-foreground", theme.border)}>
@@ -80,7 +80,7 @@ export function ListingCard({
       </div>
       </div>
       {marks.length > 0 && (
-        <div className="flex shrink-0 divide-x divide-availability-border border-l border-availability-border bg-availability text-availability-foreground" aria-label={marks.map(tr).join(", ")}>
+        <div className="flex shrink-0 divide-x divide-availability-border border-l border-availability-border bg-availability text-availability-foreground" aria-label={marks.map((x) => tr(x)).join(", ")}>
           {marks.map((m) => (
             <span key={m} className="flex w-9 items-center justify-center py-3" aria-hidden>
               <span className="whitespace-nowrap text-sm font-bold uppercase tracking-wide [writing-mode:vertical-rl] rotate-180">

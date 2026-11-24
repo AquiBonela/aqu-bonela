@@ -533,7 +533,7 @@ export type TParams = Record<string, string>;
  * Una variable sin valor se deja tal cual ({variable}) para no romper textos que usan llaves literales.
  */
 export function interpolate(text: string, params?: TParams): string {
-  if (!params) return text;
+  if (!params || typeof params !== "object") return text;
   return text.replace(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g, (match, name: string) => {
     const value = Object.hasOwn(params, name) ? params[name] : undefined;
     return typeof value === "string" ? value : match;
