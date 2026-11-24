@@ -40,4 +40,3 @@
 - Listing descriptions interpret paired double asterisks (bold) and paired single asterisks (italic) through a browser-safe text parser in the shared public/review ListingPage, never raw HTML. Why: admins can emphasize arbitrary phrases without enabling HTML injection or changing stored descriptions.
 
 - Highlighting keeps DB fields. Why: reuse.
-- Public form submissions (suggestions, listing reports) go through server functions: Zod validation → honeypot → atomic PostgreSQL rate limit (service-role-only `public.check_rate_limit`, data in `private.form_rate_limits`, hourly batch cleanup) → Turnstile Siteverify (success/action/hostname) → insert via service role. Client IP comes only from the deployment edge's trusted header, else a server-signed form session; never log IPs, hashes or tokens. Why: direct anonymous inserts allowed spam, and Turnstile reuse detection is only eventually consistent.
