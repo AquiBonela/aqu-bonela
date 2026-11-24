@@ -38,7 +38,7 @@ const casarabonela: MunicipalityConfig = {
   province: "Málaga",
   region: "Sierra de las Nieves",
   autonomousCommunity: "Andalucía",
-  siteUrl: "https://bonela-local-finds.lovable.app",
+  siteUrl: "https://aquibonela.es",
   coordinates: { lat: 36.786, lng: -4.843, timezone: "Europe/Madrid" },
   institutional: {
     townHallName: "Ayuntamiento de Casarabonela",
