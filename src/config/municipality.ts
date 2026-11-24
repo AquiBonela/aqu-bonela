@@ -3,6 +3,11 @@
  * Datos públicos, sin secretos. Seguro para SSR y navegador (solo lee VITE_MUNICIPALITY_ID).
  * Los datos operativos editables (avisos, titular legal, contacto) siguen en site_settings.
  */
+import casarabonelaLogoHome from "@/assets/logo-menu.webp";
+import casarabonelaLogoAdmin from "@/assets/logo-2.webp";
+import casarabonelaLogoText from "@/assets/logo-texto.webp";
+import casarabonelaHero from "@/assets/hero-casarabonela.jpg";
+
 export interface MunicipalityConfig {
   id: string;
   name: string;
@@ -19,14 +24,26 @@ export interface MunicipalityConfig {
     phone: string;
     website: string;
   };
-  assets: {
-    logo: string;
-    logoMenu: string;
-    logoText: string;
-    heroImage: string;
-    favicon: string;
-  };
+  assets: MunicipalityAssets;
   theme: MunicipalityTheme;
+}
+
+/**
+ * Recursos gráficos del municipio. Los de src/assets son URLs resueltas por Vite;
+ * los de public/ son rutas absolutas servidas tal cual.
+ */
+export interface MunicipalityAssets {
+  /** Logo claro para la portada, sobre la foto principal. */
+  logoHome: string;
+  /** Logo del panel de administración. */
+  logoAdmin: string;
+  /** Logo solo tipográfico. */
+  logoText: string;
+  /** Imagen principal del municipio. */
+  heroImage: string;
+  favicon: string;
+  appleTouchIcon: string;
+  pwaIcons: { icon192: string; icon512: string };
 }
 
 /** Tokens de identidad en modo claro (valores OKLCH). */
@@ -83,11 +100,13 @@ const casarabonela: MunicipalityConfig = {
     website: "https://www.casarabonela.es/",
   },
   assets: {
-    logo: "src/assets/logo.png.asset.json",
-    logoMenu: "src/assets/logo-menu.webp",
-    logoText: "src/assets/logo-texto.webp",
-    heroImage: "src/assets/hero-casarabonela.jpg",
+    logoHome: casarabonelaLogoHome,
+    logoAdmin: casarabonelaLogoAdmin,
+    logoText: casarabonelaLogoText,
+    heroImage: casarabonelaHero,
     favicon: "/favicon.png",
+    appleTouchIcon: "/apple-touch-icon.png",
+    pwaIcons: { icon192: "/icon-192.png", icon512: "/icon-512.png" },
   },
   // Valores idénticos a :root y .dark de src/styles.css (lo comprueba municipality.test.ts).
   theme: {

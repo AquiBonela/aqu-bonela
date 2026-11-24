@@ -122,4 +122,19 @@ describe("tema municipal", () => {
       getMunicipalityThemeCss({ ...base.theme, light: rest as typeof base.theme.light }),
     ).toThrow(/light\.sand/);
   });
+
+  it("Casarabonela conserva sus recursos gráficos actuales", () => {
+    vi.stubEnv("VITE_MUNICIPALITY_ID", "");
+    const a = getMunicipality().assets;
+    expect(a.logoHome).toMatch(/logo-menu.*\.webp$/);
+    expect(a.logoAdmin).toMatch(/logo-2.*\.webp$/);
+    expect(a.logoText).toMatch(/logo-texto.*\.webp$/);
+    expect(a.heroImage).toMatch(/hero-casarabonela.*\.jpg$/);
+    expect(a.favicon).toBe("/favicon.png");
+    expect(a.appleTouchIcon).toBe("/apple-touch-icon.png");
+    expect(a.pwaIcons).toEqual({ icon192: "/icon-192.png", icon512: "/icon-512.png" });
+    for (const path of [a.favicon, a.appleTouchIcon, a.pwaIcons.icon192, a.pwaIcons.icon512]) {
+      expect(readFileSync(`public${path}`).length).toBeGreaterThan(0);
+    }
+  });
 });
