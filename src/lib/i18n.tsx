@@ -525,8 +525,23 @@ export function translateText(text: string, lang: Lang): string {
   return text;
 }
 
-type Ctx = { lang: Lang; locale: string; setLang: (l: Lang) => void; t: (k: TKey) => string; tr: (text: string) => string };
-const I18nContext = createContext<Ctx>({ lang: "es", locale: "es-ES", setLang: () => {}, t: (k) => es[k], tr: (text) => text });
+/** Variables admitidas en textos traducibles, p. ej. {municipio}, {app}, {gentilicio_m}, {gentilicio_f}. */
+export type TParams = Record<string, string>;
+
+/**
+ * Sustituye {variable} por su valor. Sin parámetros devuelve el texto intacto.
+ * Una variable sin valor se deja tal cual ({variable}) para no romper textos que usan llaves literales.
+ */
+export function interpolate(text: string, params?: TParams): string {
+  if (!params) return text;
+  return text.replace(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g, (match, name: string) => {
+    const value = Object.hasOwn(params, name) ? params[name] : undefined;
+    return typeof value === "string" ? value : match;
+  });
+}
+
+type Ctx = { lang: Lang; locale: string; setLang: (l: Lang) => void; t: (k: TKey, params?: TParams) => string; tr: (text: string, params?: TParams) => string };
+const I18nContext = createContext<Ctx>({ lang: "es", locale: "es-ES", setLang: () => {}, t: (k, params) => interpolate(es[k], params), tr: (text, params) => interpolate(text, params) });
 
 export function I18nProvider({ children, fixedLanguage }: { children: ReactNode; fixedLanguage?: Lang }) {
   const [selectedLanguage, setLangState] = useState<Lang>("es");
@@ -548,8 +563,8 @@ export function I18nProvider({ children, fixedLanguage }: { children: ReactNode;
     try { window.localStorage.setItem(STORAGE_KEY, l); } catch { /* Keep the current selection in memory. */ }
   }, []);
 
-  const t = useCallback((k: TKey) => lang === "es" ? es[k] : lang === "en" ? en[k] ?? es[k] : translateText(es[k], lang), [lang]);
-  const tr = useCallback((text: string) => translateText(text, lang), [lang]);
+  const t = useCallback((k: TKey, params?: TParams) => interpolate(lang === "es" ? es[k] : lang === "en" ? en[k] ?? es[k] : translateText(es[k], lang), params), [lang]);
+  const tr = useCallback((text: string, params?: TParams) => interpolate(translateText(text, lang), params), [lang]);
 
   return <I18nContext.Provider value={{ lang, locale: LANGUAGE_OPTIONS[lang].locale, setLang, t, tr }}>{children}</I18nContext.Provider>;
 }
@@ -559,12 +574,12 @@ export const useI18n = () => useContext(I18nContext);
 /** Saved editorial versions take precedence over the legacy source-text catalog. */
 export function ContentTranslationProvider({ translations, children }: { translations: Record<string, string>; children: ReactNode }) {
   const parent = useI18n();
-  return <I18nContext.Provider value={{ ...parent, tr: (text) => Object.hasOwn(translations, text) ? translations[text] ?? text : parent.tr(text) }}>{children}</I18nContext.Provider>;
+  return <I18nContext.Provider value={{ ...parent, tr: (text, params) => Object.hasOwn(translations, text) ? interpolate(translations[text] ?? text, params) : parent.tr(text, params) }}>{children}</I18nContext.Provider>;
 }
 
-export function Text({ text }: { text: string }) {
+export function Text({ text, params }: { text: string; params?: TParams }) {
   const { tr } = useI18n();
-  return <>{tr(text)}</>;
+  return <>{tr(text, params)}</>;
 }
 
 export function LangSwitch({ className = "" }: { className?: string }) {
