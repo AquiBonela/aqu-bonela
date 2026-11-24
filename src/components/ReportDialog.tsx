@@ -2,21 +2,23 @@ import { toast } from "sonner";
 import { useI18n , Text} from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Flag, X, PencilLine, Send } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { submitReport, REPORT_REASONS as REASONS } from "@/lib/forms.functions";
+import { useFormProtection } from "@/components/FormProtection";
 import { Button } from "@/components/ui/button";
 import { PrivacyAcceptance } from "@/components/PrivacyAcceptance";
-
-const REASONS = ["Horario incorrecto", "Teléfono erróneo", "Cerrado / Mudado", "Otro motivo"] as const;
 
 export function ReportDialog({ listingId, listingName }: { listingId: string; listingName: string }) {
   const { tr, locale } = useI18n();
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState<string>(REASONS[0]);
+  const [reason, setReason] = useState<(typeof REASONS)[number]>(REASONS[0]);
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const submit = useServerFn(submitReport);
+  const protection = useFormProtection("report");
 
   useEffect(() => {
     if (!open) return;
@@ -33,13 +35,14 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!accepted || message.trim().length < 5) return;
+    if (!accepted || message.trim().length < 5 || !protection.ready) return;
     setState("sending");
-    const { error } = await supabase.from("listing_reports").insert({
-      listing_id: listingId,
-      message: `[${reason}] ${message.trim()}`,
-      contact: contact.trim() || null,
-    });
+    let error = true;
+    try {
+      const res = await submit({ data: { ...protection.payload, listingId, reason, message: message.trim(), contact: contact.trim() || undefined } });
+      error = !res.ok;
+    } catch { /* handled below */ }
+    protection.reset();
     setState(error ? "error" : "sent");
     if (error) toast.error(t("feedback.reportError"));
     else toast.success(t("feedback.reportSent"));
@@ -89,7 +92,7 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
               <form onSubmit={send} className="grid flex-1 content-start gap-5 p-5">
                 <label className="grid gap-2">
                   <span className="text-lg font-semibold"><Text text="Motivo" /></span>
-                  <select value={reason} onChange={(e) => setReason(e.target.value)}
+                  <select value={reason} onChange={(e) => setReason(e.target.value as (typeof REASONS)[number])}
                     className="h-14 w-full rounded-xl border-2 bg-background px-3 text-lg focus:border-primary focus:outline-none">
                     {REASONS.map((r) => <option key={r} value={r}>{tr(r)}</option>)}
                   </select>
@@ -109,9 +112,10 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
                 </label>
 
                 <PrivacyAcceptance accepted={accepted} onChange={setAccepted} />
+                {protection.fields}
                 {state === "error" && <p className="text-base font-medium text-destructive"><Text text="No se ha podido enviar. Inténtalo de nuevo." /></p>}
 
-                <Button type="submit" disabled={state === "sending" || !accepted} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
+                <Button type="submit" disabled={state === "sending" || !accepted || !protection.ready} className="mt-auto flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary text-lg font-semibold text-primary-foreground disabled:opacity-60 sm:mt-0">
                   <Send className="h-5 w-5" aria-hidden /> {tr(state === "sending" ? "Enviando…" : "Enviar aviso")}
                 </Button>
                 <p className="border-t pt-4 text-center text-base text-muted-foreground">

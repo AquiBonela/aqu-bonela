@@ -80,3 +80,4 @@
 - [x] Añadir elemento Imagen con subida privada, pie opcional, imagen compartida por idiomas y presentación uniforme sin recortar.
 - [ ] Verificar subida real de imágenes de trámites desde admin: Supabase externo sin sesión disponible.
 - [x] Presentar el bloque 03 «Trámites y gestiones» de Servicios públicos con pregunta de apertura, guía explicativa, caja de descargo («Aquí Bonela no realiza trámites…») y botón a la guía; 261 pruebas pasan y presentación verificada en 390 y 1280 px con las tres frases traducidas a los cinco idiomas.
+- [ ] Anti-spam fase 4: retirar INSERT directo de anon/authenticated y policies públicas en suggestions y listing_reports — tras autorizar dominios en Turnstile y publicar.

@@ -1,6 +1,8 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { submitSuggestion } from "@/lib/forms.functions";
+import { useFormProtection } from "@/components/FormProtection";
 import { Button } from "@/components/ui/button";
 import { PrivacyAcceptance } from "@/components/PrivacyAcceptance";
 
@@ -11,15 +13,20 @@ export function SuggestionForm({ business = false }: { business?: boolean }) {
   const [message, setMessage] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const protection = useFormProtection("suggestion");
+  const submit = useServerFn(submitSuggestion);
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!accepted) return;
+    if (!accepted || !protection.ready) return;
     setState("sending");
-    const { error } = await supabase
-      .from("suggestions")
-      .insert({ name: name.trim(), contact: contact.trim() || null, message: message.trim() });
-    setState(error ? "error" : "sent");
+    try {
+      const res = await submit({ data: { ...protection.payload, name: name.trim(), contact: contact.trim() || undefined, message: message.trim() } });
+      setState(res.ok ? "sent" : "error");
+    } catch {
+      setState("error");
+    }
+    protection.reset();
   };
 
   return (
@@ -65,12 +72,13 @@ export function SuggestionForm({ business = false }: { business?: boolean }) {
               />
             </label>
             <PrivacyAcceptance accepted={accepted} onChange={setAccepted} />
+            {protection.fields}
             {state === "error" && (
               <p className="text-sm text-destructive"><Text text="No se ha podido enviar. Inténtalo de nuevo." /></p>
             )}
             <Button
               type="submit"
-              disabled={state === "sending" || !accepted}
+              disabled={state === "sending" || !accepted || !protection.ready}
               className="min-h-12 bg-primary font-semibold text-primary-foreground disabled:opacity-60"
             >
               {tr(state === "sending" ? "Enviando…" : "Enviar información")}
