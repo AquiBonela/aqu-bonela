@@ -96,10 +96,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aquí Bonela" },
-      { name: "description", content: "Directorio de comercios y profesionales de Casarabonela." },
+      { title: getMunicipality().appName },
+      { name: "description", content: `Directorio de comercios y profesionales de ${getMunicipality().name}.` },
       { name: "theme-color", content: municipalityTheme.themeColor },
-      { name: "apple-mobile-web-app-title", content: "Aquí Bonela" },
+      { name: "apple-mobile-web-app-title", content: getMunicipality().appName },
     ],
     links: [
       {
