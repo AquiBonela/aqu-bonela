@@ -21,6 +21,11 @@ import { BackToTop } from "@/components/BackToTop";
 import { InstallPromptProvider } from "@/components/InstallPrompt";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { getMunicipality, getMunicipalityThemeCss } from "@/config/municipality";
+
+// Calculado una vez al cargar el módulo (SSR y navegador): un tema inválido falla de forma explícita.
+const municipalityTheme = getMunicipality().theme;
+const municipalityThemeCss = getMunicipalityThemeCss(municipalityTheme);
 
 function NotFoundContent() {
   return (
@@ -93,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Aquí Bonela" },
       { name: "description", content: "Directorio de comercios y profesionales de Casarabonela." },
-      { name: "theme-color", content: "#faf6ee" },
+      { name: "theme-color", content: municipalityTheme.themeColor },
       { name: "apple-mobile-web-app-title", content: "Aquí Bonela" },
     ],
     links: [
@@ -127,6 +132,8 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="es">
       <head>
         <HeadContent />
+        {/* Tras la hoja principal: el tema municipal prevalece desde el primer render SSR. */}
+        <style id="municipality-theme" dangerouslySetInnerHTML={{ __html: municipalityThemeCss }} />
       </head>
       <body>
         {children}
