@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { adminReportsQuery, adminSuggestionsQuery, isAdminQuery } from "@/lib/admin";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
 import logo from "@/assets/logo-2.webp";
+import { getMunicipality } from "@/config/municipality";
 
 const ADMIN_ITEMS: HeaderItem[] = [
   { to: "/admin", label: "Panel editor" },
@@ -64,10 +65,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <AppHeader
         admin
         navLabel={tr("Menú de administración")}
-        footnote={tr("Administración del directorio Aquí Bonela")}
+        footnote={tr(`Administración del directorio ${getMunicipality().appName}`)}
         brand={
           <Link to="/admin" className="inline-flex min-w-0 items-center justify-center">
-            <img src={logo} alt="Aquí Bonela" className="h-9 max-w-full object-contain brightness-0" />
+            <img src={logo} alt={getMunicipality().appName} className="h-9 max-w-full object-contain brightness-0" />
           </Link>
         }
         items={items.map((item) => ({ ...item, label: tr(item.label) }))}
