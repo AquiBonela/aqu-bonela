@@ -1,0 +1,1 @@
+REVOKE SELECT (admin_whatsapp, contact_email) ON public.site_settings FROM anon;
