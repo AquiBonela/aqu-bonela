@@ -40,4 +40,3 @@
 - Listing descriptions interpret paired double asterisks (bold) and paired single asterisks (italic) through a browser-safe text parser in the shared public/review ListingPage, never raw HTML. Why: admins can emphasize arbitrary phrases without enabling HTML injection or changing stored descriptions.
 
 - Highlighting keeps DB fields. Why: reuse.
-- Browser Supabase config falls back to window.__PUBLIC_ENV__ (only SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY), injected in the root shell from Worker bindings captured in src/server.ts or process.env. Why: published Workers may lack build-time VITE_ values; Vercel keeps working via process.env.
