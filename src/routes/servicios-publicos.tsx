@@ -5,8 +5,8 @@ import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
-import hero from "@/assets/plaza-buenavista-casarabonela.webp.asset.json";
-import puntoVuelaLogo from "@/assets/punto-vuela-logo.svg.asset.json";
+import hero from "@/assets/plaza-buenavista-casarabonela.webp";
+import puntoVuelaLogo from "@/assets/punto-vuela-logo.svg";
 import { useQuery } from "@tanstack/react-query";
 import { listingDetailQuery } from "@/lib/listing-detail";
 
@@ -54,7 +54,7 @@ function ServiciosPublicos() {
       <SiteHeader />
       <main>
         <section className="relative text-primary-foreground">
-          <img src={hero.url} alt={tr("Plaza de la Buena Vista, Casarabonela")} width={1920} height={1280} className="h-[40vh] min-h-64 w-full object-cover" />
+          <img src={hero} alt={tr("Plaza de la Buena Vista, Casarabonela")} width={1920} height={1280} className="h-[40vh] min-h-64 w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10">
             <h1 className="font-display text-4xl font-extrabold text-balance sm:text-5xl"><Text text="Servicios públicos" /></h1>
@@ -157,7 +157,7 @@ function ServiciosPublicos() {
         <section aria-labelledby="punto-vuela-title" className="mt-10 bg-vuela text-vuela-foreground">
           <div className="mx-auto max-w-5xl px-4 py-10">
             <h3 id="punto-vuela-title">
-              <img src={puntoVuelaLogo.url} alt="Punto Vuela" width={1619} height={528} className="block h-auto w-52 max-w-full" />
+              <img src={puntoVuelaLogo} alt="Punto Vuela" width={1619} height={528} className="block h-auto w-52 max-w-full" />
             </h3>
             <p className="mt-3 opacity-90"><Text text="Servicio gratuito de apoyo digital para vecinos de todas las edades." /></p>
             <PuntoVuelaInfo />

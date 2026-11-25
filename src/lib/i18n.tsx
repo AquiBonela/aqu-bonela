@@ -8,12 +8,12 @@ import ukText from "@/lib/locales/uk.json";
 import enSupplement from "@/lib/locales/en-supplement.json";
 import corrections from "@/lib/locales/corrections.json";
 import { reviewedTranslations } from "@/lib/i18n-overrides";
-import spanishFlag from "@/assets/flags/es.svg.asset.json";
-import englishFlag from "@/assets/flags/en.svg.asset.json";
-import germanFlag from "@/assets/flags/de.svg.asset.json";
-import dutchFlag from "@/assets/flags/nl.svg.asset.json";
-import frenchFlag from "@/assets/flags/fr.svg.asset.json";
-import ukrainianFlag from "@/assets/flags/uk.svg.asset.json";
+import spanishFlag from "@/assets/flags/es.svg";
+import englishFlag from "@/assets/flags/en.svg";
+import germanFlag from "@/assets/flags/de.svg";
+import dutchFlag from "@/assets/flags/nl.svg";
+import frenchFlag from "@/assets/flags/fr.svg";
+import ukrainianFlag from "@/assets/flags/uk.svg";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
@@ -26,8 +26,8 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRad
 export const LANGS = ["es", "en", "de", "nl", "fr", "uk"] as const;
 export type Lang = (typeof LANGS)[number];
 export const LANGUAGE_FLAGS: Record<Lang, string> = {
-  es: spanishFlag.url, en: englishFlag.url, de: germanFlag.url,
-  nl: dutchFlag.url, fr: frenchFlag.url, uk: ukrainianFlag.url,
+  es: spanishFlag, en: englishFlag, de: germanFlag,
+  nl: dutchFlag, fr: frenchFlag, uk: ukrainianFlag,
 };
 export const LANGUAGE_OPTIONS: Record<Lang, { name: string; flag: string; locale: string }> = {
   es: { name: "Español", flag: "🇪🇸", locale: "es-ES" },
