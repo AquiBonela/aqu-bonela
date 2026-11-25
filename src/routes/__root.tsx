@@ -22,6 +22,8 @@ import { InstallPromptProvider } from "@/components/InstallPrompt";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { getMunicipality, getMunicipalityThemeCss } from "@/config/municipality";
+import { getPublicEnv } from "@/lib/public-env.functions";
+import { publicEnvScript } from "@/lib/public-env";
 
 // Calculado una vez al cargar el módulo (SSR y navegador): un tema inválido falla de forma explícita.
 const municipalityTheme = getMunicipality().theme;
@@ -92,6 +94,12 @@ function ErrorContent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // Configuración pública de Supabase, resuelta en el servidor (bindings o process.env).
+  loader: async () => {
+    if (typeof window !== "undefined" && window.__PUBLIC_ENV__) return { publicEnv: window.__PUBLIC_ENV__ };
+    return { publicEnv: await getPublicEnv() };
+  },
+  staleTime: Infinity,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -128,9 +136,12 @@ function ErrorComponent(props: ErrorComponentProps) {
 }
 
 function RootShell({ children }: { children: ReactNode }) {
+  const publicEnv = Route.useLoaderData({ select: (d) => d?.publicEnv }) ?? {};
   return (
     <html lang="es">
       <head>
+        {/* Antes de cualquier script de la app: el cliente Supabase lee esta configuración. */}
+        <script id="public-env" dangerouslySetInnerHTML={{ __html: publicEnvScript(publicEnv) }} />
         <HeadContent />
         {/* Tras la hoja principal: el tema municipal prevalece desde el primer render SSR. */}
         <style id="municipality-theme" dangerouslySetInnerHTML={{ __html: municipalityThemeCss }} />
