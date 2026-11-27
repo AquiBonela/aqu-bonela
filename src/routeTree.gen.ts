@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AppDotwebmanifestRouteImport } from './routes/app[.]webmanifest'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as CookiesRouteImport } from './routes/cookies'
@@ -24,6 +25,7 @@ import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as VidaDiariaRouteImport } from './routes/vida-diaria'
 import { Route as AsociacionesSlugRouteImport } from './routes/asociaciones.$slug'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
+import { Route as MarcaSplatRouteImport } from './routes/marca.$'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
 import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
 import { Route as ServiciosSlugRouteImport } from './routes/servicios.$slug'
@@ -50,6 +52,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppDotwebmanifestRoute = AppDotwebmanifestRouteImport.update({
+  id: '/app.webmanifest',
+  path: '/app.webmanifest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -115,6 +122,11 @@ const AsociacionesSlugRoute = AsociacionesSlugRouteImport.update({
 const ComerciosSlugRoute = ComerciosSlugRouteImport.update({
   id: '/comercios/$slug',
   path: '/comercios/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarcaSplatRoute = MarcaSplatRouteImport.update({
+  id: '/marca/$',
+  path: '/marca/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfesionalesSlugRoute = ProfesionalesSlugRouteImport.update({
@@ -221,6 +233,7 @@ const AuthenticatedAdminTramitesIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app.webmanifest': typeof AppDotwebmanifestRoute
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
@@ -234,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
+  '/marca/$': typeof MarcaSplatRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
@@ -255,6 +269,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app.webmanifest': typeof AppDotwebmanifestRoute
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
@@ -268,6 +283,7 @@ export interface FileRoutesByTo {
   '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
+  '/marca/$': typeof MarcaSplatRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
@@ -291,6 +307,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/app.webmanifest': typeof AppDotwebmanifestRoute
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
@@ -304,6 +321,7 @@ export interface FileRoutesById {
   '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
+  '/marca/$': typeof MarcaSplatRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
@@ -327,6 +345,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app.webmanifest'
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
@@ -340,6 +359,7 @@ export interface FileRouteTypes {
     | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
+    | '/marca/$'
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
@@ -361,6 +381,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/app.webmanifest'
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
@@ -374,6 +395,7 @@ export interface FileRouteTypes {
     | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
+    | '/marca/$'
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
@@ -396,6 +418,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/app.webmanifest'
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
@@ -409,6 +432,7 @@ export interface FileRouteTypes {
     | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
+    | '/marca/$'
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
@@ -432,6 +456,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AppDotwebmanifestRoute: typeof AppDotwebmanifestRoute
   AuthRoute: typeof AuthRoute
   AvisoLegalRoute: typeof AvisoLegalRoute
   CookiesRoute: typeof CookiesRoute
@@ -445,6 +470,7 @@ export interface RootRouteChildren {
   VidaDiariaRoute: typeof VidaDiariaRouteWithChildren
   AsociacionesSlugRoute: typeof AsociacionesSlugRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
+  MarcaSplatRoute: typeof MarcaSplatRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
   RevisionTokenRoute: typeof RevisionTokenRoute
   ServiciosSlugRoute: typeof ServiciosSlugRoute
@@ -467,6 +493,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app.webmanifest': {
+      id: '/app.webmanifest'
+      path: '/app.webmanifest'
+      fullPath: '/app.webmanifest'
+      preLoaderRoute: typeof AppDotwebmanifestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -558,6 +591,13 @@ declare module '@tanstack/react-router' {
       path: '/comercios/$slug'
       fullPath: '/comercios/$slug'
       preLoaderRoute: typeof ComerciosSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marca/$': {
+      id: '/marca/$'
+      path: '/marca/$'
+      fullPath: '/marca/$'
+      preLoaderRoute: typeof MarcaSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profesionales/$slug': {
@@ -735,6 +775,7 @@ const VidaDiariaRouteWithChildren = VidaDiariaRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AppDotwebmanifestRoute: AppDotwebmanifestRoute,
   AuthRoute: AuthRoute,
   AvisoLegalRoute: AvisoLegalRoute,
   CookiesRoute: CookiesRoute,
@@ -748,6 +789,7 @@ const rootRouteChildren: RootRouteChildren = {
   VidaDiariaRoute: VidaDiariaRouteWithChildren,
   AsociacionesSlugRoute: AsociacionesSlugRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
+  MarcaSplatRoute: MarcaSplatRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
   RevisionTokenRoute: RevisionTokenRoute,
   ServiciosSlugRoute: ServiciosSlugRoute,

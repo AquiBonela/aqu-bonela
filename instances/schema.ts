@@ -25,6 +25,8 @@ export interface MunicipalityConfig {
   region?: string;
   autonomousCommunity?: string;
   siteUrl: string;
+  /** Código postal principal del municipio (cinco cifras). */
+  postalCode?: string;
   /** Sin coordenadas no se muestra el tiempo. */
   coordinates?: { lat: number; lng: number; timezone: string };
   institutional?: {

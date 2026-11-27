@@ -19,7 +19,7 @@ import type {
 import { DEFAULT_MUNICIPALITY_ID } from "../../instances/schema";
 import {
   EMPTY_SITE_CONFIG,
-  mergeIdentity,
+  mergeSiteConfig,
   readBrowserSiteConfig,
   type SiteConfig,
 } from "@/lib/site-identity";
@@ -66,7 +66,7 @@ let current: MunicipalityConfig = instance;
 /** Aplica la configuración leída de Supabase (servidor) o recibida en el HTML (navegador). */
 export function setSiteConfig(config: SiteConfig): void {
   siteConfig = config;
-  current = mergeIdentity(instance, config.identity);
+  current = mergeSiteConfig(instance, config);
 }
 
 function ensureBrowserConfig(): void {

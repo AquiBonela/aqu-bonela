@@ -30,9 +30,8 @@ import { publicEnvScript } from "@/lib/public-env";
 import { getSiteConfig } from "@/lib/site-config.functions";
 import { EMPTY_SITE_CONFIG, siteConfigScript } from "@/lib/site-identity";
 
-// Calculado una vez al cargar el módulo (SSR y navegador): un tema inválido falla de forma explícita.
-const municipalityTheme = getMunicipality().theme;
-const municipalityThemeCss = getMunicipalityThemeCss(municipalityTheme);
+// El tema se calcula en cada render con la configuración aplicada (colores de Supabase o el tema
+// compilado): nunca se guarda en una constante de módulo, que conservaría la identidad anterior.
 
 function NotFoundContent() {
   return (
@@ -127,7 +126,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         name: "description",
         content: `Directorio de comercios y profesionales de ${getMunicipality().name}.`,
       },
-      { name: "theme-color", content: municipalityTheme.themeColor },
+      { name: "theme-color", content: getMunicipality().theme.themeColor },
       { name: "apple-mobile-web-app-title", content: getMunicipality().appName },
     ],
     links: [
@@ -137,7 +136,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: getMunicipality().assets.favicon, type: "image/png" },
       { rel: "apple-touch-icon", href: getMunicipality().assets.appleTouchIcon },
-      { rel: "manifest", href: "/manifest.webmanifest" },
+      // Manifiesto generado con la identidad de esta instalación (src/routes/app[.]webmanifest.ts).
+      { rel: "manifest", href: "/app.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -175,7 +175,10 @@ function RootShell({ children }: { children: ReactNode }) {
         />
         <HeadContent />
         {/* Tras la hoja principal: el tema municipal prevalece desde el primer render SSR. */}
-        <style id="municipality-theme" dangerouslySetInnerHTML={{ __html: municipalityThemeCss }} />
+        <style
+          id="municipality-theme"
+          dangerouslySetInnerHTML={{ __html: getMunicipalityThemeCss(getMunicipality().theme) }}
+        />
       </head>
       <body>
         {children}
