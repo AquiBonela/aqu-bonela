@@ -67,7 +67,7 @@ Separar este contenido del código común es trabajo pendiente ([roadmap.md](roa
 | `src/routes/` | Páginas (rutas por archivos). `_authenticated/admin/` es el panel de administración. |
 | `src/components/` | Componentes compartidos; `admin/` para el panel y `ui/` para la base de interfaz. |
 | `src/lib/` | Lógica de dominio, funciones de servidor (`*.functions.ts`, `*.server.ts`) e i18n. |
-| `instances/<id>/` | Configuración y recursos de cada municipio: nombre, coordenadas, URL, datos institucionales, recursos gráficos y tema. Contrato en `instances/schema.ts`. |
+| `instances/<id>/` | Configuración (`config.ts`), contenido estable (`content.ts`), recursos (`assets/`) y archivos públicos (`public/`) de cada municipio. Contrato en `instances/schema.ts`. `instances/demo/` es un municipio ficticio y la instancia predeterminada. |
 | `src/config/municipality.ts` | Acceso del código común a la instancia compilada. |
 | `src/integrations/supabase/` | Clientes de Supabase (navegador y servidor) y tipos generados. |
 | `supabase/migrations/` | Historial de migraciones de **Casarabonela**. |
@@ -93,7 +93,7 @@ bun run lint                    # ESLint + Prettier (hoy falla por formato)
 
 | Variable | Tipo | Uso |
 |---|---|---|
-| `VITE_MUNICIPALITY_ID` | Pública | Municipio de la instalación; si está vacía se usa `casarabonela`, y un valor desconocido produce un error. |
+| `VITE_MUNICIPALITY_ID` | Pública | Municipio de la instalación (carpeta de `instances/`). Si está vacía se usa `demo`, un municipio ficticio; un valor sin carpeta hace fallar la compilación. |
 | `VITE_SUPABASE_URL`, `SUPABASE_URL` | Pública | URL del proyecto Supabase. |
 | `VITE_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PUBLISHABLE_KEY` | Pública | Clave publicable. |
 | `VITE_SUPABASE_PROJECT_ID` | Pública | Referencia del proyecto. |
@@ -119,12 +119,11 @@ El procedimiento detallado está en **[supabase/template/README.md](supabase/tem
 4. Ejecutar `04_verify.sql`, que debe terminar con `VERIFICACIÓN SUPERADA`.
 5. Configurar las variables del apartado 5, el dominio y un widget de Turnstile para ese dominio.
 
-**Limitaciones actuales** (roadmap, Bloque A, Prioridad 4). Sin modificar código, un municipio nuevo todavía hereda:
+**Limitaciones actuales** (roadmap, Bloque A, Prioridad 4). Iconos, manifiesto, contenido local y nombres ya son propios de cada instancia, y una sección sin datos se oculta. Todavía:
 
-- los archivos de `public/` (favicon, iconos y un manifiesto PWA que identifica a Aquí Bonela);
-- el contenido de Casarabonela escrito en rutas y componentes;
-- los textos legales del piloto;
-- la referencia de `supabase/config.toml` al proyecto de Casarabonela.
+- los diccionarios comunes conservan textos de Casarabonela (Descubre, portada), que viajan en el JavaScript aunque no se muestren;
+- los textos legales son los del piloto, con el nombre de cada instancia, y necesitan revisión jurídica;
+- `supabase/config.toml` apunta a un proyecto concreto.
 
 Tampoco hay todavía una política de versiones por municipio ni una administración central.
 

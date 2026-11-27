@@ -65,6 +65,22 @@ jobs:
             exit 1
           fi
           grep -q 'no existe la instancia "no-existe"' build-no-existe.log || { cat build-no-existe.log; exit 1; }
+      - name: Demo sin datos del municipio piloto
+        # Compila la demo como servidor Node, la arranca con un Supabase simulado
+        # (listas vacías, sin base real) y busca términos del piloto en sus páginas.
+        run: |
+          bun run build
+          node scripts/check-demo-leaks.mjs
+        env:
+          VITE_MUNICIPALITY_ID: demo
+          NITRO_PRESET: node-server
+          VITE_SUPABASE_URL: http://127.0.0.1:54321
+          VITE_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder
+          RATE_LIMIT_SECRET: ci-placeholder-not-a-secret-ci-placeholder
+          TURNSTILE_SITE_KEY: ci-placeholder
 
   lint:
     name: Lint (informativo, no bloquea)
