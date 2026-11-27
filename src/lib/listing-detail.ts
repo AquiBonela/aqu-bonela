@@ -4,7 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Listing } from "@/lib/directory";
 import { getMunicipality } from "@/config/municipality";
 
-export const SITE_URL = getMunicipality().siteUrl;
+/** URL pública de la instalación, leída en cada uso: puede cambiar desde /admin sin desplegar. */
+export function siteUrl(): string {
+  return getMunicipality().siteUrl;
+}
 export const WEEKDAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
 export type Hour = { weekday: number; opens: string; closes: string };

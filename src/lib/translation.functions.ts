@@ -24,6 +24,9 @@ export const generateTranslation = createServerFn({ method: 'POST' })
     if (!key) return { ok: false as const, message: 'La traducción automática aún no está configurada.', blocked: false };
     try {
       const { translateSource } = await import('./translate.server');
+      // Las funciones de servidor no pasan por el loader de __root: nombres a conservar según la identidad actual.
+      const { loadSiteConfig } = await import('./site-config.server');
+      await loadSiteConfig();
       // Read only editorial translation memories, with the caller's admin RLS, never contacts.
       const memories: GlossaryEntry[] = [];
       for (const table of ['listings', 'procedures'] as const) {

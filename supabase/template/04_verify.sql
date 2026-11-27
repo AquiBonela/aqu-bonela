@@ -16,17 +16,17 @@ BEGIN
   SELECT count(*) INTO n FROM pg_tables WHERE schemaname = 'public' AND tablename IN
     ('activities','approval_tokens','categories','consents','listing_activities','listing_contacts',
      'listing_hours','listing_photos','listing_reports','listing_requests','listings',
-     'procedure_categories','procedures','site_settings','suggestions','translation_gateway_state','user_roles');
-  IF n <> 17 THEN RAISE EXCEPTION 'FALLO: tablas public = % (esperado 17)', n; END IF;
+     'procedure_categories','procedures','site_identity','site_settings','suggestions','translation_gateway_state','user_roles');
+  IF n <> 18 THEN RAISE EXCEPTION 'FALLO: tablas public = % (esperado 18)', n; END IF;
   IF to_regclass('private.form_rate_limits') IS NULL THEN RAISE EXCEPTION 'FALLO: falta private.form_rate_limits'; END IF;
   SELECT count(*) INTO n FROM pg_class c JOIN pg_namespace s ON s.oid = c.relnamespace
     WHERE s.nspname IN ('public','private') AND c.relkind = 'r' AND NOT c.relrowsecurity;
   IF n <> 0 THEN RAISE EXCEPTION 'FALLO: % tablas sin RLS', n; END IF;
   SELECT count(*) INTO n FROM information_schema.columns WHERE table_schema IN ('public','private')
     AND table_name IN (SELECT tablename FROM pg_tables WHERE schemaname IN ('public','private'));
-  IF n <> 179 THEN RAISE EXCEPTION 'FALLO: columnas = % (esperado 179)', n; END IF;
+  IF n <> 198 THEN RAISE EXCEPTION 'FALLO: columnas = % (esperado 198)', n; END IF;
   SELECT count(*) INTO n FROM pg_constraint co JOIN pg_namespace s ON s.oid = co.connamespace WHERE s.nspname IN ('public','private');
-  IF n <> 61 THEN RAISE EXCEPTION 'FALLO: restricciones = % (esperado 61)', n; END IF;
+  IF n <> 70 THEN RAISE EXCEPTION 'FALLO: restricciones = % (esperado 70)', n; END IF;
 
   -- ---------- 2. ENUM ----------
   IF (SELECT string_agg(enumlabel, ',' ORDER BY enumsortorder) FROM pg_enum WHERE enumtypid = 'public.app_role'::regtype) <> 'admin'
@@ -36,24 +36,28 @@ BEGIN
 
   -- ---------- 3. Políticas, funciones, triggers ----------
   SELECT count(*) INTO n FROM pg_policies WHERE schemaname = 'public';
-  IF n <> 39 THEN RAISE EXCEPTION 'FALLO: políticas public = % (esperado 39)', n; END IF;
+  IF n <> 41 THEN RAISE EXCEPTION 'FALLO: políticas public = % (esperado 41)', n; END IF;
   SELECT count(*) INTO n FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects'
     AND (coalesce(qual,'') || coalesce(with_check,'')) ~ '(listing-photos|procedure-images)';
   IF n <> 8 THEN RAISE EXCEPTION 'FALLO: políticas de Storage = % (esperado 8)', n; END IF;
   SELECT count(*) INTO n FROM pg_proc p JOIN pg_namespace s ON s.oid = p.pronamespace
     WHERE (s.nspname, p.proname) IN (('private','has_role'),('public','has_role'),('public','check_rate_limit'),
       ('private','cleanup_expired_rate_limits'),('public','set_updated_at'),('public','limit_listing_photos'),
-      ('public','listings_publish_stamp'),('public','sync_public_contact'));
-  IF n <> 8 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 8)', n; END IF;
+      ('public','listings_publish_stamp'),('public','sync_public_contact'),
+      ('public','can_manage_identity'),('private','site_identity_before_update'),('public','site_config'));
+  IF n <> 11 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 11)', n; END IF;
   SELECT count(*) INTO n FROM pg_trigger t JOIN pg_class c ON c.oid = t.tgrelid JOIN pg_namespace s ON s.oid = c.relnamespace
     WHERE s.nspname = 'public' AND NOT t.tgisinternal;
-  IF n <> 11 THEN RAISE EXCEPTION 'FALLO: triggers = % (esperado 11)', n; END IF;
+  IF n <> 12 THEN RAISE EXCEPTION 'FALLO: triggers = % (esperado 12)', n; END IF;
   IF has_function_privilege('anon', 'public.check_rate_limit(text,integer,integer)', 'EXECUTE')
   OR has_function_privilege('authenticated', 'public.check_rate_limit(text,integer,integer)', 'EXECUTE')
   OR NOT has_function_privilege('service_role', 'public.check_rate_limit(text,integer,integer)', 'EXECUTE')
   THEN RAISE EXCEPTION 'FALLO: permisos de check_rate_limit'; END IF;
   IF has_function_privilege('anon', 'public.has_role(uuid,public.app_role)', 'EXECUTE')
   THEN RAISE EXCEPTION 'FALLO: anon puede ejecutar has_role'; END IF;
+  IF has_function_privilege('anon', 'public.can_manage_identity()', 'EXECUTE')
+  OR NOT has_function_privilege('anon', 'public.site_config()', 'EXECUTE')
+  THEN RAISE EXCEPTION 'FALLO: permisos de can_manage_identity/site_config'; END IF;
 
   -- ---------- 4. Storage ----------
   SELECT count(*) INTO n FROM storage.buckets WHERE NOT public AND
@@ -68,6 +72,13 @@ BEGIN
   OR has_table_privilege('anon', 'public.suggestions', 'INSERT')
   OR has_table_privilege('authenticated', 'public.listing_reports', 'INSERT')
   OR has_table_privilege('anon', 'private.form_rate_limits', 'SELECT')
+  OR NOT has_column_privilege('anon', 'public.site_identity', 'app_name', 'SELECT')
+  OR has_column_privilege('anon', 'public.site_identity', 'updated_by', 'SELECT')
+  OR has_any_column_privilege('anon', 'public.site_identity', 'UPDATE')
+  OR has_table_privilege('authenticated', 'public.site_identity', 'INSERT')
+  OR has_table_privilege('authenticated', 'public.site_identity', 'DELETE')
+  OR has_column_privilege('authenticated', 'public.site_identity', 'id', 'UPDATE')
+  OR has_column_privilege('authenticated', 'public.site_identity', 'updated_by', 'UPDATE')
   THEN RAISE EXCEPTION 'FALLO: permisos de tabla/columna'; END IF;
 
   -- Ni visitantes ni usuarios (incluidos admins) pueden vaciar tablas saltándose RLS.
@@ -82,6 +93,7 @@ BEGIN
   OR (SELECT count(*) FROM public.procedure_categories) <> 6
   THEN RAISE EXCEPTION 'FALLO: semilla universal incompleta'; END IF;
   IF (SELECT count(*) FROM public.site_settings) <> 1 THEN RAISE EXCEPTION 'FALLO: falta site_settings (03)'; END IF;
+  IF (SELECT count(*) FROM public.site_identity) <> 1 THEN RAISE EXCEPTION 'FALLO: falta site_identity (01)'; END IF;
 
   -- ---------- 7. Pruebas reales con roles (se deshacen) ----------
   BEGIN
@@ -121,6 +133,11 @@ BEGIN
 
     BEGIN TRUNCATE TABLE public.listing_contacts; RAISE EXCEPTION 'FALLO: anon vacía contactos';
     EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+    IF public.site_config() -> 'identity' IS NULL OR jsonb_typeof(public.site_config() -> 'identity') <> 'object'
+    THEN RAISE EXCEPTION 'FALLO: anon no lee site_config'; END IF;
+    IF public.site_config() -> 'identity' ? 'updated_by' THEN RAISE EXCEPTION 'FALLO: site_config expone updated_by'; END IF;
+    BEGIN UPDATE public.site_identity SET app_name = 'x' WHERE id; RAISE EXCEPTION 'FALLO: anon edita la identidad';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
 
     -- Usuario autenticado sin rol
     PERFORM set_config('role', 'authenticated', true);
@@ -131,6 +148,11 @@ BEGIN
     UPDATE public.listings SET name = 'x' WHERE id = v_pub;
     GET DIAGNOSTICS n = ROW_COUNT;
     IF n <> 0 THEN RAISE EXCEPTION 'FALLO: usuario sin rol edita fichas'; END IF;
+    UPDATE public.site_identity SET app_name = 'x' WHERE id;
+    GET DIAGNOSTICS n = ROW_COUNT;
+    IF n <> 0 THEN RAISE EXCEPTION 'FALLO: usuario sin rol edita la identidad'; END IF;
+    BEGIN DELETE FROM public.site_identity; RAISE EXCEPTION 'FALLO: usuario borra la identidad';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
     IF public.has_role(v_admin, 'admin') THEN RAISE EXCEPTION 'FALLO: has_role permite consultar a otros'; END IF;
 
     BEGIN TRUNCATE TABLE public.listing_contacts; RAISE EXCEPTION 'FALLO: usuario vacía contactos';
@@ -142,11 +164,25 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM public.listing_contacts WHERE listing_id = v_pub) THEN RAISE EXCEPTION 'FALLO: admin no lee contactos'; END IF;
     IF (SELECT count(*) FROM public.listings WHERE id IN (v_pub, v_draft)) <> 2 THEN RAISE EXCEPTION 'FALLO: admin no ve borradores'; END IF;
     PERFORM admin_whatsapp FROM public.site_settings;
+    UPDATE public.site_identity SET app_name = 'Verificación', timezone = 'Europe/Madrid', latitude = 40.4, longitude = -3.7 WHERE id;
+    GET DIAGNOSTICS n = ROW_COUNT;
+    IF n <> 1 THEN RAISE EXCEPTION 'FALLO: admin no edita la identidad'; END IF;
+    IF public.site_config() #>> '{identity,app_name}' <> 'Verificación' THEN RAISE EXCEPTION 'FALLO: site_config no refleja el cambio'; END IF;
+    BEGIN UPDATE public.site_identity SET site_url = 'http://ejemplo.es/' WHERE id; RAISE EXCEPTION 'FALLO: URL no válida aceptada';
+    EXCEPTION WHEN check_violation THEN NULL; END;
+    BEGIN UPDATE public.site_identity SET app_name = '<b>{app}</b>' WHERE id; RAISE EXCEPTION 'FALLO: HTML o llaves aceptados';
+    EXCEPTION WHEN check_violation THEN NULL; END;
+    BEGIN UPDATE public.site_identity SET timezone = 'Marte/Olimpo' WHERE id; RAISE EXCEPTION 'FALLO: zona horaria no válida aceptada';
+    EXCEPTION WHEN check_violation THEN NULL; END;
+    BEGIN UPDATE public.site_identity SET latitude = NULL WHERE id; RAISE EXCEPTION 'FALLO: coordenadas incompletas aceptadas';
+    EXCEPTION WHEN check_violation THEN NULL; END;
+    PERFORM set_config('role', 'postgres', true);
+    IF (SELECT updated_by FROM public.site_identity) IS DISTINCT FROM v_admin THEN RAISE EXCEPTION 'FALLO: updated_by no registra al autor'; END IF;
 
     RAISE EXCEPTION USING ERRCODE = 'PZ001', MESSAGE = 'rollback';
   EXCEPTION WHEN SQLSTATE 'PZ001' THEN NULL;
   END;
 
-  RAISE NOTICE 'VERIFICACIÓN SUPERADA: estructura, ENUM, 47 políticas, funciones, triggers, Storage, permisos, rate limiting y semilla.';
+  RAISE NOTICE 'VERIFICACIÓN SUPERADA: estructura, ENUM, 49 políticas, funciones, triggers, Storage, permisos, rate limiting, identidad y semilla.';
 END
 $verify$;

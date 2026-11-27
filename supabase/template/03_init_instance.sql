@@ -22,6 +22,16 @@
 --  banner_enabled/text no           Aviso superior opcional.
 --  common_labels       no           Etiquetas sugeridas en fichas.
 --  first_admin_email   no           Usuario YA creado en Authentication.
+--
+--  Identidad pública (public.site_identity). Vacío = la web usa el valor de
+--  su instancia compilada. Se puede cambiar después desde /admin.
+--  app_name            no           Nombre de la aplicación (≤ 60).
+--  short_name          no           Nombre corto (≤ 30).
+--  municipality_name   no           Nombre del municipio (≤ 80).
+--  province            no           Provincia (≤ 60).
+--  site_url            no           https://dominio, sin ruta ni barra final.
+--  latitude/longitude  no           Ambas o ninguna; requieren timezone.
+--  timezone            no           Zona IANA, p. ej. Europe/Madrid.
 -- =====================================================================
 DO $init$
 DECLARE
@@ -39,6 +49,22 @@ DECLARE
   v_banner_text         text    := '';
   v_common_labels       text[]  := ARRAY['Pago con tarjeta','A domicilio','Accesible','Terraza','Aparcamiento','Productos locales'];
   v_first_admin_email   text    := '';   -- vacío = no asignar ahora
+  v_app_name             text    := '';
+  v_short_name           text    := '';
+  v_municipality_name    text    := '';
+  v_province             text    := '';
+  v_region               text    := '';
+  v_autonomous_community text    := '';
+  v_demonym_masculine    text    := '';
+  v_demonym_feminine     text    := '';
+  v_site_url             text    := '';
+  v_town_hall_name       text    := '';
+  v_town_hall_address    text    := '';
+  v_town_hall_phone      text    := '';
+  v_town_hall_website    text    := '';
+  v_latitude             numeric := NULL;
+  v_longitude            numeric := NULL;
+  v_timezone             text    := '';
   v_admin_id uuid;
 BEGIN
   IF length(trim(v_hero_title)) = 0 OR length(trim(v_hero_subtitle)) = 0 THEN
@@ -67,6 +93,17 @@ BEGIN
     admin_whatsapp = EXCLUDED.admin_whatsapp, whatsapp_template = EXCLUDED.whatsapp_template,
     collaborator_months = EXCLUDED.collaborator_months, banner_enabled = EXCLUDED.banner_enabled,
     banner_text = EXCLUDED.banner_text, common_labels = EXCLUDED.common_labels;
+
+  -- Las restricciones de la tabla validan cada valor y explican el error.
+  UPDATE public.site_identity SET app_name = trim(v_app_name), short_name = trim(v_short_name),
+    municipality_name = trim(v_municipality_name), province = trim(v_province), region = trim(v_region),
+    autonomous_community = trim(v_autonomous_community), demonym_masculine = trim(v_demonym_masculine),
+    demonym_feminine = trim(v_demonym_feminine), site_url = trim(v_site_url),
+    town_hall_name = trim(v_town_hall_name), town_hall_address = trim(v_town_hall_address),
+    town_hall_phone = trim(v_town_hall_phone), town_hall_website = trim(v_town_hall_website),
+    latitude = v_latitude, longitude = v_longitude, timezone = trim(v_timezone)
+  WHERE id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Falta public.site_identity: ejecuta antes 01_schema.sql'; END IF;
 
   INSERT INTO public.translation_gateway_state (id, blocked, reason)
   VALUES (true, false, '') ON CONFLICT (id) DO NOTHING;

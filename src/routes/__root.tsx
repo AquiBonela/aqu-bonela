@@ -21,9 +21,11 @@ import { BackToTop } from "@/components/BackToTop";
 import { InstallPromptProvider } from "@/components/InstallPrompt";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { getMunicipality, getMunicipalityThemeCss } from "@/config/municipality";
+import { getMunicipality, getMunicipalityThemeCss, getSiteConfigSnapshot, setSiteConfig } from "@/config/municipality";
 import { getPublicEnv } from "@/lib/public-env.functions";
 import { publicEnvScript } from "@/lib/public-env";
+import { getSiteConfig } from "@/lib/site-config.functions";
+import { EMPTY_SITE_CONFIG, siteConfigScript } from "@/lib/site-identity";
 
 // Calculado una vez al cargar el módulo (SSR y navegador): un tema inválido falla de forma explícita.
 const municipalityTheme = getMunicipality().theme;
@@ -94,10 +96,16 @@ function ErrorContent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // Identidad de esta instalación desde su Supabase (caché de 60 s), antes de los loaders y head() de las páginas.
+  // En el navegador ya llega en el HTML (window.__SITE_CONFIG__).
+  beforeLoad: async () => {
+    if (typeof window === "undefined") setSiteConfig(await getSiteConfig());
+  },
   // Configuración pública de Supabase, resuelta en el servidor (bindings o process.env).
   loader: async () => {
-    if (typeof window !== "undefined" && window.__PUBLIC_ENV__) return { publicEnv: window.__PUBLIC_ENV__ };
-    return { publicEnv: await getPublicEnv() };
+    const siteConfig = getSiteConfigSnapshot();
+    if (typeof window !== "undefined" && window.__PUBLIC_ENV__) return { publicEnv: window.__PUBLIC_ENV__, siteConfig };
+    return { publicEnv: await getPublicEnv(), siteConfig };
   },
   staleTime: Infinity,
   head: () => ({
@@ -137,11 +145,14 @@ function ErrorComponent(props: ErrorComponentProps) {
 
 function RootShell({ children }: { children: ReactNode }) {
   const publicEnv = Route.useLoaderData({ select: (d) => d?.publicEnv }) ?? {};
+  const siteConfig = Route.useLoaderData({ select: (d) => d?.siteConfig }) ?? EMPTY_SITE_CONFIG;
   return (
     <html lang="es">
       <head>
         {/* Antes de cualquier script de la app: el cliente Supabase lee esta configuración. */}
         <script id="public-env" dangerouslySetInnerHTML={{ __html: publicEnvScript(publicEnv) }} />
+        {/* La misma identidad que ha usado el servidor, para que el navegador hidrate sin diferencias. */}
+        <script id="site-config" dangerouslySetInnerHTML={{ __html: siteConfigScript(siteConfig) }} />
         <HeadContent />
         {/* Tras la hoja principal: el tema municipal prevalece desde el primer render SSR. */}
         <style id="municipality-theme" dangerouslySetInnerHTML={{ __html: municipalityThemeCss }} />

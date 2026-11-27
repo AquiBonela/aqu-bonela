@@ -6,12 +6,13 @@ import { getMunicipality } from "@/config/municipality";
 
 type Weather = { temp: number; code: number };
 
-// Coordenadas y zona horaria del municipio configurado; sin ellas no se muestra el tiempo.
-const coordinates = getMunicipality().coordinates;
-const PLACE = coordinates ? `latitude=${coordinates.lat}&longitude=${coordinates.lng}` : "";
-const TZ = coordinates ? encodeURIComponent(coordinates.timezone) : "";
-const URL =
-  `https://api.open-meteo.com/v1/forecast?${PLACE}&current=temperature_2m,weather_code&timezone=${TZ}`;
+// Coordenadas y zona horaria del municipio configurado (pueden cambiar desde /admin); sin ellas no se muestra el tiempo.
+function forecastUrl(query: string): string | null {
+  const coordinates = getMunicipality().coordinates;
+  if (!coordinates) return null;
+  const place = `latitude=${coordinates.lat}&longitude=${coordinates.lng}`;
+  return `https://api.open-meteo.com/v1/forecast?${place}&${query}&timezone=${encodeURIComponent(coordinates.timezone)}`;
+}
 
 function iconFor(code: number): { Icon: LucideIcon; label: string } {
   if (code === 0) return { Icon: Sun, label: "Despejado" };
@@ -30,10 +31,11 @@ export function WeatherNow() {
   const [w, setW] = useState<Weather | null>(null);
 
   useEffect(() => {
-    if (!coordinates) return;
+    const url = forecastUrl("current=temperature_2m,weather_code");
+    if (!url) return;
     let alive = true;
     const load = () =>
-      fetch(URL)
+      fetch(url)
         .then((r) => r.json())
         .then((d) => {
           if (alive && d?.current) setW({ temp: Math.round(d.current.temperature_2m), code: d.current.weather_code });
@@ -73,8 +75,6 @@ export function WeatherNow() {
 
 type Day = { date: string; code: number; max: number; min: number; rain: number };
 
-const FORECAST_URL =
-  `https://api.open-meteo.com/v1/forecast?${PLACE}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${TZ}&forecast_days=7`;
 
 function dayName(date: string, i: number, locale: string) {
   if (i === 0) return "Hoy";
@@ -88,7 +88,12 @@ function Forecast() {
   const [days, setDays] = useState<Day[] | null>(null);
   const [error, setError] = useState(false);
   useEffect(() => {
-    fetch(FORECAST_URL)
+    const url = forecastUrl("daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7");
+    if (!url) {
+      setError(true);
+      return;
+    }
+    fetch(url)
       .then((r) => r.json())
       .then((d) => {
         const t = d?.daily;

@@ -1,6 +1,9 @@
 /**
  * Configuración municipal de la instalación.
- * Datos públicos, sin secretos. Seguro para SSR y navegador (solo lee VITE_MUNICIPALITY_ID).
+ * Datos públicos, sin secretos. Seguro para SSR y navegador.
+ * La identidad (nombres, provincia, URL...) se lee de public.site_config() del Supabase de la
+ * instalación y sustituye campo a campo a la instancia compilada (VITE_MUNICIPALITY_ID), que
+ * queda como respaldo. Tema, recursos y contenido siguen en el build.
  * Los datos operativos editables (avisos, titular legal, contacto) siguen en site_settings.
  */
 // La instancia se elige al compilar: ver instances/select.ts.
@@ -14,6 +17,7 @@ import type {
   MunicipalityTheme,
 } from "../../instances/schema";
 import { DEFAULT_MUNICIPALITY_ID } from "../../instances/schema";
+import { EMPTY_SITE_CONFIG, mergeIdentity, readBrowserSiteConfig, type SiteConfig } from "@/lib/site-identity";
 
 export { DEFAULT_MUNICIPALITY_ID };
 export type {
@@ -50,8 +54,36 @@ export function resolveMunicipality(
   return found;
 }
 
-/** Configuración de la instalación actual (la instancia compilada). */
+// Un despliegue sirve a un único municipio: este estado nunca contiene datos de otra instalación.
+let siteConfig: SiteConfig | undefined;
+let current: MunicipalityConfig = instance;
+
+/** Aplica la configuración leída de Supabase (servidor) o recibida en el HTML (navegador). */
+export function setSiteConfig(config: SiteConfig): void {
+  siteConfig = config;
+  current = mergeIdentity(instance, config.identity);
+}
+
+function ensureBrowserConfig(): void {
+  if (siteConfig !== undefined) return;
+  const fromPage = readBrowserSiteConfig();
+  if (fromPage) setSiteConfig(fromPage);
+}
+
+/** Configuración aplicada ahora mismo, para entregarla al navegador. */
+export function getSiteConfigSnapshot(): SiteConfig {
+  ensureBrowserConfig();
+  return siteConfig ?? EMPTY_SITE_CONFIG;
+}
+
+/** Configuración de la instalación actual: identidad de Supabase sobre la instancia compilada. */
 export function getMunicipality(): MunicipalityConfig {
+  ensureBrowserConfig();
+  return current;
+}
+
+/** Solo la instancia compilada, sin la identidad de Supabase. */
+export function getBuildMunicipality(): MunicipalityConfig {
   return instance;
 }
 
@@ -61,12 +93,12 @@ export function getInstanceContent(): InstanceContent {
 }
 
 /** Valores de {app}, {municipio}, {nombreCorto} y {provincia} en los textos. */
-export function brandParams(m: MunicipalityConfig = instance): Record<string, string> {
+export function brandParams(m: MunicipalityConfig = getMunicipality()): Record<string, string> {
   return { app: m.appName, municipio: m.name, nombreCorto: m.shortName, provincia: m.province };
 }
 
 /** Sustituye las variables de marca en textos que no pasan por las traducciones (p. ej. metadatos). */
-export function brand(text: string, m: MunicipalityConfig = instance): string {
+export function brand(text: string, m: MunicipalityConfig = getMunicipality()): string {
   const params = brandParams(m);
   return text.replace(/\{(app|municipio|nombreCorto|provincia)\}/g, (match, name: string) => params[name] ?? match);
 }
@@ -79,7 +111,7 @@ function escapeRegExp(value: string): string {
  * Inverso de brand(): vuelve a las variables a partir de los valores de la instancia,
  * para localizar en los catálogos un texto ya personalizado.
  */
-export function unbrand(text: string, m: MunicipalityConfig = instance): string {
+export function unbrand(text: string, m: MunicipalityConfig = getMunicipality()): string {
   const pairs: [string, string][] = [
     [`${m.name} (${m.province})`, "{municipio} ({provincia})"],
     [m.appName, "{app}"],
