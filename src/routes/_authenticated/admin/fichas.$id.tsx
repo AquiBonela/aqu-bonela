@@ -28,9 +28,10 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
   AVAILABILITY_OPTIONS,
-  reservedTags,
+  availabilityTags,
+  hoursHidden,
+  listingTags,
   searchTags,
-  withAvailability,
 } from "@/lib/listing-availability";
 import { deleteListing } from "@/lib/delete-listing";
 import type { Json } from "@/integrations/supabase/types";
@@ -111,6 +112,8 @@ type Form = {
   availability: string[];
   status: Status;
   hours: Hour[];
+  /** El horario se ve en la ficha pública (si no, se guarda pero los visitantes no lo reciben). */
+  show_hours: boolean;
 };
 
 const empty: Form = {
@@ -157,6 +160,7 @@ const empty: Form = {
   availability: [],
   status: "borrador",
   hours: [],
+  show_hours: true,
 };
 
 const normalizeUrl = (u: string) => {
@@ -289,7 +293,8 @@ function EditPage() {
       highlighted: isFeatured(l),
       featured_until: l.featured_until,
       urgent_24h: l.urgent_24h,
-      availability: reservedTags(l.tags),
+      availability: availabilityTags(l.tags),
+      show_hours: !hoursHidden(l.tags),
       status: l.status,
       hours: data.hours.map((h) => ({
         ...h,
@@ -339,7 +344,7 @@ function EditPage() {
       slug: f.slug || slugify(f.name),
       short_description: f.short_description.trim(),
       description: f.description,
-      tags: withAvailability(list(f.tags, /,/), f.availability),
+      tags: listingTags(list(f.tags, /,/), f.availability, f.show_hours),
       translations: prepared as unknown as Json,
       featured: f.highlighted,
       featured_until,
@@ -907,6 +912,12 @@ function EditPage() {
         >
           <Plus className="h-4 w-4" /> <Text text="Añadir tramo" />{" "}
         </button>
+        <Toggle
+          label="Mostrar el horario en la ficha pública"
+          hint="Si lo desactivas, el horario se guarda pero los visitantes no lo ven. El titular también puede decidirlo en el enlace de revisión."
+          checked={f.show_hours}
+          onChange={(v) => set("show_hours", v)}
+        />
       </Section>
 
       <Section title={tr("5. Imágenes y distinciones")}>

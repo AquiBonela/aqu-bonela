@@ -93,4 +93,59 @@ DO $$ BEGIN
  END IF;
 END $$;
 RESET ROLE;
+
+-- Groundwork (admin) controls hours visibility from the panel: it creates listings with visible
+-- and hidden hours, then switches both. Visitors only ever receive the authorised hours.
+-- Skipped when the installation has no admin yet.
+SELECT set_config('request.jwt.claim.sub', coalesce(nullif(current_setting('test.dir_admin', true), ''), 'ad000000-0000-4000-8000-000000000299'), true);
+SET LOCAL ROLE authenticated;
+DO $$ BEGIN
+ IF coalesce(current_setting('test.dir_admin', true), '') <> '' THEN
+  INSERT INTO public.listings (id, slug, type, category_id, name, status, tags) VALUES
+   ('ad000000-0000-4000-8000-000000000211', 'rls-dir-admin-visible', 'comercio', current_setting('test.dir_category')::uuid,
+    'Regression admin visible', 'publicada', ARRAY['pan']),
+   ('ad000000-0000-4000-8000-000000000212', 'rls-dir-admin-hidden', 'comercio', current_setting('test.dir_category')::uuid,
+    'Regression admin hidden', 'publicada', ARRAY['pan', '__ocultar_horario']);
+  INSERT INTO public.listing_hours (listing_id, weekday, opens, closes) VALUES
+   ('ad000000-0000-4000-8000-000000000211', 1, '09:00', '14:00'),
+   ('ad000000-0000-4000-8000-000000000212', 1, '09:00', '14:00');
+ END IF;
+END $$;
+RESET ROLE;
+SET LOCAL ROLE anon;
+DO $$ BEGIN
+ IF coalesce(current_setting('test.dir_admin', true), '') <> '' THEN
+  IF (SELECT count(*) FROM public.listing_hours WHERE listing_id = 'ad000000-0000-4000-8000-000000000211') <> 1
+  THEN RAISE EXCEPTION 'Visible hours created by the admin must reach visitors'; END IF;
+  IF EXISTS (SELECT 1 FROM public.listing_hours WHERE listing_id = 'ad000000-0000-4000-8000-000000000212')
+  THEN RAISE EXCEPTION 'Hidden hours created by the admin must not reach visitors'; END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.public_listings WHERE id = 'ad000000-0000-4000-8000-000000000212' AND hours_hidden AND tags = ARRAY['pan'])
+  THEN RAISE EXCEPTION 'The public view must flag hidden hours without exposing the reserved tag'; END IF;
+ END IF;
+END $$;
+RESET ROLE;
+
+SET LOCAL ROLE authenticated;
+DO $$ BEGIN
+ IF coalesce(current_setting('test.dir_admin', true), '') <> '' THEN
+  UPDATE public.listings SET tags = array_append(tags, '__ocultar_horario') WHERE id = 'ad000000-0000-4000-8000-000000000211';
+  IF NOT FOUND THEN RAISE EXCEPTION 'The admin must be able to hide hours'; END IF;
+  UPDATE public.listings SET tags = array_remove(tags, '__ocultar_horario') WHERE id = 'ad000000-0000-4000-8000-000000000212';
+  IF NOT FOUND THEN RAISE EXCEPTION 'The admin must be able to show hours again'; END IF;
+  IF (SELECT count(*) FROM public.listing_hours
+      WHERE listing_id IN ('ad000000-0000-4000-8000-000000000211', 'ad000000-0000-4000-8000-000000000212')) <> 2
+  THEN RAISE EXCEPTION 'The admin must keep reading every hour, visible or hidden'; END IF;
+ END IF;
+END $$;
+RESET ROLE;
+SET LOCAL ROLE anon;
+DO $$ BEGIN
+ IF coalesce(current_setting('test.dir_admin', true), '') <> '' THEN
+  IF EXISTS (SELECT 1 FROM public.listing_hours WHERE listing_id = 'ad000000-0000-4000-8000-000000000211')
+  THEN RAISE EXCEPTION 'Hours hidden by the admin must stop reaching visitors'; END IF;
+  IF (SELECT count(*) FROM public.listing_hours WHERE listing_id = 'ad000000-0000-4000-8000-000000000212') <> 1
+  THEN RAISE EXCEPTION 'Hours shown again by the admin must reach visitors'; END IF;
+ END IF;
+END $$;
+RESET ROLE;
 ROLLBACK;
