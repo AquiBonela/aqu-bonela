@@ -5,13 +5,13 @@ INSERT INTO public.translation_gateway_state(id, blocked, reason) VALUES(true,tr
 ON CONFLICT(id) DO UPDATE SET blocked=true, reason='Regression block';
 SET LOCAL ROLE anon;
 DO $$ BEGIN
+ -- Either RLS hides the row or the privilege is missing: both keep visitors out.
  BEGIN
-  PERFORM 1 FROM public.translation_gateway_state;
-  RAISE EXCEPTION 'Anon must not read translation state';
+  IF EXISTS (SELECT 1 FROM public.translation_gateway_state) THEN RAISE EXCEPTION 'Anon must not read translation state'; END IF;
  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
  BEGIN
   UPDATE public.translation_gateway_state SET blocked=false WHERE id=true;
-  RAISE EXCEPTION 'Anon must not update translation state';
+  IF FOUND THEN RAISE EXCEPTION 'Anon must not update translation state'; END IF;
  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
 END $$;
 RESET ROLE;

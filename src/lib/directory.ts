@@ -37,7 +37,8 @@ export type Listing = {
   translations?: unknown;
   category_id: string | null;
   featured: boolean;
-  featured_until: string | null;
+  /** Solo en las fichas leídas por el administrador; la vista pública no la expone. */
+  featured_until?: string | null;
   tags: string[];
   public_phone: string | null;
   public_whatsapp: string | null;
@@ -64,16 +65,15 @@ export const directoryQuery = queryOptions({
         .select("hero_title,hero_subtitle,banner_enabled,banner_text")
         .maybeSingle(),
       supabase
-        .from("listings")
+        .from("public_listings")
         .select(
-          "id,slug,type,name,description,short_description,translations,category_id,featured,featured_until,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
+          "id,slug,type,name,description,short_description,translations,category_id,featured,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
         )
-        .eq("status", "publicada")
         .order("name"),
     ]);
     if (cats.error) throw new Error(cats.error.message);
     if (list.error) throw new Error(list.error.message);
-    const listings = list.data as Listing[];
+    const listings = list.data as unknown as Listing[];
     // Firma en lote solo las cabeceras que se ven (fichas colaboradoras con imagen subida).
     const toSign = listings.filter((l) => l.cover_path && isFeatured(l));
     if (toSign.length) {
@@ -110,7 +110,15 @@ export function normalize(text: string) {
 }
 
 /** Destacada solo mientras no haya caducado (1 mes). */
-export function isFeatured(l: Pick<Listing, "featured" | "featured_until">, now = new Date()) {
+/**
+ * Destacada solo mientras no haya caducado. Las fichas de la vista pública llegan sin
+ * fecha de caducidad y con `featured` ya calculado por la base de datos.
+ */
+export function isFeatured(
+  l: { featured: boolean; featured_until?: string | null },
+  now = new Date(),
+) {
+  if (l.featured_until === undefined) return l.featured;
   return l.featured && !!l.featured_until && new Date(l.featured_until) > now;
 }
 

@@ -91,6 +91,40 @@ jobs:
           RATE_LIMIT_SECRET: ci-placeholder-not-a-secret-ci-placeholder
           TURNSTILE_SITE_KEY: ci-placeholder
 
+  database:
+    name: Base de datos (plantilla, migraciones y pruebas SQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Dos Postgres de Supabase desechables: nunca se usa una base real.
+    services:
+      db_a:
+        image: supabase/postgres:17.12.0.005
+        env:
+          POSTGRES_PASSWORD: ci-postgres-not-a-secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -h localhost"
+          --health-interval 5s --health-timeout 5s --health-retries 60
+      db_b:
+        image: supabase/postgres:17.12.0.005
+        env:
+          POSTGRES_PASSWORD: ci-postgres-not-a-secret
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -h localhost"
+          --health-interval 5s --health-timeout 5s --health-retries 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Plantilla limpia y migraciones nuevas, con 04_verify y supabase/tests
+        run: bash scripts/ci-database.sh
+        env:
+          PGPASSWORD: ci-postgres-not-a-secret
+          BASE_REF: origin/main
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

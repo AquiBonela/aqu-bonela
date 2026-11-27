@@ -863,7 +863,40 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      public_listings: {
+        Row: {
+          activity: string | null;
+          category_id: string | null;
+          cover_path: string | null;
+          cover_url: string | null;
+          description: string | null;
+          featured: boolean | null;
+          gallery_urls: string[] | null;
+          hours_hidden: boolean | null;
+          id: string | null;
+          labels: string[] | null;
+          name: string | null;
+          public_address: string | null;
+          public_email: string | null;
+          public_facebook: string | null;
+          public_instagram: string | null;
+          public_linkedin: string | null;
+          public_phone: string | null;
+          public_phone_2: string | null;
+          public_tiktok: string | null;
+          public_website: string | null;
+          public_whatsapp: string | null;
+          public_x_twitter: string | null;
+          public_youtube: string | null;
+          short_description: string | null;
+          slug: string | null;
+          tags: string[] | null;
+          translations: Json | null;
+          type: Database["public"]["Enums"]["listing_type"] | null;
+          urgent_24h: boolean | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       can_manage_identity: { Args: never; Returns: boolean };

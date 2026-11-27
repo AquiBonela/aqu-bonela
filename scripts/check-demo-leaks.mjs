@@ -87,6 +87,8 @@ if (!existsSync(SERVER_ENTRY)) {
 
 // Supabase simulado: datos vacíos, sin sesión ni archivos; site_config() según el escenario.
 let siteConfigCalls = 0;
+/** Consultas a la tabla listings: la web pública solo debe leer la vista public_listings. */
+const listingsTableRequests = [];
 const supabase = createServer((req, res) => {
   const json = (status, body) => {
     res.writeHead(status, { "content-type": "application/json" });
@@ -100,6 +102,7 @@ const supabase = createServer((req, res) => {
       }, 10_000);
     return json(200, { identity: SCENARIO === "identidad" ? TEST_IDENTITY : EMPTY_IDENTITY });
   }
+  if (/^\/rest\/v1\/listings(\?|\/|$)/.test(req.url ?? "")) listingsTableRequests.push(req.url);
   if (req.url?.startsWith("/rest/v1/")) return json(200, []);
   if (req.url?.startsWith("/auth/v1/")) return json(200, {});
   return json(404, { message: "not found" });
@@ -205,6 +208,10 @@ try {
   // La caché evita una consulta por página: en un recorrido de pocos segundos bastan muy pocas.
   console.log(`Consultas a site_config(): ${siteConfigCalls}`);
   if (siteConfigCalls === 0) errors.push("El servidor no consultó site_config()");
+  if (listingsTableRequests.length)
+    errors.push(
+      `La web consultó la tabla listings en lugar de public_listings: ${listingsTableRequests.join(", ")}`,
+    );
   if (siteConfigCalls > 3)
     errors.push(`Demasiadas consultas a site_config() (${siteConfigCalls}): la caché no funciona`);
 

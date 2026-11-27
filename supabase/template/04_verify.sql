@@ -36,7 +36,7 @@ BEGIN
 
   -- ---------- 3. Políticas, funciones, triggers ----------
   SELECT count(*) INTO n FROM pg_policies WHERE schemaname = 'public';
-  IF n <> 41 THEN RAISE EXCEPTION 'FALLO: políticas public = % (esperado 41)', n; END IF;
+  IF n <> 40 THEN RAISE EXCEPTION 'FALLO: políticas public = % (esperado 40)', n; END IF;
   SELECT count(*) INTO n FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects'
     AND (coalesce(qual,'') || coalesce(with_check,'')) ~ '(listing-photos|procedure-images)';
   IF n <> 8 THEN RAISE EXCEPTION 'FALLO: políticas de Storage = % (esperado 8)', n; END IF;
@@ -72,6 +72,18 @@ BEGIN
   OR has_table_privilege('anon', 'public.suggestions', 'INSERT')
   OR has_table_privilege('authenticated', 'public.listing_reports', 'INSERT')
   OR has_table_privilege('anon', 'private.form_rate_limits', 'SELECT')
+  OR has_table_privilege('anon', 'public.listings', 'SELECT')
+  OR NOT has_table_privilege('anon', 'public.public_listings', 'SELECT')
+  OR has_table_privilege('anon', 'public.listings', 'INSERT') OR has_table_privilege('anon', 'public.listings', 'UPDATE')
+  OR has_table_privilege('anon', 'public.listings', 'DELETE')
+  OR has_table_privilege('anon', 'public.listing_hours', 'INSERT') OR has_table_privilege('anon', 'public.listing_hours', 'UPDATE')
+  OR has_table_privilege('anon', 'public.listing_hours', 'DELETE')
+  OR has_table_privilege('anon', 'public.listing_photos', 'INSERT') OR has_table_privilege('anon', 'public.listing_photos', 'UPDATE')
+  OR has_table_privilege('anon', 'public.listing_photos', 'DELETE')
+  OR has_table_privilege('anon', 'public.listing_activities', 'INSERT') OR has_table_privilege('anon', 'public.listing_activities', 'UPDATE')
+  OR has_table_privilege('anon', 'public.listing_activities', 'DELETE')
+  OR NOT has_table_privilege('anon', 'public.listing_hours', 'SELECT')
+  OR NOT has_table_privilege('authenticated', 'public.listings', 'UPDATE')
   OR NOT has_column_privilege('anon', 'public.site_identity', 'app_name', 'SELECT')
   OR has_column_privilege('anon', 'public.site_identity', 'updated_by', 'SELECT')
   OR has_any_column_privilege('anon', 'public.site_identity', 'UPDATE')
@@ -94,6 +106,9 @@ BEGIN
   THEN RAISE EXCEPTION 'FALLO: semilla universal incompleta'; END IF;
   IF (SELECT count(*) FROM public.site_settings) <> 1 THEN RAISE EXCEPTION 'FALLO: falta site_settings (03)'; END IF;
   IF (SELECT count(*) FROM public.site_identity) <> 1 THEN RAISE EXCEPTION 'FALLO: falta site_identity (01)'; END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'public_listings'
+    AND column_name IN ('featured_until','created_at','updated_at','published_at','home_service','service_area','status'))
+  THEN RAISE EXCEPTION 'FALLO: public_listings expone columnas internas'; END IF;
 
   -- ---------- 7. Pruebas reales con roles (se deshacen) ----------
   BEGIN
@@ -105,6 +120,11 @@ BEGIN
     INSERT INTO public.listings (slug, type, category_id, name, status) VALUES
       ('verify-draft-' || v_admin, 'comercio', v_cat, 'Verify draft', 'borrador') RETURNING id INTO v_draft;
     INSERT INTO public.listing_contacts (listing_id, phone, show_phone, owner_contact) VALUES (v_pub, '600000000', false, 'privado');
+    -- Horario que el titular ha ocultado y traducción con memoria editorial.
+    INSERT INTO public.listing_hours (listing_id, weekday, opens, closes) VALUES (v_pub, 1, '09:00', '14:00');
+    UPDATE public.listings SET tags = ARRAY['pan de leña', '__ocultar_horario'], featured = true, featured_until = now() + interval '1 day',
+      translations = '{"en":{"content":{"description":"Bread"},"source":{"description":"Pan"},"manual":true,"glossary":[]}}'::jsonb
+    WHERE id = v_pub;
 
     -- Trigger de contacto: teléfono no autorizado no se publica
     IF (SELECT public_phone FROM public.listings WHERE id = v_pub) IS NOT NULL THEN RAISE EXCEPTION 'FALLO: sync_public_contact'; END IF;
@@ -120,7 +140,17 @@ BEGIN
     -- Visitante anónimo
     PERFORM set_config('role', 'anon', true);
     PERFORM set_config('request.jwt.claims', '{"role":"anon"}', true);
-    IF (SELECT count(*) FROM public.listings WHERE id IN (v_pub, v_draft)) <> 1 THEN RAISE EXCEPTION 'FALLO: anon ve borradores'; END IF;
+    IF (SELECT count(*) FROM public.public_listings WHERE id IN (v_pub, v_draft)) <> 1 THEN RAISE EXCEPTION 'FALLO: anon ve borradores'; END IF;
+    BEGIN PERFORM 1 FROM public.listings; RAISE EXCEPTION 'FALLO: anon lee listings directamente';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+    IF EXISTS (SELECT 1 FROM public.listing_hours WHERE listing_id = v_pub) THEN RAISE EXCEPTION 'FALLO: anon ve un horario oculto'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.public_listings WHERE id = v_pub AND featured AND tags = ARRAY['pan de leña'] AND hours_hidden
+      AND translations = '{"en":{"content":{"description":"Bread"}}}'::jsonb)
+    THEN RAISE EXCEPTION 'FALLO: public_listings no calcula destacado, etiquetas o traducciones'; END IF;
+    PERFORM set_config('role', 'postgres', true);
+    UPDATE public.listings SET tags = '{}' WHERE id = v_pub;
+    PERFORM set_config('role', 'anon', true);
+    IF NOT EXISTS (SELECT 1 FROM public.listing_hours WHERE listing_id = v_pub) THEN RAISE EXCEPTION 'FALLO: anon no ve un horario publicado'; END IF;
     IF EXISTS (SELECT 1 FROM public.listing_contacts) THEN RAISE EXCEPTION 'FALLO: anon lee contactos privados'; END IF;
     BEGIN PERFORM admin_whatsapp FROM public.site_settings; RAISE EXCEPTION 'FALLO: anon lee admin_whatsapp';
     EXCEPTION WHEN insufficient_privilege THEN NULL; END;
@@ -183,6 +213,6 @@ BEGIN
   EXCEPTION WHEN SQLSTATE 'PZ001' THEN NULL;
   END;
 
-  RAISE NOTICE 'VERIFICACIÓN SUPERADA: estructura, ENUM, 49 políticas, funciones, triggers, Storage, permisos, rate limiting, identidad y semilla.';
+  RAISE NOTICE 'VERIFICACIÓN SUPERADA: estructura, ENUM, 48 políticas, funciones, triggers, Storage, permisos, rate limiting, identidad y semilla.';
 END
 $verify$;
