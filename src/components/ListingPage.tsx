@@ -49,7 +49,9 @@ export type ReviewField =
   | "x_twitter"
   | "instagram"
   | "tiktok"
-  | "hours";
+  | "hours"
+  | "website"
+  | "service_area";
 export type ReviewControls = {
   show: Record<ReviewField, boolean>;
   onToggle: (f: ReviewField, v: boolean) => void;
@@ -138,6 +140,7 @@ export function ListingPage({
       label: "Web",
       value: listing.public_website,
       href: websiteUrl(listing.public_website),
+      field: "website",
     });
   if (listing.public_linkedin)
     contact.push({
@@ -323,8 +326,9 @@ export function ListingPage({
               <Text
                 text={listing.public_home_service ? "Servicio a domicilio" : "Zona de servicio"}
               />
+              <Toggle review={review} field="service_area" label={tr("servicio a domicilio")} />
             </h2>
-            {serviceArea && <p className="mt-2 text-sm">{serviceArea}</p>}
+            {serviceArea && <p className={`mt-2 text-sm ${dim("service_area")}`}>{serviceArea}</p>}
           </section>
         )}
 
