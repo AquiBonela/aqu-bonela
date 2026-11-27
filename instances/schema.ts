@@ -27,7 +27,7 @@ export interface MunicipalityConfig {
 }
 
 /**
- * Recursos gráficos del municipio. Los de src/assets son URLs resueltas por Vite;
+ * Recursos gráficos del municipio. Los de assets/ de la instancia son URLs resueltas por Vite;
  * los de public/ son rutas absolutas servidas tal cual.
  */
 export interface MunicipalityAssets {

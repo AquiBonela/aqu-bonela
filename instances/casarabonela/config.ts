@@ -1,8 +1,8 @@
 /** Instancia Aquí Bonela (Casarabonela). Solo datos públicos. */
-import casarabonelaLogoHome from "@/assets/logo-menu.webp";
-import casarabonelaLogoAdmin from "@/assets/logo-2.webp";
-import casarabonelaLogoText from "@/assets/logo-texto.webp";
-import casarabonelaHero from "@/assets/hero-casarabonela.jpg";
+import casarabonelaLogoHome from "./assets/logo-menu.webp";
+import casarabonelaLogoAdmin from "./assets/logo-2.webp";
+import casarabonelaLogoText from "./assets/logo-texto.webp";
+import casarabonelaHero from "./assets/hero-casarabonela.jpg";
 import type { MunicipalityConfig } from "../schema";
 
 const instance: MunicipalityConfig = {
