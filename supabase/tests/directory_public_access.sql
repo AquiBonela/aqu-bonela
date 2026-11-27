@@ -38,6 +38,14 @@ SELECT set_config('test.dir_activities',
 SET LOCAL ROLE anon;
 DO $$ BEGIN
  BEGIN
+  INSERT INTO public.listing_hours (listing_id, weekday, opens, closes) VALUES ('ad000000-0000-4000-8000-000000000201', 2, '09:00', '10:00');
+  RAISE EXCEPTION 'Anon must not write listing hours';
+ EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+ BEGIN
+  UPDATE public.listings SET name = 'Anon' WHERE slug = 'rls-dir-visible';
+  RAISE EXCEPTION 'Anon must not update listings';
+ EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+ BEGIN
   PERFORM 1 FROM public.listings;
   RAISE EXCEPTION 'Anon must not read public.listings';
  EXCEPTION WHEN insufficient_privilege THEN NULL; END;

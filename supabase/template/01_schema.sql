@@ -913,6 +913,12 @@ GRANT SELECT ON public.public_listings TO anon, authenticated, service_role;
 DROP POLICY IF EXISTS "Public reads published listings" ON public.listings;
 REVOKE SELECT ON public.listings FROM anon;
 
+-- Defensa adicional: RLS ya impedía a los visitantes escribir en las tablas de fichas;
+-- además se retiran esos permisos. Conservan solo la lectura que la web necesita.
+-- authenticated no cambia: el panel de administración los usa y RLS los limita al rol admin.
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+  ON public.listings, public.listing_hours, public.listing_photos, public.listing_activities FROM anon;
+
 -- 3. Políticas que comprobaban listings: ahora comprueban la vista pública.
 DROP POLICY IF EXISTS "Public reads activities of active categories" ON public.activities;
 CREATE POLICY "Public reads activities of active categories" ON public.activities AS PERMISSIVE FOR SELECT TO anon, authenticated
