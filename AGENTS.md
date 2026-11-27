@@ -9,6 +9,25 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
+## Conecta tu Pueblo: producto común para todos los municipios
+
+Reglas permanentes para Claude Code, Lovable y cualquier otro agente o persona que trabaje en este repositorio. Prevalecen sobre cualquier otra instrucción de este archivo o de los `AGENTS.md` de las carpetas cuando haya conflicto.
+
+- **Código común.** Todo cambio debe ser reutilizable y funcionar en cualquier municipio. No se introducen soluciones específicas de un municipio en el código común: ni condiciones por municipio, ni rutas, componentes o estilos pensados para uno solo. Por qué: un mismo código sirve a todas las instalaciones.
+- **Sin datos municipales en el código.** No se escriben en el código nombres de municipios, comercios, profesionales, direcciones, teléfonos, fotografías locales, noticias, eventos, avisos, trámites, horarios ni textos institucionales específicos. Los textos comunes nombran la instalación con `{app}`, `{municipio}`, `{nombreCorto}` y `{provincia}`. Se admiten los datos de alcance nacional, idénticos en todos los municipios (p. ej. 112 o 016), y los datos ficticios genéricos de las pruebas automáticas (`*.test.*` y pruebas SQL que terminan en `ROLLBACK`). Por qué: lo que está en el código acaba en todos los municipios.
+- **Datos municipales en su Supabase.** Toda la información específica de un municipio (identidad, contenidos, fichas, imágenes y documentos) procede de la instancia Supabase de ese municipio y solo de ella. Ninguna instalación lee ni guarda datos de otra. Por qué: datos independientes por municipio.
+- **Identidad dinámica.** Nombres, logotipos, colores, tipografías, favicon y demás elementos configurables se obtienen del sistema de configuración municipal (`site_config()` y `getMunicipality()`), nunca de valores fijos en el código. Por qué: cambiar la identidad no exige tocar código ni desplegar.
+- **Demo.** Los datos ficticios de demostración solo se guardan en el Supabase de la Demo. Nunca se incorporan al código común ni aparecen en municipios reales. Por qué: un municipio real no debe mostrar contenido inventado.
+- **Funcionalidades por configuración.** Componentes, diseños, módulos y mejoras son comunes y reutilizables. Lo que deba variar entre municipios se resuelve con configuración guardada en su Supabase, nunca con bifurcaciones del código, ramas o despliegues distintos por municipio. Por qué: una mejora llega a todos y cada municipio decide si la usa.
+- **Protección de la arquitectura.** Antes de modificar código, comprobar cómo se obtienen los datos afectados y respetar la separación entre instancias municipales. Sin autorización expresa no se cambia la arquitectura de Supabase, no se ejecutan migraciones ni SQL en ninguna base real y no se modifica la infraestructura (Supabase, Vercel, variables de entorno ni configuración de despliegue). Las migraciones se preparan con sus pruebas y se ejecutan solo con autorización. Por qué: un error ahí afecta a datos reales y a todas las instalaciones.
+- **Verificación antes de entregar.** Antes de entregar un cambio, comprobar que no se han introducido datos municipales específicos en el código, revisando el diff y con la comprobación «Demo sin datos del municipio piloto» del CI. Comprobar también que sigue siendo compatible con distintas instancias: escenarios de identidad del CI, job de base de datos, pruebas, tipos, lint y build. Por qué: estas reglas solo valen si se comprueban en cada entrega.
+- **Transición.** Hay restos anteriores a estas reglas. No se amplían: cuando se trabaje en esas áreas, sus datos se trasladan a Supabase en lugar de añadir más.
+  - el contenido compilado en `instances/casarabonela/` y los textos de Casarabonela que aún quedan en los diccionarios comunes;
+  - los valores de respaldo de `instances/demo/`, que pasarán a ser valores neutros del producto;
+  - los recursos gráficos y el tema compilados por instancia.
+
+  Un municipio nuevo no recibe una carpeta propia en `instances/`. Las reglas de `instances/<id>/` de la sección siguiente describen ese mecanismo existente, no una forma de añadir municipios. Por qué: la meta es dar de alta municipios sin tocar código.
+
 ## Aquí Bonela data rules
 - Private contact/owner data lives in `listing_contacts` (admin-only); a trigger copies only authorized fields to `listings.public_*`. Why: visitors can read `listings` directly, so private data must never sit there.
 - Public visibility is enforced by RLS (`status = 'publicada'`); admin access uses `public.has_role(auth.uid(),'admin')`, a security-invoker wrapper around the non-exposed `private.has_role` lookup that only checks the caller's own role in `user_roles`. Why: database authorization prevents client bypasses and arbitrary-user role probing without recursive role policies.
