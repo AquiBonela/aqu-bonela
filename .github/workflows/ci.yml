@@ -71,12 +71,15 @@ jobs:
             exit 1
           fi
           grep -q 'no existe la instancia "no-existe"' build-no-existe.log || { cat build-no-existe.log; exit 1; }
-      - name: Demo sin datos del municipio piloto
-        # Compila la demo como servidor Node, la arranca con un Supabase simulado
-        # (listas vacías, sin base real) y busca términos del piloto en sus páginas.
+      - name: Demo sin datos del municipio piloto e identidad en tiempo de ejecución
+        # Compila la demo como servidor Node y la arranca con un Supabase simulado
+        # (sin base real) en tres escenarios: sin identidad configurada, con otra
+        # identidad (debe verse sin desplegar) y con Supabase sin responder.
         run: |
           bun run build
           node scripts/check-demo-leaks.mjs
+          LEAK_SCENARIO=identidad node scripts/check-demo-leaks.mjs
+          LEAK_SCENARIO=caido node scripts/check-demo-leaks.mjs
         env:
           VITE_MUNICIPALITY_ID: demo
           NITRO_PRESET: node-server

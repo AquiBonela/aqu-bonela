@@ -93,7 +93,7 @@ bun run lint                    # ESLint + Prettier (hoy falla por formato)
 
 | Variable | Tipo | Uso |
 |---|---|---|
-| `VITE_MUNICIPALITY_ID` | Pública | Municipio de la instalación (carpeta de `instances/`). Si está vacía se usa `demo`, un municipio ficticio; un valor sin carpeta hace fallar la compilación. |
+| `VITE_MUNICIPALITY_ID` | Pública | Instancia compilada (carpeta de `instances/`): tema, recursos, contenido y valores de respaldo de la identidad. Si está vacía se usa `demo`, un municipio ficticio; un valor sin carpeta hace fallar la compilación. La identidad (nombres, provincia, URL...) se configura en `public.site_identity` del Supabase de la instalación. |
 | `VITE_SUPABASE_URL`, `SUPABASE_URL` | Pública | URL del proyecto Supabase. |
 | `VITE_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PUBLISHABLE_KEY` | Pública | Clave publicable. |
 | `VITE_SUPABASE_PROJECT_ID` | Pública | Referencia del proyecto. |
@@ -115,12 +115,16 @@ El procedimiento detallado está en **[supabase/template/README.md](supabase/tem
 
 1. Crear `instances/<id>/config.ts` (y sus recursos en `instances/<id>/assets/`): nombre, coordenadas, `siteUrl`, datos institucionales, recursos y tema. El tema se valida y lo comprueba `municipality.test.ts`.
 2. Crear un proyecto Supabase vacío y ejecutar `01_schema.sql` y `02_seed_universal.sql`.
-3. Crear el primer administrador en Supabase Auth y ejecutar `03_init_instance.sql`, que incluye los datos `legal_*` del titular.
+3. Crear el primer administrador en Supabase Auth y ejecutar `03_init_instance.sql`, que incluye los datos `legal_*` del titular y la identidad pública (nombres, provincia, URL...).
 4. Ejecutar `04_verify.sql`, que debe terminar con `VERIFICACIÓN SUPERADA`.
 5. Configurar las variables del apartado 5, el dominio y un widget de Turnstile para ese dominio.
 
+**Identidad en tiempo de ejecución.** Nombres, provincia, región, gentilicio, URL, Ayuntamiento y coordenadas se leen de `public.site_identity` (función `public.site_config()`) del Supabase de cada instalación. Un cambio llega a los visitantes en un minuto como máximo, sin desplegar. Un campo vacío usa el valor de la instancia compilada; si Supabase no responde (corte a 1,5 s), se usa el último valor bueno durante 24 h y, si no lo hay, el compilado.
+
 **Limitaciones actuales** (roadmap, Bloque A, Prioridad 4). Iconos, manifiesto, contenido local y nombres ya son propios de cada instancia, y una sección sin datos se oculta. Todavía:
 
+- tema, logotipos, imágenes, favicon, manifiesto y `robots.txt` siguen en `instances/<id>/` (fases siguientes);
+- la identidad aún no se edita desde `/admin`: se cambia con `03_init_instance.sql` o en SQL Editor;
 - los diccionarios comunes conservan textos de Casarabonela (Descubre, portada), que viajan en el JavaScript aunque no se muestren;
 - los textos legales son los del piloto, con el nombre de cada instancia, y necesitan revisión jurídica;
 - `supabase/config.toml` apunta a un proyecto concreto.
