@@ -13,7 +13,7 @@ El objetivo es que cada municipio disponga de un portal con identidad visual, do
 | | Qué es |
 |---|---|
 | **Conecta tu Pueblo** | Producto común: código, funcionalidades, esquema de base de datos y plantilla de instalación. Lo desarrolla y mantiene Groundwork. |
-| **Aquí Bonela** | Portal de **Casarabonela** (Málaga), primer municipio piloto. Es hoy la única entrada registrada en `src/config/municipality.ts`. |
+| **Aquí Bonela** | Portal de **Casarabonela** (Málaga), primer municipio piloto. Es hoy la única instancia, en `instances/casarabonela/`. |
 
 Gran parte del repositorio sigue siendo específica del piloto:
 
@@ -67,7 +67,8 @@ Separar este contenido del código común es trabajo pendiente ([roadmap.md](roa
 | `src/routes/` | Páginas (rutas por archivos). `_authenticated/admin/` es el panel de administración. |
 | `src/components/` | Componentes compartidos; `admin/` para el panel y `ui/` para la base de interfaz. |
 | `src/lib/` | Lógica de dominio, funciones de servidor (`*.functions.ts`, `*.server.ts`) e i18n. |
-| `src/config/municipality.ts` | Registro de municipios: nombre, coordenadas, URL, datos institucionales, recursos gráficos y tema. |
+| `instances/<id>/` | Configuración y recursos de cada municipio: nombre, coordenadas, URL, datos institucionales, recursos gráficos y tema. Contrato en `instances/schema.ts`. |
+| `src/config/municipality.ts` | Acceso del código común a la instancia compilada. |
 | `src/integrations/supabase/` | Clientes de Supabase (navegador y servidor) y tipos generados. |
 | `supabase/migrations/` | Historial de migraciones de **Casarabonela**. |
 | `supabase/template/` | Plantilla de instalación limpia para un proyecto Supabase nuevo. |
@@ -112,7 +113,7 @@ Nunca se incorporan secretos al repositorio: `.env` y `.env.*` están en `.gitig
 
 El procedimiento detallado está en **[supabase/template/README.md](supabase/template/README.md)**. Resumen:
 
-1. Registrar el municipio en `src/config/municipality.ts`: nombre, coordenadas, `siteUrl`, datos institucionales, recursos y tema. El tema se valida y lo comprueba `municipality.test.ts`.
+1. Crear `instances/<id>/config.ts` (y sus recursos en `instances/<id>/assets/`): nombre, coordenadas, `siteUrl`, datos institucionales, recursos y tema. El tema se valida y lo comprueba `municipality.test.ts`.
 2. Crear un proyecto Supabase vacío y ejecutar `01_schema.sql` y `02_seed_universal.sql`.
 3. Crear el primer administrador en Supabase Auth y ejecutar `03_init_instance.sql`, que incluye los datos `legal_*` del titular.
 4. Ejecutar `04_verify.sql`, que debe terminar con `VERIFICACIÓN SUPERADA`.
