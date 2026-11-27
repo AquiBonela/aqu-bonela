@@ -18,7 +18,9 @@ run() {
 }
 
 # En Supabase los buckets se crean por la API de Storage antes de 01 (ver supabase/template/README.md).
+# Antes, las piezas de Auth y Storage que la imagen de Postgres no trae (solo si faltan).
 buckets() {
+  run "$1" -f scripts/ci-database-stubs.sql
   run "$1" -c "insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) values
     ('listing-photos', 'listing-photos', false, 5242880, null),
     ('procedure-images', 'procedure-images', false, 8388608, array['image/webp'])
