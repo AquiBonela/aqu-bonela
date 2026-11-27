@@ -4,6 +4,9 @@ import { describe, expect, it } from "vitest";
 import demo from "../../instances/demo/config";
 import demoContent from "../../instances/demo/content";
 import { DEFAULT_MUNICIPALITY_ID } from "../../instances/schema";
+import casarabonelaContent from "../../instances/casarabonela/content";
+import { emergencyGroupsFor } from "@/lib/emergency-phones";
+import { dailyLifeCategories } from "@/lib/vida-diaria";
 import { brand, unbrand, validateMunicipalityTheme } from "./municipality";
 
 /** Términos que identifican al municipio piloto y nunca deben aparecer en la demo. */
@@ -43,6 +46,32 @@ describe("instancia demo", () => {
 
   it("su contenido está vacío: las secciones se ocultan", () => {
     expect(demoContent).toEqual({});
+  });
+
+  it("en SOS solo muestra teléfonos nacionales", () => {
+    const phones = emergencyGroupsFor(demoContent).flatMap((g) => g.phones.map((p) => p.tel));
+    expect(phones).toEqual(["062", "061", "016", "024", "915620420"]);
+  });
+
+  it("Casarabonela conserva su lista SOS con los teléfonos locales y regionales", () => {
+    const phones = emergencyGroupsFor(casarabonelaContent).flatMap((g) => g.phones.map((p) => p.tel));
+    expect(phones).toEqual(["062", "952456665", "061", "955545060", "016", "024", "900845040", "915620420"]);
+  });
+
+  it("oculta Vida diaria, Descubre, servicios locales y plantillas de trámites", () => {
+    expect(dailyLifeCategories(demoContent)).toEqual([]);
+    expect(demoContent.discover).toBeUndefined();
+    expect(demoContent.publicServices).toBeUndefined();
+    expect(demoContent.procedures).toBeUndefined();
+    expect(demoContent.home).toBeUndefined();
+  });
+
+  it("Casarabonela conserva su contenido", () => {
+    expect(dailyLifeCategories(casarabonelaContent).map((c) => c.id)).toEqual(["transporte", "residuos", "espacios", "municipales", "educacion", "otros"]);
+    expect(casarabonelaContent.discover?.places).toHaveLength(6);
+    expect(casarabonelaContent.publicServices?.puntoVuela?.slug).toBe("punto-vuela-casarabonela");
+    expect(casarabonelaContent.procedures?.templates.length).toBeGreaterThan(0);
+    expect(casarabonelaContent.home?.stats).toHaveLength(3);
   });
 
   it("personaliza y recupera los textos con su propio nombre", () => {

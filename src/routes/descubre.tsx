@@ -1,20 +1,18 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
-import calles from "@/assets/descubre/calles.jpg";
-import castillo from "@/assets/descubre/castillo.jpg";
-import cactus from "@/assets/descubre/cactus.jpg";
-import molino from "@/assets/descubre/molino.jpg";
-import fuentes from "@/assets/descubre/fuentes.jpg";
-import sierra from "@/assets/descubre/sierra.jpg";
-import fiestas from "@/assets/descubre/fiestas.jpg";
-import gastronomia from "@/assets/descubre/gastronomia.jpg";
-import iglesia from "@/assets/descubre/iglesia.jpg";
+import { getInstanceContent } from "@/config/municipality";
+
+// Guía turística propia de la instancia; sin ella la página no existe.
+const discover = getInstanceContent().discover;
 
 export const Route = createFileRoute("/descubre")({
-  head: () => ({
+  beforeLoad: () => {
+    if (!discover) throw notFound();
+  },
+  head: () => !discover ? {} : ({
     meta: [
       { title: "Descubre Bonela — Guía para visitar Casarabonela" },
       {
@@ -40,16 +38,7 @@ const NAV = [
   ["consejos", "descubre.nav6"],
 ] as const;
 
-const mapa = (q: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, Casarabonela`)}`;
-
-const RINCONES = [
-  { img: iglesia, q: "Iglesia de Santiago Apóstol", name: "descubre.r1Name", text: "descubre.r1Text" },
-  { img: castillo, q: "Castillo de Casarabonela", name: "descubre.r2Name", text: "descubre.r2Text" },
-  { img: cactus, q: "Jardín de Cactus", name: "descubre.r3Name", text: "descubre.r3Text" },
-  { img: fuentes, q: "Fuentes y caños", name: "descubre.r4Name", text: "descubre.r4Text" },
-  { img: molino, q: "Molino de Albaiva", name: "descubre.r5Name", text: "descubre.r5Text" },
-  { img: calles, q: "Jardín Andalusí", name: "descubre.r6Name", text: "descubre.r6Text" },
-] as const;
+const mapa = (q: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, ${discover?.mapsSuffix ?? ""}`)}`;
 
 const CONSEJOS = [
   { Icon: Footprints, title: "descubre.t1Title", text: "descubre.t1Text" },
@@ -103,6 +92,8 @@ function DirLink({ q, children }: { q: string; children: React.ReactNode }) {
 
 function Descubre() {
   const { t } = useI18n();
+  const images = discover?.images;
+  const places = discover?.places ?? [];
   const [active, setActive] = useState<string>("");
   useEffect(() => {
     const onScroll = () => {
@@ -130,7 +121,7 @@ function Descubre() {
       <main>
         {/* Introducción */}
         <section className="relative">
-          <img src={calles} alt={t("descubre.heroAlt")} width={1280} height={864} className="h-[64vh] min-h-80 w-full object-cover" />
+          <img src={images?.hero} alt={t("descubre.heroAlt")} width={1280} height={864} className="h-[64vh] min-h-80 w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10 text-background">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-90">{t("descubre.kicker")}</p>
@@ -170,7 +161,7 @@ function Descubre() {
 
         {/* 01. Historia */}
         <section id="historia" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2">
-          <img src={castillo} alt={t("descubre.castilloAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
+          <img src={images?.history} alt={t("descubre.castilloAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
           <div>
             <Kicker n="01">{t("descubre.k1")}</Kicker>
             <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h1")}</h2>
@@ -178,7 +169,7 @@ function Descubre() {
             <P>{t("descubre.p1b")}</P>
             <Bullets items={[t("descubre.b1a"), t("descubre.b1b"), t("descubre.b1c"), t("descubre.b1d")]} />
             <Closing>{t("descubre.c1")}</Closing>
-            <a href={mapa("Casco histórico")} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center gap-2 border-b-2 border-primary font-bold text-foreground hover:text-primary">
+            <a href={mapa(discover?.historicCentre ?? "")} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center gap-2 border-b-2 border-primary font-bold text-foreground hover:text-primary">
               <MapPin className="h-4 w-4" aria-hidden /> {t("descubre.map1")}
             </a>
           </div>
@@ -186,7 +177,7 @@ function Descubre() {
 
         {/* 02. Entorno */}
         <section id="entorno" className="scroll-mt-16">
-          <img src={sierra} alt={t("descubre.sierraAlt")} loading="lazy" width={1600} height={800} className="h-[55vh] min-h-72 w-full object-cover" />
+          <img src={images?.nature} alt={t("descubre.sierraAlt")} loading="lazy" width={1600} height={800} className="h-[55vh] min-h-72 w-full object-cover" />
           <div className="mx-auto max-w-3xl px-4 py-12">
             <Kicker n="02">{t("descubre.k2")}</Kicker>
             <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h2")}</h2>
@@ -207,7 +198,7 @@ function Descubre() {
             <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h3")}</h2>
             <P>{t("descubre.p3")}</P>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {RINCONES.map((r) => (
+              {places.map((r) => (
                 <article key={r.q} className="overflow-hidden bg-background shadow-sm">
                   <img src={r.img} alt={t(r.name)} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover" />
                   <div className="p-4">
@@ -226,7 +217,7 @@ function Descubre() {
 
         {/* 04. Fiestas */}
         <section id="fiestas" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2">
-          <img src={fiestas} alt={t("descubre.fiestasAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:order-2 sm:aspect-auto sm:h-full" />
+          <img src={images?.festivals} alt={t("descubre.fiestasAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:order-2 sm:aspect-auto sm:h-full" />
           <div>
             <Kicker n="04">{t("descubre.k4")}</Kicker>
             <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h4")}</h2>
@@ -244,7 +235,7 @@ function Descubre() {
         {/* 05. Sabores */}
         <section id="sabores" className="scroll-mt-16 bg-beige">
           <div className="mx-auto grid max-w-5xl gap-8 px-4 py-14 sm:grid-cols-2">
-            <img src={gastronomia} alt={t("descubre.foodAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
+            <img src={images?.food} alt={t("descubre.foodAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
             <div>
               <Kicker n="05">{t("descubre.k5")}</Kicker>
               <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h5")}</h2>

@@ -1,15 +1,12 @@
 import { Text, useI18n } from "@/lib/i18n";
-import {
-  CheckCircle2, Phone, ExternalLink, Lightbulb, ShoppingBasket, Stethoscope, Bus, ArrowRight, MapPin,
-  Recycle, Pill, Car, Mail, Landmark, Trees, Dumbbell, Waves, Building2, School, Baby, BookOpen, GraduationCap, Cross, type LucideIcon,
-} from "lucide-react";
-import { CATEGORIAS_VIDA } from "@/lib/vida-diaria";
+import { CheckCircle2, Phone, ExternalLink, ArrowRight } from "lucide-react";
+import { dailyLifeCategories, dailyLifeItems, type DailyLifeItem } from "@/lib/vida-diaria";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 
 export const Route = createFileRoute("/vida-diaria/$categoria")({
   loader: ({ params }) => {
-    const cat = CATEGORIAS_VIDA.find((c) => c.id === params.categoria);
+    const cat = dailyLifeCategories().find((c) => c.id === params.categoria);
     if (!cat) throw notFound();
     return cat;
   },
@@ -25,44 +22,7 @@ export const Route = createFileRoute("/vida-diaria/$categoria")({
   component: VidaDiaria,
 });
 
-
-type Item = {
-  Icon: LucideIcon;
-  title: string;
-  text: string;
-  facts?: { k: string; v: string }[];
-  timetable?: { columns: string[]; rows: { days: string; cells: string[][] }[]; note?: string };
-  list?: string[];
-  blocks?: { k: string; v: string; tel?: string }[];
-  note?: string;
-  wide?: boolean;
-  full?: boolean;
-  span?: boolean;
-  group?: string;
-  tel?: string;
-  link?: { label: string; href: string };
-  link2?: { label: string; href: string };
-};
-
-const DIARIO: Item[] = [
-  { group: "transporte", Icon: Bus, full: true, title: "Transporte público y autobús", text: "Autobuses Sierra de las Nieves (Grupo Paco Pepe): conexión diaria con Málaga.", timetable: { columns: ["Hacia Málaga", "Desde Málaga"], rows: [{ days: "Lunes a sábado", cells: [["7:50", "9:45", "17:00"], ["8:00", "14:00", "17:00"]] }, { days: "Domingos", cells: [["18:50"], ["20:00"]] }, { days: "Festivos", cells: [["7:50", "17:00"], ["8:00", "17:00"]] }], note: "Del 16/04 al 15/09, la vuelta de las 17:00 sale a las 18:00." }, tel: "952355490", link: { label: "Horario completo", href: "https://www.casarabonela.es/7643/autobuses-sierra-de-las-nieves" } },
-  { group: "transporte", Icon: Car, title: "Taxi", text: "Servicio de taxi local para trayectos al centro de salud, a la estación o a Málaga.", facts: [{ k: "Reserva", v: "Por teléfono, con antelación" }, { k: "Teléfono", v: "Pendiente de confirmar" }] },
-  { group: "residuos", Icon: Recycle, span: true, title: "Basura, enseres y punto limpio", text: "Cómo separar la basura, dónde llevar los enseres y cuándo abre el Punto limpio.", blocks: [{ k: "Contenedores", v: "Cada residuo, dentro del contenedor que le corresponde. No dejes bolsas ni muebles fuera." }, { k: "Muebles y enseres", v: "Primer martes de cada mes, avisando antes del lunes anterior", tel: "952456005" }, { k: "Punto limpio", v: "Sábados, 10:00–13:00 · Polígono industrial" }] },
-  { group: "espacios", Icon: Dumbbell, title: "Polideportivo municipal", text: "Pistas deportivas para fútbol sala, baloncesto y pádel.", facts: [{ k: "Reservas", v: "En el Ayuntamiento o por teléfono" }, { k: "Horario", v: "Todos los días, 9:00–22:00" }], tel: "952456561" },
-  { group: "espacios", Icon: Waves, title: "Piscina municipal", text: "Abierta en temporada de verano, con bono y entrada diaria.", facts: [{ k: "Temporada", v: "De mediados de junio a principios de septiembre" }, { k: "Horario", v: "11:00–20:00" }] },
-  { group: "espacios", Icon: Trees, title: "Parques y zonas de juego", text: "Parques infantiles y zonas verdes para pasear y descansar en el pueblo.", facts: [{ k: "Incidencias", v: "Avisa por Línea Verde" }] },
-  { group: "municipales", Icon: Building2, span: true, title: "Ayuntamiento de Casarabonela", text: "Atención al público, registro, padrón y dependencias municipales.", facts: [{ k: "Horario", v: "Lunes a viernes, 9:00–14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }], tel: "952456561", link: { label: "Web municipal", href: "https://www.casarabonela.es/" } },
-  { group: "educacion", Icon: School, title: "Colegio de Primaria", text: "Educación Infantil (3–5 años) y Primaria en el pueblo.", facts: [{ k: "Matrícula", v: "Plazo de solicitud en marzo" }] },
-  { group: "educacion", Icon: Baby, title: "Escuela infantil", text: "Guardería para niños y niñas de 0 a 3 años.", facts: [{ k: "Plazas", v: "Consulta en el Ayuntamiento" }] },
-  { group: "educacion", Icon: GraduationCap, title: "Educación de adultos", text: "Clases para obtener titulaciones y cursos para personas adultas.", facts: [{ k: "Información", v: "En el Ayuntamiento" }] },
-  { group: "otros", Icon: Stethoscope, title: "Consultorio médico", text: "Atención primaria del Servicio Andaluz de Salud en el centro del pueblo.", facts: [{ k: "Horario", v: "Lunes a viernes, 8:00–15:00" }, { k: "Dónde", v: "Avda. Fernando Díaz" }], tel: "952456559", link: { label: "Cita en ClicSalud+", href: "https://www.sspa.juntadeandalucia.es/servicioandaluzdesalud/clicsalud/" } },
-  { group: "otros", Icon: Pill, title: "Farmacia", text: "Farmacia Bonela atiende en el pueblo. Las guardias de la zona se consultan en el calendario oficial.", link: { label: "Ver en el Directorio", href: "/comercios/farmacia-bonela" }, link2: { label: "Farmacias de guardia", href: "https://www.cofmalaga.com/farmacias-de-guardia/" } },
-  { group: "otros", Icon: BookOpen, title: "Biblioteca municipal", text: "Préstamo de libros, sala de lectura y actividades culturales.", facts: [{ k: "Horario", v: "Lunes a viernes, 16:00–20:00" }] },
-  { group: "otros", Icon: Cross, title: "Cementerio municipal", text: "Información sobre horarios y gestiones de nichos en el Ayuntamiento.", facts: [{ k: "Horario", v: "Todos los días, 9:00–18:00" }] },
-  { group: "otros", Icon: Mail, title: "Oficina de Correos", text: "Envío y recogida de cartas y paquetes, certificados y giros.", facts: [{ k: "Horario", v: "Lunes a viernes, 9:00–11:30" }, { k: "Dónde", v: "Calle Real (junto al Ayuntamiento)" }] },
-  { group: "otros", Icon: Landmark, title: "Cajeros automáticos", text: "Hay cajero automático en el centro del pueblo. Consulta las entidades y sus horarios en el Directorio.", link: { label: "Ver en el Directorio", href: "/directorio" } },
-  { group: "otros", Icon: ShoppingBasket, title: "Mercadillo semanal", text: "Fruta y verdura, ropa y productos del campo cada semana.", facts: [{ k: "Cuándo", v: "Todos los viernes de 9:00 a 14:00" }, { k: "Dónde", v: "Plaza de Casarabonela" }] },
-];
+type Item = DailyLifeItem;
 
 function Actions({ i, compact }: { i: Item; compact?: boolean }) {
   const { tr } = useI18n();
@@ -96,7 +56,7 @@ function SectionTitle({ n, title, text }: { n: string; title: string; text: stri
 function VidaDiaria() {
   const { tr } = useI18n();
   const cat = Route.useLoaderData();
-  const items = DIARIO.filter((i) => i.group === cat.id);
+  const items = dailyLifeItems().filter((i) => i.group === cat.id);
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
