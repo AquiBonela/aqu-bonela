@@ -16,40 +16,34 @@ CREATE TABLE IF NOT EXISTS auth.users (
   created_at timestamptz DEFAULT now()
 );
 
+-- auth.uid(), auth.jwt() y auth.role() como en Supabase alojado: leen request.jwt.claim.* y
+-- request.jwt.claims (la imagen puede traer una versión anterior que solo lee el primero).
+CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $b$
+  SELECT coalesce(
+    nullif(current_setting('request.jwt.claim.sub', true), ''),
+    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')
+  )::uuid
+$b$;
+CREATE OR REPLACE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $b$
+  SELECT coalesce(
+    nullif(current_setting('request.jwt.claim', true), ''),
+    nullif(current_setting('request.jwt.claims', true), ''),
+    '{}'
+  )::jsonb
+$b$;
+CREATE OR REPLACE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $b$
+  SELECT coalesce(
+    nullif(current_setting('request.jwt.claim.role', true), ''),
+    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role')
+  )
+$b$;
 DO $stubs$
 BEGIN
-  IF to_regprocedure('auth.uid()') IS NULL THEN
-    EXECUTE $f$
-      CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $b$
-        SELECT coalesce(
-          nullif(current_setting('request.jwt.claim.sub', true), ''),
-          (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')
-        )::uuid
-      $b$
-    $f$;
-  END IF;
-  IF to_regprocedure('auth.jwt()') IS NULL THEN
-    EXECUTE $f$
-      CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $b$
-        SELECT coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb
-      $b$
-    $f$;
-  END IF;
-  IF to_regprocedure('auth.role()') IS NULL THEN
-    EXECUTE $f$
-      CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $b$
-        SELECT coalesce(
-          nullif(current_setting('request.jwt.claim.role', true), ''),
-          (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role')
-        )
-      $b$
-    $f$;
-  END IF;
   IF to_regprocedure('storage.foldername(text)') IS NULL THEN
     EXECUTE $f$
-      CREATE FUNCTION storage.foldername(name text) RETURNS text[] LANGUAGE sql IMMUTABLE AS $b$
+      CREATE FUNCTION storage.foldername(name text) RETURNS text[] LANGUAGE sql IMMUTABLE AS $c$
         SELECT (string_to_array(name, '/'))[1:greatest(array_length(string_to_array(name, '/'), 1) - 1, 0)]
-      $b$
+      $c$
     $f$;
   END IF;
 END
