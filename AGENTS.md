@@ -40,3 +40,4 @@
 - Listing descriptions interpret paired double asterisks (bold) and paired single asterisks (italic) through a browser-safe text parser in the shared public/review ListingPage, never raw HTML. Why: admins can emphasize arbitrary phrases without enabling HTML injection or changing stored descriptions.
 
 - Highlighting keeps DB fields. Why: reuse.
+- Each municipality lives in `instances/<id>/` (public config and assets, typed by `instances/schema.ts`); the build resolves `@instance` from `VITE_MUNICIPALITY_ID`, and shared code reads it only through `src/config/municipality.ts`. Why: one codebase, and a build never ships another municipality's configuration.

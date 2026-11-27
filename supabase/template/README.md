@@ -14,7 +14,7 @@ El esquema se ha generado desde el **catálogo de PostgreSQL de producción** (n
 
 ## 1. Requisitos previos
 - Proyecto Supabase nuevo (región UE recomendada). Se ejecuta todo como `postgres` desde **SQL Editor**.
-- Repositorio común con el municipio registrado en `src/config/municipality.ts`.
+- Repositorio común con la instancia del municipio en `instances/<id>/`.
 - Proyecto Vercel nuevo y dominio propio.
 - Widget de Cloudflare Turnstile para ese dominio.
 
@@ -52,7 +52,7 @@ Los campos `legal_*` identifican a quien **opera** el servicio en ese municipio.
 ## 6. Variables de entorno (Vercel)
 | Variable | Tipo | Valor |
 |---|---|---|
-| `VITE_MUNICIPALITY_ID` | Pública | Id registrado en `municipality.ts` |
+| `VITE_MUNICIPALITY_ID` | Pública | Nombre de su carpeta en `instances/` |
 | `VITE_SUPABASE_URL` / `SUPABASE_URL` | Pública | URL del proyecto nuevo |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_PUBLISHABLE_KEY` | Pública | Clave publicable del proyecto nuevo |
 | `VITE_SUPABASE_PROJECT_ID` | Pública | Ref del proyecto |
