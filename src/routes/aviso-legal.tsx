@@ -1,15 +1,20 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPage, useOwner, legalHead } from "@/components/LegalPage";
+import { LegalPage, LegalLoadError, legalHead } from "@/components/LegalPage";
+import { getLegalOwner } from "@/lib/legal-owner.functions";
 
 export const Route = createFileRoute("/aviso-legal")({
   head: () => legalHead("Aviso legal", "Datos del titular y condiciones de uso de Aquí Bonela, plataforma independiente de Casarabonela."),
+  loader: () => getLegalOwner(),
+  // Sin caché al salir: al volver nunca se muestra un titular anterior.
+  gcTime: 0,
   component: AvisoLegal,
+  errorComponent: LegalLoadError,
 });
 
 function AvisoLegal() {
   const { tr, locale } = useI18n();
-  const OWNER = useOwner();
+  const OWNER = Route.useLoaderData();
   return (
     <LegalPage title={tr("Aviso legal")}>
       <h2><Text text="1. Titular del sitio web" /></h2>

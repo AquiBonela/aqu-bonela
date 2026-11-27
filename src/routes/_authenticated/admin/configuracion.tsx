@@ -53,7 +53,6 @@ function GeneralSettings() {
     toast.success(tr("Configuración guardada"));
     qc.invalidateQueries({ queryKey: ["admin", "settings"] });
     qc.invalidateQueries({ queryKey: ["directory"] });
-    qc.invalidateQueries({ queryKey: ["legal-owner"] });
   }
   const block = "grid gap-4 border bg-card p-4";
   const lbl = "grid gap-1 text-sm font-medium";
