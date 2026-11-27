@@ -1,3 +1,4 @@
+import { hasControlCharacter } from "./control-characters";
 export type DescriptionPart = { text: string; bold: boolean; italic: boolean; href?: string };
 
 const plain = { bold: false, italic: false };
@@ -34,7 +35,7 @@ export function parseDescription(text: string): DescriptionPart[] {
 
 /** Only browser navigation to ordinary websites; never HTML or executable schemes. */
 export function externalTextUrl(value: string): string | null {
-  if (!value || /[\s<>\\\u0000-\u001f\u007f]/.test(value) || value.startsWith("//")) return null;
+  if (!value || /[\s<>\\]/.test(value) || hasControlCharacter(value) || value.startsWith("//")) return null;
   if (value.startsWith('/')) return value;
   // Recognize only existing public route names, never arbitrary bare words.
   if (/^(?:(?:servicios|comercios|profesionales|asociaciones|tramites|vida-diaria)(?:[/?#]|$)|punto-vuela(?:[/?#]|$)|servicios-publicos(?:[/?#]|$))/.test(value)) return `/${value}`;

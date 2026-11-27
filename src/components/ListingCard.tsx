@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 import { availabilityTags } from "@/lib/listing-availability";
 import { listingText } from '@/lib/content-translations';
 
-export const typeLabel = (t: Listing["type"]) =>
+const typeLabel = (t: Listing["type"]) =>
   t === "profesional" ? "Profesional" : t === "publico" ? "Servicio público" : t === "asociacion" ? "Asociación" : "Comercio";
 
 /** Clases de color por tipo: franja, texto y etiqueta. */
-export const typeTheme = (t: Listing["type"]) =>
+const typeTheme = (t: Listing["type"]) =>
   t === "profesional"
     ? { border: "border-l-terracotta", text: "text-terracotta", chip: "bg-accent text-terracotta" }
     : t === "publico"

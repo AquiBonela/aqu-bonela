@@ -1,6 +1,7 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPage, legalHead } from "@/components/LegalPage";
+import { LegalPage } from "@/components/LegalPage";
+import { legalHead } from "@/lib/legal-head";
 import { getMunicipality } from "@/config/municipality";
 
 export const Route = createFileRoute("/cookies")({

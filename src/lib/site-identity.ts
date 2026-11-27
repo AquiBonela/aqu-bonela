@@ -5,6 +5,7 @@
  */
 import { z } from "zod";
 import type { MunicipalityConfig } from "../../instances/schema";
+import { hasControlCharacter } from "./control-characters";
 
 /** Campos que la base de datos puede sustituir. Tema, recursos y claves técnicas siguen en el build. */
 export type IdentityOverrides = Partial<
@@ -37,7 +38,8 @@ declare global {
 }
 
 // Mismas reglas que las restricciones de public.site_identity: lo que la base no admite tampoco se usa aquí.
-const SAFE_TEXT = /^[^<>{}\u0000-\u001f\u007f]*$/;
+/** Sin HTML ni llaves (se confundirían con {app}, {municipio}...). */
+const UNSAFE_SYMBOLS = /[<>{}]/;
 const SITE_URL_PATTERN = /^https:\/\/[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+(:[0-9]{1,5})?$/;
 const WEBSITE = /^https:\/\/[^\s<>"{}]+$/;
 const PHONE = /^[0-9 +]{0,20}$/;
@@ -58,7 +60,8 @@ type FieldName =
   | "town_hall_website"
   | "timezone";
 
-const text = (max: number) => z.string().trim().max(max).regex(SAFE_TEXT);
+const safeText = (value: string) => !UNSAFE_SYMBOLS.test(value) && !hasControlCharacter(value);
+const text = (max: number) => z.string().trim().max(max).refine(safeText);
 const FIELDS: Record<FieldName, z.ZodType<string>> = {
   app_name: text(60),
   short_name: text(30),

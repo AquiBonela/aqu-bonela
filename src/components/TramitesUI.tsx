@@ -7,7 +7,7 @@ import { TAG_LABEL, isCompleta, type Categoria, type Tramite, type TramiteTag } 
 
 import { procedureTranslationMap, type PublicProcedure } from '@/lib/public-procedures';
 
-export const CAT_ICON: Record<Categoria["icon"], LucideIcon> = { doc: FileText, salud: HeartPulse, trabajo: Briefcase, familia: Users, coche: Car, muni: Landmark };
+const CAT_ICON: Record<Categoria["icon"], LucideIcon> = { doc: FileText, salud: HeartPulse, trabajo: Briefcase, familia: Users, coche: Car, muni: Landmark };
 
 const TAG_CLASS: Record<TramiteTag, string> = {
   gratis: "bg-primary/10 text-primary",

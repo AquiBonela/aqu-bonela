@@ -1,18 +1,17 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { Download, PlusSquare, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { getMunicipality } from "@/config/municipality";
+import { InstallContext } from "@/components/install-prompt-context";
 import { canOfferInstall, INSTALL_DELAY_MS, INSTALL_STORAGE_KEY, installPlatform, isIosSafari, publicInstallPage } from "@/lib/install-prompt";
 
 interface BrowserInstallEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
-const InstallContext = createContext<{ available: boolean; show: () => void }>({ available: false, show: () => {} });
-export const useInstallPrompt = () => useContext(InstallContext);
 
 export function InstallPromptProvider({ children }: { children: ReactNode }) {
   const { tr } = useI18n();

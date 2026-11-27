@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { ProcedureText } from "@/components/ProcedureText";
 import { euroAmount, hasProcedureLink } from '@/lib/procedure-display';
 import { AdminShell } from "@/components/admin/AdminShell";
-import { ProcedureFields, SECTION_FIELDS } from "@/components/admin/ProcedureFields";
+import { ProcedureFields } from "@/components/admin/ProcedureFields";
+import { SECTION_FIELDS } from "@/components/admin/procedure-fields";
 import { ProcedureSectionsEditor } from '@/components/admin/ProcedureSectionsEditor';
 import { ProcedureSections } from '@/components/ProcedureSections';
 import { modularContent, alignedModuleContent } from '@/lib/procedure-sections';
@@ -36,9 +37,10 @@ export const Route = createFileRoute("/_authenticated/admin/tramites/$id")({
     { property: "og:title", content: brand("Editar trámite · Administración {app}") }, { property: "og:description", content: brand("Editor de trámites de {app}.") },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" },
   ] }),
-  component: () => { const { id } = Route.useParams(); return <AdminShell><Suspense fallback={<Loading />}><EditorLoader key={id} id={id} /></Suspense></AdminShell>; },
+  component: EditProcedurePage,
   errorComponent: ({ reset }) => <AdminShell><EditorError retry={reset} /></AdminShell>,
 });
+function EditProcedurePage() { const { id } = Route.useParams(); return <AdminShell><Suspense fallback={<Loading />}><EditorLoader key={id} id={id} /></Suspense></AdminShell>; }
 function Loading() { const { tr } = useI18n(); return <p>{tr("Cargando…")}</p>; }
 function EditorError({ retry }: { retry: () => void }) { const { tr } = useI18n(); return <div role="alert"><p>{tr("No se pudieron cargar los trámites.")}</p><Button onClick={retry}>{tr("Reintentar")}</Button></div>; }
 function EditorLoader({ id }: { id: string }) {

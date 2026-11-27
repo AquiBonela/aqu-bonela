@@ -1,5 +1,5 @@
 import { Text, useI18n } from "@/lib/i18n";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { BUCKET, MAX_GALLERY_PHOTOS, gallerySlots, removeFile, signedUrl, uploadListingImage } from "@/lib/listing-images";
@@ -77,7 +77,7 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     const [result, listing] = await Promise.all([
       supabase.from("listing_photos").select("id,storage_path,alt,sort_order").eq("listing_id", listingId).order("sort_order"),
       supabase.from("listings").select("gallery_urls").eq("id", listingId).maybeSingle(),
@@ -89,8 +89,10 @@ export function GalleryPicker({ listingId }: { listingId: string }) {
     if (!rows.length) { setPhotos([]); return; }
     const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrls(rows.map((r) => r.storage_path), 3600);
     setPhotos(rows.map((r, i) => ({ ...r, url: signed?.[i]?.signedUrl ?? null })));
-  }
-  useEffect(() => { load().catch(() => toast.error(tr("No se pudieron cargar las fotos."))); }, [listingId]);
+  }, [listingId]);
+  // El mensaje como texto: tr cambia de identidad en cada render bajo ContentTranslationProvider.
+  const loadError = tr("No se pudieron cargar las fotos.");
+  useEffect(() => { load().catch(() => toast.error(loadError)); }, [load, loadError]);
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;

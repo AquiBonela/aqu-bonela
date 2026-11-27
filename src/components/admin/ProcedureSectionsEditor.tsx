@@ -8,7 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ProcedureFields, SECTION_FIELDS, type Field } from './ProcedureFields';
+import { ProcedureFields, type Field } from "./ProcedureFields";
+import { SECTION_FIELDS } from "./procedure-fields";
 import { readSections, newElement, ELEMENT_LABELS, type ElementKind, type ProcedureSection } from '@/lib/procedure-sections';
 import type { Content } from '@/lib/content-translations';
 

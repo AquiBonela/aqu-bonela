@@ -1,6 +1,7 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPage, LegalLoadError, legalHead } from "@/components/LegalPage";
+import { LegalPage, LegalLoadError } from "@/components/LegalPage";
+import { legalHead } from "@/lib/legal-head";
 import { getLegalOwner } from "@/lib/legal-owner.functions";
 
 export const Route = createFileRoute("/privacidad")({

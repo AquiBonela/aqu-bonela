@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Download, Menu, X } from "lucide-react";
-import { useInstallPrompt } from "@/components/InstallPrompt";
+import { useInstallPrompt } from "@/components/install-prompt-context";
 import { Button } from "@/components/ui/button";
 import { LangSwitch, useI18n } from "@/lib/i18n";
 import { EmergencyButton } from "@/components/EmergencyPhones";
