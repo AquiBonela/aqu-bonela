@@ -8,11 +8,11 @@ import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { brand, getInstanceContent, getMunicipality } from "@/config/municipality";
-import type { HomeSection } from "../../instances/schema";
+import type { HomeSection, InstanceContent } from "../../instances/schema";
 
 const { logoHome: logoWhite, heroImage: heroImg } = getMunicipality().assets;
 // Cifras, «Cómo llegar» y fotos de las tarjetas solo si la instancia las aporta.
-const home = getInstanceContent().home ?? {};
+const home: NonNullable<InstanceContent["home"]> = getInstanceContent().home ?? {};
 const hasDiscover = Boolean(getInstanceContent().discover);
 
 export const Route = createFileRoute("/")({

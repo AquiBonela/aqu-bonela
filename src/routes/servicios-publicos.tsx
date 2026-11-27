@@ -6,12 +6,13 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
 import { brand, getInstanceContent } from "@/config/municipality";
+import type { PublicServicesContent } from "../../instances/schema";
 import puntoVuelaLogo from "@/assets/punto-vuela-logo.svg";
 import { useQuery } from "@tanstack/react-query";
 import { listingDetailQuery } from "@/lib/listing-detail";
 
 // Cada bloque local solo se muestra si la instancia lo aporta.
-const services = getInstanceContent().publicServices ?? {};
+const services: PublicServicesContent = getInstanceContent().publicServices ?? {};
 const securityContacts = services.securityContacts ?? [];
 const puntoVuela = services.puntoVuela;
 
