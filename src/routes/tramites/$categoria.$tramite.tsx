@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { brand, getInstanceContent } from "@/config/municipality";
 import { ArrowLeft, ArrowRight, ExternalLink, CheckCircle2, LifeBuoy, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -22,8 +23,8 @@ export const Route = createFileRoute("/tramites/$categoria/$tramite")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.t.title ?? "Trámite"} — Aquí Bonela` },
-      { name: "description", content: loaderData ? procedureCardDescription(loaderData.t) : "Guía de trámites de Aquí Bonela." },
+      { title: brand(`${loaderData?.t.title ?? "Trámite"} — {app}`) },
+      { name: "description", content: loaderData ? procedureCardDescription(loaderData.t) : brand("Guía de trámites de {app}.") },
       { property: "og:title", content: loaderData?.t.title ?? "Trámite" },
       { property: "og:description", content: loaderData ? procedureCardDescription(loaderData.t) : "Guía de trámites." },
       { property: "og:type", content: "article" },
@@ -89,7 +90,9 @@ function GuideLink({ link, prominent = false }: { link: TramiteLink; prominent?:
     ? "press mt-4 inline-flex min-h-11 items-center gap-2 bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
     : "mt-3 inline-flex items-center gap-1.5 font-semibold text-primary underline underline-offset-4";
   if (link.url === "/punto-vuela") {
-    return <Link to="/servicios/$slug" params={{ slug: "punto-vuela-casarabonela" }} className={className}><ProcedureText text={tr(link.label)} linkPuntoVuela={false} /> <ArrowRight className="h-4 w-4 shrink-0" aria-hidden /></Link>;
+    const slug = getInstanceContent().publicServices?.puntoVuela?.slug;
+    if (!slug) return null;
+    return <Link to="/servicios/$slug" params={{ slug }} className={className}><ProcedureText text={tr(link.label)} linkPuntoVuela={false} /> <ArrowRight className="h-4 w-4 shrink-0" aria-hidden /></Link>;
   }
   return (
     <a href={link.url} target={link.url.startsWith('/') ? undefined : '_blank'} rel="noopener noreferrer" className={className}>
@@ -288,7 +291,7 @@ function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categor
             ))}
           </div>
         )}
-        <p className="mt-8 text-xs text-muted-foreground">{tr("Aquí Bonela es una guía de orientación. Los trámites se realizan siempre ante el organismo oficial correspondiente.")}</p>
+        <p className="mt-8 text-xs text-muted-foreground">{tr("{app} es una guía de orientación. Los trámites se realizan siempre ante el organismo oficial correspondiente.")}</p>
       </main>
     </div>
   );

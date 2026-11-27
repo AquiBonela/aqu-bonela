@@ -9,6 +9,15 @@ export function instanceConfigPath(root: string, id: string): string {
   return join(root, "instances", id, "config.ts");
 }
 
+export function instanceContentPath(root: string, id: string): string {
+  return join(root, "instances", id, "content.ts");
+}
+
+/** Archivos servidos tal cual (iconos, manifiesto, robots.txt). */
+export function instancePublicDir(root: string, id: string): string {
+  return join(root, "instances", id, "public");
+}
+
 export function availableInstances(root: string): string[] {
   return readdirSync(join(root, "instances"), { withFileTypes: true })
     .filter((e) => e.isDirectory() && existsSync(instanceConfigPath(root, e.name)))

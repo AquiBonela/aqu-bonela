@@ -8,6 +8,7 @@ import ukText from "@/lib/locales/uk.json";
 import enSupplement from "@/lib/locales/en-supplement.json";
 import corrections from "@/lib/locales/corrections.json";
 import { reviewedTranslations } from "@/lib/i18n-overrides";
+import { brand, brandParams, getMunicipality, unbrand } from "@/config/municipality";
 import spanishFlag from "@/assets/flags/es.svg";
 import englishFlag from "@/assets/flags/en.svg";
 import germanFlag from "@/assets/flags/de.svg";
@@ -44,12 +45,12 @@ const es = {
   "menu.close": "Cerrar menú",
   "menu.directorio": "Directorio",
   "menu.servicios": "Servicios públicos",
-  "menu.descubre": "Descubre Bonela",
+  "menu.descubre": "Descubre {nombreCorto}",
   "menu.actualidad": "Actualidad",
   "menu.clasificados": "Clasificados",
-  "menu.sobre": "Sobre Aquí Bonela",
+  "menu.sobre": "Sobre {app}",
   "menu.enviar": "Enviar información",
-  "menu.enviarDesc": "Envíanos un negocio, un lugar, un evento\no una corrección para Aquí Bonela.",
+  "menu.enviarDesc": "Envíanos un negocio, un lugar, un evento\no una corrección para {app}.",
   "lang.label": "Idioma",
   "feedback.reportSent": "Aviso recibido, muchas gracias.",
   "feedback.reportError": "No se ha podido enviar. Inténtalo de nuevo.",
@@ -59,20 +60,20 @@ const es = {
   "feedback.copied": "Copiado al portapapeles.",
   "feedback.copyError": "No se ha podido copiar. Inténtalo de nuevo.",
   "footer.tagline": "Directorio local colaborativo",
-  "footer.about": "Una plataforma digital independiente para descubrir, conocer y compartir todo lo que ocurre en Casarabonela.",
+  "footer.about": "Una plataforma digital independiente para descubrir, conocer y compartir todo lo que ocurre en {municipio}.",
   "footer.legalNav": "Información legal",
   "footer.aviso": "Aviso legal",
   "footer.privacidad": "Política de privacidad",
   "footer.cookies": "Cookies",
-  "home.heroAlt": "Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves",
-  "home.lema": "Todo lo que necesitas para descubrir, conocer y vivir Casarabonela.",
+  "home.heroAlt": "Panorámica del pueblo blanco de {municipio} y la Sierra de las Nieves",
+  "home.lema": "Todo lo que necesitas para descubrir, conocer y vivir {municipio}.",
   "home.searchLabel": "¿Qué necesitas hoy?",
   "home.searchPh": "¿Qué necesitas? Farmacia, fontanero…",
   "home.searchBtn": "Buscar",
   "home.start": "¿Por dónde empezamos?",
   "home.dirTitle": "Directorio local",
   "home.dirText": "Comercios, oficios, profesionales y asociaciones del municipio.",
-  "home.descTitle": "Descubre Bonela",
+  "home.descTitle": "Descubre {nombreCorto}",
   "home.descText": "Patrimonio, rincones con encanto, naturaleza y consejos de vecino.",
   "home.servTitle": "Servicios públicos",
   "home.servText": "Ayuntamiento, salud, dependencias y teléfonos útiles.",
@@ -82,13 +83,13 @@ const es = {
   "home.urg112": "Emergencias · 112",
   "home.urgLocal": "Servicios de urgencia del pueblo",
   "home.shareTitle": "¿Tienes un negocio, una asociación o algo que compartir?",
-  "home.shareText": "Ayúdanos a que Casarabonela esté completa y al día. Revisamos cada aportación.",
+  "home.shareText": "Ayúdanos a que {municipio} esté completa y al día. Revisamos cada aportación.",
   "home.shareBtn": "Enviar información",
-  "home.kicker": "El lugar donde empieza Casarabonela",
-  "home.exploreTitle": "Explora Casarabonela",
+  "home.kicker": "El lugar donde empieza {municipio}",
+  "home.exploreTitle": "Explora {municipio}",
   "home.rinconesKicker": "Hay mucho por descubrir",
   "home.rinconesTitle": "Rincones con historia",
-  "home.rinconesAll": "Ver todo Descubre Bonela",
+  "home.rinconesAll": "Ver todo Descubre {nombreCorto}",
   "home.r1t": "El barrio del Arrabal",
   "home.r1d": "Calles estrechas, empinadas y encaladas de traza morisca.",
   "home.r2t": "Jardín de Cactus Mora i Bravard",
@@ -97,62 +98,62 @@ const es = {
   "home.r3d": "El agua de la sierra corre por el pueblo todo el año.",
   "home.r4t": "Castillo Qasr Bunayra",
   "home.r4d": "Vigía árabe del valle desde el siglo IX.",
-  "home2.searchKicker": "Encuentra lo que necesitas en Casarabonela",
+  "home2.searchKicker": "Encuentra lo que necesitas en {municipio}",
   "home2.introKicker": "El pueblo",
-  "home2.introTitle": "Casarabonela, un pueblo por descubrir",
-  "home2.intro1": "Enclavado entre las montañas de Málaga, en las estribaciones de la Sierra de las Nieves, Casarabonela es uno de esos pueblos blancos andaluces que conservan su esencia.",
+  "home2.introTitle": "{municipio}, un pueblo por descubrir",
+  "home2.intro1": "Enclavado entre las montañas de Málaga, en las estribaciones de la Sierra de las Nieves, {municipio} es uno de esos pueblos blancos andaluces que conservan su esencia.",
   "home2.intro2": "Sus calles estrechas y empinadas, sus fachadas encaladas, sus antiguas fuentes y su herencia andalusí invitan a perderse sin prisas por un casco histórico lleno de rincones con encanto.",
   "home2.intro3": "Aquí conviven siglos de historia, paisajes de sierra, caminos naturales y una cultura popular que sigue muy viva. Desde el Castillo de Qasr Bunayra y el Jardín Islámico hasta sus tradicionales caños y hornacinas, cada rincón guarda una pequeña historia.",
   "home2.howTo": "Cómo llegar",
   "home.suggestNone": "Sin coincidencias. Pulsa Buscar para ver el directorio.",
   "home.suggestAll": "Ver todos los resultados",
-  "home.ctaTitle": "Tu negocio también forma parte de Bonela",
+  "home.ctaTitle": "Tu negocio también forma parte de {nombreCorto}",
   "home.ctaText": "Una ficha gratuita, revisada contigo, para que vecinos y visitantes puedan encontrarte.",
   "home.ctaBtn": "Solicitar mi ficha",
-  "home2.intro4": "Su gastronomía tradicional, sus productos de la tierra y celebraciones tan singulares como la Fiesta de los Rondeles, cada 12 de diciembre, hacen de Casarabonela un destino que merece la pena descubrir.",
+  "home2.intro4": "Su gastronomía tradicional, sus productos de la tierra y celebraciones tan singulares como la Fiesta de los Rondeles, cada 12 de diciembre, hacen de {municipio} un destino que merece la pena descubrir.",
   "home2.intro5": "Ven a conocerlo. Pasea, disfruta y déjate sorprender por la esencia de un auténtico pueblo andaluz.",
   "home2.f1": "metros de altitud",
   "home2.f2": "habitantes",
   "home2.f3": "km de Málaga",
-  "home2.sectionsTitle": "Todo en Aquí Bonela",
+  "home2.sectionsTitle": "Todo en {app}",
   "home2.actText": "Noticias, eventos y avisos del pueblo.",
   "home2.clasText": "Compra, venta y anuncios entre vecinos.",
   "home2.sobreText": "Quiénes somos y por qué existe esta plataforma.",
   "home2.enviarText": "Cuéntanos de un negocio, un error o algo nuevo.",
-  "sobre.title": "Sobre Aquí Bonela",
+  "sobre.title": "Sobre {app}",
   "sobre.whatTitle": "¿Qué es?",
-  "sobre.what1": "Aquí Bonela es una plataforma digital dedicada a Casarabonela, creada para reunir en un mismo lugar la información útil del municipio.",
+  "sobre.what1": "{app} es una plataforma digital dedicada a {municipio}, creada para reunir en un mismo lugar la información útil del municipio.",
   "sobre.what2": "Un espacio que reunirá comercios, profesionales, servicios públicos, asociaciones, lugares de interés, actividades, noticias y mucho más.",
   "sobre.what3": "Nace de una idea sencilla: hacer que la información de nuestro pueblo sea más accesible, esté mejor organizada y resulte fácil de encontrar desde cualquier dispositivo.",
   "sobre.audienceTitle": "¿Para quién es?",
   "sobre.aud1": "Para los vecinos y vecinas que necesitan encontrar un servicio, consultar un teléfono, conocer una actividad o estar al día de lo que ocurre en el municipio.",
-  "sobre.aud2": "Para quienes visitan Casarabonela y quieren descubrir sus lugares, rutas, comercios y propuestas.",
+  "sobre.aud2": "Para quienes visitan {municipio} y quieren descubrir sus lugares, rutas, comercios y propuestas.",
   "sobre.aud3": "Y también para los negocios, profesionales, asociaciones y colectivos que quieren dar a conocer lo que hacen y formar parte de un espacio común.",
   "sobre.howTitle": "¿Cómo funciona?",
-  "sobre.how1": "Aquí Bonela reúne diferentes contenidos del municipio para que puedas encontrar lo que necesitas de forma sencilla.",
-  "sobre.how2": "El objetivo es que no tengas que buscar en diferentes páginas, redes sociales o grupos para encontrar información sobre Casarabonela: Aquí Bonela trabaja para reunirla y organizarla en un espacio común.",
+  "sobre.how1": "{app} reúne diferentes contenidos del municipio para que puedas encontrar lo que necesitas de forma sencilla.",
+  "sobre.how2": "El objetivo es que no tengas que buscar en diferentes páginas, redes sociales o grupos para encontrar información sobre {municipio}: {app} trabaja para reunirla y organizarla en un espacio común.",
   "sobre.how3": "Estamos empezando por el directorio de comercios, profesionales y servicios públicos. Poco a poco, en los próximos meses, se irán sumando lugares de interés, actividades y eventos, noticias y clasificados.",
   "sobre.how4": "La información se organiza para facilitar las búsquedas y permitir que cualquier persona acceda sin registros ni complicaciones.",
   "sobre.how5": "Los contenidos se revisan antes de su publicación para procurar que la información sea útil, clara y fiable.",
-  "sobre.joinTitle": "¿Cómo aparecer en Aquí Bonela?",
+  "sobre.joinTitle": "¿Cómo aparecer en {app}?",
   "sobre.join1": "Cualquier persona puede participar. Si conoces un lugar de interés, organizas una actividad, quieres compartir un evento, una noticia o tienes un anuncio que pueda resultar útil para el pueblo, puedes enviárnoslo.",
   "sobre.join2": "Si además tienes un comercio, eres profesional o formas parte de una asociación o colectivo, puedes solicitar tu ficha en la plataforma.",
   "sobre.join3": "Las propuestas se revisan antes de publicarse y la inclusión básica en el directorio es siempre gratuita.",
   "sobre.growTitle": "¿Nos ayudas a crecer?",
-  "sobre.grow1": "Aquí Bonela es un proyecto que se construye y mejora con el conocimiento y la participación de quienes viven, trabajan o tienen relación con Casarabonela.",
+  "sobre.grow1": "{app} es un proyecto que se construye y mejora con el conocimiento y la participación de quienes viven, trabajan o tienen relación con {municipio}.",
   "sobre.grow2": "Si conoces un negocio que falta, sabes de un lugar que merece la pena descubrir, quieres dar a conocer una actividad o has detectado algún dato incorrecto, puedes contárnoslo.",
-  "sobre.grow3": "Toda aportación ayuda a que Aquí Bonela sea cada día más útil para el municipio.",
+  "sobre.grow3": "Toda aportación ayuda a que {app} sea cada día más útil para el municipio.",
   "sobre.indepTitle": "Una iniciativa independiente",
-  "sobre.indep1": "Aquí Bonela es una iniciativa privada e independiente, creada para reunir y facilitar el acceso a información de interés sobre Casarabonela.",
+  "sobre.indep1": "{app} es una iniciativa privada e independiente, creada para reunir y facilitar el acceso a información de interés sobre {municipio}.",
   "sobre.indep2": "No es una web oficial del Ayuntamiento ni representa a ninguna administración pública.",
 
-  "descubre.kicker": "Descubre Bonela",
-  "descubre.title": "Casarabonela, un pueblo por descubrir",
-  "descubre.heroAlt": "Calles encaladas de Casarabonela",
-  "descubre.intro1": "Entre las montañas de Málaga, en las estribaciones de la Sierra de las Nieves, se encuentra Casarabonela, un pueblo blanco que conserva el encanto de la Andalucía más auténtica.",
+  "descubre.kicker": "Descubre {nombreCorto}",
+  "descubre.title": "{municipio}, un pueblo por descubrir",
+  "descubre.heroAlt": "Calles encaladas de {municipio}",
+  "descubre.intro1": "Entre las montañas de Málaga, en las estribaciones de la Sierra de las Nieves, se encuentra {municipio}, un pueblo blanco que conserva el encanto de la Andalucía más auténtica.",
   "descubre.intro2": "Sus calles estrechas, sus casas encaladas, sus antiguas fuentes y su herencia andalusí cuentan historias que han pasado de generación en generación.",
   "descubre.intro3": "Un lugar para pasear sin prisas, disfrutar de sus paisajes, descubrir sus tradiciones y dejarse sorprender por cada rincón.",
-  "descubre.introClosing": "Ven a descubrir Bonela. Aquí cada calle tiene una historia y cada visita, algo especial.",
+  "descubre.introClosing": "Ven a descubrir {nombreCorto}. Aquí cada calle tiene una historia y cada visita, algo especial.",
   "descubre.navLabel": "Secciones de la guía",
   "descubre.nav1": "Historia",
   "descubre.nav2": "Entorno",
@@ -162,18 +163,18 @@ const es = {
   "descubre.nav6": "Consejos",
   "descubre.k1": "Historia y patrimonio",
   "descubre.h1": "Un pasado que sigue vivo",
-  "descubre.p1a": "El origen andalusí de Casarabonela todavía se reconoce en sus calles, su arquitectura y la disposición de su casco histórico.",
+  "descubre.p1a": "El origen andalusí de {municipio} todavía se reconoce en sus calles, su arquitectura y la disposición de su casco histórico.",
   "descubre.p1b": "Conocida en época musulmana como Qasr Bunayra, la localidad conserva huellas de un pasado que ha dejado una profunda identidad en el pueblo. Paseando por sus calles descubrirás:",
   "descubre.b1a": "Los vestigios de su antiguo recinto fortificado.",
   "descubre.b1b": "La Iglesia de Santiago Apóstol, uno de sus edificios más representativos.",
   "descubre.b1c": "Calles estrechas y empinadas que conservan su trazado tradicional.",
   "descubre.b1d": "Hornacinas, fuentes y rincones que forman parte de su patrimonio popular.",
-  "descubre.c1": "Un paseo por Casarabonela es también un viaje a través de su historia.",
+  "descubre.c1": "Un paseo por {municipio} es también un viaje a través de su historia.",
   "descubre.map1": "Ubicar el casco histórico",
-  "descubre.castilloAlt": "Castillo de Casarabonela",
+  "descubre.castilloAlt": "Castillo de {municipio}",
   "descubre.k2": "Naturaleza y entorno",
   "descubre.h2": "Un pueblo entre montañas",
-  "descubre.p2a": "Casarabonela disfruta de un entorno natural privilegiado, rodeado de montañas, pinares, olivares y paisajes que invitan a salir a explorar.",
+  "descubre.p2a": "{municipio} disfruta de un entorno natural privilegiado, rodeado de montañas, pinares, olivares y paisajes que invitan a salir a explorar.",
   "descubre.p2b": "Su proximidad a la Sierra de las Nieves y la presencia de enclaves como Sierra Prieta ofrecen numerosas posibilidades para disfrutar del aire libre. Aquí encontrarás:",
   "descubre.b2a": "Paisajes de montaña y espectaculares vistas del valle del Guadalhorce.",
   "descubre.b2b": "Caminos y senderos para descubrir el entorno.",
@@ -182,11 +183,11 @@ const es = {
   "descubre.b2e": "Sierra Prieta, con su flora de montaña y una rica fauna, a un paso del pueblo.",
   "descubre.routesLabel": "Rutas y senderos:",
   "descubre.routesText": "estamos preparando información detallada de las rutas de senderismo del municipio. Mientras tanto, la Oficina de Turismo puede orientarte.",
-  "descubre.c2": "Tanto si buscas una ruta por la montaña como un paseo tranquilo, el entorno de Bonela merece ser descubierto.",
+  "descubre.c2": "Tanto si buscas una ruta por la montaña como un paseo tranquilo, el entorno de {nombreCorto} merece ser descubierto.",
   "descubre.sierraAlt": "Sierra de las Nieves",
   "descubre.k3": "Rincones que descubrir",
   "descubre.h3": "Pequeños lugares con mucho que contar",
-  "descubre.p3": "Más allá de sus calles blancas, Casarabonela esconde lugares que merecen una visita.",
+  "descubre.p3": "Más allá de sus calles blancas, {municipio} esconde lugares que merecen una visita.",
   "descubre.r1Name": "Iglesia de Santiago Apóstol",
   "descubre.r1Text": "Uno de los edificios más representativos del pueblo, en pleno casco histórico.",
   "descubre.r2Name": "Castillo y mirador",
@@ -194,7 +195,7 @@ const es = {
   "descubre.r3Name": "Jardín de Cactus",
   "descubre.r3Text": "Un espacio singular para descubrir una interesante colección de cactus y otras plantas suculentas.",
   "descubre.r4Name": "Fuentes y caños",
-  "descubre.r4Text": "Forman parte de la identidad de Casarabonela y recuerdan la importancia del agua en la vida del pueblo.",
+  "descubre.r4Text": "Forman parte de la identidad de {municipio} y recuerdan la importancia del agua en la vida del pueblo.",
   "descubre.r5Name": "Molino de Albaiva",
   "descubre.r5Text": "Ligado a la tradición y al aprovechamiento de los recursos del entorno.",
   "descubre.r6Name": "Jardín Andalusí",
@@ -203,7 +204,7 @@ const es = {
   "descubre.c3": "No tengas prisa. A veces, los mejores descubrimientos aparecen al doblar una esquina.",
   "descubre.k4": "Fiestas y tradiciones",
   "descubre.h4": "Una identidad que se celebra",
-  "descubre.p4a": "Las tradiciones forman parte del carácter de Casarabonela. A lo largo del año, sus calles se llenan de encuentros y celebraciones que mantienen viva la identidad del pueblo.",
+  "descubre.p4a": "Las tradiciones forman parte del carácter de {municipio}. A lo largo del año, sus calles se llenan de encuentros y celebraciones que mantienen viva la identidad del pueblo.",
   "descubre.p4bA": "Una de las más singulares es la ",
   "descubre.p4bStrong": "Fiesta de los Rondeles",
   "descubre.p4bB": ", cada 12 de diciembre: los capachos de esparto de los antiguos molinos de aceite se convierten en antorchas que iluminan las calles.",
@@ -215,7 +216,7 @@ const es = {
   "descubre.fiestasAlt": "Fiesta de los Rondeles",
   "descubre.k5": "Sabores de nuestra tierra",
   "descubre.h5": "Tradición que también se disfruta en la mesa",
-  "descubre.p5": "La gastronomía de Casarabonela está ligada a su historia, su entorno rural y los productos de la tierra, con recetas transmitidas de generación en generación.",
+  "descubre.p5": "La gastronomía de {municipio} está ligada a su historia, su entorno rural y los productos de la tierra, con recetas transmitidas de generación en generación.",
   "descubre.b5a": "Aceitunas y aceite de oliva.",
   "descubre.b5b": "Productos del cerdo y chacinas tradicionales.",
   "descubre.b5c": "Miel y productos locales.",
@@ -224,9 +225,9 @@ const es = {
   "descubre.c5": "Una buena forma de conocer un pueblo es sentarse a su mesa.",
   "descubre.whereEat": "Dónde comer",
   "descubre.whereBuy": "Dónde comprar",
-  "descubre.foodAlt": "Productos típicos de Casarabonela",
+  "descubre.foodAlt": "Productos típicos de {municipio}",
   "descubre.k6": "Consejos de vecino",
-  "descubre.h6": "Para disfrutar Bonela como alguien de aquí",
+  "descubre.h6": "Para disfrutar {nombreCorto} como alguien de aquí",
   "descubre.t1Title": "Ven con calzado cómodo",
   "descubre.t1Text": "El casco histórico tiene calles estrechas, empinadas y con tramos empedrados.",
   "descubre.t2Title": "Aparca y descubre el pueblo caminando",
@@ -241,8 +242,8 @@ const es = {
   "descubre.t6Text": "Si tu visita coincide con alguna fiesta, tendrás una oportunidad especial para conocer sus tradiciones.",
   "descubre.practical": "Información práctica en el directorio",
   "descubre.endTitle": "Hay mucho más por descubrir",
-  "descubre.endText": "Casarabonela es un pueblo que se disfruta caminando, conversando, descubriendo sus rincones y compartiendo sus tradiciones. Descubre sus comercios, conoce su gastronomía y encuentra lugares donde disfrutar de tu visita.",
-  "descubre.endWait": "Bonela te espera.",
+  "descubre.endText": "{municipio} es un pueblo que se disfruta caminando, conversando, descubriendo sus rincones y compartiendo sus tradiciones. Descubre sus comercios, conoce su gastronomía y encuentra lugares donde disfrutar de tu visita.",
+  "descubre.endWait": "{nombreCorto} te espera.",
   "descubre.endBtn": "Explorar el directorio",
 };
 
@@ -254,12 +255,12 @@ const en: Partial<Record<TKey, string>> = {
   "menu.close": "Close menu",
   "menu.directorio": "Directory",
   "menu.servicios": "Public services",
-  "menu.descubre": "Discover Bonela",
+  "menu.descubre": "Discover {nombreCorto}",
   "menu.actualidad": "News",
   "menu.clasificados": "Classifieds",
-  "menu.sobre": "About Aquí Bonela",
+  "menu.sobre": "About {app}",
   "menu.enviar": "Send information",
-  "menu.enviarDesc": "Send us a business, a place, an event\nor a correction for Aquí Bonela.",
+  "menu.enviarDesc": "Send us a business, a place, an event\nor a correction for {app}.",
   "lang.label": "Language",
   "feedback.reportSent": "Report received, thank you.",
   "feedback.reportError": "Could not send your report. Please try again.",
@@ -269,20 +270,20 @@ const en: Partial<Record<TKey, string>> = {
   "feedback.copied": "Copied to clipboard.",
   "feedback.copyError": "Could not copy. Please try again.",
   "footer.tagline": "Collaborative local directory",
-  "footer.about": "An independent digital platform to discover, get to know and share everything happening in Casarabonela.",
+  "footer.about": "An independent digital platform to discover, get to know and share everything happening in {municipio}.",
   "footer.legalNav": "Legal information",
   "footer.aviso": "Legal notice",
   "footer.privacidad": "Privacy policy",
   "footer.cookies": "Cookies",
-  "home.heroAlt": "View of the white village of Casarabonela and the Sierra de las Nieves",
-  "home.lema": "Everything you need to discover, get to know and enjoy Casarabonela.",
+  "home.heroAlt": "View of the white village of {municipio} and the Sierra de las Nieves",
+  "home.lema": "Everything you need to discover, get to know and enjoy {municipio}.",
   "home.searchLabel": "What do you need today?",
   "home.searchPh": "What do you need? Pharmacy, plumber…",
   "home.searchBtn": "Search",
   "home.start": "Where shall we start?",
   "home.dirTitle": "Local directory",
   "home.dirText": "Shops, trades, professionals and associations in the village.",
-  "home.descTitle": "Discover Bonela",
+  "home.descTitle": "Discover {nombreCorto}",
   "home.descText": "Heritage, charming corners, nature and tips from locals.",
   "home.servTitle": "Public services",
   "home.servText": "Town hall, health, public offices and useful phone numbers.",
@@ -292,13 +293,13 @@ const en: Partial<Record<TKey, string>> = {
   "home.urg112": "Emergencies · 112",
   "home.urgLocal": "Local emergency services",
   "home.shareTitle": "Do you have a business, an association or something to share?",
-  "home.shareText": "Help us keep Casarabonela complete and up to date. We review every contribution.",
+  "home.shareText": "Help us keep {municipio} complete and up to date. We review every contribution.",
   "home.shareBtn": "Send information",
-  "home.kicker": "Where Casarabonela begins",
-  "home.exploreTitle": "Explore Casarabonela",
+  "home.kicker": "Where {municipio} begins",
+  "home.exploreTitle": "Explore {municipio}",
   "home.rinconesKicker": "There is a lot to discover",
   "home.rinconesTitle": "Corners with a story",
-  "home.rinconesAll": "See all of Discover Bonela",
+  "home.rinconesAll": "See all of Discover {nombreCorto}",
   "home.r1t": "The Arrabal quarter",
   "home.r1d": "Steep, narrow, whitewashed streets with a Moorish layout.",
   "home.r2t": "Mora i Bravard Cactus Garden",
@@ -307,62 +308,62 @@ const en: Partial<Record<TKey, string>> = {
   "home.r3d": "Mountain water running through the village all year.",
   "home.r4t": "Qasr Bunayra castle",
   "home.r4d": "A 9th-century Arab watchtower over the valley.",
-  "home2.searchKicker": "Find what you need in Casarabonela",
+  "home2.searchKicker": "Find what you need in {municipio}",
   "home2.introKicker": "The village",
-  "home2.introTitle": "Casarabonela, a village waiting to be discovered",
-  "home2.intro1": "Nestled in the mountains of Málaga, in the foothills of the Sierra de las Nieves, Casarabonela is one of those white Andalusian villages that keep their essence.",
+  "home2.introTitle": "{municipio}, a village waiting to be discovered",
+  "home2.intro1": "Nestled in the mountains of Málaga, in the foothills of the Sierra de las Nieves, {municipio} is one of those white Andalusian villages that keep their essence.",
   "home2.intro2": "Its narrow, steep streets, whitewashed façades, old fountains and Andalusí heritage invite you to wander unhurriedly through a historic centre full of charming corners.",
   "home2.intro3": "Centuries of history, mountain landscapes, nature trails and a living popular culture come together here. From the Qasr Bunayra Castle and the Islamic Garden to its traditional springs and niches, every corner holds a little story.",
   "home2.howTo": "How to get here",
   "home.suggestNone": "No matches. Press Search to open the directory.",
   "home.suggestAll": "See all results",
-  "home.ctaTitle": "Your business is part of Bonela too",
+  "home.ctaTitle": "Your business is part of {nombreCorto} too",
   "home.ctaText": "A free listing, reviewed with you, so locals and visitors can find you.",
   "home.ctaBtn": "Request my listing",
-  "home2.intro4": "Its traditional cuisine, local produce and unique celebrations such as the Fiesta de los Rondeles, every 12 December, make Casarabonela a destination well worth discovering.",
+  "home2.intro4": "Its traditional cuisine, local produce and unique celebrations such as the Fiesta de los Rondeles, every 12 December, make {municipio} a destination well worth discovering.",
   "home2.intro5": "Come and see it. Stroll, enjoy and let yourself be surprised by the essence of a genuine Andalusian village.",
   "home2.f1": "metres high",
   "home2.f2": "inhabitants",
   "home2.f3": "km from Málaga",
-  "home2.sectionsTitle": "Everything in Aquí Bonela",
+  "home2.sectionsTitle": "Everything in {app}",
   "home2.actText": "News, events and announcements from the village.",
   "home2.clasText": "Buy, sell and local notices between neighbours.",
   "home2.sobreText": "Who we are and why this platform exists.",
   "home2.enviarText": "Tell us about a business, a mistake or something new.",
-  "sobre.title": "About Aquí Bonela",
+  "sobre.title": "About {app}",
   "sobre.whatTitle": "What is it?",
-  "sobre.what1": "Aquí Bonela is a digital platform dedicated to Casarabonela, created to bring the municipality's useful information together in one place.",
+  "sobre.what1": "{app} is a digital platform dedicated to {municipio}, created to bring the municipality's useful information together in one place.",
   "sobre.what2": "A space that will gather shops, professionals, public services, associations, places of interest, activities, news and much more.",
   "sobre.what3": "It comes from a simple idea: making our village's information more accessible, better organised and easy to find from any device.",
   "sobre.audienceTitle": "Who is it for?",
   "sobre.aud1": "For residents who need to find a service, check a phone number, learn about an activity or keep up with what is happening in the municipality.",
-  "sobre.aud2": "For visitors to Casarabonela who want to discover its places, routes, shops and proposals.",
+  "sobre.aud2": "For visitors to {municipio} who want to discover its places, routes, shops and proposals.",
   "sobre.aud3": "And also for businesses, professionals, associations and groups who want to make their work known and be part of a shared space.",
   "sobre.howTitle": "How does it work?",
-  "sobre.how1": "Aquí Bonela brings together different content from the municipality so you can find what you need easily.",
-  "sobre.how2": "The aim is that you don't have to search across different pages, social networks or groups to find information about Casarabonela: Aquí Bonela works to gather and organise it in one shared space.",
+  "sobre.how1": "{app} brings together different content from the municipality so you can find what you need easily.",
+  "sobre.how2": "The aim is that you don't have to search across different pages, social networks or groups to find information about {municipio}: {app} works to gather and organise it in one shared space.",
   "sobre.how3": "We are starting with the directory of shops, professionals and public services. Little by little, over the coming months, places of interest, activities and events, news and classifieds will be added.",
   "sobre.how4": "Information is organised to make searching easier and to let anyone access it without registrations or complications.",
   "sobre.how5": "Content is reviewed before publication to keep the information useful, clear and reliable.",
-  "sobre.joinTitle": "How to appear on Aquí Bonela?",
+  "sobre.joinTitle": "How to appear on {app}?",
   "sobre.join1": "Anyone can take part. If you know a place of interest, organise an activity, want to share an event or a news item, or have an announcement that could be useful for the village, you can send it to us.",
   "sobre.join2": "If you also run a shop, are a professional or belong to an association or group, you can request your listing on the platform.",
   "sobre.join3": "Proposals are reviewed before being published, and basic inclusion in the directory is always free.",
   "sobre.growTitle": "Can you help us grow?",
-  "sobre.grow1": "Aquí Bonela is a project built and improved with the knowledge and participation of the people who live, work or have ties with Casarabonela.",
+  "sobre.grow1": "{app} is a project built and improved with the knowledge and participation of the people who live, work or have ties with {municipio}.",
   "sobre.grow2": "If you know a business that is missing, know of a place worth discovering, want to publicise an activity or have spotted incorrect data, you can tell us.",
-  "sobre.grow3": "Every contribution helps make Aquí Bonela more useful for the municipality every day.",
+  "sobre.grow3": "Every contribution helps make {app} more useful for the municipality every day.",
   "sobre.indepTitle": "An independent initiative",
-  "sobre.indep1": "Aquí Bonela is a private, independent initiative created to gather and ease access to information of interest about Casarabonela.",
+  "sobre.indep1": "{app} is a private, independent initiative created to gather and ease access to information of interest about {municipio}.",
   "sobre.indep2": "It is not an official Town Hall website and does not represent any public administration.",
 
-  "descubre.kicker": "Discover Bonela",
-  "descubre.title": "Casarabonela, a village waiting to be discovered",
-  "descubre.heroAlt": "Whitewashed streets of Casarabonela",
-  "descubre.intro1": "In the mountains of Málaga, at the foot of the Sierra de las Nieves, lies Casarabonela, a white village that keeps the charm of the most authentic Andalusia.",
+  "descubre.kicker": "Discover {nombreCorto}",
+  "descubre.title": "{municipio}, a village waiting to be discovered",
+  "descubre.heroAlt": "Whitewashed streets of {municipio}",
+  "descubre.intro1": "In the mountains of Málaga, at the foot of the Sierra de las Nieves, lies {municipio}, a white village that keeps the charm of the most authentic Andalusia.",
   "descubre.intro2": "Its narrow streets, its whitewashed houses, its old fountains and its Andalusí heritage tell stories passed down from generation to generation.",
   "descubre.intro3": "A place to stroll without hurry, enjoy the landscapes, discover its traditions and let yourself be surprised around every corner.",
-  "descubre.introClosing": "Come and discover Bonela. Here every street has a story and every visit holds something special.",
+  "descubre.introClosing": "Come and discover {nombreCorto}. Here every street has a story and every visit holds something special.",
   "descubre.navLabel": "Guide sections",
   "descubre.nav1": "History",
   "descubre.nav2": "Nature",
@@ -372,18 +373,18 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.nav6": "Tips",
   "descubre.k1": "History and heritage",
   "descubre.h1": "A past that is still alive",
-  "descubre.p1a": "The Andalusí origin of Casarabonela is still recognisable in its streets, its architecture and the layout of its historic centre.",
+  "descubre.p1a": "The Andalusí origin of {municipio} is still recognisable in its streets, its architecture and the layout of its historic centre.",
   "descubre.p1b": "Known in Muslim times as Qasr Bunayra, the town keeps traces of a past that left a deep identity on the village. Walking its streets you will discover:",
   "descubre.b1a": "The remains of its old fortified enclosure.",
   "descubre.b1b": "The Church of Santiago Apóstol, one of its most representative buildings.",
   "descubre.b1c": "Narrow, steep streets that keep their traditional layout.",
   "descubre.b1d": "Wall niches, fountains and corners that form part of its popular heritage.",
-  "descubre.c1": "A stroll through Casarabonela is also a journey through its history.",
+  "descubre.c1": "A stroll through {municipio} is also a journey through its history.",
   "descubre.map1": "See the historic centre on the map",
-  "descubre.castilloAlt": "Casarabonela Castle",
+  "descubre.castilloAlt": "{municipio} Castle",
   "descubre.k2": "Nature and surroundings",
   "descubre.h2": "A village between mountains",
-  "descubre.p2a": "Casarabonela enjoys a privileged natural setting, surrounded by mountains, pine forests, olive groves and landscapes that invite you to go out and explore.",
+  "descubre.p2a": "{municipio} enjoys a privileged natural setting, surrounded by mountains, pine forests, olive groves and landscapes that invite you to go out and explore.",
   "descubre.p2b": "Its proximity to the Sierra de las Nieves and places such as Sierra Prieta offer many ways to enjoy the outdoors. Here you will find:",
   "descubre.b2a": "Mountain landscapes and spectacular views over the Guadalhorce valley.",
   "descubre.b2b": "Paths and trails to discover the surroundings.",
@@ -392,11 +393,11 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.b2e": "Sierra Prieta, with its mountain flora and rich fauna, just a step from the village.",
   "descubre.routesLabel": "Routes and trails:",
   "descubre.routesText": "we are preparing detailed information on the municipality's hiking routes. In the meantime, the Tourist Office can point you in the right direction.",
-  "descubre.c2": "Whether you are looking for a mountain route or a gentle walk, the surroundings of Bonela are worth discovering.",
+  "descubre.c2": "Whether you are looking for a mountain route or a gentle walk, the surroundings of {nombreCorto} are worth discovering.",
   "descubre.sierraAlt": "Sierra de las Nieves",
   "descubre.k3": "Hidden spots to discover",
   "descubre.h3": "Small places with a lot to tell",
-  "descubre.p3": "Beyond its white streets, Casarabonela hides places that deserve a visit.",
+  "descubre.p3": "Beyond its white streets, {municipio} hides places that deserve a visit.",
   "descubre.r1Name": "Church of Santiago Apóstol",
   "descubre.r1Text": "One of the most representative buildings in the village, right in the historic centre.",
   "descubre.r2Name": "Castle and viewpoint",
@@ -404,7 +405,7 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.r3Name": "Cactus Garden",
   "descubre.r3Text": "A unique space to discover an interesting collection of cacti and other succulent plants.",
   "descubre.r4Name": "Fountains and springs",
-  "descubre.r4Text": "Part of the identity of Casarabonela, reminding us of the importance of water in village life.",
+  "descubre.r4Text": "Part of the identity of {municipio}, reminding us of the importance of water in village life.",
   "descubre.r5Name": "Albaiva Mill",
   "descubre.r5Text": "Linked to tradition and to the use of the resources of the surroundings.",
   "descubre.r6Name": "Andalusí Garden",
@@ -413,7 +414,7 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.c3": "Don't rush. Sometimes the best discoveries appear around the next corner.",
   "descubre.k4": "Festivals and traditions",
   "descubre.h4": "An identity that is celebrated",
-  "descubre.p4a": "Traditions are part of the character of Casarabonela. Throughout the year, its streets fill with gatherings and celebrations that keep the village's identity alive.",
+  "descubre.p4a": "Traditions are part of the character of {municipio}. Throughout the year, its streets fill with gatherings and celebrations that keep the village's identity alive.",
   "descubre.p4bA": "One of the most unique is the ",
   "descubre.p4bStrong": "Fiesta de los Rondeles",
   "descubre.p4bB": ", every 12 December: the esparto-grass mats from the old oil mills become torches that light up the streets.",
@@ -425,7 +426,7 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.fiestasAlt": "Fiesta de los Rondeles",
   "descubre.k5": "Flavours of our land",
   "descubre.h5": "Tradition that is also enjoyed at the table",
-  "descubre.p5": "The cuisine of Casarabonela is linked to its history, its rural setting and the products of the land, with recipes handed down from generation to generation.",
+  "descubre.p5": "The cuisine of {municipio} is linked to its history, its rural setting and the products of the land, with recipes handed down from generation to generation.",
   "descubre.b5a": "Olives and olive oil.",
   "descubre.b5b": "Pork products and traditional cured meats.",
   "descubre.b5c": "Honey and local products.",
@@ -434,9 +435,9 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.c5": "A good way to get to know a village is to sit down at its table.",
   "descubre.whereEat": "Where to eat",
   "descubre.whereBuy": "Where to buy",
-  "descubre.foodAlt": "Typical products of Casarabonela",
+  "descubre.foodAlt": "Typical products of {municipio}",
   "descubre.k6": "Tips from a local",
-  "descubre.h6": "To enjoy Bonela like someone from here",
+  "descubre.h6": "To enjoy {nombreCorto} like someone from here",
   "descubre.t1Title": "Come in comfortable shoes",
   "descubre.t1Text": "The historic centre has narrow, steep streets with cobbled stretches.",
   "descubre.t2Title": "Park and discover the village on foot",
@@ -451,12 +452,12 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.t6Text": "If your visit coincides with a festival, you will have a special chance to get to know its traditions.",
   "descubre.practical": "Practical information in the directory",
   "descubre.endTitle": "There is much more to discover",
-  "descubre.endText": "Casarabonela is a village enjoyed by walking, talking, discovering its corners and sharing its traditions. Discover its shops, get to know its cuisine and find places to enjoy your visit.",
-  "descubre.endWait": "Bonela is waiting for you.",
+  "descubre.endText": "{municipio} is a village enjoyed by walking, talking, discovering its corners and sharing its traditions. Discover its shops, get to know its cuisine and find places to enjoy your visit.",
+  "descubre.endWait": "{nombreCorto} is waiting for you.",
   "descubre.endBtn": "Explore the directory",
 };
 
-const STORAGE_KEY = "aquibonela-lang";
+const STORAGE_KEY = `${getMunicipality().storagePrefix}-lang`;
 
 const normalizedText = (text: string) => text.replace(/\s+/g, " ").trim();
 const originalEnglish = Object.fromEntries(Object.entries(es).map(([key, value]) => [value, en[key as TKey] ?? value]));
@@ -478,8 +479,27 @@ const textMaps = new Map(Object.entries(rawTexts).map(([language, dictionary]) =
 ]));
 
 /** Coverage is separate from fallback so missing translations can be tested before publishing. */
+/**
+ * Los catálogos guardan los nombres como {app}, {municipio}, {nombreCorto} y {provincia}.
+ * Se busca el texto tal cual, su versión con variables y, al revés, la ya personalizada.
+ */
+function lookupText(lang: Lang, text: string): string | undefined {
+  const map = textMaps.get(lang);
+  if (!map) return undefined;
+  const direct = map.get(text);
+  if (direct !== undefined) return direct;
+  const generic = unbrand(text);
+  if (generic !== text) {
+    const found = map.get(generic);
+    if (found !== undefined) return brand(found);
+  }
+  const branded = brand(text);
+  if (branded !== text) return map.get(branded);
+  return undefined;
+}
+
 export function hasTranslation(text: string, lang: Lang): boolean {
-  return lang === "es" || textMaps.get(lang)?.has(normalizedText(text)) === true;
+  return lang === "es" || lookupText(lang, normalizedText(text)) !== undefined;
 }
 
 export function translateText(text: string, lang: Lang): string {
@@ -487,13 +507,14 @@ export function translateText(text: string, lang: Lang): string {
   // Keep paragraphs and list entries intact, even when a full description is in the catalog.
   if (text.includes("\n")) return text.split("\n").map((line) => translateText(line, lang)).join("\n");
   const normalized = normalizedText(text);
-  const translated = textMaps.get(lang)?.get(normalized);
+  const translated = lookupText(lang, normalized);
   if (translated) return `${text.match(/^\s*/)?.[0] ?? ""}${translated.trim()}${text.match(/\s*$/)?.[0] ?? ""}`;
   for (const separator of [" · ", " — ", " | "]) {
     if (text.includes(separator)) return text.split(separator).map((part) => translateText(part, lang)).join(separator);
   }
-  const placeTitle = normalized.match(/^(.*?) (en Casarabonela|en Aquí Bonela)$/);
-  if (placeTitle) return `${translateText(placeTitle[1] ?? "", lang)} ${translateText(placeTitle[2] ?? "", lang)}`;
+  const m = getMunicipality();
+  const placeSuffix = [`en ${m.name}`, `en ${m.appName}`].find((suffix) => normalized.endsWith(` ${suffix}`));
+  if (placeSuffix) return `${translateText(normalized.slice(0, -placeSuffix.length - 1), lang)} ${translateText(placeSuffix, lang)}`;
   const count = normalized.match(/^(\d+) (fichas|trámites)$/);
   if (count) return `${count[1]} ${translateText(count[2] ?? "", lang)}`;
   const until = normalized.match(/^Hasta el (.+)$/);
@@ -541,7 +562,9 @@ export function interpolate(text: string, params?: TParams): string {
 }
 
 type Ctx = { lang: Lang; locale: string; setLang: (l: Lang) => void; t: (k: TKey, params?: TParams) => string; tr: (text: string, params?: TParams) => string };
-const I18nContext = createContext<Ctx>({ lang: "es", locale: "es-ES", setLang: () => {}, t: (k, params) => interpolate(es[k], params), tr: (text, params) => interpolate(text, params) });
+/** {app}, {municipio}, {nombreCorto} y {provincia} se rellenan siempre con la instancia compilada. */
+const withBrand = (params?: TParams): TParams => ({ ...brandParams(), ...params });
+const I18nContext = createContext<Ctx>({ lang: "es", locale: "es-ES", setLang: () => {}, t: (k, params) => interpolate(es[k], withBrand(params)), tr: (text, params) => interpolate(text, withBrand(params)) });
 
 export function I18nProvider({ children, fixedLanguage }: { children: ReactNode; fixedLanguage?: Lang }) {
   const [selectedLanguage, setLangState] = useState<Lang>("es");
@@ -563,8 +586,8 @@ export function I18nProvider({ children, fixedLanguage }: { children: ReactNode;
     try { window.localStorage.setItem(STORAGE_KEY, l); } catch { /* Keep the current selection in memory. */ }
   }, []);
 
-  const t = useCallback((k: TKey, params?: TParams) => interpolate(lang === "es" ? es[k] : lang === "en" ? en[k] ?? es[k] : translateText(es[k], lang), params), [lang]);
-  const tr = useCallback((text: string, params?: TParams) => interpolate(translateText(text, lang), params), [lang]);
+  const t = useCallback((k: TKey, params?: TParams) => interpolate(lang === "es" ? es[k] : lang === "en" ? en[k] ?? es[k] : translateText(es[k], lang), withBrand(params)), [lang]);
+  const tr = useCallback((text: string, params?: TParams) => interpolate(translateText(text, lang), withBrand(params)), [lang]);
 
   return <I18nContext.Provider value={{ lang, locale: LANGUAGE_OPTIONS[lang].locale, setLang, t, tr }}>{children}</I18nContext.Provider>;
 }
@@ -574,7 +597,7 @@ export const useI18n = () => useContext(I18nContext);
 /** Saved editorial versions take precedence over the legacy source-text catalog. */
 export function ContentTranslationProvider({ translations, children }: { translations: Record<string, string>; children: ReactNode }) {
   const parent = useI18n();
-  return <I18nContext.Provider value={{ ...parent, tr: (text, params) => Object.hasOwn(translations, text) ? interpolate(translations[text] ?? text, params) : parent.tr(text, params) }}>{children}</I18nContext.Provider>;
+  return <I18nContext.Provider value={{ ...parent, tr: (text, params) => Object.hasOwn(translations, text) ? interpolate(translations[text] ?? text, withBrand(params)) : parent.tr(text, params) }}>{children}</I18nContext.Provider>;
 }
 
 export function Text({ text, params }: { text: string; params?: TParams }) {

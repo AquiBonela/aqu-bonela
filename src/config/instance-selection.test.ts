@@ -2,14 +2,16 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import instance from "@instance";
+import type { ConfigEnv, UserConfig } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { availableInstances, resolveInstanceId } from "../../instances/resolve";
+import { availableInstances, instancePublicDir, resolveInstanceId } from "../../instances/resolve";
+import { instanceSelection } from "../../instances/select";
 
 let root: string;
 
 beforeAll(() => {
   root = mkdtempSync(join(tmpdir(), "instancias-"));
-  for (const id of ["casarabonela", "otro-pueblo"]) {
+  for (const id of ["casarabonela", "demo", "otro-pueblo"]) {
     mkdirSync(join(root, "instances", id), { recursive: true });
     writeFileSync(join(root, "instances", id, "config.ts"), "export default {};");
   }
@@ -17,9 +19,9 @@ beforeAll(() => {
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
 describe("selección de instancia", () => {
-  it("sin variable o en blanco usa casarabonela", () => {
-    expect(resolveInstanceId(undefined, root)).toBe("casarabonela");
-    expect(resolveInstanceId("  ", root)).toBe("casarabonela");
+  it("sin variable o en blanco usa la demo", () => {
+    expect(resolveInstanceId(undefined, root)).toBe("demo");
+    expect(resolveInstanceId("  ", root)).toBe("demo");
   });
 
   it("selecciona la instancia indicada", () => {
@@ -27,14 +29,28 @@ describe("selección de instancia", () => {
   });
 
   it("falla con un id inexistente y enumera los disponibles", () => {
-    expect(() => resolveInstanceId("no-existe", root)).toThrow(/no-existe.*casarabonela, otro-pueblo/);
+    expect(() => resolveInstanceId("no-existe", root)).toThrow(/no-existe.*casarabonela, demo, otro-pueblo/);
   });
 
   it("no admite rutas como identificador", () => {
     expect(() => resolveInstanceId("../instances/casarabonela", root)).toThrow();
   });
 
-  it("el alias @instance apunta a casarabonela por defecto", () => {
+  it("el build copia los archivos públicos de la instancia elegida", () => {
+    const saved = process.env["VITE_MUNICIPALITY_ID"];
+    delete process.env["VITE_MUNICIPALITY_ID"];
+    try {
+      const plugin = instanceSelection({ fallbackId: "otro-pueblo" });
+      const config = (plugin.config as (c: UserConfig, e: ConfigEnv) => UserConfig)({ root }, { mode: "production", command: "build" });
+      expect(config.publicDir).toBe(instancePublicDir(root, "otro-pueblo"));
+      // Nitro pone copyPublicDir a false si no se indica: sin esto no se sirven favicon, manifest ni robots.txt.
+      expect(config.environments?.["client"]?.build?.copyPublicDir).toBe(true);
+    } finally {
+      if (saved !== undefined) process.env["VITE_MUNICIPALITY_ID"] = saved;
+    }
+  });
+
+  it("en las pruebas el alias @instance apunta a casarabonela", () => {
     expect(instance.id).toBe("casarabonela");
   });
 
@@ -42,6 +58,8 @@ describe("selección de instancia", () => {
     for (const id of availableInstances(process.cwd())) {
       const source = readFileSync(join("instances", id, "config.ts"), "utf8");
       expect(source, id).toContain(`id: "${id}"`);
+      expect(readFileSync(join("instances", id, "content.ts"), "utf8").length, id).toBeGreaterThan(0);
+      expect(readFileSync(join("instances", id, "public", "manifest.webmanifest"), "utf8"), id).toContain('"name"');
     }
   });
 });

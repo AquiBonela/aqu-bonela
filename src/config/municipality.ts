@@ -5,7 +5,9 @@
  */
 // La instancia se elige al compilar: ver instances/select.ts.
 import instance from "@instance";
+import content from "@instance-content";
 import type {
+  InstanceContent,
   MunicipalityConfig,
   MunicipalityDarkTokens,
   MunicipalityLightTokens,
@@ -15,6 +17,7 @@ import { DEFAULT_MUNICIPALITY_ID } from "../../instances/schema";
 
 export { DEFAULT_MUNICIPALITY_ID };
 export type {
+  InstanceContent,
   MunicipalityAssets,
   MunicipalityConfig,
   MunicipalityDarkTokens,
@@ -47,9 +50,48 @@ export function resolveMunicipality(
   return found;
 }
 
-/** Configuración de la instalación actual. */
+/** Configuración de la instalación actual (la instancia compilada). */
 export function getMunicipality(): MunicipalityConfig {
-  return resolveMunicipality(import.meta.env["VITE_MUNICIPALITY_ID"] as string | undefined);
+  return instance;
+}
+
+/** Contenido estable de la instalación actual. */
+export function getInstanceContent(): InstanceContent {
+  return content;
+}
+
+/** Valores de {app}, {municipio}, {nombreCorto} y {provincia} en los textos. */
+export function brandParams(m: MunicipalityConfig = instance): Record<string, string> {
+  return { app: m.appName, municipio: m.name, nombreCorto: m.shortName, provincia: m.province };
+}
+
+/** Sustituye las variables de marca en textos que no pasan por las traducciones (p. ej. metadatos). */
+export function brand(text: string, m: MunicipalityConfig = instance): string {
+  const params = brandParams(m);
+  return text.replace(/\{(app|municipio|nombreCorto|provincia)\}/g, (match, name: string) => params[name] ?? match);
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Inverso de brand(): vuelve a las variables a partir de los valores de la instancia,
+ * para localizar en los catálogos un texto ya personalizado.
+ */
+export function unbrand(text: string, m: MunicipalityConfig = instance): string {
+  const pairs: [string, string][] = [
+    [`${m.name} (${m.province})`, "{municipio} ({provincia})"],
+    [m.appName, "{app}"],
+    [m.name, "{municipio}"],
+    [m.shortName, "{nombreCorto}"],
+  ];
+  let out = text;
+  for (const [value, token] of pairs) {
+    if (!value) continue;
+    out = out.replace(new RegExp(`(?<![\\p{L}\\p{N}{])${escapeRegExp(value)}(?![\\p{L}\\p{N}}])`, "gu"), token);
+  }
+  return out;
 }
 
 

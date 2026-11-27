@@ -38,14 +38,13 @@ describe("configuración municipal", () => {
     const m = resolveMunicipality("alozaina", registry);
     expect(m.name).toBe("Alozaina");
     expect(m.siteUrl).toBe("https://aquialozaina.example");
-    expect(m.coordinates.lat).toBe(36.728);
-    expect(m.coordinates.lng).toBe(-4.857);
+    expect(m.coordinates?.lat).toBe(36.728);
+    expect(m.coordinates?.lng).toBe(-4.857);
   });
 
   it("con identificador desconocido lanza un error explícito", () => {
-    vi.stubEnv("VITE_MUNICIPALITY_ID", "inexistente");
-    expect(() => getMunicipality()).toThrow(UnknownMunicipalityError);
-    expect(() => getMunicipality()).toThrow(/inexistente/);
+    expect(() => resolveMunicipality("inexistente", registry)).toThrow(UnknownMunicipalityError);
+    expect(() => resolveMunicipality("inexistente", registry)).toThrow(/inexistente/);
   });
 
   it("no acepta claves heredadas del prototipo", () => {
@@ -134,7 +133,7 @@ describe("tema municipal", () => {
     expect(a.appleTouchIcon).toBe("/apple-touch-icon.png");
     expect(a.pwaIcons).toEqual({ icon192: "/icon-192.png", icon512: "/icon-512.png" });
     for (const path of [a.favicon, a.appleTouchIcon, a.pwaIcons.icon192, a.pwaIcons.icon512]) {
-      expect(readFileSync(`public${path}`).length).toBeGreaterThan(0);
+      expect(readFileSync(`instances/casarabonela/public${path}`).length).toBeGreaterThan(0);
     }
   });
 });

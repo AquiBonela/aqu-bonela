@@ -32,7 +32,8 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@instance": ["./instances/casarabonela/config.ts"]
+      "@instance": ["./instances/casarabonela/config.ts"],
+      "@instance-content": ["./instances/casarabonela/content.ts"]
     }
   }
 }

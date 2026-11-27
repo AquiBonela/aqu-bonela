@@ -4,6 +4,7 @@ import { Download, PlusSquare, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
+import { getMunicipality } from "@/config/municipality";
 import { canOfferInstall, INSTALL_DELAY_MS, INSTALL_STORAGE_KEY, installPlatform, isIosSafari, publicInstallPage } from "@/lib/install-prompt";
 
 interface BrowserInstallEvent extends Event {
@@ -104,10 +105,10 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
       {children}
       <Dialog open={open} onOpenChange={(next) => { if (!next && !busy) dismiss(); }}>
         <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-none shadow-none sm:rounded-none motion-reduce:animate-none">
-          <img src="/icon-192.png" alt="" width={64} height={64} className="h-16 w-16" />
+          <img src={getMunicipality().assets.pwaIcons.icon192} alt="" width={64} height={64} className="h-16 w-16" />
           <DialogHeader>
-            <DialogTitle className="pr-5 font-display text-xl leading-snug">{tr("Instalar Aquí Bonela")}</DialogTitle>
-            <DialogDescription>{tr("Añadir Aquí Bonela a tu pantalla de inicio")}</DialogDescription>
+            <DialogTitle className="pr-5 font-display text-xl leading-snug">{tr("Instalar {app}")}</DialogTitle>
+            <DialogDescription>{tr("Añadir {app} a tu pantalla de inicio")}</DialogDescription>
           </DialogHeader>
           {!installEvent && (platform === "ios" && safari ? (
             <ol className="space-y-4 text-sm">

@@ -119,7 +119,7 @@ export function ReportDialog({ listingId, listingName }: { listingId: string; li
                   <Send className="h-5 w-5" aria-hidden /> {tr(state === "sending" ? "Enviando…" : "Enviar aviso")}
                 </Button>
                 <p className="border-t pt-4 text-center text-base text-muted-foreground">
-                   <Text text="Tu reporte ayuda a mantener actualizado el directorio municipal de Casarabonela. Sin spam ni datos públicos." /> </p>
+                   <Text text="Tu reporte ayuda a mantener actualizado el directorio municipal de {municipio}. Sin spam ni datos públicos." /> </p>
               </form>
             )}
           </div>

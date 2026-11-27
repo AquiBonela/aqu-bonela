@@ -10,13 +10,14 @@ import { isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
 import { changeAdminCategory, changeAdminType, emptyAdminFilters, filterAdminListings } from "@/lib/admin-listing-filters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
     meta: [
-      { title: "Fichas · Administración Aquí Bonela" },
-      { name: "description", content: "Gestión de fichas del directorio Aquí Bonela." },
-      { property: "og:title", content: "Fichas · Administración Aquí Bonela" },
+      { title: brand("Fichas · Administración {app}") },
+      { name: "description", content: brand("Gestión de fichas del directorio {app}.") },
+      { property: "og:title", content: brand("Fichas · Administración {app}") },
       { property: "og:description", content: "Gestión de fichas del directorio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

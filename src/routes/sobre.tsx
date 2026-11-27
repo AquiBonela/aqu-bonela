@@ -3,20 +3,21 @@ import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n, type TKey } from "@/lib/i18n";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
     meta: [
-      { title: "Sobre Aquí Bonela — Aquí Bonela" },
+      { title: brand("Sobre {app} — {app}") },
       {
         name: "description",
         content:
-          "Aquí Bonela reúne la información útil de Casarabonela: comercios, profesionales, servicios públicos, asociaciones, lugares, actividades y noticias.",
+          brand("{app} reúne la información útil de {municipio}: comercios, profesionales, servicios públicos, asociaciones, lugares, actividades y noticias."),
       },
-      { property: "og:title", content: "Sobre Aquí Bonela" },
+      { property: "og:title", content: brand("Sobre {app}") },
       {
         property: "og:description",
-        content: "Una plataforma independiente que reúne en un mismo lugar la información útil de Casarabonela.",
+        content: brand("Una plataforma independiente que reúne en un mismo lugar la información útil de {municipio}."),
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -5,13 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Acceso administración · Aquí Bonela" },
-      { name: "description", content: "Acceso privado para la administración del directorio Aquí Bonela." },
-      { property: "og:title", content: "Acceso administración · Aquí Bonela" },
+      { title: brand("Acceso administración · {app}") },
+      { name: "description", content: brand("Acceso privado para la administración del directorio {app}.") },
+      { property: "og:title", content: brand("Acceso administración · {app}") },
       { property: "og:description", content: "Acceso privado para la administración del directorio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

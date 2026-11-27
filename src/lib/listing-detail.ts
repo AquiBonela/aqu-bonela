@@ -83,7 +83,8 @@ export function groupHours(hours: Hour[]) {
 }
 
 export function mapsUrl(address: string) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address}, Casarabonela, Málaga`)}`;
+  const { name, province } = getMunicipality();
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address}, ${name}, ${province}`)}`;
 }
 
 /** Enlace clicable de la web de la ficha: añade https:// si el valor no lo trae. */
