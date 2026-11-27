@@ -90,6 +90,14 @@ const FIELDS: Record<FieldName, z.ZodType<string>> = {
   timezone: text(64),
 };
 
+/** Campo de texto de public.site_identity. */
+export type IdentityFieldName = FieldName;
+
+/** Comprueba un valor con las mismas reglas que aplica la lectura pública (y la base de datos). */
+export function isValidIdentityValue(name: IdentityFieldName, value: string): boolean {
+  return FIELDS[name].safeParse(value).success;
+}
+
 const coordinate = (limit: number) =>
   z
     .union([

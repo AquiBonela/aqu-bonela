@@ -1,7 +1,6 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Route as HomeRoute } from "./index";
-import { Route as IdentityRoute } from "./identidad";
 import { Route as SectionsRoute } from "./secciones";
 import { Route as ContentsRoute } from "./contenidos";
 
@@ -123,7 +122,6 @@ describe("Inicio del panel", () => {
 
 describe("áreas pendientes de desarrollo", () => {
   it.each([
-    ["Identidad municipal", IdentityRoute],
     ["Secciones y menús", SectionsRoute],
     ["Páginas y contenidos", ContentsRoute],
   ])("%s se presenta como pendiente y sin controles", (title, route) => {

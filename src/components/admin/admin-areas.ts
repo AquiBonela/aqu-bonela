@@ -72,11 +72,10 @@ export const ADMIN_AREAS: readonly AdminArea[] = [
   {
     id: "identidad",
     label: "Identidad municipal",
-    description: "Nombre, datos institucionales e imagen del municipio.",
+    description: "Nombre, datos institucionales y ubicación del municipio.",
     to: "/admin/identidad",
     icon: Building2,
     sections: [{ to: "/admin/identidad", label: "Identidad municipal" }],
-    pending: true,
   },
   {
     id: "secciones",
