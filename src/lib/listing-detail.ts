@@ -25,6 +25,8 @@ export type ListingDetail = Listing & {
   public_x_twitter: string | null;
   public_instagram: string | null;
   public_tiktok: string | null;
+  /** El titular ocultó el horario (vista pública). */
+  hours_hidden?: boolean;
 };
 
 export const listingDetailQuery = (type: Listing["type"], slug: string) =>
@@ -34,7 +36,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const { data, error } = await supabase
         .from("public_listings")
         .select(
-          "id,slug,type,name,short_description,description,translations,category_id,featured,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
+          "id,slug,type,name,short_description,description,translations,category_id,featured,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,hours_hidden",
         )
         .eq("type", type)
         .eq("slug", slug)
@@ -43,17 +45,20 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       if (!data?.id) throw notFound();
       const rest = data as unknown as Listing & Partial<ListingDetail>;
       // Categoría, horario visible y fotos, cada uno con su política pública.
+      // El horario oculto ni se pide: una sesión de administrador en el navegador sí lo recibiría.
       const [category, hoursResult, photosResult] = await Promise.all([
         rest.category_id
           ? supabase.from("categories").select("name,slug").eq("id", rest.category_id).maybeSingle()
           : null,
-        supabase.from("listing_hours").select("weekday,opens,closes").eq("listing_id", rest.id),
+        rest.hours_hidden
+          ? null
+          : supabase.from("listing_hours").select("weekday,opens,closes").eq("listing_id", rest.id),
         supabase
           .from("listing_photos")
           .select("storage_path,alt,sort_order")
           .eq("listing_id", rest.id),
       ]);
-      const relatedError = category?.error ?? hoursResult.error ?? photosResult.error;
+      const relatedError = category?.error ?? hoursResult?.error ?? photosResult.error;
       if (relatedError) throw new Error(relatedError.message);
       const sorted = [...(photosResult.data ?? [])].sort((a, b) => a.sort_order - b.sort_order);
       let photos: ListingDetail["photos"] = [];
@@ -87,7 +92,7 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
         cover_url,
         categoryName: category?.data?.name ?? null,
         categorySlug: category?.data?.slug ?? null,
-        hours: [...(hoursResult.data ?? [])].sort(
+        hours: [...(hoursResult?.data ?? [])].sort(
           (a, b) => a.weekday - b.weekday || a.opens.localeCompare(b.opens),
         ),
         photos,
