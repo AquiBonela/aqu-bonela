@@ -224,4 +224,57 @@ describe("Groundwork controla la visibilidad del horario desde el administrador"
     const { tags } = await saved("update");
     expect(tags).toEqual(["pan", HIDE]);
   });
+  // DEFECTO 1 (causa principal): el formulario guarda todo lo que cargó al abrirse. Si el
+  // titular aprueba mientras está abierto (por ejemplo, en otra ventana: React Query solo
+  // recarga al volver a una pestaña oculta), «Guardar ficha» devuelve la ficha a borrador y
+  // borra la marca de horario oculto y la visibilidad de contactos que eligió el titular.
+  it.fails(
+    "un formulario abierto antes de que el titular apruebe no sobrescribe su decisión",
+    async () => {
+      mocks.params = { id: "f3" };
+      mocks.listing = {
+        listing: {
+          type: "comercio",
+          category_id: "c1",
+          activity: null,
+          public_website: null,
+          home_service: false,
+          service_area: "",
+          labels: [],
+          name: "Taller",
+          slug: "taller",
+          short_description: "",
+          description: "",
+          tags: ["llantas"],
+          translations: {},
+          featured: false,
+          featured_until: null,
+          urgent_24h: false,
+          status: "borrador",
+          updated_at: "2026-11-27T10:00:00Z",
+        },
+        contact: null,
+        hours: [{ weekday: 1, opens: "10:00:00", closes: "13:00:00" }],
+        activityIds: [],
+      };
+      openForm();
+      await waitFor(() => expect(hoursToggle().checked).toBe(true));
+      // Aquí el titular aprueba en otra ventana: en la base, la ficha pasa a «publicada» con el
+      // horario oculto. El formulario sigue con los datos de antes y Groundwork pulsa «Guardar».
+      fireEvent.click(screen.getByRole("button", { name: "Guardar ficha" }));
+      await waitFor(() =>
+        expect(mocks.calls.some((c) => c.table === "listing_hours" && c.op === "insert")).toBe(
+          true,
+        ),
+      );
+      const overwrite = mocks.calls.find(
+        (c) =>
+          c.table === "listings" &&
+          c.op === "update" &&
+          (c.payload as { status: string }).status === "borrador" &&
+          !(c.payload as { tags: string[] }).tags.includes(HIDE),
+      );
+      expect(overwrite).toBeUndefined();
+    },
+  );
 });
