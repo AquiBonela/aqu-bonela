@@ -20,11 +20,24 @@ function AdminTabs() {
   const tabs = [
     { to: "/admin" as const, label: "Fichas", count: 0, exact: true },
     { to: "/admin/tramites" as const, label: "Trámites", count: 0, exact: false },
-    { to: "/admin/avisos" as const, label: "Avisos", count: reports.filter((r) => !r.resolved).length, exact: false },
-    { to: "/admin/sugerencias" as const, label: "Sugerencias", count: suggestions.filter((s) => !s.handled).length, exact: false },
+    {
+      to: "/admin/avisos" as const,
+      label: "Avisos",
+      count: reports.filter((r) => !r.resolved).length,
+      exact: false,
+    },
+    {
+      to: "/admin/sugerencias" as const,
+      label: "Sugerencias",
+      count: suggestions.filter((s) => !s.handled).length,
+      exact: false,
+    },
   ];
   return (
-    <nav aria-label={tr("Secciones de administración")} className="mb-5 grid grid-cols-4 gap-1 rounded-full border bg-secondary/40 p-1">
+    <nav
+      aria-label={tr("Secciones de administración")}
+      className="mb-5 grid grid-cols-4 gap-1 rounded-full border bg-secondary/40 p-1"
+    >
       {tabs.map((t) => (
         <Link
           key={t.to}
@@ -35,7 +48,9 @@ function AdminTabs() {
         >
           <span className="truncate">{tr(t.label)}</span>
           {t.count > 0 && (
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1.5 text-xs text-terracotta-foreground">{t.count}</span>
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1.5 text-xs text-terracotta-foreground">
+              {t.count}
+            </span>
           )}
         </Link>
       ))}
@@ -67,9 +82,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
         footnote={tr("Administración del directorio {app}")}
         brand={
           <Link to="/admin" className="inline-flex min-w-0 items-center justify-center">
-            {getMunicipality().assets.logoAdmin
-              ? <img src={getMunicipality().assets.logoAdmin} alt={getMunicipality().appName} className="h-9 max-w-full object-contain brightness-0" />
-              : <span className="truncate font-display text-lg font-extrabold">{getMunicipality().appName}</span>}
+            {getMunicipality().assets.logoAdmin ? (
+              <img
+                src={getMunicipality().assets.logoAdmin}
+                alt={getMunicipality().appName}
+                className="h-9 max-w-full object-contain brightness-0"
+              />
+            ) : (
+              <span className="truncate font-display text-lg font-extrabold">
+                {getMunicipality().appName}
+              </span>
+            )}
           </Link>
         }
         items={items.map((item) => ({ ...item, label: tr(item.label) }))}
@@ -81,7 +104,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
             {children}
           </>
         ) : (
-          <p className="border p-4 text-sm"><Text text="Esta cuenta no tiene permisos de administración." /></p>
+          <p className="border p-4 text-sm">
+            <Text text="Esta cuenta no tiene permisos de administración." />
+          </p>
         )}
       </main>
     </div>

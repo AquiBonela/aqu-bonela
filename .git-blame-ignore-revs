@@ -1,0 +1,4 @@
+# Commits de solo formato: git blame los omite (GitHub lo aplica automáticamente;
+# en local: git config blame.ignoreRevsFile .git-blame-ignore-revs).
+# style: aplicar Prettier a los archivos que marca el lint
+c0697bbd06dc90ced57b4c1c9ca7b95b6d41a283

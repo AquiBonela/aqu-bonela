@@ -5,26 +5,44 @@ import { getMunicipality } from "@/config/municipality";
 export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
   const { t } = useI18n();
 
-
   return (
-    <footer className={inMenu ? "text-center text-xs text-primary-foreground/85 [&_*]:!text-primary-foreground" : "mt-8 border-t bg-secondary/40 px-4 py-8 text-center text-xs text-muted-foreground"}>
+    <footer
+      className={
+        inMenu
+          ? "text-center text-xs text-primary-foreground/85 [&_*]:!text-primary-foreground"
+          : "mt-8 border-t bg-secondary/40 px-4 py-8 text-center text-xs text-muted-foreground"
+      }
+    >
       <div className="mx-auto max-w-2xl [&_nav]:justify-center [&_p]:justify-center">
         <div className="flex flex-col items-center gap-1.5 font-display text-xs font-bold uppercase tracking-wide text-foreground sm:flex-row sm:justify-center sm:gap-2.5">
-          <span className="font-display text-sm font-extrabold normal-case tracking-tight">{getMunicipality().appName}</span>
-          <span aria-hidden className="hidden sm:inline">·</span>
+          <span className="font-display text-sm font-extrabold normal-case tracking-tight">
+            {getMunicipality().appName}
+          </span>
+          <span aria-hidden className="hidden sm:inline">
+            ·
+          </span>
           <span>{t("footer.tagline")}</span>
         </div>
-        <p className="mt-2 text-xs leading-snug text-foreground/80">
-          {t("footer.about")}
-        </p>
-        <nav aria-label={t("footer.legalNav")} className="mt-3 flex flex-nowrap items-center justify-center gap-x-2 whitespace-nowrap text-[10px] font-semibold sm:gap-x-3 sm:text-xs">
-          <Link to="/aviso-legal" className="shrink-0 underline-offset-4 hover:underline">{t("footer.aviso")}</Link>
+        <p className="mt-2 text-xs leading-snug text-foreground/80">{t("footer.about")}</p>
+        <nav
+          aria-label={t("footer.legalNav")}
+          className="mt-3 flex flex-nowrap items-center justify-center gap-x-2 whitespace-nowrap text-[10px] font-semibold sm:gap-x-3 sm:text-xs"
+        >
+          <Link to="/aviso-legal" className="shrink-0 underline-offset-4 hover:underline">
+            {t("footer.aviso")}
+          </Link>
           <span aria-hidden>·</span>
-          <Link to="/privacidad" className="shrink-0 underline-offset-4 hover:underline">{t("footer.privacidad")}</Link>
+          <Link to="/privacidad" className="shrink-0 underline-offset-4 hover:underline">
+            {t("footer.privacidad")}
+          </Link>
           <span aria-hidden>·</span>
-          <Link to="/cookies" className="shrink-0 underline-offset-4 hover:underline">{t("footer.cookies")}</Link>
+          <Link to="/cookies" className="shrink-0 underline-offset-4 hover:underline">
+            {t("footer.cookies")}
+          </Link>
         </nav>
-        <p className="mt-4 font-semibold">Groundwork · {getMunicipality().name} · {new Date().getFullYear()} ®</p>
+        <p className="mt-4 font-semibold">
+          Groundwork · {getMunicipality().name} · {new Date().getFullYear()} ®
+        </p>
       </div>
     </footer>
   );

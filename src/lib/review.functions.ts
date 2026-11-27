@@ -3,7 +3,14 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { listingPath } from "@/lib/listing-detail";
 import { withHoursVisibility } from "@/lib/listing-availability";
-import { authorizedContactFields, TOKEN_RE, type Hour, type ReviewContact, type ReviewData, type SubmitResult } from "./review";
+import {
+  authorizedContactFields,
+  TOKEN_RE,
+  type Hour,
+  type ReviewContact,
+  type ReviewData,
+  type SubmitResult,
+} from "./review";
 
 const tokenInput = z.object({ token: z.string().min(1).max(200) });
 
@@ -33,29 +40,52 @@ export const getReview = createServerFn({ method: "GET" })
     const [l, c, h] = await Promise.all([
       admin
         .from("listings")
-        .select("id,slug,type,name,status,activity,labels,description,short_description,cover_url,cover_path,gallery_urls,featured,featured_until,tags,public_website,category_id,urgent_24h,categories(name,slug),listing_photos(storage_path,alt,sort_order)")
+        .select(
+          "id,slug,type,name,status,activity,labels,description,short_description,cover_url,cover_path,gallery_urls,featured,featured_until,tags,public_website,category_id,urgent_24h,categories(name,slug),listing_photos(storage_path,alt,sort_order)",
+        )
         .eq("id", row.listing_id)
         .maybeSingle(),
       admin
         .from("listing_contacts")
-        .select("phone,phone_2,whatsapp,address,email,linkedin,facebook,youtube,x_twitter,instagram,tiktok,show_phone,show_phone_2,show_whatsapp,show_address,show_email,show_linkedin,show_facebook,show_youtube,show_x_twitter,show_instagram,show_tiktok,owner_name")
+        .select(
+          "phone,phone_2,whatsapp,address,email,linkedin,facebook,youtube,x_twitter,instagram,tiktok,show_phone,show_phone_2,show_whatsapp,show_address,show_email,show_linkedin,show_facebook,show_youtube,show_x_twitter,show_instagram,show_tiktok,owner_name",
+        )
         .eq("listing_id", row.listing_id)
         .maybeSingle(),
-      admin.from("listing_hours").select("weekday,opens,closes").eq("listing_id", row.listing_id).order("weekday"),
+      admin
+        .from("listing_hours")
+        .select("weekday,opens,closes")
+        .eq("listing_id", row.listing_id)
+        .order("weekday"),
     ]);
     if (!l.data) return { ok: false, reason: "invalid" };
     const raw = l.data as {
-      id: string; slug: string; type: "comercio" | "profesional" | "publico" | "asociacion"; name: string; status: string;
-      activity: string | null; labels: string[] | null; description: string | null;
-      cover_url: string | null; gallery_urls: string[] | null; featured: boolean | null; urgent_24h: boolean | null;
+      id: string;
+      slug: string;
+      type: "comercio" | "profesional" | "publico" | "asociacion";
+      name: string;
+      status: string;
+      activity: string | null;
+      labels: string[] | null;
+      description: string | null;
+      cover_url: string | null;
+      gallery_urls: string[] | null;
+      featured: boolean | null;
+      urgent_24h: boolean | null;
       public_website: string | null;
       categories: { name?: string; slug?: string } | null;
-      short_description: string | null; cover_path: string | null; featured_until: string | null;
-      tags: string[] | null; category_id: string | null;
+      short_description: string | null;
+      cover_path: string | null;
+      featured_until: string | null;
+      tags: string[] | null;
+      category_id: string | null;
       listing_photos: { storage_path: string; alt: string; sort_order: number }[] | null;
     };
     const sorted = [...(raw.listing_photos ?? [])].sort((a, b) => a.sort_order - b.sort_order);
-    const paths = [...(raw.cover_path ? [raw.cover_path] : []), ...sorted.map((p) => p.storage_path)];
+    const paths = [
+      ...(raw.cover_path ? [raw.cover_path] : []),
+      ...sorted.map((p) => p.storage_path),
+    ];
     const { data: signed } = paths.length
       ? await admin.storage.from("listing-photos").createSignedUrls(paths, 3600)
       : { data: [] as { signedUrl: string }[] };
@@ -63,13 +93,28 @@ export const getReview = createServerFn({ method: "GET" })
     const coverSigned = raw.cover_path ? urls[0] : "";
     const photoUrls = raw.cover_path ? urls.slice(1) : urls;
     const listing = {
-      id: raw.id, slug: raw.slug, type: raw.type, name: raw.name, status: raw.status,
-      activity: raw.activity ?? null, labels: raw.labels ?? [], description: raw.description ?? "",
-      cover_url: coverSigned || raw.cover_url || null, gallery_urls: raw.gallery_urls ?? [],
-      featured: !!raw.featured, urgent_24h: !!raw.urgent_24h, categoryName: raw.categories?.name ?? null,
-      categorySlug: raw.categories?.slug ?? null, short_description: raw.short_description ?? "",
-      featured_until: raw.featured_until ?? null, tags: raw.tags ?? [], public_website: raw.public_website ?? null, category_id: raw.category_id ?? null,
-      photos: sorted.map((p, i) => ({ url: photoUrls[i] ?? "", alt: p.alt || raw.name })).filter((p) => p.url),
+      id: raw.id,
+      slug: raw.slug,
+      type: raw.type,
+      name: raw.name,
+      status: raw.status,
+      activity: raw.activity ?? null,
+      labels: raw.labels ?? [],
+      description: raw.description ?? "",
+      cover_url: coverSigned || raw.cover_url || null,
+      gallery_urls: raw.gallery_urls ?? [],
+      featured: !!raw.featured,
+      urgent_24h: !!raw.urgent_24h,
+      categoryName: raw.categories?.name ?? null,
+      categorySlug: raw.categories?.slug ?? null,
+      short_description: raw.short_description ?? "",
+      featured_until: raw.featured_until ?? null,
+      tags: raw.tags ?? [],
+      public_website: raw.public_website ?? null,
+      category_id: raw.category_id ?? null,
+      photos: sorted
+        .map((p, i) => ({ url: photoUrls[i] ?? "", alt: p.alt || raw.name }))
+        .filter((p) => p.url),
     };
     return {
       ok: true,
@@ -108,7 +153,11 @@ export const submitReview = createServerFn({ method: "POST" })
     const { row, admin } = found;
     if (row.used_at) return { ok: true, url: null };
     if (new Date(row.expires_at) < new Date()) return { ok: false, reason: "expired" };
-    const { data: l } = await admin.from("listings").select("id,type,slug,tags").eq("id", row.listing_id).maybeSingle();
+    const { data: l } = await admin
+      .from("listings")
+      .select("id,type,slug,tags")
+      .eq("id", row.listing_id)
+      .maybeSingle();
     if (!l) return { ok: false, reason: "invalid" };
 
     // Solo se copian a public_* los campos que el titular autoriza (trigger sync_public_contact).
@@ -137,28 +186,44 @@ export const submitReview = createServerFn({ method: "POST" })
       method: "enlace_privado",
     });
     if (data.comment) {
-      await admin
-        .from("listing_requests")
-        .insert({ listing_id: l.id, status: "aprobada", notes: data.comment, decided_at: new Date().toISOString() });
+      await admin.from("listing_requests").insert({
+        listing_id: l.id,
+        status: "aprobada",
+        notes: data.comment,
+        decided_at: new Date().toISOString(),
+      });
     }
-    await admin.from("listings").update({ status: "publicada", tags: withHoursVisibility((l as { tags: string[] | null }).tags ?? [], data.show_hours) }).eq("id", l.id);
-    await admin.from("approval_tokens").update({ used_at: new Date().toISOString() }).eq("id", row.id);
+    await admin
+      .from("listings")
+      .update({
+        status: "publicada",
+        tags: withHoursVisibility((l as { tags: string[] | null }).tags ?? [], data.show_hours),
+      })
+      .eq("id", l.id);
+    await admin
+      .from("approval_tokens")
+      .update({ used_at: new Date().toISOString() })
+      .eq("id", row.id);
     return { ok: true, url: listingPath(l.type, l.slug) };
   });
 
 /** El titular pide correcciones sin autorizar: llega a la bandeja de Avisos; la ficha sigue sin publicar. */
 export const sendCorrection = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({ token: z.string().regex(TOKEN_RE), comment: z.string().trim().min(1).max(1000) }).parse(d),
+    z
+      .object({ token: z.string().regex(TOKEN_RE), comment: z.string().trim().min(1).max(1000) })
+      .parse(d),
   )
   .handler(async ({ data }): Promise<SubmitResult> => {
     const found = await loadToken(data.token);
     if (!found) return { ok: false, reason: "invalid" };
     const { row, admin } = found;
     if (new Date(row.expires_at) < new Date()) return { ok: false, reason: "expired" };
-    const { error } = await admin
-      .from("listing_reports")
-      .insert({ listing_id: row.listing_id, message: `[Corrección del titular] ${data.comment}`, contact: "Enlace de revisión" });
+    const { error } = await admin.from("listing_reports").insert({
+      listing_id: row.listing_id,
+      message: `[Corrección del titular] ${data.comment}`,
+      contact: "Enlace de revisión",
+    });
     if (error) throw new Error("No se pudo enviar");
     return { ok: true, url: null };
   });

@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import instance from "@instance";
-import { mergeIdentity, parseSiteConfig, readBrowserSiteConfig, siteConfigScript } from "./site-identity";
+import {
+  mergeIdentity,
+  parseSiteConfig,
+  readBrowserSiteConfig,
+  siteConfigScript,
+} from "./site-identity";
 
 const row = {
   app_name: "Plataforma Prueba",
@@ -49,7 +54,9 @@ describe("parseSiteConfig", () => {
   });
 
   it("una fila recién creada (todo vacío) no sustituye nada", () => {
-    const empty = Object.fromEntries(Object.keys(row).map((k) => [k, k === "latitude" || k === "longitude" ? null : ""]));
+    const empty = Object.fromEntries(
+      Object.keys(row).map((k) => [k, k === "latitude" || k === "longitude" ? null : ""]),
+    );
     expect(parseSiteConfig({ identity: empty }).identity).toEqual({});
   });
 
@@ -82,31 +89,55 @@ describe("parseSiteConfig", () => {
     expect(identity.institutional?.phone).toBe("");
     expect(identity.region).toBe("Comarca Prueba");
     expect(warn).toHaveBeenCalledOnce();
-    expect(String(warn.mock.calls[0]?.[0])).toMatch(/app_name.*short_name.*municipality_name.*province.*site_url.*town_hall_phone.*latitude/);
+    expect(String(warn.mock.calls[0]?.[0])).toMatch(
+      /app_name.*short_name.*municipality_name.*province.*site_url.*town_hall_phone.*latitude/,
+    );
   });
 
   it("rechaza URLs sin https, con barra final o con mayúsculas", () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
-    for (const site_url of ["http://villa.example.org", "https://villa.example.org/", "https://Villa.example.org", "https://localhost"]) {
+    for (const site_url of [
+      "http://villa.example.org",
+      "https://villa.example.org/",
+      "https://Villa.example.org",
+      "https://localhost",
+    ]) {
       expect(parseSiteConfig({ identity: { site_url } }).identity.siteUrl).toBeUndefined();
     }
-    expect(parseSiteConfig({ identity: { site_url: "https://villa.example.org:8443" } }).identity.siteUrl).toBe("https://villa.example.org:8443");
+    expect(
+      parseSiteConfig({ identity: { site_url: "https://villa.example.org:8443" } }).identity
+        .siteUrl,
+    ).toBe("https://villa.example.org:8443");
   });
 
   it("las coordenadas necesitan latitud, longitud y zona horaria; admite numéricos en texto", () => {
-    expect(parseSiteConfig({ identity: { latitude: 40, longitude: -3 } }).identity.coordinates).toBeUndefined();
-    expect(parseSiteConfig({ identity: { latitude: 40, timezone: "Europe/Madrid" } }).identity.coordinates).toBeUndefined();
-    expect(parseSiteConfig({ identity: { latitude: "40.5", longitude: "-3.25", timezone: "Europe/Madrid" } }).identity.coordinates)
-      .toEqual({ lat: 40.5, lng: -3.25, timezone: "Europe/Madrid" });
+    expect(
+      parseSiteConfig({ identity: { latitude: 40, longitude: -3 } }).identity.coordinates,
+    ).toBeUndefined();
+    expect(
+      parseSiteConfig({ identity: { latitude: 40, timezone: "Europe/Madrid" } }).identity
+        .coordinates,
+    ).toBeUndefined();
+    expect(
+      parseSiteConfig({
+        identity: { latitude: "40.5", longitude: "-3.25", timezone: "Europe/Madrid" },
+      }).identity.coordinates,
+    ).toEqual({ lat: 40.5, lng: -3.25, timezone: "Europe/Madrid" });
   });
 
   it("un gentilicio incompleto se completa con el otro; el Ayuntamiento necesita nombre", () => {
-    expect(parseSiteConfig({ identity: { demonym_masculine: "villano" } }).identity.demonym).toEqual({ masculine: "villano", feminine: "villano" });
-    expect(parseSiteConfig({ identity: { town_hall_address: "Plaza Mayor, 1" } }).identity.institutional).toBeUndefined();
+    expect(
+      parseSiteConfig({ identity: { demonym_masculine: "villano" } }).identity.demonym,
+    ).toEqual({ masculine: "villano", feminine: "villano" });
+    expect(
+      parseSiteConfig({ identity: { town_hall_address: "Plaza Mayor, 1" } }).identity.institutional,
+    ).toBeUndefined();
   });
 
   it("recorta espacios", () => {
-    expect(parseSiteConfig({ identity: { app_name: "  Plataforma  " } }).identity.appName).toBe("Plataforma");
+    expect(parseSiteConfig({ identity: { app_name: "  Plataforma  " } }).identity.appName).toBe(
+      "Plataforma",
+    );
   });
 });
 
@@ -128,7 +159,9 @@ describe("mergeIdentity", () => {
 
 describe("script de configuración", () => {
   it("no permite cerrar el <script> ni romper la línea", () => {
-    const script = siteConfigScript({ identity: { appName: "</script><script>alert(1)</script>\u2028" } });
+    const script = siteConfigScript({
+      identity: { appName: "</script><script>alert(1)</script>\u2028" },
+    });
     expect(script).not.toContain("</script>");
     expect(script).not.toContain("\u2028");
     expect(script.startsWith("window.__SITE_CONFIG__=")).toBe(true);

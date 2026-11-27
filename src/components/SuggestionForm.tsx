@@ -21,7 +21,14 @@ export function SuggestionForm({ business = false }: { business?: boolean }) {
     if (!accepted || !protection.ready) return;
     setState("sending");
     try {
-      const res = await submit({ data: { ...protection.payload, name: name.trim(), contact: contact.trim() || undefined, message: message.trim() } });
+      const res = await submit({
+        data: {
+          ...protection.payload,
+          name: name.trim(),
+          contact: contact.trim() || undefined,
+          message: message.trim(),
+        },
+      });
       setState(res.ok ? "sent" : "error");
     } catch {
       setState("error");
@@ -31,60 +38,74 @@ export function SuggestionForm({ business = false }: { business?: boolean }) {
 
   return (
     <div>
-        {state === "sent" ? (
-          <div className="mt-8 border bg-secondary/40 p-5">
-            <p className="font-display text-lg font-bold"><Text text="Gracias por tu aportación" /></p>
-            <p className="mt-2 text-sm"><Text text="La revisaremos y, si encaja, la publicaremos en {app}." /></p>
-          </div>
-        ) : (
-          <form onSubmit={send} className="mt-6 grid gap-4">
-            <label className="grid gap-1 text-sm font-medium">
-              {tr(business ? "Nombre del negocio o servicio" : "¿De qué se trata?")}
-              <input
-                required
-                minLength={2}
-                maxLength={120}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={tr(business ? "Nombre de tu comercio o actividad" : "Un comercio, un lugar, un evento…")}
-                className="h-11 border bg-background px-2 text-base font-normal"
-              />
-            </label>
-            <label className="grid gap-1 text-sm font-medium">
-               <Text text="Tu nombre, teléfono o correo (opcional)" /> <input
-                maxLength={160}
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                placeholder={tr("Por si necesitamos aclarar algo")}
-                className="h-11 border bg-background px-2 text-base font-normal"
-              />
-            </label>
-            <label className="grid gap-1 text-sm font-medium">
-               <Text text="Cuéntanoslo" /> <textarea
-                required
-                minLength={5}
-                maxLength={1000}
-                rows={4}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={tr("Dónde está, a qué se dedica, horarios, teléfono, cualquier detalle…")}
-                className="border bg-background p-2 text-base font-normal"
-              />
-            </label>
-            <PrivacyAcceptance accepted={accepted} onChange={setAccepted} />
-            {protection.fields}
-            {state === "error" && (
-              <p className="text-sm text-destructive"><Text text="No se ha podido enviar. Inténtalo de nuevo." /></p>
-            )}
-            <Button
-              type="submit"
-              disabled={state === "sending" || !accepted || !protection.ready}
-              className="min-h-12 bg-primary font-semibold text-primary-foreground disabled:opacity-60"
-            >
-              {tr(state === "sending" ? "Enviando…" : "Enviar información")}
-            </Button>
-          </form>
-        )}
+      {state === "sent" ? (
+        <div className="mt-8 border bg-secondary/40 p-5">
+          <p className="font-display text-lg font-bold">
+            <Text text="Gracias por tu aportación" />
+          </p>
+          <p className="mt-2 text-sm">
+            <Text text="La revisaremos y, si encaja, la publicaremos en {app}." />
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={send} className="mt-6 grid gap-4">
+          <label className="grid gap-1 text-sm font-medium">
+            {tr(business ? "Nombre del negocio o servicio" : "¿De qué se trata?")}
+            <input
+              required
+              minLength={2}
+              maxLength={120}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={tr(
+                business
+                  ? "Nombre de tu comercio o actividad"
+                  : "Un comercio, un lugar, un evento…",
+              )}
+              className="h-11 border bg-background px-2 text-base font-normal"
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            <Text text="Tu nombre, teléfono o correo (opcional)" />{" "}
+            <input
+              maxLength={160}
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              placeholder={tr("Por si necesitamos aclarar algo")}
+              className="h-11 border bg-background px-2 text-base font-normal"
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            <Text text="Cuéntanoslo" />{" "}
+            <textarea
+              required
+              minLength={5}
+              maxLength={1000}
+              rows={4}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={tr(
+                "Dónde está, a qué se dedica, horarios, teléfono, cualquier detalle…",
+              )}
+              className="border bg-background p-2 text-base font-normal"
+            />
+          </label>
+          <PrivacyAcceptance accepted={accepted} onChange={setAccepted} />
+          {protection.fields}
+          {state === "error" && (
+            <p className="text-sm text-destructive">
+              <Text text="No se ha podido enviar. Inténtalo de nuevo." />
+            </p>
+          )}
+          <Button
+            type="submit"
+            disabled={state === "sending" || !accepted || !protection.ready}
+            className="min-h-12 bg-primary font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            {tr(state === "sending" ? "Enviando…" : "Enviar información")}
+          </Button>
+        </form>
+      )}
     </div>
   );
 }

@@ -1,7 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  Outlet,
-} from "@tanstack/react-router";
+import { Outlet } from "@tanstack/react-router";
 import { I18nProvider, Text } from "@/lib/i18n";
 import {
   Link,
@@ -21,7 +19,12 @@ import { BackToTop } from "@/components/BackToTop";
 import { InstallPromptProvider } from "@/components/InstallPrompt";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { getMunicipality, getMunicipalityThemeCss, getSiteConfigSnapshot, setSiteConfig } from "@/config/municipality";
+import {
+  getMunicipality,
+  getMunicipalityThemeCss,
+  getSiteConfigSnapshot,
+  setSiteConfig,
+} from "@/config/municipality";
 import { getPublicEnv } from "@/lib/public-env.functions";
 import { publicEnvScript } from "@/lib/public-env";
 import { getSiteConfig } from "@/lib/site-config.functions";
@@ -36,7 +39,9 @@ function NotFoundContent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground"><Text text="Página no encontrada" /></h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">
+          <Text text="Página no encontrada" />
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           <Text text="La página que buscas no existe o se ha movido." />
         </p>
@@ -54,7 +59,11 @@ function NotFoundContent() {
 }
 
 function NotFoundComponent() {
-  return <I18nProvider><NotFoundContent /></I18nProvider>;
+  return (
+    <I18nProvider>
+      <NotFoundContent />
+    </I18nProvider>
+  );
 }
 
 function ErrorContent({ error, reset }: ErrorComponentProps) {
@@ -104,7 +113,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   // Configuración pública de Supabase, resuelta en el servidor (bindings o process.env).
   loader: async () => {
     const siteConfig = getSiteConfigSnapshot();
-    if (typeof window !== "undefined" && window.__PUBLIC_ENV__) return { publicEnv: window.__PUBLIC_ENV__, siteConfig };
+    if (typeof window !== "undefined" && window.__PUBLIC_ENV__)
+      return { publicEnv: window.__PUBLIC_ENV__, siteConfig };
     return { publicEnv: await getPublicEnv(), siteConfig };
   },
   staleTime: Infinity,
@@ -113,7 +123,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: getMunicipality().appName },
-      { name: "description", content: `Directorio de comercios y profesionales de ${getMunicipality().name}.` },
+      {
+        name: "description",
+        content: `Directorio de comercios y profesionales de ${getMunicipality().name}.`,
+      },
       { name: "theme-color", content: municipalityTheme.themeColor },
       { name: "apple-mobile-web-app-title", content: getMunicipality().appName },
     ],
@@ -140,7 +153,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function ErrorComponent(props: ErrorComponentProps) {
-  return <I18nProvider><ErrorContent {...props} /></I18nProvider>;
+  return (
+    <I18nProvider>
+      <ErrorContent {...props} />
+    </I18nProvider>
+  );
 }
 
 function RootShell({ children }: { children: ReactNode }) {
@@ -152,7 +169,10 @@ function RootShell({ children }: { children: ReactNode }) {
         {/* Antes de cualquier script de la app: el cliente Supabase lee esta configuración. */}
         <script id="public-env" dangerouslySetInnerHTML={{ __html: publicEnvScript(publicEnv) }} />
         {/* La misma identidad que ha usado el servidor, para que el navegador hidrate sin diferencias. */}
-        <script id="site-config" dangerouslySetInnerHTML={{ __html: siteConfigScript(siteConfig) }} />
+        <script
+          id="site-config"
+          dangerouslySetInnerHTML={{ __html: siteConfigScript(siteConfig) }}
+        />
         <HeadContent />
         {/* Tras la hoja principal: el tema municipal prevalece desde el primer render SSR. */}
         <style id="municipality-theme" dangerouslySetInnerHTML={{ __html: municipalityThemeCss }} />
@@ -167,18 +187,31 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const adminPage = useRouterState({ select: (state) => state.location.pathname.startsWith("/admin") });
+  const adminPage = useRouterState({
+    select: (state) => state.location.pathname.startsWith("/admin"),
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider {...(adminPage ? { fixedLanguage: "es" as const } : {})}>
         <InstallPromptProvider>
-        <LocalizedHead />
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <SiteFooter />
-        <BackToTop />
-        <Toaster position="bottom-center" offset={100} duration={3500} closeButton toastOptions={{ classNames: { toast: "!bg-card !text-card-foreground !border-border !rounded-none !shadow-none", description: "!text-muted-foreground" } }} />
+          <LocalizedHead />
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <SiteFooter />
+          <BackToTop />
+          <Toaster
+            position="bottom-center"
+            offset={100}
+            duration={3500}
+            closeButton
+            toastOptions={{
+              classNames: {
+                toast: "!bg-card !text-card-foreground !border-border !rounded-none !shadow-none",
+                description: "!text-muted-foreground",
+              },
+            }}
+          />
         </InstallPromptProvider>
       </I18nProvider>
     </QueryClientProvider>

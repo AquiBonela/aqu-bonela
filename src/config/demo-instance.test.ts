@@ -10,10 +10,13 @@ import { dailyLifeCategories } from "@/lib/vida-diaria";
 import { brand, unbrand, validateMunicipalityTheme } from "./municipality";
 
 /** Términos que identifican al municipio piloto y nunca deben aparecer en la demo. */
-const PILOT_TERMS = /casarabonela|bonela|m[aá]laga|alozaina|sierra de las nieves|guadalhorce|punto vuela|l[ií]nea verde|buenavista|952\s?\d{3}/i;
+const PILOT_TERMS =
+  /casarabonela|bonela|m[aá]laga|alozaina|sierra de las nieves|guadalhorce|punto vuela|l[ií]nea verde|buenavista|952\s?\d{3}/i;
 
 function filesIn(dir: string): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? filesIn(join(dir, e.name)) : [join(dir, e.name)]));
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? filesIn(join(dir, e.name)) : [join(dir, e.name)],
+  );
 }
 
 describe("instancia demo", () => {
@@ -54,8 +57,19 @@ describe("instancia demo", () => {
   });
 
   it("Casarabonela conserva su lista SOS con los teléfonos locales y regionales", () => {
-    const phones = emergencyGroupsFor(casarabonelaContent).flatMap((g) => g.phones.map((p) => p.tel));
-    expect(phones).toEqual(["062", "952456665", "061", "955545060", "016", "024", "900845040", "915620420"]);
+    const phones = emergencyGroupsFor(casarabonelaContent).flatMap((g) =>
+      g.phones.map((p) => p.tel),
+    );
+    expect(phones).toEqual([
+      "062",
+      "952456665",
+      "061",
+      "955545060",
+      "016",
+      "024",
+      "900845040",
+      "915620420",
+    ]);
   });
 
   it("oculta Vida diaria, Descubre, servicios locales y plantillas de trámites", () => {
@@ -67,7 +81,14 @@ describe("instancia demo", () => {
   });
 
   it("Casarabonela conserva su contenido", () => {
-    expect(dailyLifeCategories(casarabonelaContent).map((c) => c.id)).toEqual(["transporte", "residuos", "espacios", "municipales", "educacion", "otros"]);
+    expect(dailyLifeCategories(casarabonelaContent).map((c) => c.id)).toEqual([
+      "transporte",
+      "residuos",
+      "espacios",
+      "municipales",
+      "educacion",
+      "otros",
+    ]);
     expect(casarabonelaContent.discover?.places).toHaveLength(6);
     expect(casarabonelaContent.publicServices?.puntoVuela?.slug).toBe("punto-vuela-casarabonela");
     expect(casarabonelaContent.procedures?.templates.length).toBeGreaterThan(0);
@@ -77,7 +98,9 @@ describe("instancia demo", () => {
   it("personaliza y recupera los textos con su propio nombre", () => {
     const text = "{app} no realiza trámites en {municipio} ({provincia}). Únete a {nombreCorto}.";
     const branded = brand(text, demo);
-    expect(branded).toBe("Conecta tu Pueblo Demo no realiza trámites en Municipio de ejemplo (Provincia de ejemplo). Únete a Conecta tu Pueblo.");
+    expect(branded).toBe(
+      "Conecta tu Pueblo Demo no realiza trámites en Municipio de ejemplo (Provincia de ejemplo). Únete a Conecta tu Pueblo.",
+    );
     expect(unbrand(branded, demo)).toBe(text);
   });
 });

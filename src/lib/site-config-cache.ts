@@ -68,8 +68,10 @@ export function createRefreshingCache<T>(options: RefreshingCacheOptions<T>): Re
 
   return {
     get() {
-      if (hasValue && now() - loadedAt < options.freshMs) return Promise.resolve({ value: value as T, source: "fresh" });
-      if (failedAt !== undefined && now() - failedAt < options.retryMs) return Promise.resolve(lastGood());
+      if (hasValue && now() - loadedAt < options.freshMs)
+        return Promise.resolve({ value: value as T, source: "fresh" });
+      if (failedAt !== undefined && now() - failedAt < options.retryMs)
+        return Promise.resolve(lastGood());
       inflight ??= refresh();
       return inflight;
     },

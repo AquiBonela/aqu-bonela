@@ -1,9 +1,29 @@
 import { toast } from "sonner";
-import { useI18n , Text} from "@/lib/i18n";
+import { useI18n, Text } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, AtSign, ChevronLeft, ChevronRight, Clock, Facebook, Globe, Images, Instagram, Linkedin, Mail, MapPin, MessageCircle, Music2, Navigation, Phone, Share2, X, Youtube } from "lucide-react";
+import {
+  ArrowLeft,
+  AtSign,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Facebook,
+  Globe,
+  Images,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Music2,
+  Navigation,
+  Phone,
+  Share2,
+  X,
+  Youtube,
+} from "lucide-react";
 import { whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, websiteUrl, type ListingDetail } from "@/lib/listing-detail";
 import { TypeLabel, UrgentBadge } from "@/components/ListingCard";
@@ -13,104 +33,252 @@ import { Switch } from "@/components/ui/switch";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MAX_GALLERY_PHOTOS } from "@/lib/listing-images";
 import { FormattedText } from "@/components/FormattedText";
-import { listingText } from '@/lib/content-translations';
+import { listingText } from "@/lib/content-translations";
 import { getMunicipality } from "@/config/municipality";
 
-export type ReviewField = "address" | "phone" | "phone_2" | "whatsapp" | "email" | "linkedin" | "facebook" | "youtube" | "x_twitter" | "instagram" | "tiktok" | "hours";
-export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
+export type ReviewField =
+  | "address"
+  | "phone"
+  | "phone_2"
+  | "whatsapp"
+  | "email"
+  | "linkedin"
+  | "facebook"
+  | "youtube"
+  | "x_twitter"
+  | "instagram"
+  | "tiktok"
+  | "hours";
+export type ReviewControls = {
+  show: Record<ReviewField, boolean>;
+  onToggle: (f: ReviewField, v: boolean) => void;
+};
 
-function Toggle({ review, field, label }: { review: ReviewControls | undefined; field: ReviewField; label: string }) {
+function Toggle({
+  review,
+  field,
+  label,
+}: {
+  review: ReviewControls | undefined;
+  field: ReviewField;
+  label: string;
+}) {
   const { tr, locale } = useI18n();
   if (!review) return null;
   const on = review.show[field];
   return (
     <label className="ml-auto flex shrink-0 items-center gap-2 rounded-full border-2 border-primary/40 bg-background px-3 py-1.5 text-sm font-semibold">
-      <Switch checked={on} onCheckedChange={(v) => review.onToggle(field, v)} aria-label={`${tr("Mostrar")} ${tr(label)}`} />
+      <Switch
+        checked={on}
+        onCheckedChange={(v) => review.onToggle(field, v)}
+        aria-label={`${tr("Mostrar")} ${tr(label)}`}
+      />
       {tr(on ? "Se ve" : "Oculto")}
     </label>
   );
 }
 
-
 type GalleryPhoto = { url: string; alt: string };
 
-export function ListingPage({ listing, review }: { listing: ListingDetail; review?: ReviewControls | undefined }) {
+export function ListingPage({
+  listing,
+  review,
+}: {
+  listing: ListingDetail;
+  review?: ReviewControls | undefined;
+}) {
   const { tr, locale, lang } = useI18n();
   const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
-  const showHours = review ? listing.hours.length > 0 : listing.hours.length > 0 && !hoursHidden(listing.tags);
+  const showHours = review
+    ? listing.hours.length > 0
+    : listing.hours.length > 0 && !hoursHidden(listing.tags);
   const hours = groupHours(listing.hours);
   const today = (new Date().getDay() + 6) % 7;
-  const gallery: GalleryPhoto[] = [...listing.gallery_urls.map((url) => ({ url, alt: listing.name })), ...listing.photos].slice(0, MAX_GALLERY_PHOTOS);
+  const gallery: GalleryPhoto[] = [
+    ...listing.gallery_urls.map((url) => ({ url, alt: listing.name })),
+    ...listing.photos,
+  ].slice(0, MAX_GALLERY_PHOTOS);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  type C = { icon: typeof Phone; label: string; value: string; text?: string; field?: ReviewField; href?: string };
+  type C = {
+    icon: typeof Phone;
+    label: string;
+    value: string;
+    text?: string;
+    field?: ReviewField;
+    href?: string;
+  };
   const contact: C[] = [];
-  if (listing.public_phone) contact.push({ icon: Phone, label: "Teléfono", value: listing.public_phone, field: "phone" });
-  if (listing.public_phone_2) contact.push({ icon: Phone, label: "Segundo teléfono", value: listing.public_phone_2, field: "phone_2" });
-  if (listing.public_whatsapp) contact.push({ icon: MessageCircle, label: "WhatsApp", value: listing.public_whatsapp, field: "whatsapp" });
-  if (listing.public_email) contact.push({ icon: Mail, label: "Email", value: listing.public_email, field: "email" });
-  if (listing.public_website) contact.push({ icon: Globe, label: "Web", value: listing.public_website, href: websiteUrl(listing.public_website) });
-  if (listing.public_linkedin) contact.push({ icon: Linkedin, label: "LinkedIn", value: listing.public_linkedin, text: "LinkedIn", field: "linkedin", href: websiteUrl(listing.public_linkedin) });
-  if (listing.public_facebook) contact.push({ icon: Facebook, label: "Facebook", value: listing.public_facebook, text: "Facebook", field: "facebook", href: websiteUrl(listing.public_facebook) });
-  if (listing.public_youtube) contact.push({ icon: Youtube, label: "YouTube", value: listing.public_youtube, text: "YouTube", field: "youtube", href: websiteUrl(listing.public_youtube) });
-  if (listing.public_x_twitter) contact.push({ icon: AtSign, label: "X (Twitter)", value: listing.public_x_twitter, text: "X (Twitter)", field: "x_twitter", href: websiteUrl(listing.public_x_twitter) });
-  if (listing.public_instagram) contact.push({ icon: Instagram, label: "Instagram", value: listing.public_instagram, text: "Instagram", field: "instagram", href: websiteUrl(listing.public_instagram) });
-  if (listing.public_tiktok) contact.push({ icon: Music2, label: "TikTok", value: listing.public_tiktok, text: "TikTok", field: "tiktok", href: websiteUrl(listing.public_tiktok) });
+  if (listing.public_phone)
+    contact.push({ icon: Phone, label: "Teléfono", value: listing.public_phone, field: "phone" });
+  if (listing.public_phone_2)
+    contact.push({
+      icon: Phone,
+      label: "Segundo teléfono",
+      value: listing.public_phone_2,
+      field: "phone_2",
+    });
+  if (listing.public_whatsapp)
+    contact.push({
+      icon: MessageCircle,
+      label: "WhatsApp",
+      value: listing.public_whatsapp,
+      field: "whatsapp",
+    });
+  if (listing.public_email)
+    contact.push({ icon: Mail, label: "Email", value: listing.public_email, field: "email" });
+  if (listing.public_website)
+    contact.push({
+      icon: Globe,
+      label: "Web",
+      value: listing.public_website,
+      href: websiteUrl(listing.public_website),
+    });
+  if (listing.public_linkedin)
+    contact.push({
+      icon: Linkedin,
+      label: "LinkedIn",
+      value: listing.public_linkedin,
+      text: "LinkedIn",
+      field: "linkedin",
+      href: websiteUrl(listing.public_linkedin),
+    });
+  if (listing.public_facebook)
+    contact.push({
+      icon: Facebook,
+      label: "Facebook",
+      value: listing.public_facebook,
+      text: "Facebook",
+      field: "facebook",
+      href: websiteUrl(listing.public_facebook),
+    });
+  if (listing.public_youtube)
+    contact.push({
+      icon: Youtube,
+      label: "YouTube",
+      value: listing.public_youtube,
+      text: "YouTube",
+      field: "youtube",
+      href: websiteUrl(listing.public_youtube),
+    });
+  if (listing.public_x_twitter)
+    contact.push({
+      icon: AtSign,
+      label: "X (Twitter)",
+      value: listing.public_x_twitter,
+      text: "X (Twitter)",
+      field: "x_twitter",
+      href: websiteUrl(listing.public_x_twitter),
+    });
+  if (listing.public_instagram)
+    contact.push({
+      icon: Instagram,
+      label: "Instagram",
+      value: listing.public_instagram,
+      text: "Instagram",
+      field: "instagram",
+      href: websiteUrl(listing.public_instagram),
+    });
+  if (listing.public_tiktok)
+    contact.push({
+      icon: Music2,
+      label: "TikTok",
+      value: listing.public_tiktok,
+      text: "TikTok",
+      field: "tiktok",
+      href: websiteUrl(listing.public_tiktok),
+    });
 
   return (
     <div className={review ? "bg-background" : "listing-page min-h-screen bg-background pb-8"}>
       {!review && <SiteHeader />}
-      {!review && <div className="mx-auto max-w-3xl px-4">
-        <BackLink className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
-          <ArrowLeft className="h-4 w-4" aria-hidden />  <Text text="Volver al directorio" /> </BackLink>
-      </div>}
+      {!review && (
+        <div className="mx-auto max-w-3xl px-4">
+          <BackLink className="inline-flex min-h-12 items-center gap-1.5 text-sm font-semibold hover:text-terracotta">
+            <ArrowLeft className="h-4 w-4" aria-hidden /> <Text text="Volver al directorio" />{" "}
+          </BackLink>
+        </div>
+      )}
       {listing.cover_url && (
         <div className="mx-auto max-w-3xl sm:px-4">
-          <img src={listing.cover_url} alt={listing.name} className="aspect-[16/9] w-full object-cover" />
+          <img
+            src={listing.cover_url}
+            alt={listing.name}
+            className="aspect-[16/9] w-full object-cover"
+          />
         </div>
       )}
       <header className="mx-auto mt-5 max-w-3xl px-4">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <TypeLabel type={listing.type} />
-            {listing.categoryName && listing.categorySlug && (review ? (
-              <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{tr(listing.categoryName)}</span>
-            ) : (
-              <Link to="/directorio" search={{ q: "", cat: listing.categorySlug, of: "" }} className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground hover:underline">
-                {tr(listing.categoryName)}
-              </Link>
-            ))}
-            {listing.activity && <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">{tr(listing.activity)}</span>}
+            {listing.categoryName &&
+              listing.categorySlug &&
+              (review ? (
+                <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
+                  {tr(listing.categoryName)}
+                </span>
+              ) : (
+                <Link
+                  to="/directorio"
+                  search={{ q: "", cat: listing.categorySlug, of: "" }}
+                  className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground hover:underline"
+                >
+                  {tr(listing.categoryName)}
+                </Link>
+              ))}
+            {listing.activity && (
+              <span className="bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
+                {tr(listing.activity)}
+              </span>
+            )}
           </div>
           <div className="flex max-w-40 flex-col items-end gap-1.5 text-right">
             {listing.urgent_24h && <UrgentBadge />}
-            {availabilityTags(listing.tags).map((label) => <UrgentBadge key={label} label={label} />)}
+            {availabilityTags(listing.tags).map((label) => (
+              <UrgentBadge key={label} label={label} />
+            ))}
           </div>
         </div>
-        <h1 className="mt-3 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl">{listing.name}</h1>
-        {listing.public_address && <div className="mt-3 flex items-center gap-2 text-base font-medium">
-          <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
-          <span className={dim("address")}>{listing.public_address}</span>
-          <Toggle review={review} field="address" label="dirección" />
-        </div>}
+        <h1 className="mt-3 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl">
+          {listing.name}
+        </h1>
+        {listing.public_address && (
+          <div className="mt-3 flex items-center gap-2 text-base font-medium">
+            <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
+            <span className={dim("address")}>{listing.public_address}</span>
+            <Toggle review={review} field="address" label="dirección" />
+          </div>
+        )}
       </header>
 
       <main className="mx-auto grid max-w-3xl gap-6 px-4 py-6">
         <div className="space-y-4">
           {listing.description && (
             <p className="whitespace-pre-line text-base text-pretty leading-relaxed">
-              {listingText(listing, lang, 'description').split("\n").map((line, index, lines) => (
-                <span key={`${index}-${line}`}>
-                  {line.trim() === "¿Qué información puedes obtener?" ? <strong className="font-semibold">{line}</strong> : <FormattedText text={line} />}
-                  {index < lines.length - 1 ? "\n" : null}
-                </span>
-              ))}
+              {listingText(listing, lang, "description")
+                .split("\n")
+                .map((line, index, lines) => (
+                  <span key={`${index}-${line}`}>
+                    {line.trim() === "¿Qué información puedes obtener?" ? (
+                      <strong className="font-semibold">{line}</strong>
+                    ) : (
+                      <FormattedText text={line} />
+                    )}
+                    {index < lines.length - 1 ? "\n" : null}
+                  </span>
+                ))}
             </p>
           )}
           {listing.labels.length > 0 && (
             <ul className="flex flex-wrap gap-2" aria-label={tr("Etiquetas")}>
               {listing.labels.map((t) => (
-                <li key={t} className="bg-hashtag px-2 py-0.5 text-xs font-semibold text-hashtag-foreground">{hashtag(tr(t))}</li>
+                <li
+                  key={t}
+                  className="bg-hashtag px-2 py-0.5 text-xs font-semibold text-hashtag-foreground"
+                >
+                  {hashtag(tr(t))}
+                </li>
               ))}
             </ul>
           )}
@@ -147,13 +315,25 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
           <section className="border-t pt-5">
             <div className="flex items-center gap-2">
               <h2 className="flex items-center gap-2 font-display font-bold">
-                <Clock className="h-5 w-5 text-primary" aria-hidden />  <Text text="Horario" /> </h2>
+                <Clock className="h-5 w-5 text-primary" aria-hidden /> <Text text="Horario" />{" "}
+              </h2>
               <Toggle review={review} field="hours" label={tr("horario")} />
             </div>
             <dl className={`mt-2 divide-y ${review && !review.show.hours ? "opacity-40" : ""}`}>
               {hours.map((h, i) => (
-                <div key={h.day} className={`flex justify-between gap-4 py-2 ${i === today ? "font-semibold" : ""}`}>
-                  <dt>{tr(h.day)}{i === today && <span className="sr-only">  <Text text="(hoy)" /></span>}</dt>
+                <div
+                  key={h.day}
+                  className={`flex justify-between gap-4 py-2 ${i === today ? "font-semibold" : ""}`}
+                >
+                  <dt>
+                    {tr(h.day)}
+                    {i === today && (
+                      <span className="sr-only">
+                        {" "}
+                        <Text text="(hoy)" />
+                      </span>
+                    )}
+                  </dt>
                   <dd className={h.slots.length ? "" : "text-muted-foreground"}>
                     {tr(h.slots.length ? h.slots.join(" · ") : "Cerrado")}
                   </dd>
@@ -166,8 +346,13 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
         {gallery.length > 0 && (
           <section aria-labelledby="fotos">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-              <h2 id="fotos" className="flex min-w-0 items-center gap-2 font-display font-bold"><Images className="h-5 w-5 shrink-0 text-primary" aria-hidden />  <Text text="Galería" /></h2>
-              <span className="shrink-0 text-xs text-muted-foreground">{gallery.length} {tr(gallery.length === 1 ? "fotografía" : "fotografías")}</span>
+              <h2 id="fotos" className="flex min-w-0 items-center gap-2 font-display font-bold">
+                <Images className="h-5 w-5 shrink-0 text-primary" aria-hidden />{" "}
+                <Text text="Galería" />
+              </h2>
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {gallery.length} {tr(gallery.length === 1 ? "fotografía" : "fotografías")}
+              </span>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-1.5">
               {gallery.map((p, i) => (
@@ -178,32 +363,41 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
                   aria-label={`${tr("Ampliar fotografía")} ${i + 1}: ${listing.name}`}
                   className={`relative min-w-0 cursor-zoom-in overflow-hidden ${i === gallery.length - 1 && gallery.length % 2 === 1 ? "col-span-2 aspect-[2/1]" : "aspect-square"}`}
                 >
-                  <img src={p.url} alt={p.alt} loading="lazy" className="h-full w-full object-cover" />
+                  <img
+                    src={p.url}
+                    alt={p.alt}
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
                 </button>
               ))}
             </div>
           </section>
         )}
 
-        {!review && <footer className="space-y-3 border-t pt-5">
-          {/* Botones de acción en web: apilados encima de «Compartir ficha» */}
-          <div className="hidden flex-col gap-3 sm:flex">
-            <ActionLinks listing={listing} vertical />
-          </div>
-          <ShareButton name={listing.name} />
-          <ReportDialog listingId={listing.id} listingName={listing.name} />
-        </footer>}
+        {!review && (
+          <footer className="space-y-3 border-t pt-5">
+            {/* Botones de acción en web: apilados encima de «Compartir ficha» */}
+            <div className="hidden flex-col gap-3 sm:flex">
+              <ActionLinks listing={listing} vertical />
+            </div>
+            <ShareButton name={listing.name} />
+            <ReportDialog listingId={listing.id} listingName={listing.name} />
+          </footer>
+        )}
       </main>
 
       {/* Botonera fija inferior: solo en móvil */}
-      {!review && <nav
-        aria-label={tr("Contactar")}
-        className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 px-4 py-3 backdrop-blur sm:hidden"
-      >
-        <div className="mx-auto flex max-w-3xl gap-2">
-          <ActionLinks listing={listing} />
-        </div>
-      </nav>}
+      {!review && (
+        <nav
+          aria-label={tr("Contactar")}
+          className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 px-4 py-3 backdrop-blur sm:hidden"
+        >
+          <div className="mx-auto flex max-w-3xl gap-2">
+            <ActionLinks listing={listing} />
+          </div>
+        </nav>
+      )}
 
       {lightbox !== null && gallery.length > 0 && (
         <Lightbox photos={gallery} initial={lightbox} onClose={() => setLightbox(null)} />
@@ -212,13 +406,23 @@ export function ListingPage({ listing, review }: { listing: ListingDetail; revie
   );
 }
 
-function ActionLinks({ listing, vertical = false }: { listing: ListingDetail; vertical?: boolean }) {
+function ActionLinks({
+  listing,
+  vertical = false,
+}: {
+  listing: ListingDetail;
+  vertical?: boolean;
+}) {
   const shape = vertical ? "w-full rounded-xl" : "flex-1";
   return (
     <>
       {listing.public_phone && (
-        <a href={`tel:${listing.public_phone}`} className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary`}>
-          <Phone className="h-5 w-5" aria-hidden />  <Text text="Llamar" /> </a>
+        <a
+          href={`tel:${listing.public_phone}`}
+          className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary`}
+        >
+          <Phone className="h-5 w-5" aria-hidden /> <Text text="Llamar" />{" "}
+        </a>
       )}
       {listing.public_whatsapp && (
         <a
@@ -227,7 +431,8 @@ function ActionLinks({ listing, vertical = false }: { listing: ListingDetail; ve
           rel="noopener noreferrer"
           className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm bg-primary font-semibold text-primary-foreground hover:bg-primary/90`}
         >
-          <MessageCircle className="h-5 w-5" aria-hidden />  <Text text="Mensaje" /> </a>
+          <MessageCircle className="h-5 w-5" aria-hidden /> <Text text="Mensaje" />{" "}
+        </a>
       )}
       {listing.public_address && (
         <a
@@ -236,13 +441,22 @@ function ActionLinks({ listing, vertical = false }: { listing: ListingDetail; ve
           rel="noopener noreferrer"
           className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary`}
         >
-          <Navigation className="h-5 w-5" aria-hidden />  <Text text="Cómo llegar" /> </a>
+          <Navigation className="h-5 w-5" aria-hidden /> <Text text="Cómo llegar" />{" "}
+        </a>
       )}
     </>
   );
 }
 
-function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initial: number; onClose: () => void }) {
+function Lightbox({
+  photos,
+  initial,
+  onClose,
+}: {
+  photos: GalleryPhoto[];
+  initial: number;
+  onClose: () => void;
+}) {
   const { tr, locale } = useI18n();
   const [index, setIndex] = useState(initial);
   const [zoom, setZoom] = useState(false);
@@ -278,33 +492,77 @@ function Lightbox({ photos, initial, onClose }: { photos: GalleryPhoto[]; initia
   const stop = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={tr("Fotografía ampliada")} className="fixed inset-0 z-50 flex flex-col bg-foreground/95" onClick={onClose}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={tr("Fotografía ampliada")}
+      className="fixed inset-0 z-50 flex flex-col bg-foreground/95"
+      onClick={onClose}
+    >
       <div className="flex items-center justify-between p-3" onClick={stop}>
-        <span className="text-sm font-semibold text-background">{index + 1} / {photos.length}</span>
-        <button type="button" onClick={onClose} aria-label={tr("Cerrar")} className="flex h-11 w-11 items-center justify-center text-background">
+        <span className="text-sm font-semibold text-background">
+          {index + 1} / {photos.length}
+        </span>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={tr("Cerrar")}
+          className="flex h-11 w-11 items-center justify-center text-background"
+        >
           <X className="h-6 w-6" aria-hidden />
         </button>
       </div>
       <div className="flex flex-1 items-center justify-center gap-1 px-2 pb-6">
         {photos.length > 1 && (
-          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i - 1 + photos.length) % photos.length); }} aria-label={tr("Fotografía anterior")} className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
+          <button
+            type="button"
+            onClick={(e) => {
+              stop(e);
+              setIndex((i) => (i - 1 + photos.length) % photos.length);
+            }}
+            aria-label={tr("Fotografía anterior")}
+            className="flex h-11 w-11 shrink-0 items-center justify-center text-background"
+          >
             <ChevronLeft className="h-8 w-8" aria-hidden />
           </button>
         )}
-        <div className="relative flex max-h-[75vh] max-w-full items-center justify-center overflow-hidden" onClick={stop}>
+        <div
+          className="relative flex max-h-[75vh] max-w-full items-center justify-center overflow-hidden"
+          onClick={stop}
+        >
           <img
             src={photo.url}
             alt={photo.alt}
             draggable={false}
             className={`max-h-[75vh] max-w-full object-contain transition-transform duration-200 ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
-            style={{ transform: zoom ? "scale(2.5)" : "scale(1)", transformOrigin: origin, touchAction: zoom ? "none" : "pan-y" }}
-            onClick={(e) => { pointTo(e.clientX, e.clientY, e.currentTarget); setZoom((z) => !z); }}
-            onMouseMove={(e) => { if (zoom) pointTo(e.clientX, e.clientY, e.currentTarget); }}
-            onTouchMove={(e) => { const t = e.touches[0]; if (zoom && t) pointTo(t.clientX, t.clientY, e.currentTarget); }}
+            style={{
+              transform: zoom ? "scale(2.5)" : "scale(1)",
+              transformOrigin: origin,
+              touchAction: zoom ? "none" : "pan-y",
+            }}
+            onClick={(e) => {
+              pointTo(e.clientX, e.clientY, e.currentTarget);
+              setZoom((z) => !z);
+            }}
+            onMouseMove={(e) => {
+              if (zoom) pointTo(e.clientX, e.clientY, e.currentTarget);
+            }}
+            onTouchMove={(e) => {
+              const t = e.touches[0];
+              if (zoom && t) pointTo(t.clientX, t.clientY, e.currentTarget);
+            }}
           />
         </div>
         {photos.length > 1 && (
-          <button type="button" onClick={(e) => { stop(e); setIndex((i) => (i + 1) % photos.length); }} aria-label={tr("Fotografía siguiente")} className="flex h-11 w-11 shrink-0 items-center justify-center text-background">
+          <button
+            type="button"
+            onClick={(e) => {
+              stop(e);
+              setIndex((i) => (i + 1) % photos.length);
+            }}
+            aria-label={tr("Fotografía siguiente")}
+            className="flex h-11 w-11 shrink-0 items-center justify-center text-background"
+          >
             <ChevronRight className="h-8 w-8" aria-hidden />
           </button>
         )}
@@ -323,12 +581,21 @@ function CopyValue({ label, value }: { label: string; value: string }) {
       setCopied(true);
       toast.success(t("feedback.copied"));
       setTimeout(() => setCopied(false), 1800);
-    } catch { toast.error(t("feedback.copyError")); }
+    } catch {
+      toast.error(t("feedback.copyError"));
+    }
   };
   return (
-    <button type="button" onClick={copy} title={tr("Toca para copiar")} className="select-text text-left hover:text-primary">
+    <button
+      type="button"
+      onClick={copy}
+      title={tr("Toca para copiar")}
+      className="select-text text-left hover:text-primary"
+    >
       <span className="font-semibold">{tr(label)}:</span> {value}
-      <span aria-live="polite" className="ml-2 text-sm font-semibold text-primary">{tr(copied ? "Copiado ✓" : "")}</span>
+      <span aria-live="polite" className="ml-2 text-sm font-semibold text-primary">
+        {tr(copied ? "Copiado ✓" : "")}
+      </span>
     </button>
   );
 }
@@ -343,26 +610,45 @@ function ShareButton({ name }: { name: string }) {
         await navigator.share({ title: name, text, url });
         toast.success(t("feedback.shared"));
       } catch (error) {
-        if (!(error instanceof Error && error.name === "AbortError")) toast.error(t("feedback.shareError"));
+        if (!(error instanceof Error && error.name === "AbortError"))
+          toast.error(t("feedback.shareError"));
       }
       return;
     }
-    window.open(`https://wa.me/?text=${encodeURIComponent(`${text}: ${url}`)}`, "_blank", "noopener,noreferrer");
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(`${text}: ${url}`)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
     toast(t("feedback.whatsapp"));
   };
   return (
-    <Button variant="outline" type="button" onClick={share} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-base font-semibold hover:bg-secondary">
-      <Share2 className="h-5 w-5" aria-hidden />  <Text text="Compartir ficha" /> </Button>
+    <Button
+      variant="outline"
+      type="button"
+      onClick={share}
+      className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-base font-semibold hover:bg-secondary"
+    >
+      <Share2 className="h-5 w-5" aria-hidden /> <Text text="Compartir ficha" />{" "}
+    </Button>
   );
 }
 
 export function ListingNotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
-      <h1 className="font-display text-2xl font-bold"><Text text="Esta ficha no está disponible" /></h1>
-      <p className="text-muted-foreground"><Text text="Puede que se haya retirado o que el enlace no sea correcto." /></p>
-      <Link to="/directorio" className="inline-flex min-h-11 items-center bg-primary px-4 font-semibold text-primary-foreground">
-         <Text text="Ver el directorio" /> </Link>
+      <h1 className="font-display text-2xl font-bold">
+        <Text text="Esta ficha no está disponible" />
+      </h1>
+      <p className="text-muted-foreground">
+        <Text text="Puede que se haya retirado o que el enlace no sea correcto." />
+      </p>
+      <Link
+        to="/directorio"
+        className="inline-flex min-h-11 items-center bg-primary px-4 font-semibold text-primary-foreground"
+      >
+        <Text text="Ver el directorio" />{" "}
+      </Link>
     </div>
   );
 }

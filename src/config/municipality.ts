@@ -17,7 +17,12 @@ import type {
   MunicipalityTheme,
 } from "../../instances/schema";
 import { DEFAULT_MUNICIPALITY_ID } from "../../instances/schema";
-import { EMPTY_SITE_CONFIG, mergeIdentity, readBrowserSiteConfig, type SiteConfig } from "@/lib/site-identity";
+import {
+  EMPTY_SITE_CONFIG,
+  mergeIdentity,
+  readBrowserSiteConfig,
+  type SiteConfig,
+} from "@/lib/site-identity";
 
 export { DEFAULT_MUNICIPALITY_ID };
 export type {
@@ -100,7 +105,10 @@ export function brandParams(m: MunicipalityConfig = getMunicipality()): Record<s
 /** Sustituye las variables de marca en textos que no pasan por las traducciones (p. ej. metadatos). */
 export function brand(text: string, m: MunicipalityConfig = getMunicipality()): string {
   const params = brandParams(m);
-  return text.replace(/\{(app|municipio|nombreCorto|provincia)\}/g, (match, name: string) => params[name] ?? match);
+  return text.replace(
+    /\{(app|municipio|nombreCorto|provincia)\}/g,
+    (match, name: string) => params[name] ?? match,
+  );
 }
 
 function escapeRegExp(value: string): string {
@@ -121,11 +129,13 @@ export function unbrand(text: string, m: MunicipalityConfig = getMunicipality())
   let out = text;
   for (const [value, token] of pairs) {
     if (!value) continue;
-    out = out.replace(new RegExp(`(?<![\\p{L}\\p{N}{])${escapeRegExp(value)}(?![\\p{L}\\p{N}}])`, "gu"), token);
+    out = out.replace(
+      new RegExp(`(?<![\\p{L}\\p{N}{])${escapeRegExp(value)}(?![\\p{L}\\p{N}}])`, "gu"),
+      token,
+    );
   }
   return out;
 }
-
 
 export class InvalidThemeValueError extends Error {
   constructor(token: string, value: unknown) {
@@ -135,9 +145,7 @@ export class InvalidThemeValueError extends Error {
 }
 
 const NUM = String.raw`(?:\d+(?:\.\d+)?|\.\d+)`;
-const OKLCH_RE = new RegExp(
-  String.raw`^oklch\(${NUM}%? ${NUM} ${NUM}(?: \/ ${NUM}%?)?\)$`,
-);
+const OKLCH_RE = new RegExp(String.raw`^oklch\(${NUM}%? ${NUM} ${NUM}(?: \/ ${NUM}%?)?\)$`);
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
 const LIGHT_VARS: ReadonlyArray<[keyof MunicipalityLightTokens, string]> = [

@@ -1,7 +1,11 @@
-import { externalTextUrl } from './description';
+import { externalTextUrl } from "./description";
 
 /** Older guides retain their card excerpt until an independent description is entered. */
-export function procedureCardDescription(value: { cardDescription?: string; summary?: string; short: string }): string {
+export function procedureCardDescription(value: {
+  cardDescription?: string;
+  summary?: string;
+  short: string;
+}): string {
   return value.cardDescription ?? value.summary ?? value.short;
 }
 
@@ -10,10 +14,16 @@ export function hasPlaceDetail(detail: { value: string }): boolean {
 }
 
 export function hasProcedureLink(value: unknown): value is { label: string; url: string } {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== "object") return false;
   const link = value as Record<string, unknown>;
-  if (typeof link['label'] !== 'string' || !link['label'].trim() || typeof link['url'] !== 'string' || !link['url'].trim()) return false;
-  const url = link['url'].trim();
+  if (
+    typeof link["label"] !== "string" ||
+    !link["label"].trim() ||
+    typeof link["url"] !== "string" ||
+    !link["url"].trim()
+  )
+    return false;
+  const url = link["url"].trim();
   return Boolean(externalTextUrl(url) || /^tel:\+?[\d\s()-]+$/.test(url));
 }
 

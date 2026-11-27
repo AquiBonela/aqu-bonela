@@ -19,8 +19,12 @@ export function getBrowserPublicEnv(): Partial<PublicEnv> {
 export function publicEnvScript(env: Partial<PublicEnv>): string {
   const safe = {
     SUPABASE_URL: typeof env.SUPABASE_URL === "string" ? env.SUPABASE_URL : "",
-    SUPABASE_PUBLISHABLE_KEY: typeof env.SUPABASE_PUBLISHABLE_KEY === "string" ? env.SUPABASE_PUBLISHABLE_KEY : "",
+    SUPABASE_PUBLISHABLE_KEY:
+      typeof env.SUPABASE_PUBLISHABLE_KEY === "string" ? env.SUPABASE_PUBLISHABLE_KEY : "",
   };
-  const json = JSON.stringify(safe).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+  const json = JSON.stringify(safe)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
   return `window.__PUBLIC_ENV__=${json};`;
 }

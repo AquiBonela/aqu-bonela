@@ -10,10 +10,23 @@ export const LISTING_TYPES: { value: ListingType; label: string; plural: string 
   { value: "publico", label: "Servicio público", plural: "Servicios públicos" },
   { value: "asociacion", label: "Asociación y colectivo", plural: "Asociaciones y colectivos" },
 ];
-export const isListingType = (v: string): v is ListingType => LISTING_TYPES.some((t) => t.value === v);
+export const isListingType = (v: string): v is ListingType =>
+  LISTING_TYPES.some((t) => t.value === v);
 
-export type Category = { id: string; name: string; slug: string; sort_order: number; type: ListingType };
-export type Activity = { id: string; category_id: string; name: string; synonyms: string[]; sort_order: number };
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  sort_order: number;
+  type: ListingType;
+};
+export type Activity = {
+  id: string;
+  category_id: string;
+  name: string;
+  synonyms: string[];
+  sort_order: number;
+};
 export type Listing = {
   id: string;
   slug: string;
@@ -42,8 +55,14 @@ export const directoryQuery = queryOptions({
   queryFn: async () => {
     const [cats, acts, settings, list] = await Promise.all([
       supabase.from("categories").select("id,name,slug,sort_order,type").order("sort_order"),
-      supabase.from("activities").select("id,category_id,name,synonyms,sort_order").order("sort_order"),
-      supabase.from("site_settings").select("hero_title,hero_subtitle,banner_enabled,banner_text").maybeSingle(),
+      supabase
+        .from("activities")
+        .select("id,category_id,name,synonyms,sort_order")
+        .order("sort_order"),
+      supabase
+        .from("site_settings")
+        .select("hero_title,hero_subtitle,banner_enabled,banner_text")
+        .maybeSingle(),
       supabase
         .from("listings")
         .select(
@@ -58,9 +77,10 @@ export const directoryQuery = queryOptions({
     // Firma en lote solo las cabeceras que se ven (fichas colaboradoras con imagen subida).
     const toSign = listings.filter((l) => l.cover_path && isFeatured(l));
     if (toSign.length) {
-      const { data: signed } = await supabase.storage
-        .from("listing-photos")
-        .createSignedUrls(toSign.map((l) => l.cover_path!), 3600);
+      const { data: signed } = await supabase.storage.from("listing-photos").createSignedUrls(
+        toSign.map((l) => l.cover_path!),
+        3600,
+      );
       toSign.forEach((l, i) => {
         const url = signed?.[i]?.signedUrl;
         if (url) l.cover_url = url;
@@ -73,7 +93,10 @@ export const directoryQuery = queryOptions({
       // El texto por defecto se pone al mostrarlo: los datos viajan en el HTML sin sustituir variables.
       heroTitle: settings.data?.hero_title || "",
       heroSubtitle: settings.data?.hero_subtitle ?? "",
-      banner: settings.data?.banner_enabled && settings.data.banner_text.trim() ? settings.data.banner_text.trim() : null,
+      banner:
+        settings.data?.banner_enabled && settings.data.banner_text.trim()
+          ? settings.data.banner_text.trim()
+          : null,
     };
   },
 });
@@ -107,23 +130,40 @@ export function filterListings(
   const words = normalize(q).split(/\s+/).filter(Boolean);
   const catName = new Map(categories.map((c) => [c.id, c.name]));
   // Sinónimos de cada actividad («tubería» → Fontanero), por categoría + nombre.
-  const synonyms = new Map(activities.map((a) => [`${a.category_id}|${normalize(a.name)}`, a.synonyms.join(" ")]));
+  const synonyms = new Map(
+    activities.map((a) => [`${a.category_id}|${normalize(a.name)}`, a.synonyms.join(" ")]),
+  );
   const result = listings.filter((l) => {
     if (type && l.type !== type) return false;
     if (cat && l.category_id !== cat.id) return false;
     if (cat && activity && normalize(l.activity ?? "") !== normalize(activity)) return false;
     if (!words.length) return true;
-    const fields = [l.name, l.short_description, l.description, l.activity ?? "", catName.get(l.category_id ?? "") ?? "", l.tags.join(" "), l.labels.join(" "),
-      synonyms.get(`${l.category_id}|${normalize(l.activity ?? "")}`) ?? ""];
-    const stored = l.translations && typeof l.translations === 'object' ? Object.values(l.translations).flatMap((entry) => {
-      const content = entry && typeof entry === 'object' && 'content' in entry ? entry.content : {};
-      return content && typeof content === 'object' ? Object.values(content).filter((v): v is string => typeof v === 'string') : [];
-    }) : [];
+    const fields = [
+      l.name,
+      l.short_description,
+      l.description,
+      l.activity ?? "",
+      catName.get(l.category_id ?? "") ?? "",
+      l.tags.join(" "),
+      l.labels.join(" "),
+      synonyms.get(`${l.category_id}|${normalize(l.activity ?? "")}`) ?? "",
+    ];
+    const stored =
+      l.translations && typeof l.translations === "object"
+        ? Object.values(l.translations).flatMap((entry) => {
+            const content =
+              entry && typeof entry === "object" && "content" in entry ? entry.content : {};
+            return content && typeof content === "object"
+              ? Object.values(content).filter((v): v is string => typeof v === "string")
+              : [];
+          })
+        : [];
     const hay = normalize([...fields, ...fields.map(translate), ...stored].join(" "));
     return words.every((w) => hay.includes(w));
   });
   return result.sort(
-    (a, b) => Number(isFeatured(b, now)) - Number(isFeatured(a, now)) || a.name.localeCompare(b.name, "es"),
+    (a, b) =>
+      Number(isFeatured(b, now)) - Number(isFeatured(a, now)) || a.name.localeCompare(b.name, "es"),
   );
 }
 
@@ -139,13 +179,17 @@ export function dailyShuffle<T extends { id: string }>(items: T[], now = new Dat
 }
 
 export function whatsappUrl(number: string, name?: string) {
-  const text = name ? `?text=${encodeURIComponent(brand(`Hola, os encuentro en {app} (${name}).`))}` : "";
+  const text = name
+    ? `?text=${encodeURIComponent(brand(`Hola, os encuentro en {app} (${name}).`))}`
+    : "";
   return `https://wa.me/${number.replace(/\D/g, "")}${text}`;
 }
 
 /** Oficios disponibles dentro de una categoría (ordenados, sin duplicados). */
 export function activitiesFor(listings: Listing[], categoryId: string | undefined) {
   if (!categoryId) return [];
-  const set = new Set(listings.filter((l) => l.category_id === categoryId && l.activity).map((l) => l.activity!));
+  const set = new Set(
+    listings.filter((l) => l.category_id === categoryId && l.activity).map((l) => l.activity!),
+  );
   return [...set].sort((a, b) => a.localeCompare(b, "es"));
 }

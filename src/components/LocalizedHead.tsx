@@ -11,28 +11,40 @@ export function LocalizedHead() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   useEffect(() => {
     const translate = () => {
-      document.head.querySelectorAll('title, meta[name="description"], meta[property="og:title"], meta[property="og:description"], meta[name="twitter:title"], meta[name="twitter:description"]').forEach((element) => {
-        const title = element.tagName === "TITLE";
-        const current = title ? element.textContent ?? "" : element.getAttribute("content") ?? "";
-        const previous = originals.get(element);
-        const source = previous?.rendered === current ? previous.source : current;
-        let rendered = tr(source);
-        const { appName, name } = getMunicipality();
-        const suffix = ` — ${appName}`;
-        const place = ` en ${name}`;
-        if (lang !== "es" && rendered === source && source.endsWith(suffix)) {
-          const base = source.slice(0, -suffix.length);
-          rendered = `${base.endsWith(place) ? `${tr(base.slice(0, -place.length))} ${tr(place.trim())}` : tr(base)}${suffix}`;
-        }
-        originals.set(element, { source, rendered });
-        if (current === rendered) return;
-        if (title) element.textContent = rendered;
-        else element.setAttribute("content", rendered);
-      });
+      document.head
+        .querySelectorAll(
+          'title, meta[name="description"], meta[property="og:title"], meta[property="og:description"], meta[name="twitter:title"], meta[name="twitter:description"]',
+        )
+        .forEach((element) => {
+          const title = element.tagName === "TITLE";
+          const current = title
+            ? (element.textContent ?? "")
+            : (element.getAttribute("content") ?? "");
+          const previous = originals.get(element);
+          const source = previous?.rendered === current ? previous.source : current;
+          let rendered = tr(source);
+          const { appName, name } = getMunicipality();
+          const suffix = ` — ${appName}`;
+          const place = ` en ${name}`;
+          if (lang !== "es" && rendered === source && source.endsWith(suffix)) {
+            const base = source.slice(0, -suffix.length);
+            rendered = `${base.endsWith(place) ? `${tr(base.slice(0, -place.length))} ${tr(place.trim())}` : tr(base)}${suffix}`;
+          }
+          originals.set(element, { source, rendered });
+          if (current === rendered) return;
+          if (title) element.textContent = rendered;
+          else element.setAttribute("content", rendered);
+        });
     };
     translate();
     const observer = new MutationObserver(translate);
-    observer.observe(document.head, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["content"] });
+    observer.observe(document.head, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["content"],
+    });
     return () => observer.disconnect();
   }, [tr, lang, pathname]);
   return null;

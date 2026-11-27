@@ -11,7 +11,10 @@ export const Route = createFileRoute("/_authenticated/admin/avisos")({
   head: () => ({
     meta: [
       { title: brand("Avisos · Administración {app}") },
-      { name: "description", content: brand("Avisos «¿Algo no es correcto?» del directorio {app}.") },
+      {
+        name: "description",
+        content: brand("Avisos «¿Algo no es correcto?» del directorio {app}."),
+      },
       { property: "og:title", content: brand("Avisos · Administración {app}") },
       { property: "og:description", content: "Bandeja de avisos del directorio." },
       { property: "og:type", content: "website" },
@@ -57,24 +60,38 @@ function ReportsBody() {
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-bold"><Text text="Avisos" /></h1>
+        <h1 className="font-display text-2xl font-bold">
+          <Text text="Avisos" />
+        </h1>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={showResolved} onChange={(e) => setShowResolved(e.target.checked)} />
-           <Text text="Mostrar resueltos" /> </label>
+          <input
+            type="checkbox"
+            checked={showResolved}
+            onChange={(e) => setShowResolved(e.target.checked)}
+          />
+          <Text text="Mostrar resueltos" />{" "}
+        </label>
       </div>
       <p className="mt-3 text-sm text-muted-foreground">
         {tr(isLoading ? "Cargando…" : `${pending} pendiente${pending === 1 ? "" : "s"}`)}
       </p>
       {!isLoading && rows.length === 0 && (
-        <p className="mt-6 border p-4 text-sm text-muted-foreground"><Text text="No hay avisos" />{tr(showResolved ? "" : " pendientes")}.</p>
+        <p className="mt-6 border p-4 text-sm text-muted-foreground">
+          <Text text="No hay avisos" />
+          {tr(showResolved ? "" : " pendientes")}.
+        </p>
       )}
       <ul className="mt-4 grid gap-3">
         {rows.map((r) => (
           <li key={r.id} className={`border p-4 ${r.resolved ? "bg-secondary/40" : ""}`}>
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="font-medium">
-                 <Text text="Ficha:" />{" "}
-                <Link to="/admin/fichas/$id" params={{ id: r.listing_id }} className="underline underline-offset-4">
+                <Text text="Ficha:" />{" "}
+                <Link
+                  to="/admin/fichas/$id"
+                  params={{ id: r.listing_id }}
+                  className="underline underline-offset-4"
+                >
                   {r.listings?.name ?? tr("Ficha eliminada")}
                 </Link>
               </p>
@@ -82,7 +99,9 @@ function ReportsBody() {
             </div>
             <p className="mt-2 whitespace-pre-line text-sm">{r.message}</p>
             {r.contact && (
-              <p className="mt-2 text-sm text-muted-foreground"><Text text="Contacto:" /> <span className="font-medium">{r.contact}</span></p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                <Text text="Contacto:" /> <span className="font-medium">{r.contact}</span>
+              </p>
             )}
             <div className="mt-3 flex flex-wrap gap-2">
               <button
@@ -101,7 +120,8 @@ function ReportsBody() {
                 }}
                 className="min-h-10 border px-3 text-sm text-destructive hover:bg-secondary disabled:opacity-60"
               >
-                 <Text text="Descartar" /> </button>
+                <Text text="Descartar" />{" "}
+              </button>
             </div>
           </li>
         ))}

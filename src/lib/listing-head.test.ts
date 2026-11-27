@@ -3,7 +3,8 @@ import { listingShareImage } from "./listing-head";
 
 describe("portada al compartir fichas", () => {
   it("conserva las portadas subidas y su autorización temporal", () => {
-    const cover = "https://photos.example.org/storage/v1/object/sign/listing-photos/listing/cover.webp?token=test";
+    const cover =
+      "https://photos.example.org/storage/v1/object/sign/listing-photos/listing/cover.webp?token=test";
     expect(listingShareImage(cover)).toBe(cover);
   });
   it("no inventa una imagen si la ficha no tiene portada", () => {

@@ -12,7 +12,9 @@ export const STATUSES = [
 export type Status = (typeof STATUSES)[number]["value"];
 
 export function slugify(text: string) {
-  return normalize(text).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return normalize(text)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 /** Colaborador dura 1 mes desde la activación. */
@@ -27,7 +29,11 @@ export const isAdminQuery = queryOptions({
   queryFn: async () => {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return false;
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id).eq("role", "admin");
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", u.user.id)
+      .eq("role", "admin");
     return !!data?.length;
   },
 });
@@ -37,7 +43,9 @@ export const adminListingsQuery = queryOptions({
   queryFn: async () => {
     const { data, error } = await supabase
       .from("listings")
-      .select("id,slug,type,name,status,featured,featured_until,urgent_24h,category_id,activity,updated_at,categories(name)")
+      .select(
+        "id,slug,type,name,status,featured,featured_until,urgent_24h,category_id,activity,updated_at,categories(name)",
+      )
       .order("updated_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data;
@@ -47,7 +55,10 @@ export const adminListingsQuery = queryOptions({
 export const categoriesQuery = queryOptions({
   queryKey: ["admin", "categories"],
   queryFn: async () => {
-    const { data, error } = await supabase.from("categories").select("id,name,type").order("sort_order");
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id,name,type")
+      .order("sort_order");
     if (error) throw new Error(error.message);
     return data;
   },
@@ -60,11 +71,24 @@ export const adminListingQuery = (id: string) =>
       const [l, c, h, a] = await Promise.all([
         supabase.from("listings").select("*").eq("id", id).maybeSingle(),
         supabase.from("listing_contacts").select("*").eq("listing_id", id).maybeSingle(),
-        supabase.from("listing_hours").select("weekday,opens,closes").eq("listing_id", id).order("weekday"),
-        supabase.from("listing_activities").select("activity_id").eq("listing_id", id).order("sort_order"),
+        supabase
+          .from("listing_hours")
+          .select("weekday,opens,closes")
+          .eq("listing_id", id)
+          .order("weekday"),
+        supabase
+          .from("listing_activities")
+          .select("activity_id")
+          .eq("listing_id", id)
+          .order("sort_order"),
       ]);
       if (l.error) throw new Error(l.error.message);
-      return { listing: l.data, contact: c.data, hours: h.data ?? [], activityIds: (a.data ?? []).map((x) => x.activity_id) };
+      return {
+        listing: l.data,
+        contact: c.data,
+        hours: h.data ?? [],
+        activityIds: (a.data ?? []).map((x) => x.activity_id),
+      };
     },
   });
 
@@ -96,7 +120,11 @@ export const adminSuggestionsQuery = queryOptions({
 
 /** Fecha corta en español, p. ej. «12 mar 2026». */
 export function fmtDate(iso: string, locale = "es-ES") {
-  return new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString(locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export type SiteSettings = {

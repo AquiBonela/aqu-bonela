@@ -21,11 +21,14 @@ describe("public.site_identity", () => {
   it("la migración no contiene datos de ningún municipio", () => {
     const block = identityBlock(MIGRATION);
     expect(block).toMatch(/INSERT INTO public\.site_identity \(id\) VALUES \(true\)/);
-    expect(block).not.toMatch(/casarabonela|bonela|m[aá]laga|municipio de ejemplo|conecta tu pueblo demo/i);
+    expect(block).not.toMatch(
+      /casarabonela|bonela|m[aá]laga|municipio de ejemplo|conecta tu pueblo demo/i,
+    );
   });
 
   it("site_config() no expone el autor del cambio", () => {
-    const fn = identityBlock(MIGRATION).split("CREATE OR REPLACE FUNCTION public.site_config()")[1] ?? "";
+    const fn =
+      identityBlock(MIGRATION).split("CREATE OR REPLACE FUNCTION public.site_config()")[1] ?? "";
     expect(fn).not.toContain("updated_by");
   });
 });

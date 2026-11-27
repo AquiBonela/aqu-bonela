@@ -4,7 +4,13 @@ import { parseProcedureText } from "./procedure-text";
 describe("procedure text", () => {
   it("respects a custom external link instead of replacing it with Punto Vuela", () => {
     expect(parseProcedureText("/Punto Vuela*www.casarabonela.es/")).toEqual([
-      { text: "Punto Vuela", bold: false, italic: false, href: "https://www.casarabonela.es/", puntoVuela: false },
+      {
+        text: "Punto Vuela",
+        bold: false,
+        italic: false,
+        href: "https://www.casarabonela.es/",
+        puntoVuela: false,
+      },
     ]);
   });
   it("uses double asterisks for bold in procedure text", () => {
@@ -19,7 +25,12 @@ describe("procedure text", () => {
   });
   it("does not create automatic links for Punto Vuela mentions", () => {
     expect(parseProcedureText("Importante: el Punto Vuela ofrece apoyo")).toEqual([
-      { text: "Importante: el Punto Vuela ofrece apoyo", bold: false, italic: false, puntoVuela: false },
+      {
+        text: "Importante: el Punto Vuela ofrece apoyo",
+        bold: false,
+        italic: false,
+        puntoVuela: false,
+      },
     ]);
     expect(parseProcedureText("**Acude a Punto Vuela**")).toEqual([
       { text: "Acude a Punto Vuela", bold: true, italic: false, puntoVuela: false },
@@ -32,7 +43,12 @@ describe("procedure text", () => {
   });
   it("keeps HTML, line breaks and incomplete marks literal", () => {
     expect(parseProcedureText("<script>texto</script>\n**sin cierre")).toEqual([
-      { text: "<script>texto</script>\n**sin cierre", bold: false, italic: false, puntoVuela: false },
+      {
+        text: "<script>texto</script>\n**sin cierre",
+        bold: false,
+        italic: false,
+        puntoVuela: false,
+      },
     ]);
   });
 });

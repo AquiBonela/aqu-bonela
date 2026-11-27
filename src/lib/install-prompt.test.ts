@@ -1,15 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { canOfferInstall, INSTALL_DELAY_MS, INSTALL_DISMISS_MS, installPlatform, isIosSafari, publicInstallPage } from "./install-prompt";
+import {
+  canOfferInstall,
+  INSTALL_DELAY_MS,
+  INSTALL_DISMISS_MS,
+  installPlatform,
+  isIosSafari,
+  publicInstallPage,
+} from "./install-prompt";
 
 describe("aviso de instalación", () => {
-  const input = { mobile: true, installed: false, supported: true, dismissedAt: null, now: 100_000 };
-  it("espera 12 segundos antes de ofrecer la instalación", () => expect(INSTALL_DELAY_MS).toBe(12_000));
+  const input = {
+    mobile: true,
+    installed: false,
+    supported: true,
+    dismissedAt: null,
+    now: 100_000,
+  };
+  it("espera 12 segundos antes de ofrecer la instalación", () =>
+    expect(INSTALL_DELAY_MS).toBe(12_000));
   it("no insiste durante 30 días después de descartarlo", () => {
     expect(INSTALL_DISMISS_MS).toBe(30 * 24 * 60 * 60 * 1000);
-    expect(canOfferInstall({ ...input, dismissedAt: "100000", now: 100_000 + INSTALL_DISMISS_MS - 1 })).toBe(false);
-    expect(canOfferInstall({ ...input, dismissedAt: "100000", now: 100_000 + INSTALL_DISMISS_MS })).toBe(true);
+    expect(
+      canOfferInstall({ ...input, dismissedAt: "100000", now: 100_000 + INSTALL_DISMISS_MS - 1 }),
+    ).toBe(false);
+    expect(
+      canOfferInstall({ ...input, dismissedAt: "100000", now: 100_000 + INSTALL_DISMISS_MS }),
+    ).toBe(true);
   });
-  it("no ofrece instalar cuando se abre como aplicación", () => expect(canOfferInstall({ ...input, installed: true })).toBe(false));
+  it("no ofrece instalar cuando se abre como aplicación", () =>
+    expect(canOfferInstall({ ...input, installed: true })).toBe(false));
   it("no ofrece el aviso automático en escritorio o navegadores no compatibles", () => {
     expect(canOfferInstall({ ...input, mobile: false })).toBe(false);
     expect(canOfferInstall({ ...input, supported: false })).toBe(false);

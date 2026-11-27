@@ -54,9 +54,19 @@ export type ReviewContact = {
   owner_name: string | null;
 };
 
-export type ReviewVisibility = Pick<ReviewContact,
-  "show_phone" | "show_phone_2" | "show_whatsapp" | "show_address" | "show_email" |
-  "show_linkedin" | "show_facebook" | "show_youtube" | "show_x_twitter" | "show_instagram" | "show_tiktok"
+export type ReviewVisibility = Pick<
+  ReviewContact,
+  | "show_phone"
+  | "show_phone_2"
+  | "show_whatsapp"
+  | "show_address"
+  | "show_email"
+  | "show_linkedin"
+  | "show_facebook"
+  | "show_youtube"
+  | "show_x_twitter"
+  | "show_instagram"
+  | "show_tiktok"
 > & { show_hours: boolean };
 
 /** Campos que quedan registrados en el consentimiento del titular. */
@@ -79,17 +89,29 @@ export function authorizedContactFields(show: ReviewVisibility) {
 
 export type ReviewData =
   | { ok: false; reason: "invalid" | "expired" }
-  | { ok: true; done: boolean; expiresAt: string; listing: ReviewListing; contact: ReviewContact | null; hours: Hour[] };
+  | {
+      ok: true;
+      done: boolean;
+      expiresAt: string;
+      listing: ReviewListing;
+      contact: ReviewContact | null;
+      hours: Hour[];
+    };
 
-export type SubmitResult = { ok: true; url: string | null } | { ok: false; reason: "invalid" | "expired" };
+export type SubmitResult =
+  { ok: true; url: string | null } | { ok: false; reason: "invalid" | "expired" };
 
 /** Rellena {nombre} y {enlace} en la plantilla configurada; sin plantilla usa el texto por defecto. */
 export function reviewMessage(ownerName: string | null, url: string, template?: string | null) {
   if (template && template.trim()) {
     const t = template.includes("{enlace}") ? template : `${template} {enlace}`;
-    return t.replace(/\s*\{nombre\}/g, ownerName ? ` ${ownerName}` : "").replace(/\{enlace\}/g, url);
+    return t
+      .replace(/\s*\{nombre\}/g, ownerName ? ` ${ownerName}` : "")
+      .replace(/\{enlace\}/g, url);
   }
-  return brand(`Hola${ownerName ? ` ${ownerName}` : ""}: este es tu enlace privado para revisar y autorizar la publicación de tu ficha en {app} (válido 30 días): ${url}`);
+  return brand(
+    `Hola${ownerName ? ` ${ownerName}` : ""}: este es tu enlace privado para revisar y autorizar la publicación de tu ficha en {app} (válido 30 días): ${url}`,
+  );
 }
 
 export function whatsappShareUrl(message: string, phone?: string | null) {

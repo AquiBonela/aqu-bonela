@@ -8,7 +8,11 @@ const { insert, from } = vi.hoisted(() => {
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { from } }));
 import { createReviewToken } from "./review-token";
 
-afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); vi.clearAllMocks(); });
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  vi.clearAllMocks();
+});
 
 describe("creación de enlace protegida por la base de datos", () => {
   it("guarda solo el hash SHA-256 de un token de 32 bytes", async () => {
@@ -27,8 +31,9 @@ describe("creación de enlace protegida por la base de datos", () => {
     vi.stubGlobal("crypto", webcrypto);
     vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-10-29T13:44:00Z"));
     insert.mockResolvedValue({ error: null });
-    expect((await createReviewToken("00000000-0000-4000-8000-000000000000")).expiresAt)
-      .toBe("2026-11-28T13:44:00.000Z");
+    expect((await createReviewToken("00000000-0000-4000-8000-000000000000")).expiresAt).toBe(
+      "2026-11-28T13:44:00.000Z",
+    );
   });
 
   it("no devuelve un enlace cuando la base de datos rechaza los permisos", async () => {

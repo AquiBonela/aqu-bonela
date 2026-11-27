@@ -8,7 +8,13 @@ function requireEnv(name: string): string {
 }
 
 async function hmacHex(message: string): Promise<string> {
-  const key = await crypto.subtle.importKey("raw", enc.encode(requireEnv("RATE_LIMIT_SECRET")), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(requireEnv("RATE_LIMIT_SECRET")),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
   const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(message)));
   return Array.from(sig, (b) => b.toString(16).padStart(2, "0")).join("");
 }
@@ -54,7 +60,9 @@ export function getTrustedClientIp(headers: Headers): string | null {
 const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
 
 export async function issueFormSession(): Promise<string> {
-  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
+  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+    b.toString(16).padStart(2, "0"),
+  ).join("");
   const payload = `${nonce}.${Date.now() + SESSION_TTL_MS}`;
   return `${payload}.${await hmacHex(`session:${payload}`)}`;
 }
@@ -76,7 +84,12 @@ export async function rateKey(scope: string, subject: Subject): Promise<string> 
   return `${scope}:${subject.kind}:${await hmacHex(`${subject.kind}:${subject.value}`)}`;
 }
 
-export async function checkRateLimit(scope: string, subject: Subject, max: number, windowSeconds: number): Promise<boolean> {
+export async function checkRateLimit(
+  scope: string,
+  subject: Subject,
+  max: number,
+  windowSeconds: number,
+): Promise<boolean> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
     p_key: await rateKey(scope, subject),
@@ -93,23 +106,60 @@ export async function checkRateLimit(scope: string, subject: Subject, max: numbe
 // ---- Turnstile Siteverify ----
 // Reuse detection on Cloudflare's side is eventually consistent; our own rate limits remain mandatory.
 function allowedHostnames(): Set<string> {
-  return new Set((process.env["TURNSTILE_ALLOWED_HOSTNAMES"] ?? "").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean));
+  return new Set(
+    (process.env["TURNSTILE_ALLOWED_HOSTNAMES"] ?? "")
+      .split(",")
+      .map((h) => h.trim().toLowerCase())
+      .filter(Boolean),
+  );
 }
 
-type TurnstileDiag = { success?: boolean; hostname?: string; action?: string; errorCodes?: string[]; requestHost: string };
+type TurnstileDiag = {
+  success?: boolean;
+  hostname?: string;
+  action?: string;
+  errorCodes?: string[];
+  requestHost: string;
+};
 
 /** Hostname is checked against the fixed server-side allowlist, never against browser-supplied values. */
-export async function verifyTurnstile(token: string, expectedAction: string, requestHost: string, ip: string | null): Promise<{ ok: boolean; diag: TurnstileDiag }> {
+export async function verifyTurnstile(
+  token: string,
+  expectedAction: string,
+  requestHost: string,
+  ip: string | null,
+): Promise<{ ok: boolean; diag: TurnstileDiag }> {
   const diag: TurnstileDiag = { requestHost };
   if (!token || token.length > 2048) return { ok: false, diag };
-  const body = new URLSearchParams({ secret: requireEnv("TURNSTILE_SECRET_KEY"), response: token, idempotency_key: crypto.randomUUID() });
+  const body = new URLSearchParams({
+    secret: requireEnv("TURNSTILE_SECRET_KEY"),
+    response: token,
+    idempotency_key: crypto.randomUUID(),
+  });
   if (ip) body.set("remoteip", ip);
   try {
-    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body });
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body,
+    });
     if (!res.ok) return { ok: false, diag };
-    const r = (await res.json()) as { success?: boolean; action?: string; hostname?: string; "error-codes"?: string[] };
-    Object.assign(diag, { success: r.success, hostname: r.hostname, action: r.action, errorCodes: r["error-codes"] });
-    const ok = r.success === true && r.action === expectedAction && typeof r.hostname === "string" && allowedHostnames().has(r.hostname.toLowerCase());
+    const r = (await res.json()) as {
+      success?: boolean;
+      action?: string;
+      hostname?: string;
+      "error-codes"?: string[];
+    };
+    Object.assign(diag, {
+      success: r.success,
+      hostname: r.hostname,
+      action: r.action,
+      errorCodes: r["error-codes"],
+    });
+    const ok =
+      r.success === true &&
+      r.action === expectedAction &&
+      typeof r.hostname === "string" &&
+      allowedHostnames().has(r.hostname.toLowerCase());
     return { ok, diag };
   } catch {
     console.error("[antispam] turnstile verification unavailable");

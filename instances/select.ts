@@ -1,7 +1,12 @@
 // Plugin de Vite: resuelve "@instance", "@instance-content" y la carpeta pública
 // a los de la instancia elegida en VITE_MUNICIPALITY_ID.
 import { loadEnv, type Plugin } from "vite";
-import { instanceConfigPath, instanceContentPath, instancePublicDir, resolveInstanceId } from "./resolve";
+import {
+  instanceConfigPath,
+  instanceContentPath,
+  instancePublicDir,
+  resolveInstanceId,
+} from "./resolve";
 
 export function instanceSelection(options: { fallbackId?: string } = {}): Plugin {
   return {

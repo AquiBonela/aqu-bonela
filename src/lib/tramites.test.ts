@@ -1,12 +1,22 @@
 import { describe, it, expect } from "vitest";
-import { buscarTramites, CATEGORIAS, DESTACADOS, TRAMITES, TRAMITE_TAGS, TAG_LABEL, getTramite } from "./tramites";
+import {
+  buscarTramites,
+  CATEGORIAS,
+  DESTACADOS,
+  TRAMITES,
+  TRAMITE_TAGS,
+  TAG_LABEL,
+  getTramite,
+} from "./tramites";
 
 describe("guía de trámites", () => {
   it("la TIE requiere tasa y combina cita online con asistencia presencial", () => {
     const tramite = getTramite("documentacion", "tie");
     expect(tramite?.tags).toEqual(["online", "presencial"]);
     expect(tramite?.guia?.costeImporte).toBe("Tasa oficial vigente");
-    expect(tramite?.primaryAction?.url).toBe("https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus");
+    expect(tramite?.primaryAction?.url).toBe(
+      "https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus",
+    );
     expect(tramite?.guia?.pasos).toHaveLength(5);
     expect(tramite?.necesitas).toContain("Formulario EX-17: cumplimentado y firmado.");
   });
@@ -32,8 +42,12 @@ describe("guía de trámites", () => {
   it("cada trámite pertenece a una categoría existente", () => {
     for (const t of TRAMITES) expect(CATEGORIAS.some((c) => c.slug === t.cat)).toBe(true);
   });
-  it("busca sin tildes", () => expect(buscarTramites("padron").length + buscarTramites("empadronamiento").length).toBeGreaterThan(0));
-  it("el certificado digital está en documentación", () => expect(getTramite("documentacion", "certificado-digital")).toBeTruthy());
+  it("busca sin tildes", () =>
+    expect(
+      buscarTramites("padron").length + buscarTramites("empadronamiento").length,
+    ).toBeGreaterThan(0));
+  it("el certificado digital está en documentación", () =>
+    expect(getTramite("documentacion", "certificado-digital")).toBeTruthy());
   it("el alta y cambio de domicilio en el padrón son gratuitos", () => {
     const tramite = getTramite("documentacion", "empadronamiento");
     expect(tramite?.guia?.costeImporte).toBe("0 €");

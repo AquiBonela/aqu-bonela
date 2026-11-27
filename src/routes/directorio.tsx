@@ -6,7 +6,15 @@ import { z } from "zod";
 import { Search, X, Zap } from "lucide-react";
 import { isEmergencyService } from "@/lib/listing-availability";
 import { useEffect, useMemo, useState } from "react";
-import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured, isListingType, LISTING_TYPES } from "@/lib/directory";
+import {
+  activitiesFor,
+  dailyShuffle,
+  directoryQuery,
+  filterListings,
+  isFeatured,
+  isListingType,
+  LISTING_TYPES,
+} from "@/lib/directory";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -30,19 +38,30 @@ export const Route = createFileRoute("/directorio")({
       { title: brand("Directorio local — {app}, {municipio}") },
       {
         name: "description",
-        content: brand("Encuentra y contacta con comercios y profesionales de {municipio}: llama o escribe por WhatsApp en un toque."),
+        content: brand(
+          "Encuentra y contacta con comercios y profesionales de {municipio}: llama o escribe por WhatsApp en un toque.",
+        ),
       },
       { property: "og:title", content: brand("Directorio local — {app}, {municipio}") },
-      { property: "og:description", content: brand("El directorio local de {municipio}, pensado para el móvil.") },
+      {
+        property: "og:description",
+        content: brand("El directorio local de {municipio}, pensado para el móvil."),
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
   errorComponent: () => (
-    <div role="alert" className="p-8 text-center"><Text text="No hemos podido cargar el directorio. Inténtalo de nuevo." /></div>
+    <div role="alert" className="p-8 text-center">
+      <Text text="No hemos podido cargar el directorio. Inténtalo de nuevo." />
+    </div>
   ),
-  notFoundComponent: () => <div className="p-8 text-center"><Text text="No encontrado." /></div>,
+  notFoundComponent: () => (
+    <div className="p-8 text-center">
+      <Text text="No encontrado." />
+    </div>
+  ),
 });
 
 function Index() {
@@ -55,17 +74,39 @@ function Index() {
   useEffect(() => setText(q), [q]);
   useEffect(() => {
     const t = setTimeout(() => {
-      if (text !== q) navigate({ search: (p) => ({ ...p, q: text, ...(text ? { cat: "", of: "", urg: false } : {}) }), replace: true });
+      if (text !== q)
+        navigate({
+          search: (p) => ({ ...p, q: text, ...(text ? { cat: "", of: "", urg: false } : {}) }),
+          replace: true,
+        });
     }, 250);
     return () => clearTimeout(t);
   }, [text, q, navigate]);
 
-  const catName = useMemo(() => new Map(data.categories.map((c) => [c.id, c.name])), [data.categories]);
+  const catName = useMemo(
+    () => new Map(data.categories.map((c) => [c.id, c.name])),
+    [data.categories],
+  );
   const activeCat = data.categories.find((c) => c.slug === cat);
-  const activities = activitiesFor(data.listings.filter((l) => !tipo || l.type === tipo), activeCat?.id);
+  const activities = activitiesFor(
+    data.listings.filter((l) => !tipo || l.type === tipo),
+    activeCat?.id,
+  );
   const results = urg
-    ? filterListings(data.listings, data.categories, "", "", new Date(), "", "").filter(isEmergencyService)
-    : filterListings(data.listings, data.categories, q, cat, new Date(), of, tipo, data.activities, tr);
+    ? filterListings(data.listings, data.categories, "", "", new Date(), "", "").filter(
+        isEmergencyService,
+      )
+    : filterListings(
+        data.listings,
+        data.categories,
+        q,
+        cat,
+        new Date(),
+        of,
+        tipo,
+        data.activities,
+        tr,
+      );
   const browsingHome = !q && !cat && !tipo && !urg;
   const highlightedListings = data.listings.filter((l) => isFeatured(l));
 
@@ -80,7 +121,13 @@ function Index() {
       <SiteHeader />
 
       <section className="relative w-full overflow-hidden">
-        <div className={getMunicipality().assets.heroImage ? "relative h-[24rem] w-full sm:h-[30rem]" : "relative h-[24rem] w-full bg-primary sm:h-[30rem]"}>
+        <div
+          className={
+            getMunicipality().assets.heroImage
+              ? "relative h-[24rem] w-full sm:h-[30rem]"
+              : "relative h-[24rem] w-full bg-primary sm:h-[30rem]"
+          }
+        >
           {getMunicipality().assets.heroImage && (
             <img
               src={getMunicipality().assets.heroImage}
@@ -88,19 +135,32 @@ function Index() {
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
           )}
-          {getMunicipality().assets.heroImage && <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />}
+          {getMunicipality().assets.heroImage && (
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent"
+            />
+          )}
           <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
             <h1 className="max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
               {tr(data.heroTitle || "¿Qué buscas en {municipio}?")}
             </h1>
             {data.heroSubtitle && (
-              <p className="mt-3 max-w-xl text-base text-primary-foreground/85 sm:text-lg">{tr(data.heroSubtitle)}</p>
+              <p className="mt-3 max-w-xl text-base text-primary-foreground/85 sm:text-lg">
+                {tr(data.heroSubtitle)}
+              </p>
             )}
           </div>
         </div>
         <div className="relative z-10 mx-auto -mt-7 w-full max-w-5xl px-4">
-          <form onSubmit={submit} role="search" className="mx-auto flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5">
-            <label htmlFor="buscar" className="sr-only"><Text text="Buscar comercios y profesionales" /></label>
+          <form
+            onSubmit={submit}
+            role="search"
+            className="mx-auto flex max-w-xl items-center gap-1 rounded-soft border-2 bg-card p-1.5"
+          >
+            <label htmlFor="buscar" className="sr-only">
+              <Text text="Buscar comercios y profesionales" />
+            </label>
             <Search className="ml-2 h-5 w-5 shrink-0 text-primary" aria-hidden />
             <input
               id="buscar"
@@ -113,7 +173,8 @@ function Index() {
             />
             {text && (
               <Button
-                variant="ghost" size="icon"
+                variant="ghost"
+                size="icon"
                 type="button"
                 onClick={() => setText("")}
                 aria-label={tr("Borrar búsqueda")}
@@ -122,8 +183,12 @@ function Index() {
                 <X className="h-5 w-5" />
               </Button>
             )}
-            <Button type="submit" className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90">
-               <Text text="Buscar" /> </Button>
+            <Button
+              type="submit"
+              className="h-11 rounded-soft-inner bg-terracotta px-3.5 font-display text-sm font-semibold text-terracotta-foreground shadow-none hover:bg-terracotta/90"
+            >
+              <Text text="Buscar" />{" "}
+            </Button>
           </form>
         </div>
       </section>
@@ -131,46 +196,107 @@ function Index() {
       <nav aria-label={tr("Filtros")} className="mt-4 border-b bg-background">
         <div className="mx-auto flex max-w-4xl flex-col gap-3 px-4 py-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <label className="min-w-0 sm:w-56">
-            <select aria-label={tr("Tipo de ficha")} value={tipo} onChange={(e) => {
-              const value = e.target.value;
-              if (value !== "" && !isListingType(value)) return;
-              setText("");
-              navigate({ search: (p) => ({ ...p, tipo: value, cat: "", of: "", q: "", urg: false }), resetScroll: false });
-            }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value=""><Text text="Todos" /></option>
-              {LISTING_TYPES.filter((t) => data.listings.some((l) => l.type === t.value)).map((t) => <option key={t.value} value={t.value}>{tr(t.plural)}</option>)}
+            <select
+              aria-label={tr("Tipo de ficha")}
+              value={tipo}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value !== "" && !isListingType(value)) return;
+                setText("");
+                navigate({
+                  search: (p) => ({ ...p, tipo: value, cat: "", of: "", q: "", urg: false }),
+                  resetScroll: false,
+                });
+              }}
+              className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base"
+            >
+              <option value="">
+                <Text text="Todos" />
+              </option>
+              {LISTING_TYPES.filter((t) => data.listings.some((l) => l.type === t.value)).map(
+                (t) => (
+                  <option key={t.value} value={t.value}>
+                    {tr(t.plural)}
+                  </option>
+                ),
+              )}
             </select>
           </label>
           <label className="min-w-0 sm:w-64">
-            <select aria-label={tr("Categoría")} value={cat} onChange={(e) => {
-              const value = e.target.value;
-              setText("");
-              const c = data.categories.find((x) => x.slug === value);
-              const t = c ? (c.type ?? data.listings.find((l) => l.category_id === c.id)?.type ?? tipo) : tipo;
-              navigate({ search: (p) => ({ ...p, cat: value, tipo: t, of: "", q: "", urg: false }), resetScroll: false });
-            }} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value=""><Text text="Todas las categorías" /></option>
-              {data.categories.filter((c) => data.listings.some((l) => (!tipo || l.type === tipo) && l.category_id === c.id)).map((c) => <option key={c.id} value={c.slug}>{tr(c.name)}</option>)}
+            <select
+              aria-label={tr("Categoría")}
+              value={cat}
+              onChange={(e) => {
+                const value = e.target.value;
+                setText("");
+                const c = data.categories.find((x) => x.slug === value);
+                const t = c
+                  ? (c.type ?? data.listings.find((l) => l.category_id === c.id)?.type ?? tipo)
+                  : tipo;
+                navigate({
+                  search: (p) => ({ ...p, cat: value, tipo: t, of: "", q: "", urg: false }),
+                  resetScroll: false,
+                });
+              }}
+              className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base"
+            >
+              <option value="">
+                <Text text="Todas las categorías" />
+              </option>
+              {data.categories
+                .filter((c) =>
+                  data.listings.some((l) => (!tipo || l.type === tipo) && l.category_id === c.id),
+                )
+                .map((c) => (
+                  <option key={c.id} value={c.slug}>
+                    {tr(c.name)}
+                  </option>
+                ))}
             </select>
           </label>
-          {activeCat && <label className="min-w-0 sm:w-64">
-            <select aria-label={tr("Oficio / actividad")} value={of} onChange={(e) => navigate({ search: (p) => ({ ...p, of: e.target.value }), resetScroll: false })} className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base">
-              <option value=""><Text text="Todos los oficios" /></option>
-              {activities.map((a) => <option key={a} value={a}>{tr(a)}</option>)}
-            </select>
-          </label>}
+          {activeCat && (
+            <label className="min-w-0 sm:w-64">
+              <select
+                aria-label={tr("Oficio / actividad")}
+                value={of}
+                onChange={(e) =>
+                  navigate({ search: (p) => ({ ...p, of: e.target.value }), resetScroll: false })
+                }
+                className="h-12 w-full min-w-0 rounded-soft border-2 bg-card px-3 text-base"
+              >
+                <option value="">
+                  <Text text="Todos los oficios" />
+                </option>
+                {activities.map((a) => (
+                  <option key={a} value={a}>
+                    {tr(a)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
         <div className="mx-auto flex max-w-5xl justify-center px-4 pb-3">
-          <Button variant="ghost"
+          <Button
+            variant="ghost"
             type="button"
             aria-pressed={urg}
-            onClick={() => { setText(""); navigate({ search: (p) => ({ ...p, urg: !urg, q: "", cat: "", of: "", tipo: "" }), resetScroll: false }); }}
+            onClick={() => {
+              setText("");
+              navigate({
+                search: (p) => ({ ...p, urg: !urg, q: "", cat: "", of: "", tipo: "" }),
+                resetScroll: false,
+              });
+            }}
             className={cn(
               "inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-5 font-display text-base font-bold",
-              urg ? "border-availability-border bg-availability text-availability-foreground" : "border-foreground/70 bg-card text-foreground",
+              urg
+                ? "border-availability-border bg-availability text-availability-foreground"
+                : "border-foreground/70 bg-card text-foreground",
             )}
           >
-            <Zap className="h-5 w-5" aria-hidden />  <Text text="Urgencias y guardias" />{tr(urg ? " · quitar" : "")}
+            <Zap className="h-5 w-5" aria-hidden /> <Text text="Urgencias y guardias" />
+            {tr(urg ? " · quitar" : "")}
           </Button>
         </div>
       </nav>
@@ -180,52 +306,95 @@ function Index() {
           <section aria-label={tr("Fichas resaltadas")} className="mb-6 border-b pb-6">
             <div className="grid gap-4">
               {highlightedListings.map((l) => (
-                <ListingCard key={l.id} listing={l} highlighted categoryName={catName.get(l.category_id ?? "")} />
+                <ListingCard
+                  key={l.id}
+                  listing={l}
+                  highlighted
+                  categoryName={catName.get(l.category_id ?? "")}
+                />
               ))}
             </div>
           </section>
         )}
 
-        <section key={JSON.stringify([q, cat, of, tipo, urg])} aria-label={tr("Directorio")} className="animate-results-in">
+        <section
+          key={JSON.stringify([q, cat, of, tipo, urg])}
+          aria-label={tr("Directorio")}
+          className="animate-results-in"
+        >
           {!browsingHome && (
             <h2 className="text-center font-display text-2xl font-bold">
-              {tr(urg ? "Urgencias y guardias" : activeCat ? (of ? `${activeCat.name} · ${of}` : activeCat.name) : "Resultados")}
+              {tr(
+                urg
+                  ? "Urgencias y guardias"
+                  : activeCat
+                    ? of
+                      ? `${activeCat.name} · ${of}`
+                      : activeCat.name
+                    : "Resultados",
+              )}
             </h2>
           )}
-          <p className={browsingHome ? "sr-only" : "text-center text-sm text-muted-foreground"} aria-live="polite">
+          <p
+            className={browsingHome ? "sr-only" : "text-center text-sm text-muted-foreground"}
+            aria-live="polite"
+          >
             {results.length} {tr(results.length === 1 ? "resultado" : "resultados")}
           </p>
           {results.length === 0 ? (
             <div className="mt-6 rounded-soft border bg-card p-6 text-center">
-              <p className="font-display text-xl font-bold"><Text text="Vaya, no encontramos nada con ese nombre" /></p>
-              <p className="mt-2 text-base text-muted-foreground"><Text text="Es posible que aún no esté registrado o esté escrito de otra forma." /></p>
+              <p className="font-display text-xl font-bold">
+                <Text text="Vaya, no encontramos nada con ese nombre" />
+              </p>
+              <p className="mt-2 text-base text-muted-foreground">
+                <Text text="Es posible que aún no esté registrado o esté escrito de otra forma." />
+              </p>
               <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
-                <Button type="button" variant="outline" className="h-12 rounded-soft text-base" onClick={() => { setText(""); navigate({ search: { q: "", cat: "", of: "", tipo: "", urg: false } }); }}>
-                   <Text text="Ver todo el directorio" /> </Button>
-                <BusinessSignupDialog><Button className="h-12 rounded-soft text-base"><Text text="Sugerir este negocio" /></Button></BusinessSignupDialog>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 rounded-soft text-base"
+                  onClick={() => {
+                    setText("");
+                    navigate({ search: { q: "", cat: "", of: "", tipo: "", urg: false } });
+                  }}
+                >
+                  <Text text="Ver todo el directorio" />{" "}
+                </Button>
+                <BusinessSignupDialog>
+                  <Button className="h-12 rounded-soft text-base">
+                    <Text text="Sugerir este negocio" />
+                  </Button>
+                </BusinessSignupDialog>
               </div>
             </div>
           ) : (
             <div className={cn("grid gap-4", !browsingHome && "mt-3")}>
-              {(browsingHome ? dailyShuffle(results.filter((l) => !isFeatured(l))) : results).map((l) => (
-                <ListingCard
-                  key={l.id}
-                  listing={l}
-                  highlighted={!browsingHome && isFeatured(l)}
-                  categoryName={activeCat ? undefined : catName.get(l.category_id ?? "")}
-                />
-              ))}
+              {(browsingHome ? dailyShuffle(results.filter((l) => !isFeatured(l))) : results).map(
+                (l) => (
+                  <ListingCard
+                    key={l.id}
+                    listing={l}
+                    highlighted={!browsingHome && isFeatured(l)}
+                    categoryName={activeCat ? undefined : catName.get(l.category_id ?? "")}
+                  />
+                ),
+              )}
             </div>
           )}
         </section>
 
         <aside className="mt-8 rounded-soft border bg-secondary/60 p-6 text-center">
-          <p className="text-lg font-semibold"><Text text="¿Tienes un comercio o prestas un servicio en el pueblo y no apareces?" /></p>
-          <BusinessSignupDialog><Button className="mt-4 h-12 rounded-soft text-base"><Text text="Dar de alta mi negocio" /></Button></BusinessSignupDialog>
+          <p className="text-lg font-semibold">
+            <Text text="¿Tienes un comercio o prestas un servicio en el pueblo y no apareces?" />
+          </p>
+          <BusinessSignupDialog>
+            <Button className="mt-4 h-12 rounded-soft text-base">
+              <Text text="Dar de alta mi negocio" />
+            </Button>
+          </BusinessSignupDialog>
         </aside>
       </main>
-
     </div>
   );
 }
-
