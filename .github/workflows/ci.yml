@@ -36,6 +36,8 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: ci-placeholder
           SUPABASE_URL: https://example.supabase.co
           SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+      - name: Comprobación de tipos
+        run: bunx tsc --noEmit
 
   lint:
     name: Lint (informativo, no bloquea)
