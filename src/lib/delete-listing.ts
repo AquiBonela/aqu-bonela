@@ -9,9 +9,19 @@ export async function deleteListing(id: string) {
   ]);
   if (listing.error) throw listing.error;
   if (photos.error) throw photos.error;
-  const paths = [...new Set([listing.data.cover_path, ...photos.data.map((p) => p.storage_path)]
-    .filter((path): path is string => Boolean(path)))];
-  const { data, error } = await supabase.from("listings").delete().eq("id", id).select("id").single();
+  const paths = [
+    ...new Set(
+      [listing.data.cover_path, ...photos.data.map((p) => p.storage_path)].filter(
+        (path): path is string => Boolean(path),
+      ),
+    ),
+  ];
+  const { data, error } = await supabase
+    .from("listings")
+    .delete()
+    .eq("id", id)
+    .select("id")
+    .single();
   if (error) throw error;
   if (!data) throw new Error("No se pudo eliminar la ficha.");
   if (!paths.length) return { cleanupFailed: false };

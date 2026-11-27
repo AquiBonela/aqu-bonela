@@ -28,10 +28,19 @@ export async function toWebp(file: File): Promise<Blob> {
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext("2d");
-  if (!context) { bmp.close(); throw new Error("No se pudo convertir la imagen"); }
+  if (!context) {
+    bmp.close();
+    throw new Error("No se pudo convertir la imagen");
+  }
   context.drawImage(bmp, 0, 0, width, height);
   bmp.close();
-  return new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error("No se pudo convertir la imagen"))), "image/webp", 0.8));
+  return new Promise((res, rej) =>
+    canvas.toBlob(
+      (b) => (b ? res(b) : rej(new Error("No se pudo convertir la imagen"))),
+      "image/webp",
+      0.8,
+    ),
+  );
 }
 
 /** Valida, redimensiona, convierte y sube. Devuelve el storage_path. */
@@ -40,7 +49,9 @@ export async function uploadListingImage(listingId: string, file: File): Promise
   if (err) throw new Error(err);
   const blob = await toWebp(file);
   const path = `${listingId}/${crypto.randomUUID()}.webp`;
-  const { error } = await supabase.storage.from(BUCKET).upload(path, blob, { contentType: "image/webp" });
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, blob, { contentType: "image/webp" });
   if (error) throw error;
   return path;
 }

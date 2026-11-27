@@ -1,6 +1,17 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, type LucideIcon } from "lucide-react";
+import {
+  ArrowRight,
+  Car,
+  Footprints,
+  Clock,
+  CalendarDays,
+  MessageCircle,
+  Hourglass,
+  Lightbulb,
+  MapPin,
+  type LucideIcon,
+} from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { brand, getInstanceContent } from "@/config/municipality";
@@ -12,20 +23,31 @@ export const Route = createFileRoute("/descubre")({
   beforeLoad: () => {
     if (!discover) throw notFound();
   },
-  head: () => !discover ? {} : ({
-    meta: [
-      { title: brand("Descubre {nombreCorto} — Guía para visitar {municipio}") },
-      {
-        name: "description",
-        content:
-          brand("Guía de {municipio}: historia andalusí, Sierra de las Nieves, rincones, Fiesta de los Rondeles, gastronomía y consejos de vecino."),
-      },
-      { property: "og:title", content: brand("Descubre {nombreCorto} — Guía de {municipio}") },
-      { property: "og:description", content: "Historia, naturaleza, rincones, fiestas, sabores y consejos para tu visita." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    !discover
+      ? {}
+      : {
+          meta: [
+            { title: brand("Descubre {nombreCorto} — Guía para visitar {municipio}") },
+            {
+              name: "description",
+              content: brand(
+                "Guía de {municipio}: historia andalusí, Sierra de las Nieves, rincones, Fiesta de los Rondeles, gastronomía y consejos de vecino.",
+              ),
+            },
+            {
+              property: "og:title",
+              content: brand("Descubre {nombreCorto} — Guía de {municipio}"),
+            },
+            {
+              property: "og:description",
+              content:
+                "Historia, naturaleza, rincones, fiestas, sabores y consejos para tu visita.",
+            },
+            { property: "og:type", content: "website" },
+            { name: "twitter:card", content: "summary_large_image" },
+          ],
+        },
   component: Descubre,
 });
 
@@ -38,7 +60,8 @@ const NAV = [
   ["consejos", "descubre.nav6"],
 ] as const;
 
-const mapa = (q: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, ${discover?.mapsSuffix ?? ""}`)}`;
+const mapa = (q: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, ${discover?.mapsSuffix ?? ""}`)}`;
 
 const CONSEJOS = [
   { Icon: Footprints, title: "descubre.t1Title", text: "descubre.t1Text" },
@@ -112,7 +135,11 @@ function Descubre() {
     if (!active) return;
     const a = document.querySelector<HTMLElement>(`[data-nav="${active}"]`);
     const box = a?.parentElement;
-    if (a && box) box.scrollTo({ left: a.offsetLeft - box.clientWidth / 2 + a.clientWidth / 2, behavior: "smooth" });
+    if (a && box)
+      box.scrollTo({
+        left: a.offsetLeft - box.clientWidth / 2 + a.clientWidth / 2,
+        behavior: "smooth",
+      });
   }, [active]);
 
   return (
@@ -121,10 +148,18 @@ function Descubre() {
       <main>
         {/* Introducción */}
         <section className="relative">
-          <img src={images?.hero} alt={t("descubre.heroAlt")} width={1280} height={864} className="h-[64vh] min-h-80 w-full object-cover" />
+          <img
+            src={images?.hero}
+            alt={t("descubre.heroAlt")}
+            width={1280}
+            height={864}
+            className="h-[64vh] min-h-80 w-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10 text-background">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-90">{t("descubre.kicker")}</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-90">
+              {t("descubre.kicker")}
+            </p>
             <h1 className="mt-2 max-w-2xl font-display text-4xl font-extrabold leading-tight text-balance sm:text-5xl">
               {t("descubre.title")}
             </h1>
@@ -160,16 +195,35 @@ function Descubre() {
         </nav>
 
         {/* 01. Historia */}
-        <section id="historia" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2">
-          <img src={images?.history} alt={t("descubre.castilloAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
+        <section
+          id="historia"
+          className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2"
+        >
+          <img
+            src={images?.history}
+            alt={t("descubre.castilloAlt")}
+            loading="lazy"
+            width={1280}
+            height={864}
+            className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full"
+          />
           <div>
             <Kicker n="01">{t("descubre.k1")}</Kicker>
-            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h1")}</h2>
+            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">
+              {t("descubre.h1")}
+            </h2>
             <P>{t("descubre.p1a")}</P>
             <P>{t("descubre.p1b")}</P>
-            <Bullets items={[t("descubre.b1a"), t("descubre.b1b"), t("descubre.b1c"), t("descubre.b1d")]} />
+            <Bullets
+              items={[t("descubre.b1a"), t("descubre.b1b"), t("descubre.b1c"), t("descubre.b1d")]}
+            />
             <Closing>{t("descubre.c1")}</Closing>
-            <a href={mapa(discover?.historicCentre ?? "")} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center gap-2 border-b-2 border-primary font-bold text-foreground hover:text-primary">
+            <a
+              href={mapa(discover?.historicCentre ?? "")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex min-h-12 items-center gap-2 border-b-2 border-primary font-bold text-foreground hover:text-primary"
+            >
               <MapPin className="h-4 w-4" aria-hidden /> {t("descubre.map1")}
             </a>
           </div>
@@ -177,15 +231,33 @@ function Descubre() {
 
         {/* 02. Entorno */}
         <section id="entorno" className="scroll-mt-16">
-          <img src={images?.nature} alt={t("descubre.sierraAlt")} loading="lazy" width={1600} height={800} className="h-[55vh] min-h-72 w-full object-cover" />
+          <img
+            src={images?.nature}
+            alt={t("descubre.sierraAlt")}
+            loading="lazy"
+            width={1600}
+            height={800}
+            className="h-[55vh] min-h-72 w-full object-cover"
+          />
           <div className="mx-auto max-w-3xl px-4 py-12">
             <Kicker n="02">{t("descubre.k2")}</Kicker>
-            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h2")}</h2>
+            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">
+              {t("descubre.h2")}
+            </h2>
             <P>{t("descubre.p2a")}</P>
             <P>{t("descubre.p2b")}</P>
-            <Bullets items={[t("descubre.b2a"), t("descubre.b2b"), t("descubre.b2c"), t("descubre.b2d"), t("descubre.b2e")]} />
+            <Bullets
+              items={[
+                t("descubre.b2a"),
+                t("descubre.b2b"),
+                t("descubre.b2c"),
+                t("descubre.b2d"),
+                t("descubre.b2e"),
+              ]}
+            />
             <p className="mt-6 border-l-4 border-primary bg-muted/60 p-4 text-base text-muted-foreground">
-              <strong className="text-foreground">{t("descubre.routesLabel")}</strong> {t("descubre.routesText")}
+              <strong className="text-foreground">{t("descubre.routesLabel")}</strong>{" "}
+              {t("descubre.routesText")}
             </p>
             <Closing>{t("descubre.c2")}</Closing>
           </div>
@@ -195,16 +267,30 @@ function Descubre() {
         <section id="rincones" className="scroll-mt-16 bg-muted/50">
           <div className="mx-auto max-w-5xl px-4 py-14">
             <Kicker n="03">{t("descubre.k3")}</Kicker>
-            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h3")}</h2>
+            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">
+              {t("descubre.h3")}
+            </h2>
             <P>{t("descubre.p3")}</P>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {places.map((r) => (
                 <article key={r.q} className="overflow-hidden bg-background shadow-sm">
-                  <img src={r.img} alt={t(r.name)} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover" />
+                  <img
+                    src={r.img}
+                    alt={t(r.name)}
+                    loading="lazy"
+                    width={1280}
+                    height={864}
+                    className="aspect-[4/3] w-full object-cover"
+                  />
                   <div className="p-4">
                     <h3 className="font-display text-lg font-extrabold">{t(r.name)}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">{t(r.text)}</p>
-                    <a href={mapa(r.q)} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-10 items-center gap-1 text-sm font-bold text-primary hover:underline">
+                    <a
+                      href={mapa(r.q)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex min-h-10 items-center gap-1 text-sm font-bold text-primary hover:underline"
+                    >
                       <MapPin className="h-4 w-4" aria-hidden /> {t("descubre.viewMap")}
                     </a>
                   </div>
@@ -216,18 +302,32 @@ function Descubre() {
         </section>
 
         {/* 04. Fiestas */}
-        <section id="fiestas" className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2">
-          <img src={images?.festivals} alt={t("descubre.fiestasAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:order-2 sm:aspect-auto sm:h-full" />
+        <section
+          id="fiestas"
+          className="mx-auto grid max-w-5xl scroll-mt-16 gap-8 px-4 py-14 sm:grid-cols-2"
+        >
+          <img
+            src={images?.festivals}
+            alt={t("descubre.fiestasAlt")}
+            loading="lazy"
+            width={1280}
+            height={864}
+            className="aspect-[4/3] w-full object-cover sm:order-2 sm:aspect-auto sm:h-full"
+          />
           <div>
             <Kicker n="04">{t("descubre.k4")}</Kicker>
-            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h4")}</h2>
+            <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">
+              {t("descubre.h4")}
+            </h2>
             <P>{t("descubre.p4a")}</P>
             <P>
               {t("descubre.p4bA")}
               <strong className="text-foreground">{t("descubre.p4bStrong")}</strong>
               {t("descubre.p4bB")}
             </P>
-            <Bullets items={[t("descubre.b4a"), t("descubre.b4b"), t("descubre.b4c"), t("descubre.b4d")]} />
+            <Bullets
+              items={[t("descubre.b4a"), t("descubre.b4b"), t("descubre.b4c"), t("descubre.b4d")]}
+            />
             <Closing>{t("descubre.c4")}</Closing>
           </div>
         </section>
@@ -235,12 +335,29 @@ function Descubre() {
         {/* 05. Sabores */}
         <section id="sabores" className="scroll-mt-16 bg-beige">
           <div className="mx-auto grid max-w-5xl gap-8 px-4 py-14 sm:grid-cols-2">
-            <img src={images?.food} alt={t("descubre.foodAlt")} loading="lazy" width={1280} height={864} className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full" />
+            <img
+              src={images?.food}
+              alt={t("descubre.foodAlt")}
+              loading="lazy"
+              width={1280}
+              height={864}
+              className="aspect-[4/3] w-full object-cover sm:aspect-auto sm:h-full"
+            />
             <div>
               <Kicker n="05">{t("descubre.k5")}</Kicker>
-              <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">{t("descubre.h5")}</h2>
+              <h2 className="mt-2 font-display text-3xl font-extrabold text-balance">
+                {t("descubre.h5")}
+              </h2>
               <P>{t("descubre.p5")}</P>
-              <Bullets items={[t("descubre.b5a"), t("descubre.b5b"), t("descubre.b5c"), t("descubre.b5d"), t("descubre.b5e")]} />
+              <Bullets
+                items={[
+                  t("descubre.b5a"),
+                  t("descubre.b5b"),
+                  t("descubre.b5c"),
+                  t("descubre.b5d"),
+                  t("descubre.b5e"),
+                ]}
+              />
               <Closing>{t("descubre.c5")}</Closing>
               <div className="flex flex-wrap gap-x-6">
                 <DirLink q="restaurante">{t("descubre.whereEat")}</DirLink>
@@ -256,7 +373,9 @@ function Descubre() {
             <Kicker n="06">{t("descubre.k6")}</Kicker>
             <div className="mt-2 flex items-center gap-3">
               <Lightbulb className="h-7 w-7 text-primary" aria-hidden />
-              <h2 className="font-display text-3xl font-extrabold text-balance">{t("descubre.h6")}</h2>
+              <h2 className="font-display text-3xl font-extrabold text-balance">
+                {t("descubre.h6")}
+              </h2>
             </div>
             <ul className="mt-8 grid gap-x-10 sm:grid-cols-2">
               {CONSEJOS.map(({ Icon, title, text }) => (

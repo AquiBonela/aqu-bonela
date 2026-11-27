@@ -11,9 +11,15 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: brand("Acceso administración · {app}") },
-      { name: "description", content: brand("Acceso privado para la administración del directorio {app}.") },
+      {
+        name: "description",
+        content: brand("Acceso privado para la administración del directorio {app}."),
+      },
       { property: "og:title", content: brand("Acceso administración · {app}") },
-      { property: "og:description", content: "Acceso privado para la administración del directorio." },
+      {
+        property: "og:description",
+        content: "Acceso privado para la administración del directorio.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -44,19 +50,42 @@ function AuthPage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-sm px-4 py-12">
-        <h1 className="font-display text-2xl font-bold"><Text text="Administración" /></h1>
-        <p className="mt-1 text-sm text-muted-foreground"><Text text="Acceso solo para el equipo del directorio." /></p>
+        <h1 className="font-display text-2xl font-bold">
+          <Text text="Administración" />
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          <Text text="Acceso solo para el equipo del directorio." />
+        </p>
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="email"><Text text="Correo" /></Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Label htmlFor="email">
+              <Text text="Correo" />
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="pw"><Text text="Contraseña" /></Label>
-            <Input id="pw" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Label htmlFor="pw">
+              <Text text="Contraseña" />
+            </Label>
+            <Input
+              id="pw"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
           {error && <p className="text-sm text-destructive">{tr(error)}</p>}
-          <button disabled={busy} className="h-11 w-full bg-primary font-medium text-primary-foreground disabled:opacity-60">
+          <button
+            disabled={busy}
+            className="h-11 w-full bg-primary font-medium text-primary-foreground disabled:opacity-60"
+          >
             {tr(busy ? "Entrando…" : "Entrar")}
           </button>
         </form>

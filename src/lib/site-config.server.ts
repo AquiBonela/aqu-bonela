@@ -42,7 +42,10 @@ function cacheFor(key: string): RefreshingCache<SiteConfig> {
       retryMs: RETRY_AFTER_FAILURE_MS,
       timeoutMs: TIMEOUT_MS,
       onError: (error) =>
-        console.error("[site-config] Supabase no respondió; se usa la última configuración buena o la compilada.", error instanceof Error ? error.message : error),
+        console.error(
+          "[site-config] Supabase no respondió; se usa la última configuración buena o la compilada.",
+          error instanceof Error ? error.message : error,
+        ),
     });
   }
   return cache;

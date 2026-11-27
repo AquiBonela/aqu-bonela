@@ -52,7 +52,15 @@ const BIG_CLASS = "block font-display text-3xl font-extrabold tracking-tight hov
  * Cabecera compartida: menú siempre visible en escritorio y,
  * en móvil, menú a pantalla completa sobre fondo verde principal.
  */
-export function AppHeader({ brand, items, navLabel = "Menú principal", footnote, left, overlay = false, admin = false }: AppHeaderProps) {
+export function AppHeader({
+  brand,
+  items,
+  navLabel = "Menú principal",
+  footnote,
+  left,
+  overlay = false,
+  admin = false,
+}: AppHeaderProps) {
   const { tr, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const installation = useInstallPrompt();
@@ -63,7 +71,10 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
   const closeMenu = () => {
     if (closing) return;
     setClosing(true);
-    window.setTimeout(() => { setOpen(false); setClosing(false); }, 160);
+    window.setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+    }, 160);
   };
   const sendItem = items.find((item) => item.label === t("menu.enviar"));
   const aboutItem = items.find((item) => item.to === "/sobre");
@@ -96,7 +107,10 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
 
   const renderItem = (item: HeaderItem, big: boolean) =>
     item.soon ? (
-      <span aria-disabled="true" className="block cursor-default font-display text-3xl font-extrabold tracking-tight opacity-40">
+      <span
+        aria-disabled="true"
+        className="block cursor-default font-display text-3xl font-extrabold tracking-tight opacity-40"
+      >
         {item.label}
       </span>
     ) : item.to ? (
@@ -110,32 +124,69 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
       >
         <span className="block">{item.label}</span>
         {item.description && (
-          <span className="mt-2 block whitespace-pre-line font-sans text-xs font-medium tracking-wide opacity-80">{item.description}</span>
+          <span className="mt-2 block whitespace-pre-line font-sans text-xs font-medium tracking-wide opacity-80">
+            {item.description}
+          </span>
         )}
       </Link>
     ) : (
-      <Button variant="ghost" key={item.label} type="button" onClick={() => { setOpen(false); void item.onClick?.(); }} className={`h-auto whitespace-normal p-0 text-inherit hover:bg-transparent ${big ? BIG_CLASS : SMALL_CLASS}`}>
+      <Button
+        variant="ghost"
+        key={item.label}
+        type="button"
+        onClick={() => {
+          setOpen(false);
+          void item.onClick?.();
+        }}
+        className={`h-auto whitespace-normal p-0 text-inherit hover:bg-transparent ${big ? BIG_CLASS : SMALL_CLASS}`}
+      >
         {item.label}
       </Button>
     );
 
   return (
     <>
-      <header className={overlay
-        ? scrolled
-          ? "fixed inset-x-0 top-0 z-40 border-b bg-background text-foreground"
-          : "absolute inset-x-0 top-0 z-20 text-primary-foreground"
-        : "sticky top-0 z-40 border-b bg-background"}>
-        <div className={admin ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2" : "mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-1 px-2 py-2 sm:gap-x-2 sm:px-4"}>
+      <header
+        className={
+          overlay
+            ? scrolled
+              ? "fixed inset-x-0 top-0 z-40 border-b bg-background text-foreground"
+              : "absolute inset-x-0 top-0 z-20 text-primary-foreground"
+            : "sticky top-0 z-40 border-b bg-background"
+        }
+      >
+        <div
+          className={
+            admin
+              ? "mx-auto grid min-h-14 max-w-5xl grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-x-2 px-4 py-2"
+              : "mx-auto grid min-h-14 max-w-5xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-1 px-2 py-2 sm:gap-x-2 sm:px-4"
+          }
+        >
           <div className="flex min-w-0 items-center justify-start gap-1 sm:gap-5">
             {!admin && <EmergencyButton />}
-            {!admin && <span className={overlay && !scrolled ? "[&_button]:!text-primary-foreground [&_svg]:!text-primary-foreground" : undefined}>{left}</span>}
+            {!admin && (
+              <span
+                className={
+                  overlay && !scrolled
+                    ? "[&_button]:!text-primary-foreground [&_svg]:!text-primary-foreground"
+                    : undefined
+                }
+              >
+                {left}
+              </span>
+            )}
           </div>
           {admin && <div className="flex min-w-0 items-center justify-center">{brand}</div>}
           <div className="flex min-w-0 items-center justify-end gap-1">
             {!admin && brand}
-            {!admin && <LangSwitch className={overlay && !scrolled ? "[&_button]:!text-primary-foreground" : ""} />}
-            <Button variant="ghost" size="icon"
+            {!admin && (
+              <LangSwitch
+                className={overlay && !scrolled ? "[&_button]:!text-primary-foreground" : ""}
+              />
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
               type="button"
               onClick={() => setOpen(true)}
               aria-expanded={open}
@@ -148,17 +199,27 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
         </div>
       </header>
       {open && (
-        <div id="menu-principal" onClick={(event) => {
-          if (!(event.target instanceof Element) || event.target.closest("a, button, [role='group'], footer, img, li")) return;
-          closeMenu();
-        }} className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground`}>
+        <div
+          id="menu-principal"
+          onClick={(event) => {
+            if (
+              !(event.target instanceof Element) ||
+              event.target.closest("a, button, [role='group'], footer, img, li")
+            )
+              return;
+            closeMenu();
+          }}
+          className={`${closing ? "animate-fade-out-soft" : "animate-menu-full"} fixed inset-0 z-50 flex flex-col bg-primary text-primary-foreground`}
+        >
           <div className="mx-auto grid min-h-14 w-full max-w-5xl grid-cols-[auto_minmax(0,1fr)_2.75rem] items-center px-4 py-2">
             <div className="flex justify-start">
               {!admin && <LangSwitch className="[&_button]:!text-primary-foreground" />}
             </div>
             <div />
             <div className="flex justify-end">
-              <Button variant="ghost" size="icon"
+              <Button
+                variant="ghost"
+                size="icon"
                 type="button"
                 onClick={closeMenu}
                 aria-label={t("menu.close")}
@@ -168,30 +229,59 @@ export function AppHeader({ brand, items, navLabel = "Menú principal", footnote
               </Button>
             </div>
           </div>
-          <nav aria-label={tr("Menú móvil")} className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center">
+          <nav
+            aria-label={tr("Menú móvil")}
+            className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-y-auto px-6 text-center"
+          >
             <div className="flex flex-1 flex-col items-center justify-center py-8">
               <ul className="flex flex-col items-center gap-6">
                 {mainItems.map((item, i) => (
-                  <li key={item.label} className={`animate-menu-item ${item.to === "/" ? "whitespace-nowrap" : ""}`} style={{ animationDelay: `${0.06 * (i + 1)}s` }}>
+                  <li
+                    key={item.label}
+                    className={`animate-menu-item ${item.to === "/" ? "whitespace-nowrap" : ""}`}
+                    style={{ animationDelay: `${0.06 * (i + 1)}s` }}
+                  >
                     {renderItem(item, true)}
                   </li>
                 ))}
               </ul>
             </div>
-            {!admin && installation.available && <div className="flex justify-center pb-5">
-              <Button variant="ghost" onClick={() => { setOpen(false); installation.show(); }} className="h-auto whitespace-normal text-primary-foreground hover:bg-transparent hover:text-beige">
-                <Download className="h-4 w-4 shrink-0" aria-hidden />{tr("Instalar en el móvil")}
-              </Button>
-            </div>}
-            {aboutItem && <div className={`mx-auto w-fit px-3 pb-2 ${sendItem ? "mb-2 border-b border-primary-foreground/15" : "mb-4"}`}>
-              {renderItem(aboutItem, false)}
-            </div>}
-            {sendItem && <div className="flex flex-col items-center pb-6">
-              {renderItem(sendItem, false)}
-              {sendItem.description && <p className="mt-2 max-w-xs whitespace-pre-line text-xs leading-snug text-primary-foreground/80">{sendItem.description}</p>}
-            </div>}
+            {!admin && installation.available && (
+              <div className="flex justify-center pb-5">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setOpen(false);
+                    installation.show();
+                  }}
+                  className="h-auto whitespace-normal text-primary-foreground hover:bg-transparent hover:text-beige"
+                >
+                  <Download className="h-4 w-4 shrink-0" aria-hidden />
+                  {tr("Instalar en el móvil")}
+                </Button>
+              </div>
+            )}
+            {aboutItem && (
+              <div
+                className={`mx-auto w-fit px-3 pb-2 ${sendItem ? "mb-2 border-b border-primary-foreground/15" : "mb-4"}`}
+              >
+                {renderItem(aboutItem, false)}
+              </div>
+            )}
+            {sendItem && (
+              <div className="flex flex-col items-center pb-6">
+                {renderItem(sendItem, false)}
+                {sendItem.description && (
+                  <p className="mt-2 max-w-xs whitespace-pre-line text-xs leading-snug text-primary-foreground/80">
+                    {sendItem.description}
+                  </p>
+                )}
+              </div>
+            )}
             {footnote && (
-              <div className="mt-auto border-t border-primary-foreground/15 pb-6 pt-6">{footnote}</div>
+              <div className="mt-auto border-t border-primary-foreground/15 pb-6 pt-6">
+                {footnote}
+              </div>
             )}
           </nav>
         </div>

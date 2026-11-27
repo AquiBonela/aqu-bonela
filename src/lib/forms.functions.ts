@@ -2,9 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 
-export const REPORT_REASONS = ["Horario incorrecto", "Teléfono erróneo", "Cerrado / Mudado", "Otro motivo"] as const;
+export const REPORT_REASONS = [
+  "Horario incorrecto",
+  "Teléfono erróneo",
+  "Cerrado / Mudado",
+  "Otro motivo",
+] as const;
 
-export type FormResult = { ok: true } | { ok: false; error: "invalid" | "rate_limited" | "verification" | "unavailable" };
+export type FormResult =
+  { ok: true } | { ok: false; error: "invalid" | "rate_limited" | "verification" | "unavailable" };
 
 const common = {
   session: z.string().max(200),
@@ -46,13 +52,16 @@ async function guard(
   const subjects: Array<{ kind: "ip" | "ss"; value: string }> = [{ kind: "ss", value: nonce }];
   if (ip) subjects.unshift({ kind: "ip", value: ip });
 
-  for (const s of subjects) if (!(await a.checkRateLimit("form", s, 10, 60))) return { ok: false, error: "rate_limited" };
+  for (const s of subjects)
+    if (!(await a.checkRateLimit("form", s, 10, 60))) return { ok: false, error: "rate_limited" };
 
   const host = new URL(request.url).hostname;
   const ts = await a.verifyTurnstile(input.turnstileToken, action, host, ip);
   if (!ts.ok) return { ok: false, error: "verification" };
 
-  for (const s of subjects) if (!(await a.checkRateLimit(scope, s, maxSubmissions, 600))) return { ok: false, error: "rate_limited" };
+  for (const s of subjects)
+    if (!(await a.checkRateLimit(scope, s, maxSubmissions, 600)))
+      return { ok: false, error: "rate_limited" };
   return { ok: true };
 }
 
@@ -66,8 +75,13 @@ export const submitSuggestion = createServerFn({ method: "POST" })
     const g = await guard("sug", "suggestion", v, 3);
     if (!g.ok) return g;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("suggestions").insert({ name: v.name, contact: v.contact || null, message: v.message });
-    if (error) { console.error("[forms] suggestion insert failed"); return { ok: false, error: "unavailable" }; }
+    const { error } = await supabaseAdmin
+      .from("suggestions")
+      .insert({ name: v.name, contact: v.contact || null, message: v.message });
+    if (error) {
+      console.error("[forms] suggestion insert failed");
+      return { ok: false, error: "unavailable" };
+    }
     return { ok: true };
   });
 
@@ -81,13 +95,21 @@ export const submitReport = createServerFn({ method: "POST" })
     const g = await guard("rep", "report", v, 5);
     if (!g.ok) return g;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: listing } = await supabaseAdmin.from("listings").select("id").eq("id", v.listingId).eq("status", "publicada").maybeSingle();
+    const { data: listing } = await supabaseAdmin
+      .from("listings")
+      .select("id")
+      .eq("id", v.listingId)
+      .eq("status", "publicada")
+      .maybeSingle();
     if (!listing) return { ok: false, error: "invalid" };
     const { error } = await supabaseAdmin.from("listing_reports").insert({
       listing_id: v.listingId,
       message: `[${v.reason}] ${v.message}`,
       contact: v.contact || null,
     });
-    if (error) { console.error("[forms] report insert failed"); return { ok: false, error: "unavailable" }; }
+    if (error) {
+      console.error("[forms] report insert failed");
+      return { ok: false, error: "unavailable" };
+    }
     return { ok: true };
   });

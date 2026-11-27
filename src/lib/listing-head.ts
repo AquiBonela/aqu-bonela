@@ -3,7 +3,17 @@ import { brand } from "@/config/municipality";
 
 export function listingHead(loaderData: ListingDetail | undefined) {
   if (!loaderData) {
-    return { meta: [{ title: brand("Ficha no disponible — {app}") }, { name: "description", content: "Esta ficha no está disponible." }, { property: "og:title", content: brand("Ficha no disponible — {app}") }, { property: "og:description", content: "Esta ficha no está disponible." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] };
+    return {
+      meta: [
+        { title: brand("Ficha no disponible — {app}") },
+        { name: "description", content: "Esta ficha no está disponible." },
+        { property: "og:title", content: brand("Ficha no disponible — {app}") },
+        { property: "og:description", content: "Esta ficha no está disponible." },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary" },
+        { name: "robots", content: "noindex" },
+      ],
+    };
   }
   const l = loaderData;
   const url = siteUrl() + listingPath(l.type, l.slug);
@@ -19,11 +29,13 @@ export function listingHead(loaderData: ListingDetail | undefined) {
       { property: "og:type", content: "business.business" },
       { property: "og:url", content: url },
       { name: "twitter:card", content: image ? "summary_large_image" : "summary" },
-      ...(image ? [
-        { property: "og:image", content: image },
-        { name: "twitter:image", content: image },
-        { property: "og:image:alt", content: l.name },
-      ] : []),
+      ...(image
+        ? [
+            { property: "og:image", content: image },
+            { name: "twitter:image", content: image },
+            { property: "og:image:alt", content: l.name },
+          ]
+        : []),
     ],
     links: [{ rel: "canonical", href: url }],
   };

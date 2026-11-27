@@ -46,16 +46,19 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const sorted = [...listing_photos].sort((a, b) => a.sort_order - b.sort_order);
       let photos: ListingDetail["photos"] = [];
       if (sorted.length) {
-        const { data: signed } = await supabase.storage
-          .from("listing-photos")
-          .createSignedUrls(sorted.map((p) => p.storage_path), 3600);
+        const { data: signed } = await supabase.storage.from("listing-photos").createSignedUrls(
+          sorted.map((p) => p.storage_path),
+          3600,
+        );
         photos = sorted
           .map((p, i) => ({ url: signed?.[i]?.signedUrl ?? "", alt: p.alt || rest.name }))
           .filter((p) => p.url);
       }
       let cover_url = rest.cover_url;
       if (rest.cover_path) {
-        const { data: c } = await supabase.storage.from("listing-photos").createSignedUrl(rest.cover_path, 3600);
+        const { data: c } = await supabase.storage
+          .from("listing-photos")
+          .createSignedUrl(rest.cover_path, 3600);
         if (c?.signedUrl) cover_url = c.signedUrl;
       }
       return {
@@ -72,7 +75,9 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
         cover_url,
         categoryName: categories?.name ?? null,
         categorySlug: categories?.slug ?? null,
-        hours: [...listing_hours].sort((a, b) => a.weekday - b.weekday || a.opens.localeCompare(b.opens)),
+        hours: [...listing_hours].sort(
+          (a, b) => a.weekday - b.weekday || a.opens.localeCompare(b.opens),
+        ),
         photos,
       };
     },
@@ -81,7 +86,9 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
 export function groupHours(hours: Hour[]) {
   return WEEKDAYS.map((day, i) => ({
     day,
-    slots: hours.filter((h) => h.weekday === i + 1).map((h) => `${h.opens.slice(0, 5)}–${h.closes.slice(0, 5)}`),
+    slots: hours
+      .filter((h) => h.weekday === i + 1)
+      .map((h) => `${h.opens.slice(0, 5)}–${h.closes.slice(0, 5)}`),
   }));
 }
 

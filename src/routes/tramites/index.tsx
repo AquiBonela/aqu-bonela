@@ -12,9 +12,19 @@ export const Route = createFileRoute("/tramites/")({
   head: () => ({
     meta: [
       { title: brand("Guía de trámites — {app}") },
-      { name: "description", content: brand("Encuentra guías de trámites y gestiones en {municipio}: documentación personal, requisitos, pasos y enlaces oficiales.") },
+      {
+        name: "description",
+        content: brand(
+          "Encuentra guías de trámites y gestiones en {municipio}: documentación personal, requisitos, pasos y enlaces oficiales.",
+        ),
+      },
       { property: "og:title", content: brand("Guía de trámites — {app}") },
-      { property: "og:description", content: brand("Busca tu trámite y consulta sus requisitos, pasos y enlaces oficiales en la guía de {municipio}.") },
+      {
+        property: "og:description",
+        content: brand(
+          "Busca tu trámite y consulta sus requisitos, pasos y enlaces oficiales en la guía de {municipio}.",
+        ),
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -27,11 +37,16 @@ function TramitesPage() {
     <div className="min-h-dvh bg-background">
       <SiteHeader />
       <main>
-        <Hero title="Guía de trámites" text="¿Necesitas realizar una gestión y no sabes por dónde empezar? Encuentra guías sencillas para conocer los requisitos, preparar la documentación y saber dónde y cómo solicitar cada trámite." />
+        <Hero
+          title="Guía de trámites"
+          text="¿Necesitas realizar una gestión y no sabes por dónde empezar? Encuentra guías sencillas para conocer los requisitos, preparar la documentación y saber dónde y cómo solicitar cada trámite."
+        />
         <div className="mx-auto max-w-5xl px-4 pt-6">
           <div className="flex max-w-2xl items-start gap-3 border-l-4 border-primary bg-muted p-4">
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-            <p className="text-sm"><Text text="{app} no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales." /></p>
+            <p className="text-sm">
+              <Text text="{app} no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales." />
+            </p>
           </div>
         </div>
         <div className="mx-auto max-w-5xl px-4 py-10">

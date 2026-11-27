@@ -25,9 +25,22 @@ const NATIONAL_GROUPS: EmergencyGroup[] = [
     id: "ayuda",
     title: "Líneas de ayuda",
     phones: [
-      { tel: "016", label: "Violencia de género", note: "24 h, gratuito y confidencial. No aparece en la factura; borra la llamada del historial." },
-      { tel: "024", label: "Atención a la conducta suicida", note: "24 h, gratuito y confidencial." },
-      { tel: "915620420", show: "915 620 420", label: "Información toxicológica", note: "Picaduras, plantas o ingestión accidental." },
+      {
+        tel: "016",
+        label: "Violencia de género",
+        note: "24 h, gratuito y confidencial. No aparece en la factura; borra la llamada del historial.",
+      },
+      {
+        tel: "024",
+        label: "Atención a la conducta suicida",
+        note: "24 h, gratuito y confidencial.",
+      },
+      {
+        tel: "915620420",
+        show: "915 620 420",
+        label: "Información toxicológica",
+        note: "Picaduras, plantas o ingestión accidental.",
+      },
     ],
   },
 ];

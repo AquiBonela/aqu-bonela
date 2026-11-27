@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { HIDE_HOURS_TAG, hoursHidden, searchTags, withAvailability, withHoursVisibility } from "./listing-availability";
+import {
+  HIDE_HOURS_TAG,
+  hoursHidden,
+  searchTags,
+  withAvailability,
+  withHoursVisibility,
+} from "./listing-availability";
 
 describe("ocultar horario", () => {
   it("el titular oculta el horario", () => {

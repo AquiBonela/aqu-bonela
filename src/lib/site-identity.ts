@@ -29,7 +29,9 @@ export interface SiteConfig {
   identity: IdentityOverrides;
 }
 
-export const EMPTY_SITE_CONFIG: SiteConfig = Object.freeze({ identity: Object.freeze({}) }) as SiteConfig;
+export const EMPTY_SITE_CONFIG: SiteConfig = Object.freeze({
+  identity: Object.freeze({}),
+}) as SiteConfig;
 
 declare global {
   interface Window {
@@ -40,7 +42,8 @@ declare global {
 // Mismas reglas que las restricciones de public.site_identity: lo que la base no admite tampoco se usa aquí.
 /** Sin HTML ni llaves (se confundirían con {app}, {municipio}...). */
 const UNSAFE_SYMBOLS = /[<>{}]/;
-const SITE_URL_PATTERN = /^https:\/\/[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+(:[0-9]{1,5})?$/;
+const SITE_URL_PATTERN =
+  /^https:\/\/[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+(:[0-9]{1,5})?$/;
 const WEBSITE = /^https:\/\/[^\s<>"{}]+$/;
 const PHONE = /^[0-9 +]{0,20}$/;
 
@@ -71,16 +74,33 @@ const FIELDS: Record<FieldName, z.ZodType<string>> = {
   autonomous_community: text(80),
   demonym_masculine: text(40),
   demonym_feminine: text(40),
-  site_url: z.string().trim().max(300).refine((v) => v === "" || SITE_URL_PATTERN.test(v)),
+  site_url: z
+    .string()
+    .trim()
+    .max(300)
+    .refine((v) => v === "" || SITE_URL_PATTERN.test(v)),
   town_hall_name: text(120),
   town_hall_address: text(200),
   town_hall_phone: z.string().trim().regex(PHONE),
-  town_hall_website: z.string().trim().max(300).refine((v) => v === "" || WEBSITE.test(v)),
+  town_hall_website: z
+    .string()
+    .trim()
+    .max(300)
+    .refine((v) => v === "" || WEBSITE.test(v)),
   timezone: text(64),
 };
 
 const coordinate = (limit: number) =>
-  z.union([z.number(), z.string().trim().regex(/^-?\d+(\.\d+)?$/).transform(Number)]).pipe(z.number().min(-limit).max(limit));
+  z
+    .union([
+      z.number(),
+      z
+        .string()
+        .trim()
+        .regex(/^-?\d+(\.\d+)?$/)
+        .transform(Number),
+    ])
+    .pipe(z.number().min(-limit).max(limit));
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -134,7 +154,8 @@ export function parseSiteConfig(raw: unknown): SiteConfig {
 
   const masculine = read("demonym_masculine");
   const feminine = read("demonym_feminine");
-  if (masculine || feminine) identity.demonym = { masculine: masculine || feminine, feminine: feminine || masculine };
+  if (masculine || feminine)
+    identity.demonym = { masculine: masculine || feminine, feminine: feminine || masculine };
 
   const townHallName = read("town_hall_name");
   const address = read("town_hall_address");
@@ -145,14 +166,19 @@ export function parseSiteConfig(raw: unknown): SiteConfig {
   const lat = readCoordinate("latitude", 90);
   const lng = readCoordinate("longitude", 180);
   const timezone = read("timezone");
-  if (lat !== undefined && lng !== undefined && timezone) identity.coordinates = { lat, lng, timezone };
+  if (lat !== undefined && lng !== undefined && timezone)
+    identity.coordinates = { lat, lng, timezone };
 
-  if (rejected.length) console.warn(`[site-identity] Valores no válidos descartados: ${rejected.join(", ")}`);
+  if (rejected.length)
+    console.warn(`[site-identity] Valores no válidos descartados: ${rejected.join(", ")}`);
   return { identity };
 }
 
 /** Identidad efectiva: la de la base de datos donde exista, la compilada en el resto. */
-export function mergeIdentity(base: MunicipalityConfig, overrides: IdentityOverrides): MunicipalityConfig {
+export function mergeIdentity(
+  base: MunicipalityConfig,
+  overrides: IdentityOverrides,
+): MunicipalityConfig {
   return { ...base, ...overrides };
 }
 
@@ -169,5 +195,7 @@ export function siteConfigScript(config: SiteConfig): string {
 export function readBrowserSiteConfig(): SiteConfig | undefined {
   if (typeof window === "undefined") return undefined;
   const value: unknown = window.__SITE_CONFIG__;
-  return isRecord(value) && isRecord(value["identity"]) ? (value as unknown as SiteConfig) : undefined;
+  return isRecord(value) && isRecord(value["identity"])
+    ? (value as unknown as SiteConfig)
+    : undefined;
 }

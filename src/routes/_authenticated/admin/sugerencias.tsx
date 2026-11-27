@@ -10,7 +10,10 @@ export const Route = createFileRoute("/_authenticated/admin/sugerencias")({
   head: () => ({
     meta: [
       { title: brand("Sugerencias · Administración {app}") },
-      { name: "description", content: "Sugerencias de comercios y profesionales enviadas por visitantes." },
+      {
+        name: "description",
+        content: "Sugerencias de comercios y profesionales enviadas por visitantes.",
+      },
       { property: "og:title", content: brand("Sugerencias · Administración {app}") },
       { property: "og:description", content: "Bandeja de sugerencias del directorio." },
       { property: "og:type", content: "website" },
@@ -53,12 +56,16 @@ function SuggestionsBody() {
 
   return (
     <>
-      <h1 className="font-display text-2xl font-bold"><Text text="Sugerencias" /></h1>
+      <h1 className="font-display text-2xl font-bold">
+        <Text text="Sugerencias" />
+      </h1>
       <p className="mt-3 text-sm text-muted-foreground">
         {tr(isLoading ? "Cargando…" : `${open} sin atender`)}
       </p>
       {!isLoading && data.length === 0 && (
-        <p className="mt-6 border p-4 text-sm text-muted-foreground"><Text text="Todavía no hay sugerencias." /></p>
+        <p className="mt-6 border p-4 text-sm text-muted-foreground">
+          <Text text="Todavía no hay sugerencias." />
+        </p>
       )}
       <ul className="mt-4 grid gap-3">
         {data.map((s) => (
@@ -69,7 +76,9 @@ function SuggestionsBody() {
             </div>
             <p className="mt-2 whitespace-pre-line text-sm">{s.message}</p>
             {s.contact && (
-              <p className="mt-2 text-sm text-muted-foreground"><Text text="Contacto:" /> <span className="font-medium">{s.contact}</span></p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                <Text text="Contacto:" /> <span className="font-medium">{s.contact}</span>
+              </p>
             )}
             <div className="mt-3 flex flex-wrap gap-2">
               <button
@@ -84,11 +93,13 @@ function SuggestionsBody() {
                 type="button"
                 disabled={remove.isPending}
                 onClick={() => {
-                  if (window.confirm("¿Descartar esta sugerencia definitivamente?")) remove.mutate(s.id);
+                  if (window.confirm("¿Descartar esta sugerencia definitivamente?"))
+                    remove.mutate(s.id);
                 }}
                 className="min-h-10 border px-3 text-sm text-destructive hover:bg-secondary disabled:opacity-60"
               >
-                 <Text text="Descartar" /> </button>
+                <Text text="Descartar" />{" "}
+              </button>
             </div>
           </li>
         ))}

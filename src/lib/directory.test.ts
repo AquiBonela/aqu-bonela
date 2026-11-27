@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { activitiesFor, filterListings, isFeatured, type Category, type Listing } from "./directory";
+import {
+  activitiesFor,
+  filterListings,
+  isFeatured,
+  type Category,
+  type Listing,
+} from "./directory";
 import { translateText } from "./i18n";
 
 const now = new Date("2026-10-24T00:00:00Z");
@@ -7,30 +13,86 @@ const cats: Category[] = [
   { id: "c1", name: "Alimentación", slug: "alimentacion", sort_order: 1, type: "comercio" },
   { id: "c2", name: "Salud", slug: "salud", sort_order: 2, type: "comercio" },
 ];
-const base = { public_phone: null, public_whatsapp: null, public_address: null, description: "", short_description: "", labels: [], cover_url: null, gallery_urls: [], urgent_24h: false };
+const base = {
+  public_phone: null,
+  public_whatsapp: null,
+  public_address: null,
+  description: "",
+  short_description: "",
+  labels: [],
+  cover_url: null,
+  gallery_urls: [],
+  urgent_24h: false,
+};
 const items: Listing[] = [
-  { ...base, id: "1", slug: "a", type: "comercio", name: "Panadería", activity: "Panadería", category_id: "c1", featured: false, featured_until: null, tags: ["molletes"] },
-  { ...base, id: "2", slug: "b", type: "comercio", name: "Carnicería", activity: "Carnicería", category_id: "c1", featured: true, featured_until: "2026-11-20T00:00:00Z", tags: [] },
-  { ...base, id: "3", slug: "c", type: "profesional", name: "Fisio", activity: "Fisioterapeuta", category_id: "c2", featured: true, featured_until: "2026-10-01T00:00:00Z", tags: [] },
+  {
+    ...base,
+    id: "1",
+    slug: "a",
+    type: "comercio",
+    name: "Panadería",
+    activity: "Panadería",
+    category_id: "c1",
+    featured: false,
+    featured_until: null,
+    tags: ["molletes"],
+  },
+  {
+    ...base,
+    id: "2",
+    slug: "b",
+    type: "comercio",
+    name: "Carnicería",
+    activity: "Carnicería",
+    category_id: "c1",
+    featured: true,
+    featured_until: "2026-11-20T00:00:00Z",
+    tags: [],
+  },
+  {
+    ...base,
+    id: "3",
+    slug: "c",
+    type: "profesional",
+    name: "Fisio",
+    activity: "Fisioterapeuta",
+    category_id: "c2",
+    featured: true,
+    featured_until: "2026-10-01T00:00:00Z",
+    tags: [],
+  },
 ];
 
 describe("directorio", () => {
   it.each([
-    ["en", "bakery"], ["de", "bäckerei"], ["nl", "bakkerij"], ["fr", "boulangerie"], ["uk", "пекарня"],
-  ] as const)("finds Spanish entries with a %s search without changing their classification", (lang, query) => {
-    const result = filterListings(items, cats, query, "alimentacion", now, "", "", [], (text) => translateText(text, lang));
-    expect(result.map((listing) => listing.id)).toEqual(["1"]);
-    expect(result[0]?.category_id).toBe("c1");
-    expect(items[0]?.name).toBe("Panadería");
-  });
+    ["en", "bakery"],
+    ["de", "bäckerei"],
+    ["nl", "bakkerij"],
+    ["fr", "boulangerie"],
+    ["uk", "пекарня"],
+  ] as const)(
+    "finds Spanish entries with a %s search without changing their classification",
+    (lang, query) => {
+      const result = filterListings(items, cats, query, "alimentacion", now, "", "", [], (text) =>
+        translateText(text, lang),
+      );
+      expect(result.map((listing) => listing.id)).toEqual(["1"]);
+      expect(result[0]?.category_id).toBe("c1");
+      expect(items[0]?.name).toBe("Panadería");
+    },
+  );
   it("el destacado caduca al pasar su fecha", () => {
-    const active = items[1], expired = items[2];
+    const active = items[1],
+      expired = items[2];
     if (!active || !expired) throw new Error("Missing fixture");
     expect(isFeatured(active, now)).toBe(true);
     expect(isFeatured(expired, now)).toBe(false);
   });
   it("las destacadas van primero dentro de su categoría", () => {
-    expect(filterListings(items, cats, "", "alimentacion", now).map((l) => l.id)).toEqual(["2", "1"]);
+    expect(filterListings(items, cats, "", "alimentacion", now).map((l) => l.id)).toEqual([
+      "2",
+      "1",
+    ]);
   });
   it("busca por tags ocultos y sin acentos", () => {
     expect(filterListings(items, cats, "MOLLETES", "", now).map((l) => l.id)).toEqual(["1"]);
@@ -46,13 +108,20 @@ describe("directorio", () => {
     expect(r.map((l) => l.id)).toEqual(["1"]);
   });
   it("permite mostrar solo comercios", () => {
-    expect(filterListings(items, cats, "", "", now, "", "comercio").map((l) => l.id)).toEqual(["2", "1"]);
+    expect(filterListings(items, cats, "", "", now, "", "comercio").map((l) => l.id)).toEqual([
+      "2",
+      "1",
+    ]);
   });
   it("permite mostrar solo profesionales", () => {
-    expect(filterListings(items, cats, "", "", now, "", "profesional").map((l) => l.id)).toEqual(["3"]);
+    expect(filterListings(items, cats, "", "", now, "", "profesional").map((l) => l.id)).toEqual([
+      "3",
+    ]);
   });
   it("combina tipo, categoría y oficio", () => {
-    expect(filterListings(items, cats, "", "alimentacion", now, "Panadería", "profesional")).toEqual([]);
+    expect(
+      filterListings(items, cats, "", "alimentacion", now, "Panadería", "profesional"),
+    ).toEqual([]);
   });
 });
 
@@ -70,10 +139,61 @@ describe("dailyShuffle", () => {
 describe("búsqueda por palabras parecidas", () => {
   it("encuentra al fontanero al buscar «tubería»", async () => {
     const { filterListings } = await import("@/lib/directory");
-    const l = { id: "1", slug: "paco", type: "profesional", name: "Paco Gil", description: "", short_description: "", category_id: "c1", featured: false, featured_until: null, tags: [], public_phone: null, public_whatsapp: null, public_address: null, activity: "Fontanero", labels: [], cover_url: null, gallery_urls: [], urgent_24h: false } as const;
-    const cats = [{ id: "c1", name: "Hogar y reformas", slug: "hogar-reformas", sort_order: 1, type: "profesional" as const }];
-    const acts = [{ id: "a1", category_id: "c1", name: "Fontanero", synonyms: ["tubería"], sort_order: 0 }];
-    expect(filterListings([{ ...l, tags: [], labels: [], gallery_urls: [] }], cats, "tuberia", "", new Date(), "", "", acts)).toHaveLength(1);
-    expect(filterListings([{ ...l, tags: [], labels: [], gallery_urls: [] }], cats, "tuberia", "", new Date(), "", "", [])).toHaveLength(0);
+    const l = {
+      id: "1",
+      slug: "paco",
+      type: "profesional",
+      name: "Paco Gil",
+      description: "",
+      short_description: "",
+      category_id: "c1",
+      featured: false,
+      featured_until: null,
+      tags: [],
+      public_phone: null,
+      public_whatsapp: null,
+      public_address: null,
+      activity: "Fontanero",
+      labels: [],
+      cover_url: null,
+      gallery_urls: [],
+      urgent_24h: false,
+    } as const;
+    const cats = [
+      {
+        id: "c1",
+        name: "Hogar y reformas",
+        slug: "hogar-reformas",
+        sort_order: 1,
+        type: "profesional" as const,
+      },
+    ];
+    const acts = [
+      { id: "a1", category_id: "c1", name: "Fontanero", synonyms: ["tubería"], sort_order: 0 },
+    ];
+    expect(
+      filterListings(
+        [{ ...l, tags: [], labels: [], gallery_urls: [] }],
+        cats,
+        "tuberia",
+        "",
+        new Date(),
+        "",
+        "",
+        acts,
+      ),
+    ).toHaveLength(1);
+    expect(
+      filterListings(
+        [{ ...l, tags: [], labels: [], gallery_urls: [] }],
+        cats,
+        "tuberia",
+        "",
+        new Date(),
+        "",
+        "",
+        [],
+      ),
+    ).toHaveLength(0);
   });
 });

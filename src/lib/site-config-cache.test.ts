@@ -14,7 +14,13 @@ function setup(load: (signal: AbortSignal) => Promise<string>) {
     now: () => clock,
     onError,
   });
-  return { cache, onError, advance: (ms: number) => { clock += ms; } };
+  return {
+    cache,
+    onError,
+    advance: (ms: number) => {
+      clock += ms;
+    },
+  };
 }
 
 afterEach(() => vi.useRealTimers());
@@ -73,7 +79,12 @@ describe("caché de configuración", () => {
 
   it("las peticiones simultáneas comparten una consulta", async () => {
     let resolve: (v: string) => void = () => {};
-    const load = vi.fn(() => new Promise<string>((r) => { resolve = r; }));
+    const load = vi.fn(
+      () =>
+        new Promise<string>((r) => {
+          resolve = r;
+        }),
+    );
     const { cache } = setup(load);
     const results = Promise.all([cache.get(), cache.get(), cache.get()]);
     resolve("v1");
@@ -84,7 +95,10 @@ describe("caché de configuración", () => {
   it("corta la espera y cancela la consulta si Supabase no responde", async () => {
     vi.useFakeTimers();
     let signal: AbortSignal | undefined;
-    const { cache, onError } = setup((s) => { signal = s; return new Promise<string>(() => {}); });
+    const { cache, onError } = setup((s) => {
+      signal = s;
+      return new Promise<string>(() => {});
+    });
     const pending = cache.get();
     await vi.advanceTimersByTimeAsync(1_500);
     expect(await pending).toEqual({ value: "respaldo", source: "fallback" });

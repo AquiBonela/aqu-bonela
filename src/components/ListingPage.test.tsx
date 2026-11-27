@@ -66,9 +66,26 @@ afterEach(cleanup);
 
 describe("galería independiente del resaltado", () => {
   it.each([false, true])("permite ampliar cinco fotografías con resaltado=%s", (featured) => {
-    render(<I18nProvider><ListingPage listing={{ ...listing, featured, featured_until: "2099-01-01T00:00:00Z", photos: Array.from({ length: 5 }, (_, i) => ({ url: `https://example.com/photo-${i}.webp`, alt: `Foto ${i + 1}` })) }} review={{ show: visible, onToggle: vi.fn() }} /></I18nProvider>);
+    render(
+      <I18nProvider>
+        <ListingPage
+          listing={{
+            ...listing,
+            featured,
+            featured_until: "2099-01-01T00:00:00Z",
+            photos: Array.from({ length: 5 }, (_, i) => ({
+              url: `https://example.com/photo-${i}.webp`,
+              alt: `Foto ${i + 1}`,
+            })),
+          }}
+          review={{ show: visible, onToggle: vi.fn() }}
+        />
+      </I18nProvider>,
+    );
     expect(screen.getAllByRole("button", { name: /Ampliar fotografía/ })).toHaveLength(5);
-    fireEvent.click(screen.getByRole("button", { name: "Ampliar fotografía 5: Comercio de prueba" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Ampliar fotografía 5: Comercio de prueba" }),
+    );
     expect(screen.getByRole("dialog", { name: "Fotografía ampliada" })).toBeTruthy();
     expect(screen.getByText("5 / 5")).toBeTruthy();
   });
@@ -111,7 +128,10 @@ describe("contactos ampliados de la ficha", () => {
 function renderWithDescription(description: string) {
   render(
     <I18nProvider>
-      <ListingPage listing={{ ...listing, description }} review={{ show: visible, onToggle: vi.fn() }} />
+      <ListingPage
+        listing={{ ...listing, description }}
+        review={{ show: visible, onToggle: vi.fn() }}
+      />
     </I18nProvider>,
   );
 }
@@ -119,7 +139,10 @@ function renderWithDescription(description: string) {
 describe("formato de la descripción en la ficha", () => {
   it("enlaza la palabra ayuntamiento a la web indicada en la descripción compartida con revisión", () => {
     renderWithDescription("Consulta /ayuntamiento*www.casarabonela.es/.");
-    expect(screen.getByRole("link", { name: "ayuntamiento" })).toHaveProperty("href", "https://www.casarabonela.es/");
+    expect(screen.getByRole("link", { name: "ayuntamiento" })).toHaveProperty(
+      "href",
+      "https://www.casarabonela.es/",
+    );
   });
   it("muestra en negrita el doble asterisco y en cursiva el asterisco simple", () => {
     renderWithDescription("**Cerrado** *por obras*");

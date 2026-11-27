@@ -7,7 +7,11 @@ type TurnstileApi = {
   reset: (id: string) => void;
   remove: (id: string) => void;
 };
-declare global { interface Window { turnstile?: TurnstileApi } }
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
 
 let scriptPromise: Promise<void> | null = null;
 function loadTurnstile(): Promise<void> {
@@ -17,7 +21,10 @@ function loadTurnstile(): Promise<void> {
     s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
     s.async = true;
     s.onload = () => resolve();
-    s.onerror = () => { scriptPromise = null; reject(new Error("turnstile")); };
+    s.onerror = () => {
+      scriptPromise = null;
+      reject(new Error("turnstile"));
+    };
     document.head.appendChild(s);
   });
   return scriptPromise;
@@ -65,12 +72,28 @@ export function useFormProtection(action: string) {
 
   const fields = (
     <>
-      <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
-        <label>Website<input tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} /></label>
+      <div
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}
+      >
+        <label>
+          Website
+          <input
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </label>
       </div>
       <div ref={setContainer} />
     </>
   );
 
-  return { fields, ready: Boolean(session && token), payload: { session, turnstileToken: token, website: honeypot }, reset };
+  return {
+    fields,
+    ready: Boolean(session && token),
+    payload: { session, turnstileToken: token, website: honeypot },
+    reset,
+  };
 }

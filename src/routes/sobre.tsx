@@ -11,13 +11,16 @@ export const Route = createFileRoute("/sobre")({
       { title: brand("Sobre {app} — {app}") },
       {
         name: "description",
-        content:
-          brand("{app} reúne la información útil de {municipio}: comercios, profesionales, servicios públicos, asociaciones, lugares, actividades y noticias."),
+        content: brand(
+          "{app} reúne la información útil de {municipio}: comercios, profesionales, servicios públicos, asociaciones, lugares, actividades y noticias.",
+        ),
       },
       { property: "og:title", content: brand("Sobre {app}") },
       {
         property: "og:description",
-        content: brand("Una plataforma independiente que reúne en un mismo lugar la información útil de {municipio}."),
+        content: brand(
+          "Una plataforma independiente que reúne en un mismo lugar la información útil de {municipio}.",
+        ),
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -58,7 +61,10 @@ function Sobre() {
         </section>
 
         {SECTIONS.map((s) => (
-          <section key={s.title} className="mt-8 grid gap-2 border-t pt-8 text-base leading-relaxed">
+          <section
+            key={s.title}
+            className="mt-8 grid gap-2 border-t pt-8 text-base leading-relaxed"
+          >
             <h2 className="font-display text-xl font-bold">{t(s.title)}</h2>
             {s.paragraphs.map((p, i) => (
               <p key={p} className={i === 0 ? "font-medium" : undefined}>
@@ -76,11 +82,11 @@ function Sobre() {
               <p>{t("sobre.grow2")}</p>
               <p>{t("sobre.grow3")}</p>
             </div>
-            <BusinessSignupDialog business={false}><Button
-              className="mt-4 inline-flex min-h-12 items-center bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary/90"
-            >
-              {t("menu.enviar")}
-            </Button></BusinessSignupDialog>
+            <BusinessSignupDialog business={false}>
+              <Button className="mt-4 inline-flex min-h-12 items-center bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary/90">
+                {t("menu.enviar")}
+              </Button>
+            </BusinessSignupDialog>
           </div>
         </section>
 

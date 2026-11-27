@@ -10,7 +10,8 @@ export const buttonVariants = cva(
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        vuela: "bg-vuela-action text-vuela-foreground hover:bg-vuela-surface focus-visible:ring-vuela-foreground",
+        vuela:
+          "bg-vuela-action text-vuela-foreground hover:bg-vuela-surface focus-visible:ring-vuela-foreground",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

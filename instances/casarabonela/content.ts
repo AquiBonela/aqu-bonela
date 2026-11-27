@@ -13,7 +13,9 @@ const content: InstanceContent = {
   dailyLife,
   discover,
   procedures: { categories, templates, featured },
-  legal: { operatorNote: "{app} es una iniciativa privada gestionada por su titular como persona física." },
+  legal: {
+    operatorNote: "{app} es una iniciativa privada gestionada por su titular como persona física.",
+  },
 };
 
 export default content;

@@ -17,7 +17,9 @@ export function reservedTags(tags: string[]) {
 }
 
 export function searchTags(tags: string[]) {
-  return tags.filter((tag) => tag !== HIDE_HOURS_TAG && !AVAILABILITY_OPTIONS.some((option) => option === tag));
+  return tags.filter(
+    (tag) => tag !== HIDE_HOURS_TAG && !AVAILABILITY_OPTIONS.some((option) => option === tag),
+  );
 }
 
 export function withAvailability(tags: string[], selected: string[]) {

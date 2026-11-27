@@ -1,1040 +1,1017 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "17.1"
-  }
+    PostgrestVersion: "17.1";
+  };
   public: {
     Tables: {
       activities: {
         Row: {
-          category_id: string
-          created_at: string
-          id: string
-          name: string
-          sort_order: number
-          synonyms: string[]
-          updated_at: string
-        }
+          category_id: string;
+          created_at: string;
+          id: string;
+          name: string;
+          sort_order: number;
+          synonyms: string[];
+          updated_at: string;
+        };
         Insert: {
-          category_id: string
-          created_at?: string
-          id?: string
-          name: string
-          sort_order?: number
-          synonyms?: string[]
-          updated_at?: string
-        }
+          category_id: string;
+          created_at?: string;
+          id?: string;
+          name: string;
+          sort_order?: number;
+          synonyms?: string[];
+          updated_at?: string;
+        };
         Update: {
-          category_id?: string
-          created_at?: string
-          id?: string
-          name?: string
-          sort_order?: number
-          synonyms?: string[]
-          updated_at?: string
-        }
+          category_id?: string;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          sort_order?: number;
+          synonyms?: string[];
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "activities_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["id"]
+            foreignKeyName: "activities_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       approval_tokens: {
         Row: {
-          created_at: string
-          expires_at: string
-          id: string
-          listing_id: string
-          request_id: string | null
-          token_hash: string
-          used_at: string | null
-        }
+          created_at: string;
+          expires_at: string;
+          id: string;
+          listing_id: string;
+          request_id: string | null;
+          token_hash: string;
+          used_at: string | null;
+        };
         Insert: {
-          created_at?: string
-          expires_at?: string
-          id?: string
-          listing_id: string
-          request_id?: string | null
-          token_hash: string
-          used_at?: string | null
-        }
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          listing_id: string;
+          request_id?: string | null;
+          token_hash: string;
+          used_at?: string | null;
+        };
         Update: {
-          created_at?: string
-          expires_at?: string
-          id?: string
-          listing_id?: string
-          request_id?: string | null
-          token_hash?: string
-          used_at?: string | null
-        }
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          listing_id?: string;
+          request_id?: string | null;
+          token_hash?: string;
+          used_at?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "approval_tokens_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "approval_tokens_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "approval_tokens_request_id_fkey"
-            columns: ["request_id"]
-            isOneToOne: false
-            referencedRelation: "listing_requests"
-            referencedColumns: ["id"]
+            foreignKeyName: "approval_tokens_request_id_fkey";
+            columns: ["request_id"];
+            isOneToOne: false;
+            referencedRelation: "listing_requests";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       categories: {
         Row: {
-          created_at: string
-          id: string
-          is_provisional: boolean
-          name: string
-          slug: string
-          sort_order: number
-          type: Database["public"]["Enums"]["listing_type"]
-          updated_at: string
-        }
+          created_at: string;
+          id: string;
+          is_provisional: boolean;
+          name: string;
+          slug: string;
+          sort_order: number;
+          type: Database["public"]["Enums"]["listing_type"];
+          updated_at: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          is_provisional?: boolean
-          name: string
-          slug: string
-          sort_order?: number
-          type?: Database["public"]["Enums"]["listing_type"]
-          updated_at?: string
-        }
+          created_at?: string;
+          id?: string;
+          is_provisional?: boolean;
+          name: string;
+          slug: string;
+          sort_order?: number;
+          type?: Database["public"]["Enums"]["listing_type"];
+          updated_at?: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          is_provisional?: boolean
-          name?: string
-          slug?: string
-          sort_order?: number
-          type?: Database["public"]["Enums"]["listing_type"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          is_provisional?: boolean;
+          name?: string;
+          slug?: string;
+          sort_order?: number;
+          type?: Database["public"]["Enums"]["listing_type"];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       consents: {
         Row: {
-          authorized_fields: Json | null
-          granted: boolean
-          granted_at: string
-          id: string
-          listing_id: string
-          method: string
-          purpose: string
-          request_id: string | null
-          text_version: string
-          withdrawn_at: string | null
-        }
+          authorized_fields: Json | null;
+          granted: boolean;
+          granted_at: string;
+          id: string;
+          listing_id: string;
+          method: string;
+          purpose: string;
+          request_id: string | null;
+          text_version: string;
+          withdrawn_at: string | null;
+        };
         Insert: {
-          authorized_fields?: Json | null
-          granted: boolean
-          granted_at?: string
-          id?: string
-          listing_id: string
-          method?: string
-          purpose: string
-          request_id?: string | null
-          text_version: string
-          withdrawn_at?: string | null
-        }
+          authorized_fields?: Json | null;
+          granted: boolean;
+          granted_at?: string;
+          id?: string;
+          listing_id: string;
+          method?: string;
+          purpose: string;
+          request_id?: string | null;
+          text_version: string;
+          withdrawn_at?: string | null;
+        };
         Update: {
-          authorized_fields?: Json | null
-          granted?: boolean
-          granted_at?: string
-          id?: string
-          listing_id?: string
-          method?: string
-          purpose?: string
-          request_id?: string | null
-          text_version?: string
-          withdrawn_at?: string | null
-        }
+          authorized_fields?: Json | null;
+          granted?: boolean;
+          granted_at?: string;
+          id?: string;
+          listing_id?: string;
+          method?: string;
+          purpose?: string;
+          request_id?: string | null;
+          text_version?: string;
+          withdrawn_at?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "consents_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "consents_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "consents_request_id_fkey"
-            columns: ["request_id"]
-            isOneToOne: false
-            referencedRelation: "listing_requests"
-            referencedColumns: ["id"]
+            foreignKeyName: "consents_request_id_fkey";
+            columns: ["request_id"];
+            isOneToOne: false;
+            referencedRelation: "listing_requests";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       listing_activities: {
         Row: {
-          activity_id: string
-          created_at: string
-          listing_id: string
-          sort_order: number
-        }
+          activity_id: string;
+          created_at: string;
+          listing_id: string;
+          sort_order: number;
+        };
         Insert: {
-          activity_id: string
-          created_at?: string
-          listing_id: string
-          sort_order?: number
-        }
+          activity_id: string;
+          created_at?: string;
+          listing_id: string;
+          sort_order?: number;
+        };
         Update: {
-          activity_id?: string
-          created_at?: string
-          listing_id?: string
-          sort_order?: number
-        }
+          activity_id?: string;
+          created_at?: string;
+          listing_id?: string;
+          sort_order?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "listing_activities_activity_id_fkey"
-            columns: ["activity_id"]
-            isOneToOne: false
-            referencedRelation: "activities"
-            referencedColumns: ["id"]
+            foreignKeyName: "listing_activities_activity_id_fkey";
+            columns: ["activity_id"];
+            isOneToOne: false;
+            referencedRelation: "activities";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "listing_activities_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "listing_activities_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       listing_contacts: {
         Row: {
-          address: string | null
-          created_at: string
-          email: string | null
-          facebook: string | null
-          instagram: string | null
-          linkedin: string | null
-          listing_id: string
-          owner_contact: string | null
-          owner_name: string | null
-          phone: string | null
-          phone_2: string | null
-          show_address: boolean
-          show_email: boolean
-          show_facebook: boolean
-          show_instagram: boolean
-          show_linkedin: boolean
-          show_phone: boolean
-          show_phone_2: boolean
-          show_tiktok: boolean
-          show_whatsapp: boolean
-          show_x_twitter: boolean
-          show_youtube: boolean
-          tiktok: string | null
-          updated_at: string
-          whatsapp: string | null
-          x_twitter: string | null
-          youtube: string | null
-        }
+          address: string | null;
+          created_at: string;
+          email: string | null;
+          facebook: string | null;
+          instagram: string | null;
+          linkedin: string | null;
+          listing_id: string;
+          owner_contact: string | null;
+          owner_name: string | null;
+          phone: string | null;
+          phone_2: string | null;
+          show_address: boolean;
+          show_email: boolean;
+          show_facebook: boolean;
+          show_instagram: boolean;
+          show_linkedin: boolean;
+          show_phone: boolean;
+          show_phone_2: boolean;
+          show_tiktok: boolean;
+          show_whatsapp: boolean;
+          show_x_twitter: boolean;
+          show_youtube: boolean;
+          tiktok: string | null;
+          updated_at: string;
+          whatsapp: string | null;
+          x_twitter: string | null;
+          youtube: string | null;
+        };
         Insert: {
-          address?: string | null
-          created_at?: string
-          email?: string | null
-          facebook?: string | null
-          instagram?: string | null
-          linkedin?: string | null
-          listing_id: string
-          owner_contact?: string | null
-          owner_name?: string | null
-          phone?: string | null
-          phone_2?: string | null
-          show_address?: boolean
-          show_email?: boolean
-          show_facebook?: boolean
-          show_instagram?: boolean
-          show_linkedin?: boolean
-          show_phone?: boolean
-          show_phone_2?: boolean
-          show_tiktok?: boolean
-          show_whatsapp?: boolean
-          show_x_twitter?: boolean
-          show_youtube?: boolean
-          tiktok?: string | null
-          updated_at?: string
-          whatsapp?: string | null
-          x_twitter?: string | null
-          youtube?: string | null
-        }
+          address?: string | null;
+          created_at?: string;
+          email?: string | null;
+          facebook?: string | null;
+          instagram?: string | null;
+          linkedin?: string | null;
+          listing_id: string;
+          owner_contact?: string | null;
+          owner_name?: string | null;
+          phone?: string | null;
+          phone_2?: string | null;
+          show_address?: boolean;
+          show_email?: boolean;
+          show_facebook?: boolean;
+          show_instagram?: boolean;
+          show_linkedin?: boolean;
+          show_phone?: boolean;
+          show_phone_2?: boolean;
+          show_tiktok?: boolean;
+          show_whatsapp?: boolean;
+          show_x_twitter?: boolean;
+          show_youtube?: boolean;
+          tiktok?: string | null;
+          updated_at?: string;
+          whatsapp?: string | null;
+          x_twitter?: string | null;
+          youtube?: string | null;
+        };
         Update: {
-          address?: string | null
-          created_at?: string
-          email?: string | null
-          facebook?: string | null
-          instagram?: string | null
-          linkedin?: string | null
-          listing_id?: string
-          owner_contact?: string | null
-          owner_name?: string | null
-          phone?: string | null
-          phone_2?: string | null
-          show_address?: boolean
-          show_email?: boolean
-          show_facebook?: boolean
-          show_instagram?: boolean
-          show_linkedin?: boolean
-          show_phone?: boolean
-          show_phone_2?: boolean
-          show_tiktok?: boolean
-          show_whatsapp?: boolean
-          show_x_twitter?: boolean
-          show_youtube?: boolean
-          tiktok?: string | null
-          updated_at?: string
-          whatsapp?: string | null
-          x_twitter?: string | null
-          youtube?: string | null
-        }
+          address?: string | null;
+          created_at?: string;
+          email?: string | null;
+          facebook?: string | null;
+          instagram?: string | null;
+          linkedin?: string | null;
+          listing_id?: string;
+          owner_contact?: string | null;
+          owner_name?: string | null;
+          phone?: string | null;
+          phone_2?: string | null;
+          show_address?: boolean;
+          show_email?: boolean;
+          show_facebook?: boolean;
+          show_instagram?: boolean;
+          show_linkedin?: boolean;
+          show_phone?: boolean;
+          show_phone_2?: boolean;
+          show_tiktok?: boolean;
+          show_whatsapp?: boolean;
+          show_x_twitter?: boolean;
+          show_youtube?: boolean;
+          tiktok?: string | null;
+          updated_at?: string;
+          whatsapp?: string | null;
+          x_twitter?: string | null;
+          youtube?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "listing_contacts_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: true
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "listing_contacts_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: true;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       listing_hours: {
         Row: {
-          closes: string
-          created_at: string
-          id: string
-          listing_id: string
-          opens: string
-          weekday: number
-        }
+          closes: string;
+          created_at: string;
+          id: string;
+          listing_id: string;
+          opens: string;
+          weekday: number;
+        };
         Insert: {
-          closes: string
-          created_at?: string
-          id?: string
-          listing_id: string
-          opens: string
-          weekday: number
-        }
+          closes: string;
+          created_at?: string;
+          id?: string;
+          listing_id: string;
+          opens: string;
+          weekday: number;
+        };
         Update: {
-          closes?: string
-          created_at?: string
-          id?: string
-          listing_id?: string
-          opens?: string
-          weekday?: number
-        }
+          closes?: string;
+          created_at?: string;
+          id?: string;
+          listing_id?: string;
+          opens?: string;
+          weekday?: number;
+        };
         Relationships: [
           {
-            foreignKeyName: "listing_hours_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "listing_hours_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       listing_photos: {
         Row: {
-          alt: string
-          created_at: string
-          id: string
-          listing_id: string
-          sort_order: number
-          storage_path: string
-        }
+          alt: string;
+          created_at: string;
+          id: string;
+          listing_id: string;
+          sort_order: number;
+          storage_path: string;
+        };
         Insert: {
-          alt?: string
-          created_at?: string
-          id?: string
-          listing_id: string
-          sort_order?: number
-          storage_path: string
-        }
+          alt?: string;
+          created_at?: string;
+          id?: string;
+          listing_id: string;
+          sort_order?: number;
+          storage_path: string;
+        };
         Update: {
-          alt?: string
-          created_at?: string
-          id?: string
-          listing_id?: string
-          sort_order?: number
-          storage_path?: string
-        }
+          alt?: string;
+          created_at?: string;
+          id?: string;
+          listing_id?: string;
+          sort_order?: number;
+          storage_path?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "listing_photos_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "listing_photos_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       listing_reports: {
         Row: {
-          contact: string | null
-          created_at: string
-          id: string
-          listing_id: string
-          message: string
-          resolved: boolean
-        }
+          contact: string | null;
+          created_at: string;
+          id: string;
+          listing_id: string;
+          message: string;
+          resolved: boolean;
+        };
         Insert: {
-          contact?: string | null
-          created_at?: string
-          id?: string
-          listing_id: string
-          message: string
-          resolved?: boolean
-        }
+          contact?: string | null;
+          created_at?: string;
+          id?: string;
+          listing_id: string;
+          message: string;
+          resolved?: boolean;
+        };
         Update: {
-          contact?: string | null
-          created_at?: string
-          id?: string
-          listing_id?: string
-          message?: string
-          resolved?: boolean
-        }
+          contact?: string | null;
+          created_at?: string;
+          id?: string;
+          listing_id?: string;
+          message?: string;
+          resolved?: boolean;
+        };
         Relationships: [
           {
-            foreignKeyName: "listing_reports_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "listing_reports_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       listing_requests: {
         Row: {
-          created_at: string
-          decided_at: string | null
-          id: string
-          listing_id: string
-          notes: string | null
-          snapshot: Json | null
-          status: string
-        }
+          created_at: string;
+          decided_at: string | null;
+          id: string;
+          listing_id: string;
+          notes: string | null;
+          snapshot: Json | null;
+          status: string;
+        };
         Insert: {
-          created_at?: string
-          decided_at?: string | null
-          id?: string
-          listing_id: string
-          notes?: string | null
-          snapshot?: Json | null
-          status?: string
-        }
+          created_at?: string;
+          decided_at?: string | null;
+          id?: string;
+          listing_id: string;
+          notes?: string | null;
+          snapshot?: Json | null;
+          status?: string;
+        };
         Update: {
-          created_at?: string
-          decided_at?: string | null
-          id?: string
-          listing_id?: string
-          notes?: string | null
-          snapshot?: Json | null
-          status?: string
-        }
+          created_at?: string;
+          decided_at?: string | null;
+          id?: string;
+          listing_id?: string;
+          notes?: string | null;
+          snapshot?: Json | null;
+          status?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "listing_requests_listing_id_fkey"
-            columns: ["listing_id"]
-            isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            foreignKeyName: "listing_requests_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "listings";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       listings: {
         Row: {
-          activity: string | null
-          category_id: string | null
-          cover_path: string | null
-          cover_url: string | null
-          created_at: string
-          description: string
-          featured: boolean
-          featured_until: string | null
-          gallery_urls: string[]
-          home_service: boolean
-          id: string
-          labels: string[]
-          name: string
-          public_address: string | null
-          public_email: string | null
-          public_facebook: string | null
-          public_instagram: string | null
-          public_linkedin: string | null
-          public_phone: string | null
-          public_phone_2: string | null
-          public_tiktok: string | null
-          public_website: string | null
-          public_whatsapp: string | null
-          public_x_twitter: string | null
-          public_youtube: string | null
-          published_at: string | null
-          service_area: string
-          short_description: string
-          slug: string
-          status: Database["public"]["Enums"]["listing_status"]
-          tags: string[]
-          translations: Json
-          type: Database["public"]["Enums"]["listing_type"]
-          updated_at: string
-          urgent_24h: boolean
-        }
+          activity: string | null;
+          category_id: string | null;
+          cover_path: string | null;
+          cover_url: string | null;
+          created_at: string;
+          description: string;
+          featured: boolean;
+          featured_until: string | null;
+          gallery_urls: string[];
+          home_service: boolean;
+          id: string;
+          labels: string[];
+          name: string;
+          public_address: string | null;
+          public_email: string | null;
+          public_facebook: string | null;
+          public_instagram: string | null;
+          public_linkedin: string | null;
+          public_phone: string | null;
+          public_phone_2: string | null;
+          public_tiktok: string | null;
+          public_website: string | null;
+          public_whatsapp: string | null;
+          public_x_twitter: string | null;
+          public_youtube: string | null;
+          published_at: string | null;
+          service_area: string;
+          short_description: string;
+          slug: string;
+          status: Database["public"]["Enums"]["listing_status"];
+          tags: string[];
+          translations: Json;
+          type: Database["public"]["Enums"]["listing_type"];
+          updated_at: string;
+          urgent_24h: boolean;
+        };
         Insert: {
-          activity?: string | null
-          category_id?: string | null
-          cover_path?: string | null
-          cover_url?: string | null
-          created_at?: string
-          description?: string
-          featured?: boolean
-          featured_until?: string | null
-          gallery_urls?: string[]
-          home_service?: boolean
-          id?: string
-          labels?: string[]
-          name: string
-          public_address?: string | null
-          public_email?: string | null
-          public_facebook?: string | null
-          public_instagram?: string | null
-          public_linkedin?: string | null
-          public_phone?: string | null
-          public_phone_2?: string | null
-          public_tiktok?: string | null
-          public_website?: string | null
-          public_whatsapp?: string | null
-          public_x_twitter?: string | null
-          public_youtube?: string | null
-          published_at?: string | null
-          service_area?: string
-          short_description?: string
-          slug: string
-          status?: Database["public"]["Enums"]["listing_status"]
-          tags?: string[]
-          translations?: Json
-          type: Database["public"]["Enums"]["listing_type"]
-          updated_at?: string
-          urgent_24h?: boolean
-        }
+          activity?: string | null;
+          category_id?: string | null;
+          cover_path?: string | null;
+          cover_url?: string | null;
+          created_at?: string;
+          description?: string;
+          featured?: boolean;
+          featured_until?: string | null;
+          gallery_urls?: string[];
+          home_service?: boolean;
+          id?: string;
+          labels?: string[];
+          name: string;
+          public_address?: string | null;
+          public_email?: string | null;
+          public_facebook?: string | null;
+          public_instagram?: string | null;
+          public_linkedin?: string | null;
+          public_phone?: string | null;
+          public_phone_2?: string | null;
+          public_tiktok?: string | null;
+          public_website?: string | null;
+          public_whatsapp?: string | null;
+          public_x_twitter?: string | null;
+          public_youtube?: string | null;
+          published_at?: string | null;
+          service_area?: string;
+          short_description?: string;
+          slug: string;
+          status?: Database["public"]["Enums"]["listing_status"];
+          tags?: string[];
+          translations?: Json;
+          type: Database["public"]["Enums"]["listing_type"];
+          updated_at?: string;
+          urgent_24h?: boolean;
+        };
         Update: {
-          activity?: string | null
-          category_id?: string | null
-          cover_path?: string | null
-          cover_url?: string | null
-          created_at?: string
-          description?: string
-          featured?: boolean
-          featured_until?: string | null
-          gallery_urls?: string[]
-          home_service?: boolean
-          id?: string
-          labels?: string[]
-          name?: string
-          public_address?: string | null
-          public_email?: string | null
-          public_facebook?: string | null
-          public_instagram?: string | null
-          public_linkedin?: string | null
-          public_phone?: string | null
-          public_phone_2?: string | null
-          public_tiktok?: string | null
-          public_website?: string | null
-          public_whatsapp?: string | null
-          public_x_twitter?: string | null
-          public_youtube?: string | null
-          published_at?: string | null
-          service_area?: string
-          short_description?: string
-          slug?: string
-          status?: Database["public"]["Enums"]["listing_status"]
-          tags?: string[]
-          translations?: Json
-          type?: Database["public"]["Enums"]["listing_type"]
-          updated_at?: string
-          urgent_24h?: boolean
-        }
+          activity?: string | null;
+          category_id?: string | null;
+          cover_path?: string | null;
+          cover_url?: string | null;
+          created_at?: string;
+          description?: string;
+          featured?: boolean;
+          featured_until?: string | null;
+          gallery_urls?: string[];
+          home_service?: boolean;
+          id?: string;
+          labels?: string[];
+          name?: string;
+          public_address?: string | null;
+          public_email?: string | null;
+          public_facebook?: string | null;
+          public_instagram?: string | null;
+          public_linkedin?: string | null;
+          public_phone?: string | null;
+          public_phone_2?: string | null;
+          public_tiktok?: string | null;
+          public_website?: string | null;
+          public_whatsapp?: string | null;
+          public_x_twitter?: string | null;
+          public_youtube?: string | null;
+          published_at?: string | null;
+          service_area?: string;
+          short_description?: string;
+          slug?: string;
+          status?: Database["public"]["Enums"]["listing_status"];
+          tags?: string[];
+          translations?: Json;
+          type?: Database["public"]["Enums"]["listing_type"];
+          updated_at?: string;
+          urgent_24h?: boolean;
+        };
         Relationships: [
           {
-            foreignKeyName: "listings_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["id"]
+            foreignKeyName: "listings_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       procedure_categories: {
         Row: {
-          created_at: string
-          description: string
-          description_en: string
-          id: string
-          slug: string
-          sort_order: number
-          title: string
-          title_en: string
-          updated_at: string
-          visible: boolean
-        }
+          created_at: string;
+          description: string;
+          description_en: string;
+          id: string;
+          slug: string;
+          sort_order: number;
+          title: string;
+          title_en: string;
+          updated_at: string;
+          visible: boolean;
+        };
         Insert: {
-          created_at?: string
-          description?: string
-          description_en?: string
-          id?: string
-          slug: string
-          sort_order?: number
-          title: string
-          title_en?: string
-          updated_at?: string
-          visible?: boolean
-        }
+          created_at?: string;
+          description?: string;
+          description_en?: string;
+          id?: string;
+          slug: string;
+          sort_order?: number;
+          title: string;
+          title_en?: string;
+          updated_at?: string;
+          visible?: boolean;
+        };
         Update: {
-          created_at?: string
-          description?: string
-          description_en?: string
-          id?: string
-          slug?: string
-          sort_order?: number
-          title?: string
-          title_en?: string
-          updated_at?: string
-          visible?: boolean
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          description?: string;
+          description_en?: string;
+          id?: string;
+          slug?: string;
+          sort_order?: number;
+          title?: string;
+          title_en?: string;
+          updated_at?: string;
+          visible?: boolean;
+        };
+        Relationships: [];
+      };
       procedures: {
         Row: {
-          category_id: string
-          content: Json
-          content_en: Json
-          created_at: string
-          id: string
-          slug: string
-          sort_order: number
-          source_key: string | null
-          status: string
-          summary: string
-          title: string
-          translations: Json
-          updated_at: string
-          visibility: Json
-        }
+          category_id: string;
+          content: Json;
+          content_en: Json;
+          created_at: string;
+          id: string;
+          slug: string;
+          sort_order: number;
+          source_key: string | null;
+          status: string;
+          summary: string;
+          title: string;
+          translations: Json;
+          updated_at: string;
+          visibility: Json;
+        };
         Insert: {
-          category_id: string
-          content?: Json
-          content_en?: Json
-          created_at?: string
-          id?: string
-          slug: string
-          sort_order?: number
-          source_key?: string | null
-          status?: string
-          summary?: string
-          title: string
-          translations?: Json
-          updated_at?: string
-          visibility?: Json
-        }
+          category_id: string;
+          content?: Json;
+          content_en?: Json;
+          created_at?: string;
+          id?: string;
+          slug: string;
+          sort_order?: number;
+          source_key?: string | null;
+          status?: string;
+          summary?: string;
+          title: string;
+          translations?: Json;
+          updated_at?: string;
+          visibility?: Json;
+        };
         Update: {
-          category_id?: string
-          content?: Json
-          content_en?: Json
-          created_at?: string
-          id?: string
-          slug?: string
-          sort_order?: number
-          source_key?: string | null
-          status?: string
-          summary?: string
-          title?: string
-          translations?: Json
-          updated_at?: string
-          visibility?: Json
-        }
+          category_id?: string;
+          content?: Json;
+          content_en?: Json;
+          created_at?: string;
+          id?: string;
+          slug?: string;
+          sort_order?: number;
+          source_key?: string | null;
+          status?: string;
+          summary?: string;
+          title?: string;
+          translations?: Json;
+          updated_at?: string;
+          visibility?: Json;
+        };
         Relationships: [
           {
-            foreignKeyName: "procedures_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "procedure_categories"
-            referencedColumns: ["id"]
+            foreignKeyName: "procedures_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "procedure_categories";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       site_identity: {
         Row: {
-          app_name: string
-          autonomous_community: string
-          demonym_feminine: string
-          demonym_masculine: string
-          id: boolean
-          latitude: number | null
-          longitude: number | null
-          municipality_name: string
-          province: string
-          region: string
-          short_name: string
-          site_url: string
-          timezone: string
-          town_hall_address: string
-          town_hall_name: string
-          town_hall_phone: string
-          town_hall_website: string
-          updated_at: string
-          updated_by: string | null
-        }
+          app_name: string;
+          autonomous_community: string;
+          demonym_feminine: string;
+          demonym_masculine: string;
+          id: boolean;
+          latitude: number | null;
+          longitude: number | null;
+          municipality_name: string;
+          province: string;
+          region: string;
+          short_name: string;
+          site_url: string;
+          timezone: string;
+          town_hall_address: string;
+          town_hall_name: string;
+          town_hall_phone: string;
+          town_hall_website: string;
+          updated_at: string;
+          updated_by: string | null;
+        };
         Insert: {
-          app_name?: string
-          autonomous_community?: string
-          demonym_feminine?: string
-          demonym_masculine?: string
-          id?: boolean
-          latitude?: number | null
-          longitude?: number | null
-          municipality_name?: string
-          province?: string
-          region?: string
-          short_name?: string
-          site_url?: string
-          timezone?: string
-          town_hall_address?: string
-          town_hall_name?: string
-          town_hall_phone?: string
-          town_hall_website?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
+          app_name?: string;
+          autonomous_community?: string;
+          demonym_feminine?: string;
+          demonym_masculine?: string;
+          id?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
+          municipality_name?: string;
+          province?: string;
+          region?: string;
+          short_name?: string;
+          site_url?: string;
+          timezone?: string;
+          town_hall_address?: string;
+          town_hall_name?: string;
+          town_hall_phone?: string;
+          town_hall_website?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
         Update: {
-          app_name?: string
-          autonomous_community?: string
-          demonym_feminine?: string
-          demonym_masculine?: string
-          id?: boolean
-          latitude?: number | null
-          longitude?: number | null
-          municipality_name?: string
-          province?: string
-          region?: string
-          short_name?: string
-          site_url?: string
-          timezone?: string
-          town_hall_address?: string
-          town_hall_name?: string
-          town_hall_phone?: string
-          town_hall_website?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: []
-      }
+          app_name?: string;
+          autonomous_community?: string;
+          demonym_feminine?: string;
+          demonym_masculine?: string;
+          id?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
+          municipality_name?: string;
+          province?: string;
+          region?: string;
+          short_name?: string;
+          site_url?: string;
+          timezone?: string;
+          town_hall_address?: string;
+          town_hall_name?: string;
+          town_hall_phone?: string;
+          town_hall_website?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
+      };
       site_settings: {
         Row: {
-          admin_whatsapp: string
-          banner_enabled: boolean
-          banner_text: string
-          collaborator_months: number
-          common_labels: string[]
-          contact_email: string
-          hero_subtitle: string
-          hero_title: string
-          id: boolean
-          legal_address: string
-          legal_email: string
-          legal_name: string
-          legal_nif: string
-          updated_at: string
-          whatsapp_template: string
-        }
+          admin_whatsapp: string;
+          banner_enabled: boolean;
+          banner_text: string;
+          collaborator_months: number;
+          common_labels: string[];
+          contact_email: string;
+          hero_subtitle: string;
+          hero_title: string;
+          id: boolean;
+          legal_address: string;
+          legal_email: string;
+          legal_name: string;
+          legal_nif: string;
+          updated_at: string;
+          whatsapp_template: string;
+        };
         Insert: {
-          admin_whatsapp?: string
-          banner_enabled?: boolean
-          banner_text?: string
-          collaborator_months?: number
-          common_labels?: string[]
-          contact_email?: string
-          hero_subtitle?: string
-          hero_title?: string
-          id?: boolean
-          legal_address?: string
-          legal_email?: string
-          legal_name?: string
-          legal_nif?: string
-          updated_at?: string
-          whatsapp_template?: string
-        }
+          admin_whatsapp?: string;
+          banner_enabled?: boolean;
+          banner_text?: string;
+          collaborator_months?: number;
+          common_labels?: string[];
+          contact_email?: string;
+          hero_subtitle?: string;
+          hero_title?: string;
+          id?: boolean;
+          legal_address?: string;
+          legal_email?: string;
+          legal_name?: string;
+          legal_nif?: string;
+          updated_at?: string;
+          whatsapp_template?: string;
+        };
         Update: {
-          admin_whatsapp?: string
-          banner_enabled?: boolean
-          banner_text?: string
-          collaborator_months?: number
-          common_labels?: string[]
-          contact_email?: string
-          hero_subtitle?: string
-          hero_title?: string
-          id?: boolean
-          legal_address?: string
-          legal_email?: string
-          legal_name?: string
-          legal_nif?: string
-          updated_at?: string
-          whatsapp_template?: string
-        }
-        Relationships: []
-      }
+          admin_whatsapp?: string;
+          banner_enabled?: boolean;
+          banner_text?: string;
+          collaborator_months?: number;
+          common_labels?: string[];
+          contact_email?: string;
+          hero_subtitle?: string;
+          hero_title?: string;
+          id?: boolean;
+          legal_address?: string;
+          legal_email?: string;
+          legal_name?: string;
+          legal_nif?: string;
+          updated_at?: string;
+          whatsapp_template?: string;
+        };
+        Relationships: [];
+      };
       suggestions: {
         Row: {
-          contact: string | null
-          created_at: string
-          handled: boolean
-          id: string
-          message: string
-          name: string
-        }
+          contact: string | null;
+          created_at: string;
+          handled: boolean;
+          id: string;
+          message: string;
+          name: string;
+        };
         Insert: {
-          contact?: string | null
-          created_at?: string
-          handled?: boolean
-          id?: string
-          message: string
-          name: string
-        }
+          contact?: string | null;
+          created_at?: string;
+          handled?: boolean;
+          id?: string;
+          message: string;
+          name: string;
+        };
         Update: {
-          contact?: string | null
-          created_at?: string
-          handled?: boolean
-          id?: string
-          message?: string
-          name?: string
-        }
-        Relationships: []
-      }
+          contact?: string | null;
+          created_at?: string;
+          handled?: boolean;
+          id?: string;
+          message?: string;
+          name?: string;
+        };
+        Relationships: [];
+      };
       translation_gateway_state: {
         Row: {
-          blocked: boolean
-          id: boolean
-          reason: string
-          updated_at: string
-        }
+          blocked: boolean;
+          id: boolean;
+          reason: string;
+          updated_at: string;
+        };
         Insert: {
-          blocked?: boolean
-          id?: boolean
-          reason?: string
-          updated_at?: string
-        }
+          blocked?: boolean;
+          id?: boolean;
+          reason?: string;
+          updated_at?: string;
+        };
         Update: {
-          blocked?: boolean
-          id?: boolean
-          reason?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          blocked?: boolean;
+          id?: boolean;
+          reason?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       user_roles: {
         Row: {
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          id: string;
+          role: Database["public"]["Enums"]["app_role"];
+          user_id: string;
+        };
         Insert: {
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          id?: string;
+          role: Database["public"]["Enums"]["app_role"];
+          user_id: string;
+        };
         Update: {
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
+          id?: string;
+          role?: Database["public"]["Enums"]["app_role"];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      can_manage_identity: { Args: never; Returns: boolean }
+      can_manage_identity: { Args: never; Returns: boolean };
       check_rate_limit: {
         Args: {
-          p_key: string
-          p_max_attempts: number
-          p_window_seconds: number
-        }
-        Returns: boolean
-      }
+          p_key: string;
+          p_max_attempts: number;
+          p_window_seconds: number;
+        };
+        Returns: boolean;
+      };
       has_role: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      site_config: { Args: never; Returns: Json }
-    }
+          _role: Database["public"]["Enums"]["app_role"];
+          _user_id: string;
+        };
+        Returns: boolean;
+      };
+      site_config: { Args: never; Returns: Json };
+    };
     Enums: {
-      app_role: "admin"
-      listing_status:
-        | "borrador"
-        | "pendiente"
-        | "publicada"
-        | "rechazada"
-        | "oculta"
-      listing_type: "comercio" | "profesional" | "publico" | "asociacion"
-    }
+      app_role: "admin";
+      listing_status: "borrador" | "pendiente" | "publicada" | "rechazada" | "oculta";
+      listing_type: "comercio" | "profesional" | "publico" | "asociacion";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
     Enums: {
       app_role: ["admin"],
-      listing_status: [
-        "borrador",
-        "pendiente",
-        "publicada",
-        "rechazada",
-        "oculta",
-      ],
+      listing_status: ["borrador", "pendiente", "publicada", "rechazada", "oculta"],
       listing_type: ["comercio", "profesional", "publico", "asociacion"],
     },
   },
-} as const
+} as const;

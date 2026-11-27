@@ -17,7 +17,12 @@ export const Route = createFileRoute("/revision/$token")({
   head: () => ({
     meta: [
       { title: brand("Revisión de ficha · {app}") },
-      { name: "description", content: brand("Revisa y autoriza la publicación de tu ficha en el directorio de {municipio}.") },
+      {
+        name: "description",
+        content: brand(
+          "Revisa y autoriza la publicación de tu ficha en el directorio de {municipio}.",
+        ),
+      },
       { property: "og:title", content: brand("Revisión de ficha · {app}") },
       { property: "og:description", content: "Revisa y autoriza la publicación de tu ficha." },
       { property: "og:type", content: "website" },
@@ -27,7 +32,11 @@ export const Route = createFileRoute("/revision/$token")({
   }),
   loader: ({ context, params }) => context.queryClient.ensureQueryData(reviewQuery(params.token)),
   component: Page,
-  errorComponent: () => <div role="alert" className="p-8 text-center"><Text text="No hemos podido cargar esta página." /></div>,
+  errorComponent: () => (
+    <div role="alert" className="p-8 text-center">
+      <Text text="No hemos podido cargar esta página." />
+    </div>
+  ),
 });
 
 function Page() {
@@ -73,7 +82,9 @@ function Shell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-40 border-b bg-background px-4 py-3">
         <div className="mx-auto flex max-w-2xl items-baseline justify-between">
           <span className="font-display text-lg font-bold">{getMunicipality().appName}</span>
-          <span className="text-xs uppercase tracking-widest text-foreground"><Text text="Revisión de ficha" /></span>
+          <span className="text-xs uppercase tracking-widest text-foreground">
+            <Text text="Revisión de ficha" />
+          </span>
         </div>
       </header>
       <main className="mx-auto max-w-2xl px-4 py-6">{children}</main>
@@ -96,11 +107,21 @@ function Done({ url }: { url: string | null }) {
   return (
     <div className="space-y-4 py-10 text-center">
       <BadgeCheck className="mx-auto h-12 w-12 text-primary" />
-      <h1 className="font-display text-2xl font-bold"><Text text="¡Gracias! Tu ficha está autorizada" /></h1>
-      <p className="text-sm text-muted-foreground"><Text text="Ya aparece publicada en el directorio de {municipio}. Puedes cerrar esta página." /></p>
+      <h1 className="font-display text-2xl font-bold">
+        <Text text="¡Gracias! Tu ficha está autorizada" />
+      </h1>
+      <p className="text-sm text-muted-foreground">
+        <Text text="Ya aparece publicada en el directorio de {municipio}. Puedes cerrar esta página." />
+      </p>
       {url && (
-        <a href={url} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center bg-primary px-5 text-sm font-medium text-primary-foreground">
-           <Text text="Ver mi ficha" /> </a>
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex h-11 items-center bg-primary px-5 text-sm font-medium text-primary-foreground"
+        >
+          <Text text="Ver mi ficha" />{" "}
+        </a>
       )}
     </div>
   );
@@ -163,7 +184,10 @@ function ReviewForm({
     try {
       const res = await correct({ data: { token, comment: comment.trim() } });
       if (res.ok) setSent(true);
-      else toast.error(tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."));
+      else
+        toast.error(
+          tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."),
+        );
     } catch {
       toast.error(tr("No se pudo enviar. Inténtalo de nuevo."));
     } finally {
@@ -195,7 +219,9 @@ function ReviewForm({
         toast.success(tr("Ficha autorizada y publicada"));
         onApproved(res.url);
       } else {
-        toast.error(tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."));
+        toast.error(
+          tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."),
+        );
       }
     } catch {
       toast.error(tr("No se pudo guardar. Inténtalo de nuevo."));
@@ -206,63 +232,92 @@ function ReviewForm({
 
   return (
     <div className="space-y-5">
-    <div className="space-y-5">
-      <div>
-        <h1 className="font-display text-2xl font-bold"><Text text="Revisa tu ficha" /></h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-           <Text text="Comprueba que todo está bien, elige qué datos se publican y autoriza. Este enlace caduca el" />{" "}
-          {new Date(expiresAt).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })}.
+      <div className="space-y-5">
+        <div>
+          <h1 className="font-display text-2xl font-bold">
+            <Text text="Revisa tu ficha" />
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            <Text text="Comprueba que todo está bien, elige qué datos se publican y autoriza. Este enlace caduca el" />{" "}
+            {new Date(expiresAt).toLocaleDateString(locale, {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+            .
+          </p>
+        </div>
+
+        <p className="rounded-xl bg-secondary px-4 py-3 text-base text-secondary-foreground">
+          <Text text="Así se verá tu ficha. Usa los interruptores" />{" "}
+          <strong>
+            <Text text="«Se ve / Oculto»" />
+          </strong>{" "}
+          <Text text="para elegir qué datos aparecen." />{" "}
         </p>
       </div>
 
-      <p className="rounded-xl bg-secondary px-4 py-3 text-base text-secondary-foreground">
-         <Text text="Así se verá tu ficha. Usa los interruptores" /> <strong><Text text="«Se ve / Oculto»" /></strong>  <Text text="para elegir qué datos aparecen." /> </p>
-    </div>
+      <div className="-mx-4 border-y py-4">
+        <ListingPage
+          review={{ show, onToggle: (f, v) => setShow((p) => ({ ...p, [f]: v })) }}
+          listing={preview}
+        />
+      </div>
 
-    <div className="-mx-4 border-y py-4">
-      <ListingPage review={{ show, onToggle: (f, v) => setShow((p) => ({ ...p, [f]: v })) }} listing={preview} />
-    </div>
-
-    <div className="space-y-5">
-      <section className="space-y-3 rounded-xl border p-4">
-        <h2 className="font-display text-lg font-bold"><Text text="Si todo está correcto" /></h2>
-        <label className="flex items-start gap-2 text-base">
-          <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1 h-5 w-5" />
-          <span><Text text="Confirmo que soy el titular de este negocio y autorizo la publicación de los datos marcados en {app}." /></span>
-        </label>
-        <button
-          onClick={approve}
-          disabled={busy || !agree}
-          className="h-12 w-full rounded-xl bg-primary text-base font-semibold text-primary-foreground disabled:opacity-60"
-        >
-          {tr(busy ? "Enviando…" : "Autorizo la publicación de estos datos")}
-        </button>
-      </section>
-
-      <section className="space-y-3 rounded-xl border p-4">
-        <h2 className="font-display text-lg font-bold"><Text text="Si algo no es correcto" /></h2>
-        {sent ? (
-          <p className="text-base"><Text text="Mensaje enviado. El administrador revisará los cambios y te avisará. Tu ficha sigue sin publicar." /></p>
-        ) : (
-          <>
-            <Textarea
-              rows={3}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder={tr("Escribe qué hay que corregir")}
-              aria-label={tr("Qué hay que corregir")}
-              className="text-base"
+      <div className="space-y-5">
+        <section className="space-y-3 rounded-xl border p-4">
+          <h2 className="font-display text-lg font-bold">
+            <Text text="Si todo está correcto" />
+          </h2>
+          <label className="flex items-start gap-2 text-base">
+            <input
+              type="checkbox"
+              checked={agree}
+              onChange={(e) => setAgree(e.target.checked)}
+              className="mt-1 h-5 w-5"
             />
-            <button
-              onClick={notify}
-              disabled={busy || !comment.trim()}
-              className="h-12 w-full rounded-xl border bg-card text-base font-semibold disabled:opacity-60"
-            >
-               <Text text="Avisar al administrador" /> </button>
-          </>
-        )}
-      </section>
-    </div>
+            <span>
+              <Text text="Confirmo que soy el titular de este negocio y autorizo la publicación de los datos marcados en {app}." />
+            </span>
+          </label>
+          <button
+            onClick={approve}
+            disabled={busy || !agree}
+            className="h-12 w-full rounded-xl bg-primary text-base font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            {tr(busy ? "Enviando…" : "Autorizo la publicación de estos datos")}
+          </button>
+        </section>
+
+        <section className="space-y-3 rounded-xl border p-4">
+          <h2 className="font-display text-lg font-bold">
+            <Text text="Si algo no es correcto" />
+          </h2>
+          {sent ? (
+            <p className="text-base">
+              <Text text="Mensaje enviado. El administrador revisará los cambios y te avisará. Tu ficha sigue sin publicar." />
+            </p>
+          ) : (
+            <>
+              <Textarea
+                rows={3}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder={tr("Escribe qué hay que corregir")}
+                aria-label={tr("Qué hay que corregir")}
+                className="text-base"
+              />
+              <button
+                onClick={notify}
+                disabled={busy || !comment.trim()}
+                className="h-12 w-full rounded-xl border bg-card text-base font-semibold disabled:opacity-60"
+              >
+                <Text text="Avisar al administrador" />{" "}
+              </button>
+            </>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

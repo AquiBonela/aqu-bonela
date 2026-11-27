@@ -3,37 +3,63 @@ import { parseDescription } from "./description";
 
 describe("description formatting", () => {
   it.each([
-    ['servicios/punto-vuela-casarabonela', '/servicios/punto-vuela-casarabonela'],
-    ['punto-vuela', '/punto-vuela'],
-    ['tramites/documentacion/nie', '/tramites/documentacion/nie'],
-  ])('recognizes the internal path %s without a leading slash', (input, href) => {
-    expect(parseDescription(`*** Punto Vuela (${input}) ***`)).toEqual([{ text: 'Punto Vuela', bold: false, italic: false, href }]);
+    ["servicios/punto-vuela-casarabonela", "/servicios/punto-vuela-casarabonela"],
+    ["punto-vuela", "/punto-vuela"],
+    ["tramites/documentacion/nie", "/tramites/documentacion/nie"],
+  ])("recognizes the internal path %s without a leading slash", (input, href) => {
+    expect(parseDescription(`*** Punto Vuela (${input}) ***`)).toEqual([
+      { text: "Punto Vuela", bold: false, italic: false, href },
+    ]);
   });
-  it('does not guess arbitrary words as internal routes', () => {
-    const text = '*** Centro (centro-inventado) ***';
+  it("does not guess arbitrary words as internal routes", () => {
+    const text = "*** Centro (centro-inventado) ***";
     expect(parseDescription(text)).toEqual([{ text, bold: false, italic: false }]);
   });
-  it('supports triple-asterisk local links without tying them to a domain', () => {
-    expect(parseDescription('*** Centro médico (/servicios/consultorio-medico) ***')).toEqual([{ text: 'Centro médico', bold: false, italic: false, href: '/servicios/consultorio-medico' }]);
+  it("supports triple-asterisk local links without tying them to a domain", () => {
+    expect(parseDescription("*** Centro médico (/servicios/consultorio-medico) ***")).toEqual([
+      { text: "Centro médico", bold: false, italic: false, href: "/servicios/consultorio-medico" },
+    ]);
   });
-  it('supports triple-asterisk external links and URL parentheses', () => {
-    expect(parseDescription('***Web (https://example.org/info_(a))***')).toEqual([{ text: 'Web', bold: false, italic: false, href: 'https://example.org/info_(a)' }]);
+  it("supports triple-asterisk external links and URL parentheses", () => {
+    expect(parseDescription("***Web (https://example.org/info_(a))***")).toEqual([
+      { text: "Web", bold: false, italic: false, href: "https://example.org/info_(a)" },
+    ]);
   });
-  it('does not confuse triple-asterisk links with bold and italic', () => {
-    expect(parseDescription('**Título** *** Centro (/punto-vuela) *** *Nota*').filter((p) => p.href || p.bold || p.italic)).toEqual([{ text: 'Título', bold: true, italic: false }, { text: 'Centro', bold: false, italic: false, href: '/punto-vuela' }, { text: 'Nota', bold: false, italic: true }]);
+  it("does not confuse triple-asterisk links with bold and italic", () => {
+    expect(
+      parseDescription("**Título** *** Centro (/punto-vuela) *** *Nota*").filter(
+        (p) => p.href || p.bold || p.italic,
+      ),
+    ).toEqual([
+      { text: "Título", bold: true, italic: false },
+      { text: "Centro", bold: false, italic: false, href: "/punto-vuela" },
+      { text: "Nota", bold: false, italic: true },
+    ]);
   });
-  it.each(['javascript:alert(1)', '//evil.example', '/\\evil.example'])('rejects unsafe new-format links %s', (url) => {
-    const text = `*** Enlace (${url}) ***`;
-    expect(parseDescription(text)).toEqual([{ text, bold: false, italic: false }]);
-  });
+  it.each(["javascript:alert(1)", "//evil.example", "/\\evil.example"])(
+    "rejects unsafe new-format links %s",
+    (url) => {
+      const text = `*** Enlace (${url}) ***`;
+      expect(parseDescription(text)).toEqual([{ text, bold: false, italic: false }]);
+    },
+  );
   it("creates the requested ayuntamiento link from a bare website", () => {
     expect(parseDescription("/ayuntamiento*www.casarabonela.es/")).toEqual([
       { text: "ayuntamiento", bold: false, italic: false, href: "https://www.casarabonela.es/" },
     ]);
   });
   it("supports explicit HTTPS URLs with paths, query parameters and fragments", () => {
-    expect(parseDescription("/Solicitar cita*https://www.casarabonela.es/tramites/cita?q=nie#solicitud/")).toEqual([
-      { text: "Solicitar cita", bold: false, italic: false, href: "https://www.casarabonela.es/tramites/cita?q=nie#solicitud" },
+    expect(
+      parseDescription(
+        "/Solicitar cita*https://www.casarabonela.es/tramites/cita?q=nie#solicitud/",
+      ),
+    ).toEqual([
+      {
+        text: "Solicitar cita",
+        bold: false,
+        italic: false,
+        href: "https://www.casarabonela.es/tramites/cita?q=nie#solicitud",
+      },
     ]);
   });
   it("keeps links separate from bold and italic text", () => {
@@ -45,12 +71,22 @@ describe("description formatting", () => {
       { text: "oficial", bold: false, italic: true },
     ]);
   });
-  it.each(["javascript:alert(1)", "data:text/html,test", "//evil.example", "https://user:pass@example.com", "https://example.com/<script>"])("does not create an unsafe link to %s", (url) => {
+  it.each([
+    "javascript:alert(1)",
+    "data:text/html,test",
+    "//evil.example",
+    "https://user:pass@example.com",
+    "https://example.com/<script>",
+  ])("does not create an unsafe link to %s", (url) => {
     const text = `/enlace*${url}/`;
     expect(parseDescription(text)).toEqual([{ text, bold: false, italic: false }]);
   });
   it("parses multiple links without consuming the intervening text", () => {
-    expect(parseDescription("/Uno*www.casarabonela.es/ y /Dos*https://example.com/info/").filter((part) => part.href).map((part) => part.href)).toEqual(["https://www.casarabonela.es/", "https://example.com/info"]);
+    expect(
+      parseDescription("/Uno*www.casarabonela.es/ y /Dos*https://example.com/info/")
+        .filter((part) => part.href)
+        .map((part) => part.href),
+    ).toEqual(["https://www.casarabonela.es/", "https://example.com/info"]);
   });
   it("marks text between paired double asterisks as bold", () => {
     expect(parseDescription("**Horario:** de 9:00 a 14:00. **Servicios** disponibles.")).toEqual([

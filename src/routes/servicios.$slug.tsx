@@ -6,11 +6,16 @@ import { listingHead } from "@/lib/listing-head";
 import { ListingNotFound, ListingPage } from "@/components/ListingPage";
 
 export const Route = createFileRoute("/servicios/$slug")({
-  loader: ({ context, params }) => context.queryClient.ensureQueryData(listingDetailQuery("publico", params.slug)),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(listingDetailQuery("publico", params.slug)),
   head: ({ loaderData }) => listingHead(loaderData),
   component: Page,
   notFoundComponent: ListingNotFound,
-  errorComponent: () => <div role="alert" className="p-8 text-center"><Text text="No hemos podido cargar esta ficha." /></div>,
+  errorComponent: () => (
+    <div role="alert" className="p-8 text-center">
+      <Text text="No hemos podido cargar esta ficha." />
+    </div>
+  ),
 });
 
 function Page() {
