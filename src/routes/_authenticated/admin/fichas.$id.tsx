@@ -1,7 +1,7 @@
 import { Text, type Lang, LANGS, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -169,6 +169,12 @@ const normalizeUrl = (u: string) => {
   return /^https?:\/\//i.test(t) ? t : `https://${t}`;
 };
 
+const LISTING_CHANGED_CODE = "PT409";
+const LISTING_CHANGED =
+  "La ficha ha cambiado desde que la abriste y no se ha guardado nada. Recárgala para ver la versión actual.";
+/** updated_at llega como texto ISO; se comparan instantes, no el formato. */
+const sameVersion = (a: string, b: string) => a === b || Date.parse(a) === Date.parse(b);
+
 const list = (s: string, sep: RegExp) =>
   s
     .split(sep)
@@ -185,7 +191,7 @@ function EditPage() {
   const { data: acts = [] } = useQuery(activitiesQuery);
   const { data: settings } = useQuery(siteSettingsQuery);
   const months = settings?.collaborator_months ?? 1;
-  const { data, isLoading } = useQuery({ ...adminListingQuery(id), enabled: !isNew });
+  const { data, isLoading, refetch } = useQuery({ ...adminListingQuery(id), enabled: !isNew });
   const [f, setF] = useState<Form>(empty);
   const [language, setLanguage] = useState<Lang>("es");
   const [translations, setTranslations] = useState<Translations>({});
@@ -234,8 +240,9 @@ function EditPage() {
     }
   }
 
-  useEffect(() => {
-    if (!data?.listing) return;
+  // Versión de la ficha en la base, tal como la muestra el formulario.
+  const server = useMemo(() => {
+    if (!data?.listing) return null;
     const l = data.listing,
       c = data.contact;
     const saved = readTranslations(l.translations);
@@ -249,8 +256,7 @@ function EditPage() {
         )
           saved[lang] = { content: translated, source, manual: false };
       }
-    setTranslations(saved);
-    setF({
+    const form: Form = {
       type: l.type,
       category_id: l.category_id ?? "",
       activity: l.activity ?? "",
@@ -301,8 +307,48 @@ function EditPage() {
         opens: h.opens.slice(0, 5),
         closes: h.closes.slice(0, 5),
       })),
-    });
+    };
+    return { version: l.updated_at, form, translations: saved };
   }, [data, acts]);
+  // Versión sobre la que se está editando. El guardado solo se aplica si la ficha sigue en ella.
+  const [base, setBase] = useState<typeof server>(null);
+  // La base rechazó el guardado porque la ficha había cambiado.
+  const [conflict, setConflict] = useState(false);
+  const dirty =
+    base !== null &&
+    (JSON.stringify(f) !== JSON.stringify(base.form) ||
+      JSON.stringify(translations) !== JSON.stringify(base.translations));
+  // La ficha cambió (por ejemplo, el titular la aprobó) mientras había cambios sin guardar.
+  const stale = !!server && !!base && dirty && !sameVersion(server.version, base.version);
+
+  // Carga la versión de la base salvo que haya cambios locales: esos no se pisan nunca.
+  useEffect(() => {
+    if (!server || server === base || (base && dirty)) return;
+    setF(server.form);
+    setTranslations(server.translations);
+    setBase(server);
+    setConflict(false);
+  }, [server, base, dirty]);
+
+  // React Query solo recarga al volver a una pestaña oculta; esto cubre también volver desde
+  // otra ventana (por ejemplo, la del enlace de revisión).
+  useEffect(() => {
+    if (isNew) return;
+    const onFocus = () => void refetch();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [isNew, refetch]);
+
+  async function reload() {
+    const fresh = await refetch();
+    if (fresh.error) {
+      toast.error(tr("No se pudo recargar la ficha. Comprueba tu conexión."));
+      return;
+    }
+    // La versión nueva llega por «server»; se carga aunque haya cambios locales.
+    setBase(null);
+    setConflict(false);
+  }
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
 
@@ -317,6 +363,10 @@ function EditPage() {
       return;
     }
     if (saving || translating) return;
+    if (!isNew && (stale || conflict)) {
+      toast.error(tr(LISTING_CHANGED));
+      return;
+    }
     if (choice === undefined && languagesToGenerate(translations, source).length) {
       setConfirmTranslations(true);
       return;
@@ -354,77 +404,65 @@ function EditPage() {
       home_service: f.home_service,
       service_area: f.service_area.trim(),
     };
+    const contact = {
+      phone: f.phone || null,
+      phone_2: f.phone_2 || null,
+      whatsapp: f.whatsapp || null,
+      address: f.address || null,
+      email: f.email || null,
+      linkedin: normalizeUrl(f.linkedin),
+      facebook: normalizeUrl(f.facebook),
+      youtube: normalizeUrl(f.youtube),
+      x_twitter: normalizeUrl(f.x_twitter),
+      instagram: normalizeUrl(f.instagram),
+      tiktok: normalizeUrl(f.tiktok),
+      show_email: f.show_email,
+      show_phone: f.show_phone,
+      show_phone_2: f.show_phone_2,
+      show_whatsapp: f.show_whatsapp,
+      show_address: f.show_address,
+      show_linkedin: f.show_linkedin,
+      show_facebook: f.show_facebook,
+      show_youtube: f.show_youtube,
+      show_x_twitter: f.show_x_twitter,
+      show_instagram: f.show_instagram,
+      show_tiktok: f.show_tiktok,
+      owner_name: f.owner_name || null,
+      owner_contact: f.owner_contact || null,
+    };
+    const hours = f.hours
+      .filter((h) => h.opens && h.closes)
+      .map(({ weekday, opens, closes }) => ({ weekday, opens, closes }));
+    const mainId = acts.find((a) => a.category_id === f.category_id && a.name === f.activity)?.id;
+    const actIds = [...new Set([mainId, ...f.extra_activities].filter((x): x is string => !!x))];
     try {
-      let listingId = id;
-      if (isNew) {
-        const { data: ins, error } = await supabase
-          .from("listings")
-          .insert(row)
-          .select("id")
-          .single();
-        if (error) throw error;
-        listingId = ins.id;
-      } else {
-        const { error } = await supabase.from("listings").update(row).eq("id", id);
-        if (error) throw error;
-      }
-      const { error: cErr } = await supabase.from("listing_contacts").upsert({
-        listing_id: listingId,
-        phone: f.phone || null,
-        phone_2: f.phone_2 || null,
-        whatsapp: f.whatsapp || null,
-        address: f.address || null,
-        email: f.email || null,
-        linkedin: normalizeUrl(f.linkedin),
-        facebook: normalizeUrl(f.facebook),
-        youtube: normalizeUrl(f.youtube),
-        x_twitter: normalizeUrl(f.x_twitter),
-        instagram: normalizeUrl(f.instagram),
-        tiktok: normalizeUrl(f.tiktok),
-        show_email: f.show_email,
-        show_phone: f.show_phone,
-        show_phone_2: f.show_phone_2,
-        show_whatsapp: f.show_whatsapp,
-        show_address: f.show_address,
-        show_linkedin: f.show_linkedin,
-        show_facebook: f.show_facebook,
-        show_youtube: f.show_youtube,
-        show_x_twitter: f.show_x_twitter,
-        show_instagram: f.show_instagram,
-        show_tiktok: f.show_tiktok,
-        owner_name: f.owner_name || null,
-        owner_contact: f.owner_contact || null,
+      // Ficha, contactos, horario y actividades en una sola transacción (save_listing). Al
+      // editar, solo se aplica si la ficha sigue en la versión que se abrió; si no, nada cambia.
+      const { data: result, error } = await supabase.rpc("save_listing", {
+        p_listing: row as unknown as Json,
+        p_contact: contact,
+        p_hours: hours,
+        p_activity_ids: actIds,
+        // Sin versión cargada la base lo trata como conflicto: nunca guarda a ciegas.
+        ...(isNew ? {} : { p_id: id, ...(base ? { p_expected_updated_at: base.version } : {}) }),
       });
-      if (cErr) throw cErr;
-      await supabase.from("listing_hours").delete().eq("listing_id", listingId);
-      const hours = f.hours
-        .filter((h) => h.opens && h.closes)
-        .map((h) => ({ ...h, listing_id: listingId }));
-      if (hours.length) {
-        const { error: hErr } = await supabase.from("listing_hours").insert(hours);
-        if (hErr) throw hErr;
-      }
-      const mainId = acts.find((a) => a.category_id === f.category_id && a.name === f.activity)?.id;
-      const actIds = [...new Set([mainId, ...f.extra_activities].filter((x): x is string => !!x))];
-      const { error: dErr } = await supabase
-        .from("listing_activities")
-        .delete()
-        .eq("listing_id", listingId);
-      if (dErr) throw dErr;
-      if (actIds.length) {
-        const { error: aErr } = await supabase
-          .from("listing_activities")
-          .insert(
-            actIds.map((activity_id, i) => ({ listing_id: listingId, activity_id, sort_order: i })),
-          );
-        if (aErr) throw aErr;
-      }
+      if (error) throw error;
+      const saved = result as { id: string; updated_at: string };
+      const listingId = saved.id;
+      setBase({ version: saved.updated_at, form: f, translations: prepared });
+      setTranslations(prepared);
       await qc.invalidateQueries({ queryKey: ["admin"] });
       qc.invalidateQueries({ queryKey: ["directory"] });
       qc.invalidateQueries({ queryKey: ["listing"] });
       toast.success(tr("Ficha guardada"));
       if (isNew) navigate({ to: "/admin/fichas/$id", params: { id: listingId } });
     } catch (err) {
+      if ((err as { code?: string }).code === LISTING_CHANGED_CODE) {
+        setConflict(true);
+        toast.error(tr(LISTING_CHANGED));
+        void refetch();
+        return;
+      }
       const msg = (err as { message?: string }).message ?? "";
       toast.error(
         tr(
@@ -507,6 +545,20 @@ function EditPage() {
           </a>
         )}
       </div>
+
+      {!isNew && (stale || conflict) && (
+        <div role="alert" className="space-y-2 border border-destructive/50 p-4 text-sm">
+          <p className="font-semibold text-destructive">
+            <Text text="Esta ficha ha cambiado desde que la abriste" />
+          </p>
+          <p>
+            <Text text="Se ha modificado mientras la editabas (por ejemplo, el titular la ha autorizado desde su enlace). Para no sobrescribir esos cambios, no se puede guardar. Tus cambios siguen en el formulario: anota lo que necesites y recarga la ficha para ver la versión actual." />
+          </p>
+          <Button type="button" variant="outline" size="sm" onClick={() => void reload()}>
+            <Text text="Recargar la ficha" />
+          </Button>
+        </div>
+      )}
 
       <Section title={tr("1. Tipo y categoría")}>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -926,7 +978,15 @@ function EditPage() {
             <Text text="Guarda la ficha para poder subir imágenes." />
           </p>
         ) : (
-          <CoverPicker listingId={id} />
+          <CoverPicker
+            listingId={id}
+            version={base?.version}
+            onSaved={(version) => setBase((b) => (b ? { ...b, version } : b))}
+            onConflict={() => {
+              setConflict(true);
+              void refetch();
+            }}
+          />
         )}
         <Toggle
           label={tr("Resaltado")}

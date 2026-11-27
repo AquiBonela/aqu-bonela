@@ -9,7 +9,12 @@ import { reviewQuery, sendCorrection, submitReview } from "@/lib/review.function
 import { listingPath, type ListingDetail } from "@/lib/listing-detail";
 import { ListingPage } from "@/components/ListingPage";
 import { hoursHidden } from "@/lib/listing-availability";
-import type { Hour, ReviewContact, ReviewListing } from "@/lib/review";
+import {
+  submitErrorMessage,
+  type Hour,
+  type ReviewContact,
+  type ReviewListing,
+} from "@/lib/review";
 import { Textarea } from "@/components/ui/textarea";
 import { brand, getMunicipality } from "@/config/municipality";
 
@@ -184,10 +189,7 @@ function ReviewForm({
     try {
       const res = await correct({ data: { token, comment: comment.trim() } });
       if (res.ok) setSent(true);
-      else
-        toast.error(
-          tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."),
-        );
+      else toast.error(tr(submitErrorMessage(res.reason)));
     } catch {
       toast.error(tr("No se pudo enviar. Inténtalo de nuevo."));
     } finally {
@@ -219,9 +221,7 @@ function ReviewForm({
         toast.success(tr("Ficha autorizada y publicada"));
         onApproved(res.url);
       } else {
-        toast.error(
-          tr(res.reason === "expired" ? "El enlace ha caducado." : "El enlace ya no es válido."),
-        );
+        toast.error(tr(submitErrorMessage(res.reason)));
       }
     } catch {
       toast.error(tr("No se pudo guardar. Inténtalo de nuevo."));

@@ -7,6 +7,7 @@
 #   C) Vuelta atrás: sobre B, los scripts de supabase/rollback/ de esas migraciones (en orden
 #      inverso) y el 04_verify de la rama base deben dejar la base como estaba.
 #      Cada migración nueva debe tener su script de vuelta atrás con el mismo nombre.
+#   En A también se prueban escrituras simultáneas reales de fichas (scripts/ci-concurrency.sh).
 # Variables: PGPASSWORD (obligatoria), BASE_REF (por defecto origin/main), PORT_A y PORT_B.
 set -euo pipefail
 
@@ -60,6 +61,8 @@ for step in 01_schema 02_seed_universal 03_init_instance 04_verify; do
 done
 admin "$PORT_A"
 sql_tests "$PORT_A"
+echo "   concurrencia: dos sesiones a la vez (scripts/ci-concurrency.sh)"
+bash scripts/ci-concurrency.sh "$PORT_A"
 
 echo "### B. Plantilla de $BASE_REF + migraciones nuevas de esta rama"
 base_dir=$(mktemp -d)

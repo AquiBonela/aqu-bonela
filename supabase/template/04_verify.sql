@@ -44,8 +44,9 @@ BEGIN
     WHERE (s.nspname, p.proname) IN (('private','has_role'),('public','has_role'),('public','check_rate_limit'),
       ('private','cleanup_expired_rate_limits'),('public','set_updated_at'),('public','limit_listing_photos'),
       ('public','listings_publish_stamp'),('public','sync_public_contact'),
-      ('public','can_manage_identity'),('private','site_identity_before_update'),('public','site_config'));
-  IF n <> 11 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 11)', n; END IF;
+      ('public','can_manage_identity'),('private','site_identity_before_update'),('public','site_config'),
+      ('public','save_listing'),('public','approve_listing_review'));
+  IF n <> 13 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 13)', n; END IF;
   SELECT count(*) INTO n FROM pg_trigger t JOIN pg_class c ON c.oid = t.tgrelid JOIN pg_namespace s ON s.oid = c.relnamespace
     WHERE s.nspname = 'public' AND NOT t.tgisinternal;
   IF n <> 12 THEN RAISE EXCEPTION 'FALLO: triggers = % (esperado 12)', n; END IF;
@@ -58,6 +59,13 @@ BEGIN
   IF has_function_privilege('anon', 'public.can_manage_identity()', 'EXECUTE')
   OR NOT has_function_privilege('anon', 'public.site_config()', 'EXECUTE')
   THEN RAISE EXCEPTION 'FALLO: permisos de can_manage_identity/site_config'; END IF;
+  IF has_function_privilege('anon', 'public.save_listing(jsonb,jsonb,jsonb,uuid[],uuid,timestamp with time zone)', 'EXECUTE')
+  OR NOT has_function_privilege('authenticated', 'public.save_listing(jsonb,jsonb,jsonb,uuid[],uuid,timestamp with time zone)', 'EXECUTE')
+  THEN RAISE EXCEPTION 'FALLO: permisos de save_listing'; END IF;
+  IF has_function_privilege('anon', 'public.approve_listing_review(text,jsonb,boolean,jsonb,text)', 'EXECUTE')
+  OR has_function_privilege('authenticated', 'public.approve_listing_review(text,jsonb,boolean,jsonb,text)', 'EXECUTE')
+  OR NOT has_function_privilege('service_role', 'public.approve_listing_review(text,jsonb,boolean,jsonb,text)', 'EXECUTE')
+  THEN RAISE EXCEPTION 'FALLO: permisos de approve_listing_review'; END IF;
 
   -- ---------- 4. Storage ----------
   SELECT count(*) INTO n FROM storage.buckets WHERE NOT public AND

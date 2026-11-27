@@ -98,8 +98,23 @@ export type ReviewData =
       hours: Hour[];
     };
 
+/**
+ * Resultado de autorizar o enviar correcciones. «used»: el enlace ya se usó y esta vez no se
+ * aplicó nada. «error»: la base no completó la operación y no se aplicó ningún cambio.
+ */
 export type SubmitResult =
-  { ok: true; url: string | null } | { ok: false; reason: "invalid" | "expired" };
+  | { ok: true; url: string | null }
+  | { ok: false; reason: "invalid" | "expired" | "used" | "error" };
+
+/** Mensaje para el titular cuando su envío no se aplicó. */
+export function submitErrorMessage(reason: "invalid" | "expired" | "used" | "error") {
+  if (reason === "expired") return "El enlace ha caducado.";
+  if (reason === "used")
+    return "Este enlace ya se usó y la ficha ya está autorizada. Si necesitas cambiar algo, contacta con el administrador.";
+  if (reason === "error")
+    return "No se pudo guardar tu autorización y no se ha aplicado ningún cambio. Inténtalo de nuevo.";
+  return "El enlace ya no es válido.";
+}
 
 /** Rellena {nombre} y {enlace} en la plantilla configurada; sin plantilla usa el texto por defecto. */
 export function reviewMessage(ownerName: string | null, url: string, template?: string | null) {

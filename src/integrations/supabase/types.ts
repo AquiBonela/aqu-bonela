@@ -899,6 +899,16 @@ export type Database = {
       };
     };
     Functions: {
+      approve_listing_review: {
+        Args: {
+          p_authorized_fields: Json;
+          p_comment?: string;
+          p_show_hours: boolean;
+          p_token_hash: string;
+          p_visibility: Json;
+        };
+        Returns: Json;
+      };
       can_manage_identity: { Args: never; Returns: boolean };
       check_rate_limit: {
         Args: {
@@ -914,6 +924,17 @@ export type Database = {
           _user_id: string;
         };
         Returns: boolean;
+      };
+      save_listing: {
+        Args: {
+          p_activity_ids: string[];
+          p_contact: Json;
+          p_expected_updated_at?: string;
+          p_hours: Json;
+          p_id?: string;
+          p_listing: Json;
+        };
+        Returns: Json;
       };
       site_config: { Args: never; Returns: Json };
     };

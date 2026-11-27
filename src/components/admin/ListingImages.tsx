@@ -17,7 +17,21 @@ const ACCEPT = "image/jpeg,image/png,image/webp";
 const btn = "border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-50";
 const errMsg = (e: unknown) => (e as { message?: string }).message ?? "Error desconocido";
 
-export function CoverPicker({ listingId }: { listingId: string }) {
+/**
+ * Portada de la ficha. Se guarda al momento, aparte del formulario; con `version` solo se
+ * aplica si la ficha sigue en esa versión (la que abrió el formulario) y devuelve la nueva.
+ */
+export function CoverPicker({
+  listingId,
+  version,
+  onSaved,
+  onConflict,
+}: {
+  listingId: string;
+  version?: string | undefined;
+  onSaved?: (version: string) => void;
+  onConflict?: () => void;
+}) {
   const { tr, locale } = useI18n();
   const [path, setPath] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
@@ -38,13 +52,21 @@ export function CoverPicker({ listingId }: { listingId: string }) {
   }, [path]);
 
   async function setCover(next: string | null) {
-    const { error } = await supabase
-      .from("listings")
-      .update({ cover_path: next })
-      .eq("id", listingId);
+    const update = supabase.from("listings").update({ cover_path: next }).eq("id", listingId);
+    const { data, error } = await (version ? update.eq("updated_at", version) : update).select(
+      "updated_at",
+    );
     if (error) throw error;
+    const saved = data?.[0];
+    if (!saved) {
+      onConflict?.();
+      throw new Error(
+        tr("La ficha ha cambiado desde que la abriste. Recárgala antes de cambiar la portada."),
+      );
+    }
     if (path) await removeFile(path);
     setPath(next);
+    onSaved?.(saved.updated_at);
   }
 
   async function onFile(file?: File) {
