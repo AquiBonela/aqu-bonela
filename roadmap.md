@@ -73,6 +73,7 @@ No se deben confundir las pruebas simuladas con una validación de producción. 
 - [ ] Definir copias de seguridad, recuperación y monitorización para cada instalación. **Estado:** Sin iniciar.
 - [ ] Diseñar un plan para eliminar la dependencia del servicio de traducción de Lovable (`ai.gateway.lovable.dev`). **Estado:** Sin iniciar.
 - [ ] Evaluar las políticas de permisos de tablas y reforzar la seguridad más allá de depender únicamente de RLS cuando corresponda. **Estado:** Sin iniciar — `anon`/`authenticated` conservan privilegios de tabla amplios y la protección depende de RLS.
+- [ ] Permitir que el titular revise y cambie desde un enlace nuevo una ficha que ya está publicada. **Estado:** Sin iniciar — previsto para la etapa 5 (Nuevo Directorio y fichas), decisión del 27-11-2026. Hoy `getReview` presenta como «autorizada» cualquier ficha publicada (`done` si `status = 'publicada'`), así que un enlace nuevo no muestra los interruptores; una prueba de `src/lib/review.functions.test.ts` fija ese comportamiento para que el cambio sea deliberado. Al abordarlo, decidir si el titular puede cambiar la visibilidad de contactos y horario sin despublicar la ficha y cómo se registra el nuevo consentimiento.
 - [ ] Valorar una administración central de Groundwork cuando la replicación de un segundo municipio esté probada. No es un requisito para cerrar el piloto inicial. **Estado:** Bloqueado — depende de la Prioridad 4.
 
 ---

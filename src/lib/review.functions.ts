@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { listingPath } from "@/lib/listing-detail";
-import { withHoursVisibility } from "@/lib/listing-availability";
 import {
   authorizedContactFields,
   TOKEN_RE,
@@ -13,6 +12,7 @@ import {
 } from "./review";
 
 const tokenInput = z.object({ token: z.string().min(1).max(200) });
+type ListingType = "comercio" | "profesional" | "publico" | "asociacion";
 
 async function sha256Hex(text: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -148,63 +148,40 @@ export const submitReview = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data }): Promise<SubmitResult> => {
-    const found = await loadToken(data.token);
-    if (!found) return { ok: false, reason: "invalid" };
-    const { row, admin } = found;
-    if (row.used_at) return { ok: true, url: null };
-    if (new Date(row.expires_at) < new Date()) return { ok: false, reason: "expired" };
-    const { data: l } = await admin
-      .from("listings")
-      .select("id,type,slug,tags")
-      .eq("id", row.listing_id)
-      .maybeSingle();
-    if (!l) return { ok: false, reason: "invalid" };
-
-    // Solo se copian a public_* los campos que el titular autoriza (trigger sync_public_contact).
-    await admin.from("listing_contacts").upsert({
-      listing_id: l.id,
-      show_phone: data.show_phone,
-      show_phone_2: data.show_phone_2,
-      show_whatsapp: data.show_whatsapp,
-      show_address: data.show_address,
-      show_email: data.show_email,
-      show_linkedin: data.show_linkedin,
-      show_facebook: data.show_facebook,
-      show_youtube: data.show_youtube,
-      show_x_twitter: data.show_x_twitter,
-      show_instagram: data.show_instagram,
-      show_tiktok: data.show_tiktok,
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Una sola transacción en la base (approve_listing_review): publica la ficha con la decisión
+    // del titular sobre el horario, guarda la visibilidad de sus contactos (el trigger
+    // sync_public_contact copia a public_* solo lo autorizado), registra el consentimiento y el
+    // comentario y gasta el enlace. Si algo falla no se aplica nada y el enlace sigue sin usar.
+    const { data: result, error } = await supabaseAdmin.rpc("approve_listing_review", {
+      p_token_hash: await sha256Hex(data.token),
+      p_visibility: {
+        show_phone: data.show_phone,
+        show_phone_2: data.show_phone_2,
+        show_whatsapp: data.show_whatsapp,
+        show_address: data.show_address,
+        show_email: data.show_email,
+        show_linkedin: data.show_linkedin,
+        show_facebook: data.show_facebook,
+        show_youtube: data.show_youtube,
+        show_x_twitter: data.show_x_twitter,
+        show_instagram: data.show_instagram,
+        show_tiktok: data.show_tiktok,
+      },
+      p_show_hours: data.show_hours,
+      p_authorized_fields: authorizedContactFields(data),
+      ...(data.comment ? { p_comment: data.comment } : {}),
     });
-    const authorized = authorizedContactFields(data);
-    await admin.from("consents").insert({
-      listing_id: l.id,
-      request_id: row.request_id ?? null,
-      purpose: "publicacion_ficha",
-      text_version: "v1",
-      granted: true,
-      authorized_fields: authorized,
-      method: "enlace_privado",
-    });
-    if (data.comment) {
-      await admin.from("listing_requests").insert({
-        listing_id: l.id,
-        status: "aprobada",
-        notes: data.comment,
-        decided_at: new Date().toISOString(),
-      });
+    if (error) {
+      console.error("approve_listing_review", error.code, error.message);
+      return { ok: false, reason: "error" };
     }
-    await admin
-      .from("listings")
-      .update({
-        status: "publicada",
-        tags: withHoursVisibility((l as { tags: string[] | null }).tags ?? [], data.show_hours),
-      })
-      .eq("id", l.id);
-    await admin
-      .from("approval_tokens")
-      .update({ used_at: new Date().toISOString() })
-      .eq("id", row.id);
-    return { ok: true, url: listingPath(l.type, l.slug) };
+    const r = (result ?? {}) as { status?: string; type?: ListingType; slug?: string };
+    if (r.status === "ok" && r.type && r.slug)
+      return { ok: true, url: listingPath(r.type, r.slug) };
+    if (r.status === "used" || r.status === "expired" || r.status === "invalid")
+      return { ok: false, reason: r.status };
+    return { ok: false, reason: "error" };
   });
 
 /** El titular pide correcciones sin autorizar: llega a la bandeja de Avisos; la ficha sigue sin publicar. */
