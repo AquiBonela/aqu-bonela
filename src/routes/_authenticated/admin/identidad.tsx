@@ -14,6 +14,8 @@ import {
   formFromRow,
   IDENTITY_COLUMNS,
   identityErrorMessage,
+  identityFallbacks,
+  identityPlaceholders,
   validateIdentityForm,
   type IdentityErrors,
   type IdentityForm,
@@ -62,107 +64,68 @@ const identityQuery = queryOptions({
 type FieldDef = {
   name: IdentityFormField;
   label: string;
-  /** Valor compilado de la instalación, que se usa mientras el campo esté vacío. */
-  fallback?: string | undefined;
   hint?: string | undefined;
+  /**
+   * Teclado del móvil. Las coordenadas usan el de texto: el teclado numérico del iPhone
+   * no tiene signo menos y casi todas las longitudes de España son negativas.
+   */
   type?: "text" | "url" | "tel" | undefined;
-  inputMode?: "decimal" | undefined;
 };
 
-function sections(): { title: string; intro?: string; fields: FieldDef[] }[] {
-  const build = getBuildMunicipality();
-  return [
-    {
-      title: "Nombre y territorio",
-      fields: [
-        { name: "municipality_name", label: "Nombre del municipio", fallback: build.name },
-        { name: "app_name", label: "Nombre de la plataforma", fallback: build.appName },
-        {
-          name: "short_name",
-          label: "Nombre breve",
-          fallback: build.shortName,
-          hint: "Se usa en frases cortas de la web.",
-        },
-        { name: "province", label: "Provincia", fallback: build.province },
-        { name: "region", label: "Comarca", fallback: build.region },
-        {
-          name: "autonomous_community",
-          label: "Comunidad autónoma",
-          fallback: build.autonomousCommunity,
-        },
-        {
-          name: "demonym_masculine",
-          label: "Gentilicio masculino",
-          fallback: build.demonym?.masculine,
-        },
-        {
-          name: "demonym_feminine",
-          label: "Gentilicio femenino",
-          fallback: build.demonym?.feminine,
-        },
-      ],
-    },
-    {
-      title: "Datos institucionales",
-      intro: "Solo se muestran en la web si el Ayuntamiento tiene nombre.",
-      fields: [
-        {
-          name: "town_hall_name",
-          label: "Nombre del Ayuntamiento",
-          fallback: build.institutional?.townHallName,
-        },
-        {
-          name: "town_hall_address",
-          label: "Dirección",
-          fallback: build.institutional?.address,
-        },
-        {
-          name: "town_hall_phone",
-          label: "Teléfono",
-          type: "tel",
-          fallback: build.institutional?.phone,
-        },
-        {
-          name: "town_hall_website",
-          label: "Web del Ayuntamiento",
-          type: "url",
-          fallback: build.institutional?.website,
-        },
-      ],
-    },
-    {
-      title: "Web y ubicación",
-      intro: "Las coordenadas y la zona horaria permiten mostrar el tiempo del municipio.",
-      fields: [
-        {
-          name: "site_url",
-          label: "Dirección pública de la plataforma",
-          type: "url",
-          fallback: build.siteUrl,
-          hint: "Solo la dirección principal, sin rutas: por ejemplo, https://ejemplo.es",
-        },
-        {
-          name: "latitude",
-          label: "Latitud",
-          inputMode: "decimal",
-          fallback: build.coordinates ? String(build.coordinates.lat) : undefined,
-        },
-        {
-          name: "longitude",
-          label: "Longitud",
-          inputMode: "decimal",
-          fallback: build.coordinates ? String(build.coordinates.lng) : undefined,
-        },
-        {
-          name: "timezone",
-          label: "Zona horaria",
-          fallback: build.coordinates?.timezone,
-          hint: "Formato Región/Ciudad, por ejemplo Europe/Madrid.",
-        },
-      ],
-    },
-  ];
-}
+const SECTIONS: { title: string; intro?: string; fields: FieldDef[] }[] = [
+  {
+    title: "Nombre y territorio",
+    fields: [
+      { name: "municipality_name", label: "Nombre del municipio" },
+      { name: "app_name", label: "Nombre de la plataforma" },
+      { name: "short_name", label: "Nombre breve", hint: "Se usa en frases cortas de la web." },
+      { name: "province", label: "Provincia" },
+      { name: "region", label: "Comarca" },
+      { name: "autonomous_community", label: "Comunidad autónoma" },
+      {
+        name: "demonym_masculine",
+        label: "Gentilicio masculino",
+        hint: "Si rellenas solo uno, se usa para los dos.",
+      },
+      { name: "demonym_feminine", label: "Gentilicio femenino" },
+    ],
+  },
+  {
+    title: "Datos institucionales",
+    intro:
+      "Con todo el bloque vacío se usan los datos de la instalación. Si rellenas alguno, se publican solo los de este bloque, y el nombre del Ayuntamiento es obligatorio.",
+    fields: [
+      { name: "town_hall_name", label: "Nombre del Ayuntamiento" },
+      { name: "town_hall_address", label: "Dirección" },
+      { name: "town_hall_phone", label: "Teléfono", type: "tel" },
+      { name: "town_hall_website", label: "Web del Ayuntamiento", type: "url" },
+    ],
+  },
+  {
+    title: "Web y ubicación",
+    intro:
+      "Las coordenadas y la zona horaria permiten mostrar el tiempo del municipio. Se rellenan las tres o ninguna; vacías, se usan las de la instalación.",
+    fields: [
+      {
+        name: "site_url",
+        label: "Dirección pública de la plataforma",
+        type: "url",
+        hint: "Solo la dirección principal, sin rutas: por ejemplo, https://ejemplo.es",
+      },
+      { name: "latitude", label: "Latitud", hint: "Número con punto o coma decimal, como 40.5" },
+      {
+        name: "longitude",
+        label: "Longitud",
+        hint: "Al oeste de Greenwich es negativa, como -3.7",
+      },
+      {
+        name: "timezone",
+        label: "Zona horaria",
+        hint: "Formato Región/Ciudad, por ejemplo Europe/Madrid.",
+      },
+    ],
+  },
+];
 
 const fieldId = (name: IdentityFormField) => `identidad-${name}`;
 
@@ -182,7 +145,12 @@ function IdentityEditor() {
     }
   }, [data, form]);
 
-  if (isLoading) return null;
+  if (isLoading)
+    return (
+      <p role="status" className="mt-6 text-sm text-muted-foreground">
+        <Text text="Cargando la identidad municipal…" />
+      </p>
+    );
   if (error || !data)
     return (
       <p role="alert" className="mt-6 border bg-card p-4 text-sm">
@@ -231,11 +199,14 @@ function IdentityEditor() {
         return;
       }
       if (!saved) {
+        // Nada se actualizó: o la versión ya no es la cargada, o la política no deja escribir.
         const current = await readIdentity().catch(() => null);
         toast.error(
-          current && current.updated_at !== loaded.updated_at
-            ? "La identidad cambió en otra sesión mientras editabas. Recarga la página para ver los datos actuales."
-            : "Esta cuenta no tiene permiso para cambiar la identidad municipal.",
+          !current
+            ? identityErrorMessage({})
+            : current.updated_at !== loaded.updated_at
+              ? "La identidad cambió en otra sesión mientras editabas. Recarga la página para ver los datos actuales."
+              : "Esta cuenta no tiene permiso para cambiar la identidad municipal.",
         );
         return;
       }
@@ -252,9 +223,11 @@ function IdentityEditor() {
     }
   }
 
+  const placeholders = identityPlaceholders(form, identityFallbacks(getBuildMunicipality()));
+
   return (
     <form onSubmit={save} noValidate className="mt-6 grid gap-6">
-      {sections().map((section) => (
+      {SECTIONS.map((section) => (
         <section key={section.title} className="grid gap-4 border bg-card p-4">
           <div>
             <h2 className="font-display text-lg font-bold">
@@ -272,6 +245,7 @@ function IdentityEditor() {
                 key={field.name}
                 field={field}
                 value={form[field.name]}
+                placeholder={placeholders[field.name]}
                 error={errors[field.name]}
                 onChange={(value) => set(field.name, value)}
               />
@@ -297,11 +271,14 @@ function IdentityEditor() {
 function IdentityField({
   field,
   value,
+  placeholder,
   error,
   onChange,
 }: {
   field: FieldDef;
   value: string;
+  /** Lo que la web mostrará si el campo se queda vacío. */
+  placeholder: string;
   error?: string | undefined;
   onChange: (value: string) => void;
 }) {
@@ -315,9 +292,8 @@ function IdentityField({
       <Input
         id={id}
         type={field.type ?? "text"}
-        inputMode={field.inputMode}
         value={value}
-        placeholder={field.fallback ?? ""}
+        placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy.length ? describedBy.join(" ") : undefined}

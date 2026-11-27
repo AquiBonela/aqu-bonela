@@ -4,6 +4,7 @@
  * vuelve a comprobarlas con sus restricciones, su disparador y su política de escritura.
  */
 import type { Database } from "@/integrations/supabase/types";
+import type { MunicipalityConfig } from "../../instances/schema";
 import { isValidIdentityValue, type IdentityFieldName } from "./site-identity";
 
 type Row = Database["public"]["Tables"]["site_identity"]["Row"];
@@ -53,6 +54,55 @@ export function formFromRow(row: IdentityRow): IdentityForm {
   form.latitude = row.latitude === null ? "" : String(row.latitude);
   form.longitude = row.longitude === null ? "" : String(row.longitude);
   return form;
+}
+
+/** Valores compilados de la instalación, en los mismos campos que el formulario. */
+export function identityFallbacks(build: MunicipalityConfig): IdentityForm {
+  return {
+    app_name: build.appName,
+    short_name: build.shortName,
+    municipality_name: build.name,
+    province: build.province,
+    region: build.region ?? "",
+    autonomous_community: build.autonomousCommunity ?? "",
+    demonym_masculine: build.demonym?.masculine ?? "",
+    demonym_feminine: build.demonym?.feminine ?? "",
+    site_url: build.siteUrl,
+    town_hall_name: build.institutional?.townHallName ?? "",
+    town_hall_address: build.institutional?.address ?? "",
+    town_hall_phone: build.institutional?.phone ?? "",
+    town_hall_website: build.institutional?.website ?? "",
+    latitude: build.coordinates ? String(build.coordinates.lat) : "",
+    longitude: build.coordinates ? String(build.coordinates.lng) : "",
+    timezone: build.coordinates?.timezone ?? "",
+  };
+}
+
+const INSTITUTIONAL: IdentityFormField[] = [
+  "town_hall_name",
+  "town_hall_address",
+  "town_hall_phone",
+  "town_hall_website",
+];
+const COORDINATES: IdentityFormField[] = ["latitude", "longitude", "timezone"];
+
+/**
+ * Lo que la web mostrará en cada campo vacío, con las mismas reglas que la lectura pública:
+ * los datos del Ayuntamiento y las coordenadas se sustituyen en bloque (nunca se mezclan
+ * con los de la instalación) y un gentilicio solo sirve para los dos.
+ */
+export function identityPlaceholders(form: IdentityForm, fallbacks: IdentityForm): IdentityForm {
+  const placeholders = { ...fallbacks };
+  const filled = (names: IdentityFormField[]) => names.some((name) => form[name].trim());
+  if (filled(INSTITUTIONAL)) for (const name of INSTITUTIONAL) placeholders[name] = "";
+  if (filled(COORDINATES)) for (const name of COORDINATES) placeholders[name] = "";
+  const masculine = form.demonym_masculine.trim();
+  const feminine = form.demonym_feminine.trim();
+  if (masculine || feminine) {
+    placeholders.demonym_masculine = feminine;
+    placeholders.demonym_feminine = masculine;
+  }
+  return placeholders;
 }
 
 /** Normaliza lo que un administrador suele pegar: barra final o mayúsculas en la dirección web. */
@@ -114,6 +164,9 @@ export function validateIdentityForm(form: IdentityForm): IdentityValidation {
       errors[missing] = "Indica latitud y longitud, o deja las dos vacías.";
     } else if (latitude !== null && !values.timezone && !errors.timezone) {
       errors.timezone = "Indica la zona horaria de las coordenadas (por ejemplo, Europe/Madrid).";
+    } else if (latitude === null && values.timezone && !errors.timezone) {
+      // Sin coordenadas la web ignora la zona horaria y seguiría usando la de la instalación.
+      errors.timezone = "Indica también latitud y longitud, o deja la zona horaria vacía.";
     }
     values.latitude = latitude;
     values.longitude = longitude;
@@ -134,6 +187,9 @@ export function identityErrorMessage(error: { code?: string; message?: string })
   if (NOT_INSTALLED.has(code))
     return "La identidad municipal aún no está instalada en este Supabase. Hay que aplicar su migración.";
   if (code === "42501") return "Esta cuenta no tiene permiso para cambiar la identidad municipal.";
+  // Sesión de Supabase no válida o caducada.
+  if (code === "PGRST301" || code === "PGRST303")
+    return "La sesión no es válida o ha caducado. Sal del panel y vuelve a entrar.";
   if (code === "23514")
     return /zona horaria/i.test(error.message ?? "")
       ? "La base de datos no reconoce la zona horaria indicada."

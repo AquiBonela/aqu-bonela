@@ -140,6 +140,64 @@ describe("pantalla de identidad municipal", () => {
     expect(mocks.error).not.toHaveBeenCalled();
   });
 
+  it("guarda los datos institucionales tal como se escriben", async () => {
+    mocks.updateResult = {
+      data: {
+        ...stored,
+        town_hall_name: "Ayuntamiento de Prueba",
+        town_hall_phone: "900 000 000",
+        updated_at: V2,
+      },
+      error: null,
+    };
+    openIdentity();
+    fireEvent.change(await field("Nombre del Ayuntamiento"), {
+      target: { value: "Ayuntamiento de Prueba" },
+    });
+    fireEvent.change(screen.getByLabelText("Teléfono"), { target: { value: "900 000 000" } });
+    fireEvent.click(saveButton());
+    await waitFor(() => expect(mocks.success).toHaveBeenCalledOnce());
+    expect(updates()[0]?.args[0]).toMatchObject({
+      town_hall_name: "Ayuntamiento de Prueba",
+      town_hall_phone: "900 000 000",
+      town_hall_address: "",
+      town_hall_website: "",
+    });
+    expect(screen.getByLabelText("Teléfono")).toHaveValue("900 000 000");
+  });
+
+  it("muestra en gris lo que la web usará y lo retira al empezar el bloque del Ayuntamiento", async () => {
+    openIdentity();
+    const address = screen.getByLabelText.bind(screen, "Dirección");
+    await field("Nombre del Ayuntamiento");
+    const compiled = address().getAttribute("placeholder");
+    expect(compiled).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Nombre del Ayuntamiento"), {
+      target: { value: "Ayuntamiento de Prueba" },
+    });
+    expect(address()).toHaveAttribute("placeholder", "");
+  });
+
+  it("usa el teclado de texto en las coordenadas para poder escribir el signo menos", async () => {
+    openIdentity();
+    for (const name of ["Latitud", "Longitud"]) {
+      const input = await field(name);
+      expect(input).toHaveAttribute("type", "text");
+      expect(input).not.toHaveAttribute("inputmode");
+    }
+  });
+
+  it("habla de la conexión, no de permisos, si no puede comprobar por qué no se guardó", async () => {
+    mocks.reads.push({ data: null, error: { code: "", message: "Failed to fetch" } });
+    openIdentity();
+    fireEvent.change(await field("Provincia"), { target: { value: "Otra" } });
+    fireEvent.click(saveButton());
+    await waitFor(() =>
+      expect(mocks.error).toHaveBeenCalledWith(expect.stringMatching(/conexión/)),
+    );
+    expect(mocks.error).not.toHaveBeenCalledWith(expect.stringMatching(/permiso/));
+  });
+
   it("explica el error de la base de datos y no confirma el guardado", async () => {
     mocks.updateResult = { data: null, error: { code: "23514", message: "check" } };
     openIdentity();

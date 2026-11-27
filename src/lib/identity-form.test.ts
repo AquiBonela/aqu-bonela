@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
+import { getBuildMunicipality } from "@/config/municipality";
 import {
   formFromRow,
   identityErrorMessage,
+  identityFallbacks,
+  identityPlaceholders,
   validateIdentityForm,
   type IdentityForm,
+  type IdentityFormField,
   type IdentityRow,
 } from "./identity-form";
+import { mergeIdentity, parseSiteConfig } from "./site-identity";
 
 const row: IdentityRow = {
   app_name: "Mi Pueblo",
@@ -127,9 +132,79 @@ describe("formulario de identidad municipal", () => {
     expect(errorsOf({ latitude: "norte", longitude: "0" }).latitude).toBeDefined();
   });
 
+  it("no admite una zona horaria sin coordenadas, porque la web la ignoraría", () => {
+    expect(errorsOf({ timezone: "Europe/Madrid" }).timezone).toMatch(/latitud y longitud/);
+  });
+
   it("rechaza zonas horarias inexistentes", () => {
-    expect(errorsOf({ timezone: "Marte/Olimpo" }).timezone).toMatch(/no reconocida/);
-    expect(errorsOf({ timezone: "Europe/Madrid" }).timezone).toBeUndefined();
+    const withCoordinates = { latitude: "40.5", longitude: "-3.7" };
+    expect(errorsOf({ ...withCoordinates, timezone: "Marte/Olimpo" }).timezone).toMatch(
+      /no reconocida/,
+    );
+    expect(errorsOf({ ...withCoordinates, timezone: "Europe/Madrid" }).timezone).toBeUndefined();
+  });
+});
+
+describe("valores de la instalación en los campos vacíos", () => {
+  const build = getBuildMunicipality();
+  const blank = Object.fromEntries(
+    Object.keys(formFromRow(row)).map((key) => [key, ""]),
+  ) as unknown as IdentityForm;
+
+  /**
+   * Lo que la web publicará de verdad tras guardar: los valores guardados pasan por la
+   * misma lectura pública (parseSiteConfig) y se combinan con la instalación compilada.
+   */
+  function published(form: IdentityForm): IdentityForm {
+    const result = validateIdentityForm(form);
+    if (!result.ok) throw new Error(JSON.stringify(result.errors));
+    return identityFallbacks(
+      mergeIdentity(build, parseSiteConfig({ identity: result.values }).identity),
+    );
+  }
+
+  /** Lo que el formulario anuncia: el valor escrito o, si está vacío, el texto en gris. */
+  function announced(form: IdentityForm): IdentityForm {
+    const placeholders = identityPlaceholders(form, identityFallbacks(build));
+    const values = validateIdentityForm(form);
+    if (!values.ok) throw new Error("invalid");
+    const shown = {} as IdentityForm;
+    for (const name of Object.keys(form) as IdentityFormField[]) {
+      const value = values.values[name];
+      shown[name] =
+        value === null || value === undefined || value === "" ? placeholders[name] : String(value);
+    }
+    return shown;
+  }
+
+  it("la instalación de prueba tiene datos en todos los bloques", () => {
+    // Si no los tuviera, las comprobaciones siguientes no demostrarían nada.
+    expect(build.institutional?.townHallName).toBeTruthy();
+    expect(build.demonym?.masculine).toBeTruthy();
+    expect(build.coordinates).toBeDefined();
+  });
+
+  it.each<[string, Partial<IdentityForm>]>([
+    ["todo vacío", {}],
+    ["solo el nombre del municipio", { municipality_name: "Villaprueba" }],
+    [
+      "Ayuntamiento con nombre y teléfono",
+      { town_hall_name: "Ayto. Prueba", town_hall_phone: "900 000 000" },
+    ],
+    ["solo el gentilicio femenino", { demonym_feminine: "pruebense" }],
+    ["coordenadas completas", { latitude: "40,5", longitude: "-3.7", timezone: "Europe/Madrid" }],
+  ])("anuncia lo que se publicará: %s", (_case, changes) => {
+    const form = { ...blank, ...changes };
+    expect(announced(form)).toEqual(published(form));
+  });
+
+  it("no anuncia datos de la instalación en un bloque del Ayuntamiento ya empezado", () => {
+    const placeholders = identityPlaceholders(
+      { ...blank, town_hall_name: "Ayto. Prueba" },
+      identityFallbacks(build),
+    );
+    expect(placeholders.town_hall_address).toBe("");
+    expect(placeholders.town_hall_website).toBe("");
   });
 });
 
@@ -137,6 +212,7 @@ describe("mensajes de error de la identidad", () => {
   it.each([
     [{ code: "PGRST205" }, /migración/],
     [{ code: "42501" }, /permiso/],
+    [{ code: "PGRST303" }, /sesión/],
     [{ code: "23514", message: "Zona horaria no válida: X" }, /zona horaria/],
     [{ code: "23514", message: "violates check constraint" }, /formato admitido/],
     [{}, /conexión/],
