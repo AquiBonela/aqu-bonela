@@ -32,6 +32,10 @@ import { Route as VidaDiariaCategoriaRouteImport } from './routes/vida-diaria.$c
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
 import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_authenticated/admin/configuracion'
+import { Route as AuthenticatedAdminContenidosRouteImport } from './routes/_authenticated/admin/contenidos'
+import { Route as AuthenticatedAdminDirectorioRouteImport } from './routes/_authenticated/admin/directorio'
+import { Route as AuthenticatedAdminIdentidadRouteImport } from './routes/_authenticated/admin/identidad'
+import { Route as AuthenticatedAdminSeccionesRouteImport } from './routes/_authenticated/admin/secciones'
 import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
 import { Route as TramitesCategoriaIndexRouteImport } from './routes/tramites/$categoria.index'
 import { Route as TramitesCategoriaTramiteRouteImport } from './routes/tramites/$categoria.$tramite'
@@ -155,6 +159,30 @@ const AuthenticatedAdminConfiguracionRoute =
     path: '/admin/configuracion',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminContenidosRoute =
+  AuthenticatedAdminContenidosRouteImport.update({
+    id: '/admin/contenidos',
+    path: '/admin/contenidos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminDirectorioRoute =
+  AuthenticatedAdminDirectorioRouteImport.update({
+    id: '/admin/directorio',
+    path: '/admin/directorio',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminIdentidadRoute =
+  AuthenticatedAdminIdentidadRouteImport.update({
+    id: '/admin/identidad',
+    path: '/admin/identidad',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminSeccionesRoute =
+  AuthenticatedAdminSeccionesRouteImport.update({
+    id: '/admin/secciones',
+    path: '/admin/secciones',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminSugerenciasRoute =
   AuthenticatedAdminSugerenciasRouteImport.update({
     id: '/admin/sugerencias',
@@ -213,6 +241,10 @@ export interface FileRoutesByFullPath {
   '/tramites/': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
+  '/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
+  '/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
+  '/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
+  '/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -243,6 +275,10 @@ export interface FileRoutesByTo {
   '/tramites': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
+  '/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
+  '/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
+  '/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
+  '/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
   '/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -275,6 +311,10 @@ export interface FileRoutesById {
   '/tramites/': typeof TramitesIndexRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
+  '/_authenticated/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
+  '/_authenticated/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
+  '/_authenticated/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
+  '/_authenticated/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
   '/_authenticated/admin/sugerencias': typeof AuthenticatedAdminSugerenciasRoute
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -307,6 +347,10 @@ export interface FileRouteTypes {
     | '/tramites/'
     | '/admin/avisos'
     | '/admin/configuracion'
+    | '/admin/contenidos'
+    | '/admin/directorio'
+    | '/admin/identidad'
+    | '/admin/secciones'
     | '/admin/sugerencias'
     | '/tramites/$categoria/$tramite'
     | '/admin/'
@@ -337,6 +381,10 @@ export interface FileRouteTypes {
     | '/tramites'
     | '/admin/avisos'
     | '/admin/configuracion'
+    | '/admin/contenidos'
+    | '/admin/directorio'
+    | '/admin/identidad'
+    | '/admin/secciones'
     | '/admin/sugerencias'
     | '/tramites/$categoria/$tramite'
     | '/admin'
@@ -368,6 +416,10 @@ export interface FileRouteTypes {
     | '/tramites/'
     | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/configuracion'
+    | '/_authenticated/admin/contenidos'
+    | '/_authenticated/admin/directorio'
+    | '/_authenticated/admin/identidad'
+    | '/_authenticated/admin/secciones'
     | '/_authenticated/admin/sugerencias'
     | '/tramites/$categoria/$tramite'
     | '/_authenticated/admin/'
@@ -564,6 +616,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminConfiguracionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/contenidos': {
+      id: '/_authenticated/admin/contenidos'
+      path: '/admin/contenidos'
+      fullPath: '/admin/contenidos'
+      preLoaderRoute: typeof AuthenticatedAdminContenidosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/directorio': {
+      id: '/_authenticated/admin/directorio'
+      path: '/admin/directorio'
+      fullPath: '/admin/directorio'
+      preLoaderRoute: typeof AuthenticatedAdminDirectorioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/identidad': {
+      id: '/_authenticated/admin/identidad'
+      path: '/admin/identidad'
+      fullPath: '/admin/identidad'
+      preLoaderRoute: typeof AuthenticatedAdminIdentidadRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/secciones': {
+      id: '/_authenticated/admin/secciones'
+      path: '/admin/secciones'
+      fullPath: '/admin/secciones'
+      preLoaderRoute: typeof AuthenticatedAdminSeccionesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/sugerencias': {
       id: '/_authenticated/admin/sugerencias'
       path: '/admin/sugerencias'
@@ -612,6 +692,10 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAvisosRoute: typeof AuthenticatedAdminAvisosRoute
   AuthenticatedAdminConfiguracionRoute: typeof AuthenticatedAdminConfiguracionRoute
+  AuthenticatedAdminContenidosRoute: typeof AuthenticatedAdminContenidosRoute
+  AuthenticatedAdminDirectorioRoute: typeof AuthenticatedAdminDirectorioRoute
+  AuthenticatedAdminIdentidadRoute: typeof AuthenticatedAdminIdentidadRoute
+  AuthenticatedAdminSeccionesRoute: typeof AuthenticatedAdminSeccionesRoute
   AuthenticatedAdminSugerenciasRoute: typeof AuthenticatedAdminSugerenciasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminFichasIdRoute: typeof AuthenticatedAdminFichasIdRoute
@@ -622,6 +706,10 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAvisosRoute: AuthenticatedAdminAvisosRoute,
   AuthenticatedAdminConfiguracionRoute: AuthenticatedAdminConfiguracionRoute,
+  AuthenticatedAdminContenidosRoute: AuthenticatedAdminContenidosRoute,
+  AuthenticatedAdminDirectorioRoute: AuthenticatedAdminDirectorioRoute,
+  AuthenticatedAdminIdentidadRoute: AuthenticatedAdminIdentidadRoute,
+  AuthenticatedAdminSeccionesRoute: AuthenticatedAdminSeccionesRoute,
   AuthenticatedAdminSugerenciasRoute: AuthenticatedAdminSugerenciasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminFichasIdRoute: AuthenticatedAdminFichasIdRoute,

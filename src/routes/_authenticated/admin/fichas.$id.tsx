@@ -494,7 +494,7 @@ function EditPage() {
       if (result.cleanupFailed)
         toast.warning(tr("Ficha eliminada, pero no se pudieron borrar algunos archivos de fotos."));
       else toast.success(tr("Ficha eliminada"));
-      navigate({ to: "/admin" });
+      navigate({ to: "/admin/directorio" });
     } catch {
       toast.error(tr("No se pudo eliminar la ficha. Comprueba tu conexión y tus permisos."));
     } finally {
@@ -525,7 +525,7 @@ function EditPage() {
     >
       <div className="flex items-center gap-3">
         <Link
-          to="/admin"
+          to="/admin/directorio"
           className="text-muted-foreground hover:text-foreground"
           aria-label="Volver"
         >
@@ -1115,7 +1115,10 @@ function EditPage() {
       />
       <div className="fixed inset-x-0 bottom-0 border-t bg-background">
         <div className="mx-auto flex max-w-5xl justify-end gap-2 px-4 py-3">
-          <Link to="/admin" className="inline-flex h-11 items-center border px-4 text-sm">
+          <Link
+            to="/admin/directorio"
+            className="inline-flex h-11 items-center border px-4 text-sm"
+          >
             <Text text="Cancelar" />
           </Link>
           <Button
