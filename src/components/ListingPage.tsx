@@ -25,7 +25,8 @@ import {
   Youtube,
 } from "lucide-react";
 import { whatsappUrl } from "@/lib/directory";
-import { groupHours, mapsUrl, websiteUrl, type ListingDetail } from "@/lib/listing-detail";
+import { groupHours, websiteUrl, type ListingDetail } from "@/lib/listing-detail";
+import { hoursOn, mapLink, PERIOD_LABELS, periodRange } from "@/lib/listing-details";
 import { TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
 import { availabilityTags, hashtag, showsHours } from "@/lib/listing-availability";
@@ -90,7 +91,13 @@ export function ListingPage({
   const { tr, locale, lang } = useI18n();
   const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
   const showHours = showsHours(listing, Boolean(review));
-  const hours = groupHours(listing.hours);
+  // Horario de hoy sin contradicciones: un cierre manda; una temporada sustituye al habitual.
+  const now = hoursOn(listing.hours, listing.periods ?? []);
+  const hours = groupHours(now.hours);
+  const place =
+    listing.public_address ??
+    (listing.public_locality ? `${tr("Zona")}: ${listing.public_locality}` : null);
+  const serviceArea = listing.public_service_area?.trim() ?? "";
   const today = (new Date().getDay() + 6) % 7;
   const gallery: GalleryPhoto[] = [
     ...listing.gallery_urls.map((url) => ({ url, alt: listing.name })),
@@ -201,7 +208,7 @@ export function ListingPage({
         <div className="mx-auto max-w-3xl sm:px-4">
           <img
             src={listing.cover_url}
-            alt={listing.name}
+            alt={listing.cover_alt || listing.name}
             className="aspect-[16/9] w-full object-cover"
           />
         </div>
@@ -241,10 +248,10 @@ export function ListingPage({
         <h1 className="mt-3 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl">
           {listing.name}
         </h1>
-        {listing.public_address && (
+        {place && (
           <div className="mt-3 flex items-center gap-2 text-base font-medium">
             <MapPin className="h-4 w-4 shrink-0 text-terracotta" aria-hidden />
-            <span className={dim("address")}>{listing.public_address}</span>
+            <span className={dim("address")}>{place}</span>
             <Toggle review={review} field="address" label="dirección" />
           </div>
         )}
@@ -309,6 +316,18 @@ export function ListingPage({
           </section>
         )}
 
+        {(listing.public_home_service || serviceArea) && (
+          <section className="border-t pt-5" aria-labelledby="servicio-domicilio">
+            <h2 id="servicio-domicilio" className="flex items-center gap-2 font-display font-bold">
+              <Navigation className="h-5 w-5 text-primary" aria-hidden />
+              <Text
+                text={listing.public_home_service ? "Servicio a domicilio" : "Zona de servicio"}
+              />
+            </h2>
+            {serviceArea && <p className="mt-2 text-sm">{serviceArea}</p>}
+          </section>
+        )}
+
         {showHours && (
           <section className="border-t pt-5">
             <div className="flex items-center gap-2">
@@ -317,6 +336,19 @@ export function ListingPage({
               </h2>
               <Toggle review={review} field="hours" label={tr("horario")} />
             </div>
+            {now.closure && (
+              <p
+                role="status"
+                className="mt-2 border-l-4 border-terracotta bg-muted p-3 text-sm font-medium"
+              >
+                {`${tr("Cerrado")} ${periodRange(now.closure, locale)}${now.closure.label ? ` · ${now.closure.label}` : ""}`}
+              </p>
+            )}
+            {now.season && !now.closure && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                {`${now.season.label || tr(PERIOD_LABELS.temporada)} ${periodRange(now.season, locale)}`}
+              </p>
+            )}
             <dl className={`mt-2 divide-y ${review && !review.show.hours ? "opacity-40" : ""}`}>
               {hours.map((h, i) => (
                 <div
@@ -338,6 +370,19 @@ export function ListingPage({
                 </div>
               ))}
             </dl>
+            {listing.hours_note && <p className="mt-2 text-sm">{listing.hours_note}</p>}
+            {now.upcoming.length > 0 && (
+              <ul
+                className="mt-2 grid gap-1 text-sm text-muted-foreground"
+                aria-label={tr("Próximos cambios de horario")}
+              >
+                {now.upcoming.map((p) => (
+                  <li key={`${p.kind}-${p.starts_on}`}>
+                    {`${p.label || tr(PERIOD_LABELS[p.kind])}: ${p.kind === "temporada" ? tr("horario especial") : tr("cerrado")} ${periodRange(p, locale)}`}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
 
@@ -432,9 +477,9 @@ function ActionLinks({
           <MessageCircle className="h-5 w-5" aria-hidden /> <Text text="Mensaje" />{" "}
         </a>
       )}
-      {listing.public_address && (
+      {mapLink(listing) && (
         <a
-          href={mapsUrl(listing.public_address)}
+          href={mapLink(listing) ?? undefined}
           target="_blank"
           rel="noopener noreferrer"
           className={`flex min-h-12 ${shape} items-center justify-center gap-1.5 whitespace-nowrap text-sm border bg-card font-semibold hover:bg-secondary`}

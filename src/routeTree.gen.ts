@@ -34,13 +34,14 @@ import { Route as VidaDiariaCategoriaRouteImport } from './routes/vida-diaria.$c
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
 import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_authenticated/admin/configuracion'
-import { Route as AuthenticatedAdminContenidosRouteImport } from './routes/_authenticated/admin/contenidos'
 import { Route as AuthenticatedAdminDirectorioRouteImport } from './routes/_authenticated/admin/directorio'
 import { Route as AuthenticatedAdminIdentidadRouteImport } from './routes/_authenticated/admin/identidad'
 import { Route as AuthenticatedAdminSeccionesRouteImport } from './routes/_authenticated/admin/secciones'
 import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
 import { Route as TramitesCategoriaIndexRouteImport } from './routes/tramites/$categoria.index'
 import { Route as TramitesCategoriaTramiteRouteImport } from './routes/tramites/$categoria.$tramite'
+import { Route as AuthenticatedAdminContenidosIndexRouteImport } from './routes/_authenticated/admin/contenidos.index'
+import { Route as AuthenticatedAdminContenidosPaginaRouteImport } from './routes/_authenticated/admin/contenidos.$pagina'
 import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
 import { Route as AuthenticatedAdminTramitesIndexRouteImport } from './routes/_authenticated/admin/tramites.index'
 import { Route as AuthenticatedAdminTramitesIdRouteImport } from './routes/_authenticated/admin/tramites.$id'
@@ -171,12 +172,6 @@ const AuthenticatedAdminConfiguracionRoute =
     path: '/admin/configuracion',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminContenidosRoute =
-  AuthenticatedAdminContenidosRouteImport.update({
-    id: '/admin/contenidos',
-    path: '/admin/contenidos',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminDirectorioRoute =
   AuthenticatedAdminDirectorioRouteImport.update({
     id: '/admin/directorio',
@@ -211,6 +206,18 @@ const TramitesCategoriaTramiteRoute =
     id: '/tramites/$categoria/$tramite',
     path: '/tramites/$categoria/$tramite',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAdminContenidosIndexRoute =
+  AuthenticatedAdminContenidosIndexRouteImport.update({
+    id: '/admin/contenidos/',
+    path: '/admin/contenidos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminContenidosPaginaRoute =
+  AuthenticatedAdminContenidosPaginaRouteImport.update({
+    id: '/admin/contenidos/$pagina',
+    path: '/admin/contenidos/$pagina',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminFichasIdRoute =
   AuthenticatedAdminFichasIdRouteImport.update({
@@ -255,7 +262,6 @@ export interface FileRoutesByFullPath {
   '/tramites/': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
-  '/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
   '/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
   '/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
   '/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
@@ -263,8 +269,10 @@ export interface FileRoutesByFullPath {
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
+  '/admin/contenidos/$pagina': typeof AuthenticatedAdminContenidosPaginaRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
   '/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/admin/contenidos/': typeof AuthenticatedAdminContenidosIndexRoute
   '/admin/tramites/': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -291,7 +299,6 @@ export interface FileRoutesByTo {
   '/tramites': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
-  '/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
   '/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
   '/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
   '/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
@@ -299,8 +306,10 @@ export interface FileRoutesByTo {
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria': typeof TramitesCategoriaIndexRoute
+  '/admin/contenidos/$pagina': typeof AuthenticatedAdminContenidosPaginaRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
   '/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/admin/contenidos': typeof AuthenticatedAdminContenidosIndexRoute
   '/admin/tramites': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRoutesById {
@@ -329,7 +338,6 @@ export interface FileRoutesById {
   '/tramites/': typeof TramitesIndexRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
-  '/_authenticated/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
   '/_authenticated/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
   '/_authenticated/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
   '/_authenticated/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
@@ -337,8 +345,10 @@ export interface FileRoutesById {
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
+  '/_authenticated/admin/contenidos/$pagina': typeof AuthenticatedAdminContenidosPaginaRoute
   '/_authenticated/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
   '/_authenticated/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/_authenticated/admin/contenidos/': typeof AuthenticatedAdminContenidosIndexRoute
   '/_authenticated/admin/tramites/': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRouteTypes {
@@ -367,7 +377,6 @@ export interface FileRouteTypes {
     | '/tramites/'
     | '/admin/avisos'
     | '/admin/configuracion'
-    | '/admin/contenidos'
     | '/admin/directorio'
     | '/admin/identidad'
     | '/admin/secciones'
@@ -375,8 +384,10 @@ export interface FileRouteTypes {
     | '/tramites/$categoria/$tramite'
     | '/admin/'
     | '/tramites/$categoria/'
+    | '/admin/contenidos/$pagina'
     | '/admin/fichas/$id'
     | '/admin/tramites/$id'
+    | '/admin/contenidos/'
     | '/admin/tramites/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -403,7 +414,6 @@ export interface FileRouteTypes {
     | '/tramites'
     | '/admin/avisos'
     | '/admin/configuracion'
-    | '/admin/contenidos'
     | '/admin/directorio'
     | '/admin/identidad'
     | '/admin/secciones'
@@ -411,8 +421,10 @@ export interface FileRouteTypes {
     | '/tramites/$categoria/$tramite'
     | '/admin'
     | '/tramites/$categoria'
+    | '/admin/contenidos/$pagina'
     | '/admin/fichas/$id'
     | '/admin/tramites/$id'
+    | '/admin/contenidos'
     | '/admin/tramites'
   id:
     | '__root__'
@@ -440,7 +452,6 @@ export interface FileRouteTypes {
     | '/tramites/'
     | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/configuracion'
-    | '/_authenticated/admin/contenidos'
     | '/_authenticated/admin/directorio'
     | '/_authenticated/admin/identidad'
     | '/_authenticated/admin/secciones'
@@ -448,8 +459,10 @@ export interface FileRouteTypes {
     | '/tramites/$categoria/$tramite'
     | '/_authenticated/admin/'
     | '/tramites/$categoria/'
+    | '/_authenticated/admin/contenidos/$pagina'
     | '/_authenticated/admin/fichas/$id'
     | '/_authenticated/admin/tramites/$id'
+    | '/_authenticated/admin/contenidos/'
     | '/_authenticated/admin/tramites/'
   fileRoutesById: FileRoutesById
 }
@@ -656,13 +669,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminConfiguracionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/contenidos': {
-      id: '/_authenticated/admin/contenidos'
-      path: '/admin/contenidos'
-      fullPath: '/admin/contenidos'
-      preLoaderRoute: typeof AuthenticatedAdminContenidosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/directorio': {
       id: '/_authenticated/admin/directorio'
       path: '/admin/directorio'
@@ -705,6 +711,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TramitesCategoriaTramiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/contenidos/': {
+      id: '/_authenticated/admin/contenidos/'
+      path: '/admin/contenidos'
+      fullPath: '/admin/contenidos/'
+      preLoaderRoute: typeof AuthenticatedAdminContenidosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/contenidos/$pagina': {
+      id: '/_authenticated/admin/contenidos/$pagina'
+      path: '/admin/contenidos/$pagina'
+      fullPath: '/admin/contenidos/$pagina'
+      preLoaderRoute: typeof AuthenticatedAdminContenidosPaginaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/fichas/$id': {
       id: '/_authenticated/admin/fichas/$id'
       path: '/admin/fichas/$id'
@@ -732,28 +752,32 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAvisosRoute: typeof AuthenticatedAdminAvisosRoute
   AuthenticatedAdminConfiguracionRoute: typeof AuthenticatedAdminConfiguracionRoute
-  AuthenticatedAdminContenidosRoute: typeof AuthenticatedAdminContenidosRoute
   AuthenticatedAdminDirectorioRoute: typeof AuthenticatedAdminDirectorioRoute
   AuthenticatedAdminIdentidadRoute: typeof AuthenticatedAdminIdentidadRoute
   AuthenticatedAdminSeccionesRoute: typeof AuthenticatedAdminSeccionesRoute
   AuthenticatedAdminSugerenciasRoute: typeof AuthenticatedAdminSugerenciasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminContenidosPaginaRoute: typeof AuthenticatedAdminContenidosPaginaRoute
   AuthenticatedAdminFichasIdRoute: typeof AuthenticatedAdminFichasIdRoute
   AuthenticatedAdminTramitesIdRoute: typeof AuthenticatedAdminTramitesIdRoute
+  AuthenticatedAdminContenidosIndexRoute: typeof AuthenticatedAdminContenidosIndexRoute
   AuthenticatedAdminTramitesIndexRoute: typeof AuthenticatedAdminTramitesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAvisosRoute: AuthenticatedAdminAvisosRoute,
   AuthenticatedAdminConfiguracionRoute: AuthenticatedAdminConfiguracionRoute,
-  AuthenticatedAdminContenidosRoute: AuthenticatedAdminContenidosRoute,
   AuthenticatedAdminDirectorioRoute: AuthenticatedAdminDirectorioRoute,
   AuthenticatedAdminIdentidadRoute: AuthenticatedAdminIdentidadRoute,
   AuthenticatedAdminSeccionesRoute: AuthenticatedAdminSeccionesRoute,
   AuthenticatedAdminSugerenciasRoute: AuthenticatedAdminSugerenciasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminContenidosPaginaRoute:
+    AuthenticatedAdminContenidosPaginaRoute,
   AuthenticatedAdminFichasIdRoute: AuthenticatedAdminFichasIdRoute,
   AuthenticatedAdminTramitesIdRoute: AuthenticatedAdminTramitesIdRoute,
+  AuthenticatedAdminContenidosIndexRoute:
+    AuthenticatedAdminContenidosIndexRoute,
   AuthenticatedAdminTramitesIndexRoute: AuthenticatedAdminTramitesIndexRoute,
 }
 

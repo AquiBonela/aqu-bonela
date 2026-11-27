@@ -5,7 +5,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { adminReportsQuery, adminSuggestionsQuery, isAdminQuery } from "@/lib/admin";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
-import { getMunicipality } from "@/config/municipality";
+import { getMunicipality, getSiteConfigSnapshot } from "@/config/municipality";
 import {
   ADMIN_AREAS,
   adminAreaForPath,
@@ -172,7 +172,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <img
                 src={getMunicipality().assets.logoAdmin}
                 alt={getMunicipality().appName}
-                className="h-9 max-w-full object-contain brightness-0"
+                // El logotipo compilado del piloto es blanco y se oscurece; uno subido se muestra tal cual.
+                className={`h-9 max-w-full object-contain ${getSiteConfigSnapshot().branding?.logoPath ? "" : "brightness-0"}`}
               />
             ) : (
               <span className="truncate font-display text-lg font-extrabold">

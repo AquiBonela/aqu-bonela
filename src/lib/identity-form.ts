@@ -12,7 +12,7 @@ export type IdentityUpdate = Database["public"]["Tables"]["site_identity"]["Upda
 
 /** Columnas legibles por el panel. updated_by no es visible para nadie desde la web. */
 export const IDENTITY_COLUMNS =
-  "app_name,short_name,municipality_name,province,region,autonomous_community,demonym_masculine,demonym_feminine,site_url,town_hall_name,town_hall_address,town_hall_phone,town_hall_website,latitude,longitude,timezone,updated_at";
+  "app_name,short_name,municipality_name,province,region,autonomous_community,demonym_masculine,demonym_feminine,site_url,town_hall_name,town_hall_address,town_hall_phone,town_hall_website,latitude,longitude,timezone,postal_code,primary_color,accent_color,logo_path,logo_light_path,icon_path,icon_small_path,updated_at";
 
 export type IdentityRow = Omit<Row, "id" | "updated_by">;
 
@@ -36,6 +36,9 @@ const MAX_LENGTH: Record<IdentityFieldName, number> = {
   town_hall_phone: 20,
   town_hall_website: 300,
   timezone: 64,
+  postal_code: 5,
+  primary_color: 7,
+  accent_color: 7,
 };
 
 const FORMAT_MESSAGE: Partial<Record<IdentityFieldName, string>> = {
@@ -43,6 +46,9 @@ const FORMAT_MESSAGE: Partial<Record<IdentityFieldName, string>> = {
     "Escribe solo la dirección principal, con https:// y sin rutas ni barra final (por ejemplo, https://ejemplo.es).",
   town_hall_phone: "Usa solo números, espacios y el signo +.",
   town_hall_website: "Debe empezar por https:// y no contener espacios.",
+  postal_code: "Escribe las cinco cifras del código postal.",
+  primary_color: "Elige un color o escribe su código, por ejemplo #1f4e79.",
+  accent_color: "Elige un color o escribe su código, por ejemplo #b5562a.",
 };
 const TEXT_MESSAGE = "No uses los símbolos < > { } ni saltos de línea.";
 
@@ -75,6 +81,9 @@ export function identityFallbacks(build: MunicipalityConfig): IdentityForm {
     latitude: build.coordinates ? String(build.coordinates.lat) : "",
     longitude: build.coordinates ? String(build.coordinates.lng) : "",
     timezone: build.coordinates?.timezone ?? "",
+    postal_code: build.postalCode ?? "",
+    primary_color: "",
+    accent_color: "",
   };
 }
 
@@ -138,7 +147,12 @@ export function validateIdentityForm(form: IdentityForm): IdentityValidation {
   const values: IdentityUpdate = {};
 
   for (const name of TEXT_FIELDS) {
-    const value = name === "site_url" ? normalizeSiteUrl(form[name]) : form[name].trim();
+    const value =
+      name === "site_url"
+        ? normalizeSiteUrl(form[name])
+        : name === "primary_color" || name === "accent_color"
+          ? form[name].trim().toLowerCase()
+          : form[name].trim();
     if (value.length > MAX_LENGTH[name]) errors[name] = `Máximo ${MAX_LENGTH[name]} caracteres.`;
     else if (!isValidIdentityValue(name, value))
       errors[name] = FORMAT_MESSAGE[name] ?? TEXT_MESSAGE;
@@ -195,4 +209,32 @@ export function identityErrorMessage(error: { code?: string; message?: string })
       ? "La base de datos no reconoce la zona horaria indicada."
       : "Algún dato no tiene un formato admitido. Revisa los campos y vuelve a intentarlo.";
   return "No se pudo completar la operación. Comprueba tu conexión y vuelve a intentarlo.";
+}
+
+/** Zona horaria predeterminada al indicar coordenadas. */
+export const DEFAULT_TIMEZONE = "Europe/Madrid";
+/** Zonas de España, primero en el selector. */
+export const COMMON_TIMEZONES = ["Europe/Madrid", "Atlantic/Canary", "Africa/Ceuta"];
+
+function supportedTimezones(): string[] {
+  try {
+    return Intl.supportedValuesOf("timeZone");
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Opciones del selector de zona horaria (IANA). Un valor guardado que no esté en la lista del
+ * navegador se conserva como opción, para no perderlo al guardar.
+ */
+export function timezoneOptions(current: string): { label: string; zones: string[] }[] {
+  const all = supportedTimezones();
+  const others = all.filter((zone) => !COMMON_TIMEZONES.includes(zone));
+  const value = current.trim();
+  if (value && !COMMON_TIMEZONES.includes(value) && !all.includes(value)) others.unshift(value);
+  return [
+    { label: "España", zones: COMMON_TIMEZONES },
+    { label: "Otras zonas", zones: others },
+  ];
 }

@@ -19,6 +19,8 @@ import type { PublicServicesContent } from "../../instances/schema";
 import puntoVuelaLogo from "@/assets/punto-vuela-logo.svg";
 import { useQuery } from "@tanstack/react-query";
 import { listingDetailQuery } from "@/lib/listing-detail";
+import { PageHeaderImage } from "@/components/PageHeaderImage";
+import { pageHeaderImage } from "@/lib/page-headers";
 
 // Cada bloque local solo se muestra si la instancia lo aporta.
 const services: PublicServicesContent = getInstanceContent().publicServices ?? {};
@@ -86,23 +88,23 @@ function SectionTitle({ n, title, text }: { n: string; title: string; text: stri
 function ServiciosPublicos() {
   const { tr } = useI18n();
   const vidaCategories = dailyLifeCategories();
+  const hero = pageHeaderImage("servicios-publicos", {
+    src: services.heroImage,
+    alt: tr(services.heroAlt ?? ""),
+  });
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main>
         <section className="relative text-primary-foreground">
-          {services.heroImage ? (
-            <img
-              src={services.heroImage}
-              alt={tr(services.heroAlt ?? "")}
-              width={1920}
-              height={1280}
-              className="h-[40vh] min-h-64 w-full object-cover"
-            />
+          {hero ? (
+            <div className="relative h-[40vh] min-h-64 w-full">
+              <PageHeaderImage image={hero} priority />
+            </div>
           ) : (
             <div aria-hidden className="h-[40vh] min-h-64 w-full bg-primary" />
           )}
-          {services.heroImage && (
+          {hero && (
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
           )}
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10">

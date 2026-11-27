@@ -72,6 +72,13 @@ const stored = {
   latitude: null,
   longitude: null,
   timezone: "",
+  postal_code: "",
+  primary_color: "",
+  accent_color: "",
+  logo_path: "",
+  logo_light_path: "",
+  icon_path: "",
+  icon_small_path: "",
   updated_at: V1,
 };
 
@@ -134,9 +141,9 @@ describe("pantalla de identidad municipal", () => {
     expect(mocks.calls).toContainEqual({ op: "eq", args: ["id", true] });
     expect(mocks.calls).toContainEqual({ op: "eq", args: ["updated_at", V1] });
     expect(screen.getByLabelText("Nombre del municipio")).toHaveValue("Villanueva");
-    expect(mocks.setSiteConfig).toHaveBeenCalledWith({
-      identity: expect.objectContaining({ name: "Villanueva" }),
-    });
+    expect(mocks.setSiteConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ identity: expect.objectContaining({ name: "Villanueva" }) }),
+    );
     expect(mocks.error).not.toHaveBeenCalled();
   });
 
@@ -235,12 +242,64 @@ describe("pantalla de identidad municipal", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("presenta logotipo y colores solo como consulta", async () => {
+  it("guarda los dos colores en minúsculas y comprueba su contraste", async () => {
+    mocks.updateResult = {
+      data: { ...stored, primary_color: "#1f4e79", accent_color: "#b5562a", updated_at: V2 },
+      error: null,
+    };
     openIdentity();
-    const block = (await screen.findByRole("heading", { name: "Logotipo y colores" })).closest(
+    fireEvent.change(await field("Color principal"), { target: { value: "#1F4E79" } });
+    fireEvent.change(screen.getByLabelText("Color de acento"), { target: { value: "#B5562A" } });
+    const checks = screen.getByRole("list", { name: "Contraste de la paleta" });
+    expect(within(checks).getAllByText(/· AA/)).toHaveLength(6);
+    fireEvent.click(saveButton());
+    await waitFor(() => expect(mocks.success).toHaveBeenCalledOnce());
+    expect(updates()[0]?.args[0]).toMatchObject({
+      primary_color: "#1f4e79",
+      accent_color: "#b5562a",
+    });
+    expect(mocks.setSiteConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        branding: expect.objectContaining({ primaryColor: "#1f4e79", accentColor: "#b5562a" }),
+      }),
+    );
+  });
+
+  it("rechaza un código postal o un color mal escritos", async () => {
+    openIdentity();
+    fireEvent.change(await field("Código postal principal"), { target: { value: "123" } });
+    fireEvent.change(screen.getByLabelText("Color principal"), { target: { value: "azul" } });
+    fireEvent.click(saveButton());
+    await waitFor(() => expect(mocks.error).toHaveBeenCalledWith("Revisa los campos marcados."));
+    expect(updates()).toHaveLength(0);
+    expect(screen.getByLabelText("Código postal principal")).toHaveAccessibleDescription(
+      /cinco cifras/,
+    );
+    expect(screen.getByLabelText("Color principal")).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("propone Europe/Madrid al escribir coordenadas y conserva una zona poco habitual", async () => {
+    mocks.reads = [{ data: { ...stored, timezone: "Etc/GMT+12" }, error: null }];
+    openIdentity();
+    const zone = await field("Zona horaria");
+    expect(zone).toHaveValue("Etc/GMT+12");
+    fireEvent.change(zone, { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("Latitud"), { target: { value: "40.5" } });
+    expect(screen.getByLabelText("Zona horaria")).toHaveValue("Europe/Madrid");
+    expect(
+      within(screen.getByLabelText("Zona horaria")).getByRole("option", {
+        name: "Atlantic/Canary",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("ofrece subir el logotipo y su versión clara", async () => {
+    openIdentity();
+    const block = (await screen.findByRole("heading", { name: "Logotipo e iconos" })).closest(
       "section",
     )!;
-    expect(within(block).queryAllByRole("textbox")).toHaveLength(0);
-    expect(block.querySelectorAll("input, select, textarea, button")).toHaveLength(0);
+    expect(within(block).getByRole("button", { name: "Subir logotipo" })).toBeInTheDocument();
+    expect(within(block).getByRole("button", { name: "Subir versión clara" })).toBeInTheDocument();
+    expect(within(block).queryByRole("button", { name: "Eliminar" })).not.toBeInTheDocument();
   });
 });

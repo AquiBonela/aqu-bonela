@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { normalize } from "@/lib/directory";
+import type { HourPeriod } from "@/lib/listing-details";
 
 export const STATUSES = [
   { value: "borrador", label: "Borrador" },
@@ -68,12 +69,12 @@ export const adminListingQuery = (id: string) =>
   queryOptions({
     queryKey: ["admin", "listing", id],
     queryFn: async () => {
-      const [l, c, h, a] = await Promise.all([
+      const [l, c, h, a, p] = await Promise.all([
         supabase.from("listings").select("*").eq("id", id).maybeSingle(),
         supabase.from("listing_contacts").select("*").eq("listing_id", id).maybeSingle(),
         supabase
           .from("listing_hours")
-          .select("weekday,opens,closes")
+          .select("weekday,opens,closes,period_id")
           .eq("listing_id", id)
           .order("weekday"),
         supabase
@@ -81,12 +82,38 @@ export const adminListingQuery = (id: string) =>
           .select("activity_id")
           .eq("listing_id", id)
           .order("sort_order"),
+        supabase
+          .from("listing_hour_periods")
+          .select("id,kind,starts_on,ends_on,label")
+          .eq("listing_id", id)
+          .order("sort_order"),
       ]);
       if (l.error) throw new Error(l.error.message);
+      const allHours = h.data ?? [];
+      const strip = ({
+        weekday,
+        opens,
+        closes,
+      }: {
+        weekday: number;
+        opens: string;
+        closes: string;
+      }) => ({
+        weekday,
+        opens: opens.slice(0, 5),
+        closes: closes.slice(0, 5),
+      });
       return {
         listing: l.data,
         contact: c.data,
-        hours: h.data ?? [],
+        hours: allHours.filter((x) => !x.period_id),
+        periods: (p.data ?? []).map((period) => ({
+          kind: period.kind as HourPeriod["kind"],
+          starts_on: period.starts_on,
+          ends_on: period.ends_on,
+          label: period.label,
+          hours: allHours.filter((x) => x.period_id === period.id).map(strip),
+        })),
         activityIds: (a.data ?? []).map((x) => x.activity_id),
       };
     },
@@ -141,10 +168,12 @@ export type SiteSettings = {
   banner_enabled: boolean;
   banner_text: string;
   common_labels: string[];
+  /** Publicar al aprobar el titular; si no, la ficha queda «Aprobada» hasta que se publique. */
+  publish_on_owner_approval: boolean;
 };
 
 const SETTINGS_COLS =
-  "hero_title,hero_subtitle,contact_email,admin_whatsapp,collaborator_months,legal_name,legal_nif,legal_address,legal_email,whatsapp_template,banner_enabled,banner_text,common_labels";
+  "hero_title,hero_subtitle,contact_email,admin_whatsapp,collaborator_months,legal_name,legal_nif,legal_address,legal_email,whatsapp_template,banner_enabled,banner_text,common_labels,publish_on_owner_approval";
 
 /** Completa campos ausentes (datos antiguos o en caché) para que el formulario nunca falle. */
 export function withSettingsDefaults(d: Partial<SiteSettings> | null | undefined): SiteSettings {
@@ -162,6 +191,7 @@ export function withSettingsDefaults(d: Partial<SiteSettings> | null | undefined
     banner_enabled: d?.banner_enabled ?? false,
     banner_text: d?.banner_text ?? "",
     common_labels: Array.isArray(d?.common_labels) ? d.common_labels : [],
+    publish_on_owner_approval: d?.publish_on_owner_approval ?? true,
   };
 }
 

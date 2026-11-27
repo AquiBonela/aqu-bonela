@@ -21,6 +21,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { brand, getMunicipality } from "@/config/municipality";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PageHeaderImage } from "@/components/PageHeaderImage";
+import { pageHeaderImage } from "@/lib/page-headers";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -116,6 +118,10 @@ function Index() {
     document.getElementById("resultados")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const hero = pageHeaderImage("directorio", {
+    src: getMunicipality().assets.heroImage,
+    alt: tr("Vista de {municipio}"),
+  });
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -123,19 +129,13 @@ function Index() {
       <section className="relative w-full overflow-hidden">
         <div
           className={
-            getMunicipality().assets.heroImage
+            hero
               ? "relative h-[24rem] w-full sm:h-[30rem]"
               : "relative h-[24rem] w-full bg-primary sm:h-[30rem]"
           }
         >
-          {getMunicipality().assets.heroImage && (
-            <img
-              src={getMunicipality().assets.heroImage}
-              alt={tr("Panorámica del pueblo blanco de {municipio} y la Sierra de las Nieves")}
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-          )}
-          {getMunicipality().assets.heroImage && (
+          {hero && <PageHeaderImage image={hero} priority />}
+          {hero && (
             <div
               aria-hidden
               className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent"

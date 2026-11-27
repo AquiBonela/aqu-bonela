@@ -7,12 +7,27 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n, type TKey } from "@/lib/i18n";
-import { brand, getInstanceContent, getMunicipality } from "@/config/municipality";
+import {
+  brand,
+  getInstanceContent,
+  getMunicipality,
+  getSiteConfigSnapshot,
+} from "@/config/municipality";
+import { PageHeaderImage } from "@/components/PageHeaderImage";
+import { pageHeaderImage } from "@/lib/page-headers";
+import type { PageKey } from "@/lib/site-identity";
 import type { HomeSection, InstanceContent } from "../../instances/schema";
 
-const { logoHome: logoWhite, heroImage: heroImg } = getMunicipality().assets;
 // Cifras, «Cómo llegar» y fotos de las tarjetas solo si la instancia las aporta.
 const home: NonNullable<InstanceContent["home"]> = getInstanceContent().home ?? {};
+/** Cada tarjeta de la portada usa la cabecera de su página. */
+const SECTION_PAGE: Record<HomeSection, PageKey> = {
+  directorio: "directorio",
+  descubre: "descubre",
+  servicios: "servicios-publicos",
+  actualidad: "actualidad",
+  clasificados: "tablon",
+};
 const hasDiscover = Boolean(getInstanceContent().discover);
 
 export const Route = createFileRoute("/")({
@@ -117,32 +132,41 @@ function Home() {
     });
   };
 
+  // Identidad aplicada en cada render (Supabase o la instalación compilada).
+  const assets = getMunicipality().assets;
+  const hero = pageHeaderImage("inicio", { src: assets.heroImage, alt: t("home.heroAlt") });
+  const logoLight = assets.logoHome;
+  // Logotipo subido sin versión clara: se muestra sobre una pastilla blanca para que se lea.
+  const logoBadge =
+    !logoLight && getSiteConfigSnapshot().branding?.logoPath ? assets.logoAdmin : undefined;
   return (
     <div className="min-h-screen bg-background">
       <div className="relative z-10">
         <SiteHeader overlay />
 
-        <section className={heroImg ? "relative" : "relative bg-primary"}>
-          {heroImg && (
-            <img
-              src={heroImg}
-              alt={t("home.heroAlt")}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          )}
-          {heroImg && (
+        <section className={hero ? "relative" : "relative bg-primary"}>
+          {hero && <PageHeaderImage image={hero} priority />}
+          {hero && (
             <div
               aria-hidden
               className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/40 to-foreground/85"
             />
           )}
           <div className="relative mx-auto flex min-h-[36rem] max-w-3xl flex-col items-center justify-center px-4 pb-14 pt-24 text-center">
-            {logoWhite ? (
+            {logoLight ? (
               <img
-                src={logoWhite}
+                src={logoLight}
                 alt={getMunicipality().appName}
                 className="h-auto w-64 sm:w-80"
               />
+            ) : logoBadge ? (
+              <span className="inline-flex rounded-soft bg-white/95 px-6 py-4 shadow-lg">
+                <img
+                  src={logoBadge}
+                  alt={getMunicipality().appName}
+                  className="h-auto max-h-24 w-56 object-contain sm:w-64"
+                />
+              </span>
             ) : (
               <p className="font-display text-4xl font-extrabold leading-tight text-primary-foreground text-balance sm:text-5xl">
                 {getMunicipality().appName}
@@ -268,14 +292,15 @@ function Home() {
           <ul className="grid gap-4 sm:grid-cols-2">
             {SECTIONS.map(({ key, text, section, to }, i) => {
               const inactive = !to;
-              const img = home.sectionImages?.[section];
+              const img = pageHeaderImage(SECTION_PAGE[section], {
+                src: home.sectionImages?.[section],
+              });
               const inner = (
                 <>
                   {img && (
-                    <img
-                      src={img}
-                      alt=""
-                      loading="lazy"
+                    <PageHeaderImage
+                      image={img}
+                      decorative
                       className={`absolute inset-0 h-full w-full object-cover ${inactive ? "grayscale" : "transition-transform duration-700 group-hover:scale-105"}`}
                     />
                   )}

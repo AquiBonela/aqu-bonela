@@ -243,6 +243,15 @@ export type Database = {
           whatsapp: string | null;
           x_twitter: string | null;
           youtube: string | null;
+          latitude: number | null;
+          locality: string | null;
+          longitude: number | null;
+          postal_code: string | null;
+          show_approximate_location: boolean;
+          show_website: boolean;
+          street: string | null;
+          street_number: string | null;
+          website: string | null;
         };
         Insert: {
           address?: string | null;
@@ -272,6 +281,15 @@ export type Database = {
           whatsapp?: string | null;
           x_twitter?: string | null;
           youtube?: string | null;
+          latitude?: number | null;
+          locality?: string | null;
+          longitude?: number | null;
+          postal_code?: string | null;
+          show_approximate_location?: boolean;
+          show_website?: boolean;
+          street?: string | null;
+          street_number?: string | null;
+          website?: string | null;
         };
         Update: {
           address?: string | null;
@@ -301,6 +319,15 @@ export type Database = {
           whatsapp?: string | null;
           x_twitter?: string | null;
           youtube?: string | null;
+          latitude?: number | null;
+          locality?: string | null;
+          longitude?: number | null;
+          postal_code?: string | null;
+          show_approximate_location?: boolean;
+          show_website?: boolean;
+          street?: string | null;
+          street_number?: string | null;
+          website?: string | null;
         };
         Relationships: [
           {
@@ -320,6 +347,7 @@ export type Database = {
           listing_id: string;
           opens: string;
           weekday: number;
+          period_id: string | null;
         };
         Insert: {
           closes: string;
@@ -328,6 +356,7 @@ export type Database = {
           listing_id: string;
           opens: string;
           weekday: number;
+          period_id?: string | null;
         };
         Update: {
           closes?: string;
@@ -336,6 +365,7 @@ export type Database = {
           listing_id?: string;
           opens?: string;
           weekday?: number;
+          period_id?: string | null;
         };
         Relationships: [
           {
@@ -492,6 +522,13 @@ export type Database = {
           type: Database["public"]["Enums"]["listing_type"];
           updated_at: string;
           urgent_24h: boolean;
+          cover_alt: string;
+          hours_note: string;
+          public_latitude: number | null;
+          public_locality: string | null;
+          public_location_approximate: boolean;
+          public_longitude: number | null;
+          show_service_area: boolean;
         };
         Insert: {
           activity?: string | null;
@@ -529,6 +566,13 @@ export type Database = {
           type: Database["public"]["Enums"]["listing_type"];
           updated_at?: string;
           urgent_24h?: boolean;
+          cover_alt?: string;
+          hours_note?: string;
+          public_latitude?: number | null;
+          public_locality?: string | null;
+          public_location_approximate?: boolean;
+          public_longitude?: number | null;
+          show_service_area?: boolean;
         };
         Update: {
           activity?: string | null;
@@ -566,6 +610,13 @@ export type Database = {
           type?: Database["public"]["Enums"]["listing_type"];
           updated_at?: string;
           urgent_24h?: boolean;
+          cover_alt?: string;
+          hours_note?: string;
+          public_latitude?: number | null;
+          public_locality?: string | null;
+          public_location_approximate?: boolean;
+          public_longitude?: number | null;
+          show_service_area?: boolean;
         };
         Relationships: [
           {
@@ -576,6 +627,105 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      listing_events: {
+        Row: {
+          actor: string | null;
+          created_at: string;
+          from_status: Database["public"]["Enums"]["listing_status"] | null;
+          id: number;
+          kind: string;
+          listing_id: string;
+          note: string;
+          to_status: Database["public"]["Enums"]["listing_status"] | null;
+        };
+        Insert: {
+          actor?: string | null;
+          created_at?: string;
+          from_status?: Database["public"]["Enums"]["listing_status"] | null;
+          id?: number;
+          kind: string;
+          listing_id: string;
+          note?: string;
+          to_status?: Database["public"]["Enums"]["listing_status"] | null;
+        };
+        Update: {
+          actor?: string | null;
+          created_at?: string;
+          from_status?: Database["public"]["Enums"]["listing_status"] | null;
+          id?: number;
+          kind?: string;
+          listing_id?: string;
+          note?: string;
+          to_status?: Database["public"]["Enums"]["listing_status"] | null;
+        };
+        Relationships: [];
+      };
+      listing_hour_periods: {
+        Row: {
+          created_at: string;
+          ends_on: string;
+          id: string;
+          kind: string;
+          label: string;
+          listing_id: string;
+          sort_order: number;
+          starts_on: string;
+        };
+        Insert: {
+          created_at?: string;
+          ends_on: string;
+          id?: string;
+          kind: string;
+          label?: string;
+          listing_id: string;
+          sort_order?: number;
+          starts_on: string;
+        };
+        Update: {
+          created_at?: string;
+          ends_on?: string;
+          id?: string;
+          kind?: string;
+          label?: string;
+          listing_id?: string;
+          sort_order?: number;
+          starts_on?: string;
+        };
+        Relationships: [];
+      };
+      page_headers: {
+        Row: {
+          alt: string;
+          focal_x: number;
+          focal_y: number;
+          image_path: string;
+          image_small_path: string;
+          page_key: string;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          alt?: string;
+          focal_x?: number;
+          focal_y?: number;
+          image_path: string;
+          image_small_path: string;
+          page_key: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          alt?: string;
+          focal_x?: number;
+          focal_y?: number;
+          image_path?: string;
+          image_small_path?: string;
+          page_key?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
       };
       procedure_categories: {
         Row: {
@@ -696,6 +846,13 @@ export type Database = {
           town_hall_website: string;
           updated_at: string;
           updated_by: string | null;
+          accent_color: string;
+          icon_path: string;
+          icon_small_path: string;
+          logo_light_path: string;
+          logo_path: string;
+          postal_code: string;
+          primary_color: string;
         };
         Insert: {
           app_name?: string;
@@ -717,6 +874,13 @@ export type Database = {
           town_hall_website?: string;
           updated_at?: string;
           updated_by?: string | null;
+          accent_color?: string;
+          icon_path?: string;
+          icon_small_path?: string;
+          logo_light_path?: string;
+          logo_path?: string;
+          postal_code?: string;
+          primary_color?: string;
         };
         Update: {
           app_name?: string;
@@ -738,6 +902,13 @@ export type Database = {
           town_hall_website?: string;
           updated_at?: string;
           updated_by?: string | null;
+          accent_color?: string;
+          icon_path?: string;
+          icon_small_path?: string;
+          logo_light_path?: string;
+          logo_path?: string;
+          postal_code?: string;
+          primary_color?: string;
         };
         Relationships: [];
       };
@@ -758,6 +929,7 @@ export type Database = {
           legal_nif: string;
           updated_at: string;
           whatsapp_template: string;
+          publish_on_owner_approval: boolean;
         };
         Insert: {
           admin_whatsapp?: string;
@@ -775,6 +947,7 @@ export type Database = {
           legal_nif?: string;
           updated_at?: string;
           whatsapp_template?: string;
+          publish_on_owner_approval?: boolean;
         };
         Update: {
           admin_whatsapp?: string;
@@ -792,6 +965,7 @@ export type Database = {
           legal_nif?: string;
           updated_at?: string;
           whatsapp_template?: string;
+          publish_on_owner_approval?: boolean;
         };
         Relationships: [];
       };
@@ -894,6 +1068,14 @@ export type Database = {
           translations: Json | null;
           type: Database["public"]["Enums"]["listing_type"] | null;
           urgent_24h: boolean | null;
+          cover_alt: string | null;
+          hours_note: string | null;
+          public_home_service: boolean | null;
+          public_latitude: number | null;
+          public_locality: string | null;
+          public_location_approximate: boolean | null;
+          public_longitude: number | null;
+          public_service_area: string | null;
         };
         Relationships: [];
       };
@@ -906,6 +1088,7 @@ export type Database = {
           p_show_hours: boolean;
           p_token_hash: string;
           p_visibility: Json;
+          p_terms_version?: string;
         };
         Returns: Json;
       };
@@ -925,6 +1108,11 @@ export type Database = {
         };
         Returns: boolean;
       };
+      listing_review_state: { Args: { p_listing_id: string }; Returns: string };
+      request_listing_corrections: {
+        Args: { p_message: string; p_token_hash: string };
+        Returns: Json;
+      };
       save_listing: {
         Args: {
           p_activity_ids: string[];
@@ -933,10 +1121,15 @@ export type Database = {
           p_hours: Json;
           p_id?: string;
           p_listing: Json;
+          p_periods?: Json;
         };
         Returns: Json;
       };
       site_config: { Args: never; Returns: Json };
+      withdraw_listing_consent: {
+        Args: { p_listing_id: string; p_note?: string };
+        Returns: Json;
+      };
     };
     Enums: {
       app_role: "admin";

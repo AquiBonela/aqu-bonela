@@ -6,6 +6,19 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { HourPeriodsEditor } from "@/components/admin/listing/HourPeriodsEditor";
+import {
+  listingReviewQuery,
+  ReviewStatusPanel,
+} from "@/components/admin/listing/ReviewStatusPanel";
+import {
+  composeAddress,
+  normalizeWebsite,
+  parseCoordinate,
+  validateListingDetails,
+  type HourPeriod,
+} from "@/lib/listing-details";
+import { canPublish, OWNER_APPROVAL_REQUIRED } from "@/lib/listing-review";
 import { CoverPicker, GalleryPicker } from "@/components/admin/ListingImages";
 import {
   activitiesQuery,
@@ -114,6 +127,18 @@ type Form = {
   hours: Hour[];
   /** El horario se ve en la ficha pública (si no, se guarda pero los visitantes no lo reciben). */
   show_hours: boolean;
+  show_website: boolean;
+  show_service_area: boolean;
+  street: string;
+  street_number: string;
+  postal_code: string;
+  locality: string;
+  latitude: string;
+  longitude: string;
+  show_approximate_location: boolean;
+  cover_alt: string;
+  hours_note: string;
+  periods: HourPeriod[];
 };
 
 const empty: Form = {
@@ -161,6 +186,18 @@ const empty: Form = {
   status: "borrador",
   hours: [],
   show_hours: true,
+  show_website: false,
+  show_service_area: false,
+  street: "",
+  street_number: "",
+  postal_code: "",
+  locality: "",
+  latitude: "",
+  longitude: "",
+  show_approximate_location: false,
+  cover_alt: "",
+  hours_note: "",
+  periods: [],
 };
 
 const normalizeUrl = (u: string) => {
@@ -168,6 +205,9 @@ const normalizeUrl = (u: string) => {
   if (!t) return null;
   return /^https?:\/\//i.test(t) ? t : `https://${t}`;
 };
+
+/** Coordenada válida o vacío (la validación previa ya descartó los valores incorrectos). */
+const numberOrNull = (v: number | null | "invalid") => (typeof v === "number" ? v : null);
 
 const LISTING_CHANGED_CODE = "PT409";
 const LISTING_CHANGED =
@@ -192,6 +232,10 @@ function EditPage() {
   const { data: settings } = useQuery(siteSettingsQuery);
   const months = settings?.collaborator_months ?? 1;
   const { data, isLoading, refetch } = useQuery({ ...adminListingQuery(id), enabled: !isNew });
+  const { data: review, refetch: refetchReview } = useQuery({
+    ...listingReviewQuery(id),
+    enabled: !isNew,
+  });
   const [f, setF] = useState<Form>(empty);
   const [language, setLanguage] = useState<Lang>("es");
   const [translations, setTranslations] = useState<Translations>({});
@@ -260,7 +304,20 @@ function EditPage() {
       type: l.type,
       category_id: l.category_id ?? "",
       activity: l.activity ?? "",
-      website: l.public_website ?? "",
+      // La web vive en la parte privada; si aún no, la pública que ya se mostraba.
+      website: c?.website ?? l.public_website ?? "",
+      show_website: c?.show_website ?? Boolean(l.public_website),
+      show_service_area: l.show_service_area,
+      street: c?.street ?? "",
+      street_number: c?.street_number ?? "",
+      postal_code: c?.postal_code ?? "",
+      locality: c?.locality ?? "",
+      latitude: c?.latitude == null ? "" : String(c.latitude),
+      longitude: c?.longitude == null ? "" : String(c.longitude),
+      show_approximate_location: c?.show_approximate_location ?? false,
+      cover_alt: l.cover_alt ?? "",
+      hours_note: l.hours_note ?? "",
+      periods: data.periods ?? [],
       home_service: l.home_service,
       service_area: l.service_area ?? "",
       extra_activities: data.activityIds.filter(
@@ -362,6 +419,12 @@ function EditPage() {
       toast.error(tr("Elige una categoría."));
       return;
     }
+    const detailErrors = validateListingDetails(f);
+    const firstError = Object.values(detailErrors)[0];
+    if (firstError) {
+      toast.error(tr(firstError));
+      return;
+    }
     if (saving || translating) return;
     if (!isNew && (stale || conflict)) {
       toast.error(tr(LISTING_CHANGED));
@@ -400,9 +463,11 @@ function EditPage() {
       featured_until,
       urgent_24h: f.urgent_24h,
       status: f.status,
-      public_website: normalizeUrl(f.website),
       home_service: f.home_service,
       service_area: f.service_area.trim(),
+      show_service_area: f.show_service_area,
+      cover_alt: f.cover_alt.trim(),
+      hours_note: f.hours_note.trim(),
     };
     const contact = {
       phone: f.phone || null,
@@ -429,7 +494,21 @@ function EditPage() {
       show_tiktok: f.show_tiktok,
       owner_name: f.owner_name || null,
       owner_contact: f.owner_contact || null,
+      street: f.street.trim() || null,
+      street_number: f.street_number.trim() || null,
+      postal_code: f.postal_code.trim() || null,
+      locality: f.locality.trim() || null,
+      latitude: numberOrNull(parseCoordinate(f.latitude, 90)),
+      longitude: numberOrNull(parseCoordinate(f.longitude, 180)),
+      show_approximate_location: f.show_approximate_location,
+      website: normalizeWebsite(f.website) || null,
+      show_website: f.show_website,
     };
+    const periods = f.periods.map((p) => ({
+      ...p,
+      label: p.label.trim(),
+      hours: p.hours.filter((h) => h.opens && h.closes),
+    }));
     const hours = f.hours
       .filter((h) => h.opens && h.closes)
       .map(({ weekday, opens, closes }) => ({ weekday, opens, closes }));
@@ -443,6 +522,7 @@ function EditPage() {
         p_contact: contact,
         p_hours: hours,
         p_activity_ids: actIds,
+        p_periods: periods as unknown as Json,
         // Sin versión cargada la base lo trata como conflicto: nunca guarda a ciegas.
         ...(isNew ? {} : { p_id: id, ...(base ? { p_expected_updated_at: base.version } : {}) }),
       });
@@ -454,6 +534,7 @@ function EditPage() {
       await qc.invalidateQueries({ queryKey: ["admin"] });
       qc.invalidateQueries({ queryKey: ["directory"] });
       qc.invalidateQueries({ queryKey: ["listing"] });
+      void refetchReview();
       toast.success(tr("Ficha guardada"));
       if (isNew) navigate({ to: "/admin/fichas/$id", params: { id: listingId } });
     } catch (err) {
@@ -461,6 +542,10 @@ function EditPage() {
         setConflict(true);
         toast.error(tr(LISTING_CHANGED));
         void refetch();
+        return;
+      }
+      if ((err as { code?: string }).code === "PT422") {
+        toast.error(tr(OWNER_APPROVAL_REQUIRED));
         return;
       }
       const msg = (err as { message?: string }).message ?? "";
@@ -662,7 +747,7 @@ function EditPage() {
         )}
         <Field
           label={tr("Página web")}
-          hint={tr("Opcional. Se mostrará en la ficha más adelante.")}
+          hint={tr("Opcional. Solo se publica si la marcas como visible.")}
         >
           <Input
             type="url"
@@ -673,6 +758,11 @@ function EditPage() {
           />
         </Field>
         <Toggle
+          label={tr("Mostrar la página web en la ficha")}
+          checked={f.show_website}
+          onChange={(v) => set("show_website", v)}
+        />
+        <Toggle
           label={tr("Servicio a domicilio")}
           checked={f.home_service}
           onChange={(v) => set("home_service", v)}
@@ -681,6 +771,12 @@ function EditPage() {
         <Field label={tr("Zona de servicio")} hint={tr("Opcional. Ej.: {municipio} y alrededores")}>
           <Input value={f.service_area} onChange={(e) => set("service_area", e.target.value)} />
         </Field>
+        <Toggle
+          label={tr("Mostrar el servicio a domicilio y la zona en la ficha")}
+          hint={tr("Solo se publica si hay servicio a domicilio o una zona escrita.")}
+          checked={f.show_service_area}
+          onChange={(v) => set("show_service_area", v)}
+        />
         <Field
           label={tr("Etiquetas destacadas")}
           hint={tr("Hasta 3, separadas por comas. Ej.: Pan de leña, Encargos")}
@@ -808,13 +904,74 @@ function EditPage() {
           show={f.show_whatsapp}
           onShow={(v) => set("show_whatsapp", v)}
         />
-        <ContactRow
-          label={tr("Dirección")}
-          value={f.address}
-          onValue={(v) => set("address", v)}
-          show={f.show_address}
-          onShow={(v) => set("show_address", v)}
-        />
+        <fieldset className="grid gap-3 border p-3">
+          <legend className="px-1 text-sm font-medium">{tr("Dirección y ubicación")}</legend>
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]">
+            <Field label={tr("Calle")}>
+              <Input
+                value={f.street}
+                onChange={(e) => set("street", e.target.value)}
+                maxLength={120}
+              />
+            </Field>
+            <Field label={tr("Número")}>
+              <Input
+                value={f.street_number}
+                onChange={(e) => set("street_number", e.target.value)}
+                maxLength={20}
+              />
+            </Field>
+            <Field label={tr("Código postal")}>
+              <Input
+                inputMode="numeric"
+                maxLength={5}
+                value={f.postal_code}
+                onChange={(e) => set("postal_code", e.target.value)}
+              />
+            </Field>
+            <Field label={tr("Localidad")}>
+              <Input
+                value={f.locality}
+                onChange={(e) => set("locality", e.target.value)}
+                maxLength={80}
+              />
+            </Field>
+            <Field label={tr("Latitud")} hint={tr("Opcional, para situarla en el mapa.")}>
+              <Input value={f.latitude} onChange={(e) => set("latitude", e.target.value)} />
+            </Field>
+            <Field label={tr("Longitud")} hint={tr("Al oeste de Greenwich es negativa.")}>
+              <Input value={f.longitude} onChange={(e) => set("longitude", e.target.value)} />
+            </Field>
+          </div>
+          {f.address && !f.street && (
+            <Field
+              label={tr("Dirección guardada")}
+              hint={tr("Se usa mientras no indiques la calle.")}
+            >
+              <Input value={f.address} onChange={(e) => set("address", e.target.value)} />
+            </Field>
+          )}
+          <Toggle
+            label={tr("Publicar la dirección exacta")}
+            checked={f.show_address}
+            onChange={(v) => set("show_address", v)}
+          />
+          <Toggle
+            label={tr("Publicar solo la zona aproximada")}
+            hint={tr(
+              "Muestra la localidad y un mapa con un margen de un kilómetro, sin calle ni número.",
+            )}
+            checked={f.show_approximate_location && !f.show_address}
+            onChange={(v) => set("show_approximate_location", v)}
+          />
+          <p className="text-xs text-muted-foreground">
+            {f.show_address
+              ? `${tr("Se publicará:")} ${composeAddress(f) || tr("(sin dirección)")}`
+              : f.show_approximate_location
+                ? `${tr("Se publicará:")} ${[f.postal_code, f.locality].filter(Boolean).join(" ") || tr("(sin localidad)")}`
+                : tr("La dirección no se publica.")}
+          </p>
+        </fieldset>
         <ContactRow
           label="Email"
           type="email"
@@ -970,6 +1127,21 @@ function EditPage() {
           checked={f.show_hours}
           onChange={(v) => set("show_hours", v)}
         />
+        <Field
+          label={tr("Nota sobre el horario")}
+          hint={tr("Opcional. Por ejemplo: cerrado el día de la fiesta local.")}
+        >
+          <Input
+            value={f.hours_note}
+            maxLength={300}
+            onChange={(e) => set("hours_note", e.target.value)}
+          />
+        </Field>
+        <HourPeriodsEditor
+          periods={f.periods}
+          onChange={(periods) => set("periods", periods)}
+          error={validateListingDetails(f).periods}
+        />
       </Section>
 
       <Section title={tr("5. Imágenes y distinciones")}>
@@ -988,6 +1160,18 @@ function EditPage() {
             }}
           />
         )}
+        <Field
+          label={tr("Texto alternativo de la portada")}
+          hint={tr(
+            "Describe la foto principal para quien no la ve. Por ejemplo: Fachada de la tienda.",
+          )}
+        >
+          <Input
+            value={f.cover_alt}
+            maxLength={200}
+            onChange={(e) => set("cover_alt", e.target.value)}
+          />
+        </Field>
         <Toggle
           label={tr("Resaltado")}
           checked={f.highlighted}
@@ -1023,16 +1207,42 @@ function EditPage() {
       </Section>
 
       <Section title={tr("6. Estado")}>
+        {!isNew && data?.listing && (
+          <ReviewStatusPanel
+            listingId={id}
+            status={data.listing.status}
+            current={{
+              listing: f as unknown as Record<string, unknown>,
+              contact: f as unknown as Record<string, unknown>,
+            }}
+            onChanged={() => {
+              setBase(null);
+              void refetch();
+              void refetchReview();
+            }}
+          />
+        )}
         <select
+          aria-label={tr("Estado de publicación")}
           value={f.status}
           onChange={(e) => set("status", e.target.value as Status)}
           className="h-10 w-full border bg-background px-3 text-sm sm:w-72"
         >
-          {STATUSES.map((s) => (
-            <option key={s.value} value={s.value}>
-              {tr(s.label)}
-            </option>
-          ))}
+          {STATUSES.map((s) => {
+            const blocked =
+              s.value === "publicada" &&
+              !canPublish({
+                status: data?.listing?.status ?? "borrador",
+                type: f.type,
+                review: review?.review ?? "sin_enviar",
+                publishedBefore: Boolean(data?.listing?.published_at),
+              });
+            return (
+              <option key={s.value} value={s.value} disabled={blocked}>
+                {tr(blocked ? "Publicada (necesita la aprobación del titular)" : s.label)}
+              </option>
+            );
+          })}
         </select>
         <div className="space-y-3 border-t pt-3">
           <p className="text-xs text-muted-foreground">

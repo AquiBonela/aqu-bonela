@@ -7,7 +7,9 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { adminHead } from "@/components/admin/admin-areas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getBuildMunicipality, getMunicipality, setSiteConfig } from "@/config/municipality";
+import { getBuildMunicipality, getSiteConfigSnapshot, setSiteConfig } from "@/config/municipality";
+import { BrandColors } from "@/components/admin/identity/BrandColors";
+import { LogoManager } from "@/components/admin/identity/LogoManager";
 import { fmtDate } from "@/lib/admin";
 import { Text } from "@/lib/i18n";
 import {
@@ -16,6 +18,8 @@ import {
   identityErrorMessage,
   identityFallbacks,
   identityPlaceholders,
+  DEFAULT_TIMEZONE,
+  timezoneOptions,
   validateIdentityForm,
   type IdentityErrors,
   type IdentityForm,
@@ -69,7 +73,8 @@ type FieldDef = {
    * Teclado del móvil. Las coordenadas usan el de texto: el teclado numérico del iPhone
    * no tiene signo menos y casi todas las longitudes de España son negativas.
    */
-  type?: "text" | "url" | "tel" | undefined;
+  type?: "text" | "url" | "tel" | "timezone" | undefined;
+  inputMode?: "numeric" | undefined;
 };
 
 const SECTIONS: { title: string; intro?: string; fields: FieldDef[] }[] = [
@@ -77,6 +82,12 @@ const SECTIONS: { title: string; intro?: string; fields: FieldDef[] }[] = [
     title: "Nombre y territorio",
     fields: [
       { name: "municipality_name", label: "Nombre del municipio" },
+      {
+        name: "postal_code",
+        label: "Código postal principal",
+        hint: "Cinco cifras.",
+        inputMode: "numeric",
+      },
       { name: "app_name", label: "Nombre de la plataforma" },
       { name: "short_name", label: "Nombre breve", hint: "Se usa en frases cortas de la web." },
       { name: "province", label: "Provincia" },
@@ -121,7 +132,8 @@ const SECTIONS: { title: string; intro?: string; fields: FieldDef[] }[] = [
       {
         name: "timezone",
         label: "Zona horaria",
-        hint: "Formato Región/Ciudad, por ejemplo Europe/Madrid.",
+        type: "timezone",
+        hint: "Al indicar coordenadas se propone Europe/Madrid.",
       },
     ],
   },
@@ -168,9 +180,26 @@ function IdentityEditor() {
   if (!form || !loaded) return null;
 
   const set = (name: IdentityFormField, value: string) => {
-    setForm({ ...form, [name]: value });
+    const next = { ...form, [name]: value };
+    // Al empezar a indicar coordenadas se propone la zona horaria predeterminada.
+    if ((name === "latitude" || name === "longitude") && value.trim() && !next.timezone.trim())
+      next.timezone = DEFAULT_TIMEZONE;
+    setForm(next);
     if (errors[name]) setErrors({ ...errors, [name]: undefined });
   };
+
+  // La sesión del administrador ve el cambio al momento, sin perder las cabeceras ya cargadas;
+  // los visitantes, al renovarse la caché del servidor.
+  function applySaved(saved: IdentityRow) {
+    setLoaded(saved);
+    qc.setQueryData(identityQuery.queryKey, saved);
+    const parsed = parseSiteConfig({ identity: saved });
+    setSiteConfig({
+      ...getSiteConfigSnapshot(),
+      identity: parsed.identity,
+      branding: parsed.branding ?? {},
+    });
+  }
 
   async function save(event: FormEvent) {
     event.preventDefault();
@@ -210,11 +239,8 @@ function IdentityEditor() {
         );
         return;
       }
-      setLoaded(saved);
+      applySaved(saved);
       setForm(formFromRow(saved));
-      qc.setQueryData(identityQuery.queryKey, saved);
-      // Esta sesión ve el cambio al momento; los visitantes, al renovarse la caché del servidor.
-      setSiteConfig(parseSiteConfig({ identity: saved }));
       toast.success("Identidad guardada. La web pública la mostrará en un minuto como máximo.");
     } catch {
       toast.error(identityErrorMessage({}));
@@ -226,45 +252,53 @@ function IdentityEditor() {
   const placeholders = identityPlaceholders(form, identityFallbacks(getBuildMunicipality()));
 
   return (
-    <form onSubmit={save} noValidate className="mt-6 grid gap-6">
-      {SECTIONS.map((section) => (
-        <section key={section.title} className="grid gap-4 border bg-card p-4">
-          <div>
-            <h2 className="font-display text-lg font-bold">
-              <Text text={section.title} />
-            </h2>
-            {section.intro && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                <Text text={section.intro} />
-              </p>
-            )}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {section.fields.map((field) => (
-              <IdentityField
-                key={field.name}
-                field={field}
-                value={form[field.name]}
-                placeholder={placeholders[field.name]}
-                error={errors[field.name]}
-                onChange={(value) => set(field.name, value)}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+    <div className="mt-6 grid gap-6">
+      <form onSubmit={save} noValidate className="grid gap-6">
+        {SECTIONS.map((section) => (
+          <section key={section.title} className="grid gap-4 border bg-card p-4">
+            <div>
+              <h2 className="font-display text-lg font-bold">
+                <Text text={section.title} />
+              </h2>
+              {section.intro && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  <Text text={section.intro} />
+                </p>
+              )}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {section.fields.map((field) => (
+                <IdentityField
+                  key={field.name}
+                  field={field}
+                  value={form[field.name]}
+                  placeholder={placeholders[field.name]}
+                  error={errors[field.name]}
+                  onChange={(value) => set(field.name, value)}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
 
-      <LogoAndColors />
+        <BrandColors
+          primary={form.primary_color}
+          accent={form.accent_color}
+          errors={{ primary_color: errors.primary_color, accent_color: errors.accent_color }}
+          onChange={set}
+        />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" disabled={saving}>
-          <Text text={saving ? "Guardando…" : "Guardar identidad"} />
-        </Button>
-        <p className="text-xs text-muted-foreground">
-          <Text text="Última modificación:" /> {fmtDate(loaded.updated_at)}
-        </p>
-      </div>
-    </form>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button type="submit" disabled={saving}>
+            <Text text={saving ? "Guardando…" : "Guardar identidad"} />
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            <Text text="Última modificación:" /> {fmtDate(loaded.updated_at)}
+          </p>
+        </div>
+      </form>
+      <LogoManager row={loaded} onSaved={applySaved} />
+    </div>
   );
 }
 
@@ -289,16 +323,41 @@ function IdentityField({
       <label htmlFor={id} className="font-medium">
         <Text text={field.label} />
       </label>
-      <Input
-        id={id}
-        type={field.type ?? "text"}
-        value={value}
-        placeholder={placeholder}
-        onChange={(event) => onChange(event.target.value)}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy.length ? describedBy.join(" ") : undefined}
-        className={error ? "border-destructive" : undefined}
-      />
+      {field.type === "timezone" ? (
+        <select
+          id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy.length ? describedBy.join(" ") : undefined}
+          className={`h-10 w-full min-w-0 rounded-md border bg-background px-3 text-sm ${error ? "border-destructive" : ""}`}
+        >
+          <option value="">
+            {placeholder ? `De la instalación (${placeholder})` : "Sin zona horaria"}
+          </option>
+          {timezoneOptions(value).map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.zones.map((zone) => (
+                <option key={zone} value={zone}>
+                  {zone}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      ) : (
+        <Input
+          id={id}
+          type={field.type ?? "text"}
+          inputMode={field.inputMode}
+          value={value}
+          placeholder={placeholder}
+          onChange={(event) => onChange(event.target.value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy.length ? describedBy.join(" ") : undefined}
+          className={error ? "border-destructive" : undefined}
+        />
+      )}
       {field.hint && (
         <p id={`${id}-ayuda`} className="text-xs text-muted-foreground">
           <Text text={field.hint} />
@@ -310,47 +369,5 @@ function IdentityField({
         </p>
       )}
     </div>
-  );
-}
-
-/** Solo consulta: Supabase todavía no tiene dónde guardar logotipos ni colores. */
-function LogoAndColors() {
-  const m = getMunicipality();
-  const logo = m.assets.logoAdmin ?? m.assets.logoText;
-  return (
-    <section className="grid gap-4 border bg-card p-4" aria-labelledby="identidad-imagen">
-      <div>
-        <h2 id="identidad-imagen" className="font-display text-lg font-bold">
-          <Text text="Logotipo y colores" />
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          <Text text="Se definen en la instalación y todavía no se pueden cambiar desde el panel." />
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-6">
-        {logo ? (
-          <img
-            src={logo}
-            alt={`Logotipo de ${m.appName}`}
-            className="h-14 max-w-56 object-contain"
-          />
-        ) : (
-          <p className="text-sm">
-            <Text text="Sin logotipo: se muestra el nombre de la plataforma." />
-          </p>
-        )}
-        <ul className="flex flex-wrap gap-4 text-xs">
-          {[
-            { label: "Color principal", className: "bg-primary" },
-            { label: "Color de acento", className: "bg-terracotta" },
-          ].map((color) => (
-            <li key={color.label} className="flex items-center gap-2">
-              <span aria-hidden className={`h-8 w-8 rounded-full border ${color.className}`} />
-              <Text text={color.label} />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
   );
 }

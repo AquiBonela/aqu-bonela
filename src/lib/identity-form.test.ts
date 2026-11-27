@@ -29,6 +29,13 @@ const row: IdentityRow = {
   latitude: null,
   longitude: null,
   timezone: "",
+  postal_code: "",
+  primary_color: "",
+  accent_color: "",
+  logo_path: "",
+  logo_light_path: "",
+  icon_path: "",
+  icon_small_path: "",
   updated_at: "2026-11-27T10:00:00.123456+00:00",
 };
 
@@ -74,6 +81,9 @@ describe("formulario de identidad municipal", () => {
         "town_hall_name",
         "town_hall_phone",
         "town_hall_website",
+        "postal_code",
+        "primary_color",
+        "accent_color",
       ].sort(),
     );
     expect(result.values).not.toHaveProperty("updated_at");

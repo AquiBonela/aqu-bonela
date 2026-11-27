@@ -129,7 +129,10 @@ type FieldName =
   | "town_hall_address"
   | "town_hall_phone"
   | "town_hall_website"
-  | "timezone";
+  | "timezone"
+  | "postal_code"
+  | "primary_color"
+  | "accent_color";
 
 const safeText = (value: string) => !UNSAFE_SYMBOLS.test(value) && !hasControlCharacter(value);
 const text = (max: number) => z.string().trim().max(max).refine(safeText);
@@ -156,6 +159,9 @@ const FIELDS: Record<FieldName, z.ZodType<string>> = {
     .max(300)
     .refine((v) => v === "" || WEBSITE.test(v)),
   timezone: text(64),
+  postal_code: z.string().regex(/^([0-9]{5})?$/),
+  primary_color: z.string().regex(/^(#[0-9a-f]{6})?$/),
+  accent_color: z.string().regex(/^(#[0-9a-f]{6})?$/),
 };
 
 /** Campo de texto de public.site_identity. */

@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { siteSettingsQuery, withSettingsDefaults, type SiteSettings } from "@/lib/admin";
 import { brand } from "@/config/municipality";
+import { PageHeaderEditor } from "@/components/admin/PageHeaderEditor";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracion")({
   head: () => ({
@@ -29,6 +30,9 @@ export const Route = createFileRoute("/_authenticated/admin/configuracion")({
       <h1 className="font-display text-2xl font-bold">
         <Text text="Configuración" />
       </h1>
+      <div className="mt-6">
+        <PageHeaderEditor page="inicio" />
+      </div>
       <GeneralSettings />
     </AdminShell>
   ),
@@ -160,6 +164,18 @@ function GeneralSettings() {
             onChange={(e) => set("admin_whatsapp", e.target.value)}
             placeholder="+34 600 000 000"
           />
+        </label>
+        <label className="flex items-start gap-3 text-sm font-medium">
+          <Switch
+            checked={f.publish_on_owner_approval}
+            onCheckedChange={(v) => set("publish_on_owner_approval", v)}
+          />
+          <span>
+            <Text text="Publicar la ficha en cuanto el titular la apruebe" />
+            <span className="block text-xs font-normal text-muted-foreground">
+              <Text text="Si lo desactivas, la ficha aprobada queda como «Aprobada» hasta que la publiques desde el panel." />
+            </span>
+          </span>
         </label>
         <label className={lbl}>
           <Text text="Duración de «Resaltado» (meses)" />{" "}

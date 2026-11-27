@@ -2,7 +2,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Route as HomeRoute } from "./index";
 import { Route as SectionsRoute } from "./secciones";
-import { Route as ContentsRoute } from "./contenidos";
+import { Route as ContentsRoute } from "./contenidos.index";
 
 type Result = { data?: unknown; isSuccess: boolean; isError: boolean };
 const loading: Result = { data: undefined, isSuccess: false, isError: false };
@@ -121,21 +121,28 @@ describe("Inicio del panel", () => {
 });
 
 describe("áreas pendientes de desarrollo", () => {
-  it.each([
-    ["Secciones y menús", SectionsRoute],
-    ["Páginas y contenidos", ContentsRoute],
-  ])("%s se presenta como pendiente y sin controles", (title, route) => {
-    const { container } = renderRoute(route);
-    expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
-    expect(screen.getByText("Módulo pendiente de desarrollo")).toBeInTheDocument();
-    expect(container.querySelectorAll("form, input, select, textarea, button")).toHaveLength(0);
-  });
+  it.each([["Secciones y menús", SectionsRoute]])(
+    "%s se presenta como pendiente y sin controles",
+    (title, route) => {
+      const { container } = renderRoute(route);
+      expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
+      expect(screen.getByText("Módulo pendiente de desarrollo")).toBeInTheDocument();
+      expect(container.querySelectorAll("form, input, select, textarea, button")).toHaveLength(0);
+    },
+  );
 
-  it("Páginas y contenidos mantiene el acceso a los trámites existentes", () => {
+  it("Páginas y contenidos enlaza el editor de cada página y los trámites", () => {
     renderRoute(ContentsRoute);
-    expect(screen.getByRole("link", { name: /Trámites/ })).toHaveAttribute(
-      "href",
-      "/admin/tramites",
-    );
+    expect(
+      screen.getAllByRole("link", { name: /Trámites/ }).map((l) => l.getAttribute("href")),
+    ).toContain("/admin/tramites");
+    for (const page of [
+      "Portada",
+      "Directorio",
+      "Servicios públicos",
+      "Tablón",
+      "Actualidad y eventos",
+    ])
+      expect(screen.getByRole("link", { name: new RegExp(page) })).toBeInTheDocument();
   });
 });

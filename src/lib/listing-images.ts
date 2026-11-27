@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { renderImage } from "./image-processing";
 
 export const MAX_GALLERY_PHOTOS = 5;
 export const gallerySlots = (existing: number) => Math.max(0, MAX_GALLERY_PHOTOS - existing);
@@ -21,26 +22,14 @@ export function fitSize(w: number, h: number, max = MAX_SIDE) {
   return { width: Math.round(w * k), height: Math.round(h * k) };
 }
 
+/** Foto de ficha: lado mayor de MAX_SIDE px como máximo, en WebP. */
 export async function toWebp(file: File): Promise<Blob> {
-  const bmp = await createImageBitmap(file);
-  const { width, height } = fitSize(bmp.width, bmp.height);
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext("2d");
-  if (!context) {
-    bmp.close();
-    throw new Error("No se pudo convertir la imagen");
-  }
-  context.drawImage(bmp, 0, 0, width, height);
-  bmp.close();
-  return new Promise((res, rej) =>
-    canvas.toBlob(
-      (b) => (b ? res(b) : rej(new Error("No se pudo convertir la imagen"))),
-      "image/webp",
-      0.8,
-    ),
-  );
+  return renderImage(file, {
+    maxWidth: MAX_SIDE,
+    maxHeight: MAX_SIDE,
+    type: "image/webp",
+    quality: 0.8,
+  });
 }
 
 /** Valida, redimensiona, convierte y sube. Devuelve el storage_path. */
