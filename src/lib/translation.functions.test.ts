@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), maybeSingle: vi.fn(), upsert: vi.fn(), translate: vi.fn(), rows: vi.fn() }));
 vi.mock('@/integrations/supabase/auth-middleware', () => ({ requireSupabaseAuth: {} }));
 vi.mock('@/lib/translate.server', () => ({ translateSource: mocks.translate }));
+vi.mock('@/lib/site-config.server', () => ({ loadSiteConfig: async () => ({ identity: {} }) }));
 vi.mock('@tanstack/react-start', () => ({ createServerFn: () => {
   const chain = {
     middleware: () => chain,
