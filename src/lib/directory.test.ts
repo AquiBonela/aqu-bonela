@@ -88,6 +88,10 @@ describe("directorio", () => {
     expect(isFeatured(active, now)).toBe(true);
     expect(isFeatured(expired, now)).toBe(false);
   });
+  it("las fichas de la vista pública llegan con el destacado ya calculado y sin fecha", () => {
+    expect(isFeatured({ featured: true }, now)).toBe(true);
+    expect(isFeatured({ featured: false }, now)).toBe(false);
+  });
   it("las destacadas van primero dentro de su categoría", () => {
     expect(filterListings(items, cats, "", "alimentacion", now).map((l) => l.id)).toEqual([
       "2",

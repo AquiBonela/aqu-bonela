@@ -32,18 +32,30 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
     queryKey: ["listing", type, slug],
     queryFn: async (): Promise<ListingDetail> => {
       const { data, error } = await supabase
-        .from("listings")
+        .from("public_listings")
         .select(
-          "id,slug,type,name,short_description,description,translations,category_id,featured,featured_until,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,categories(name,slug),listing_hours(weekday,opens,closes),listing_photos(storage_path,alt,sort_order)",
+          "id,slug,type,name,short_description,description,translations,category_id,featured,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
         )
-        .eq("status", "publicada")
         .eq("type", type)
         .eq("slug", slug)
         .maybeSingle();
       if (error) throw new Error(error.message);
-      if (!data) throw notFound();
-      const { categories, listing_hours, listing_photos, ...rest } = data;
-      const sorted = [...listing_photos].sort((a, b) => a.sort_order - b.sort_order);
+      if (!data?.id) throw notFound();
+      const rest = data as unknown as Listing & Partial<ListingDetail>;
+      // Categoría, horario visible y fotos, cada uno con su política pública.
+      const [category, hoursResult, photosResult] = await Promise.all([
+        rest.category_id
+          ? supabase.from("categories").select("name,slug").eq("id", rest.category_id).maybeSingle()
+          : null,
+        supabase.from("listing_hours").select("weekday,opens,closes").eq("listing_id", rest.id),
+        supabase
+          .from("listing_photos")
+          .select("storage_path,alt,sort_order")
+          .eq("listing_id", rest.id),
+      ]);
+      const relatedError = category?.error ?? hoursResult.error ?? photosResult.error;
+      if (relatedError) throw new Error(relatedError.message);
+      const sorted = [...(photosResult.data ?? [])].sort((a, b) => a.sort_order - b.sort_order);
       let photos: ListingDetail["photos"] = [];
       if (sorted.length) {
         const { data: signed } = await supabase.storage.from("listing-photos").createSignedUrls(
@@ -62,9 +74,9 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
         if (c?.signedUrl) cover_url = c.signedUrl;
       }
       return {
-        ...(rest as unknown as Listing),
-        public_email: (rest as { public_email?: string | null }).public_email ?? null,
-        public_website: (rest as { public_website?: string | null }).public_website ?? null,
+        ...(rest as Listing),
+        public_email: rest.public_email ?? null,
+        public_website: rest.public_website ?? null,
         public_phone_2: rest.public_phone_2 ?? null,
         public_linkedin: rest.public_linkedin ?? null,
         public_facebook: rest.public_facebook ?? null,
@@ -73,9 +85,9 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
         public_instagram: rest.public_instagram ?? null,
         public_tiktok: rest.public_tiktok ?? null,
         cover_url,
-        categoryName: categories?.name ?? null,
-        categorySlug: categories?.slug ?? null,
-        hours: [...listing_hours].sort(
+        categoryName: category?.data?.name ?? null,
+        categorySlug: category?.data?.slug ?? null,
+        hours: [...(hoursResult.data ?? [])].sort(
           (a, b) => a.weekday - b.weekday || a.opens.localeCompare(b.opens),
         ),
         photos,
