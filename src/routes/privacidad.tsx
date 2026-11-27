@@ -4,7 +4,7 @@ import { LegalPage, LegalLoadError, legalHead } from "@/components/LegalPage";
 import { getLegalOwner } from "@/lib/legal-owner.functions";
 
 export const Route = createFileRoute("/privacidad")({
-  head: () => legalHead("Política de privacidad", "Cómo trata Aquí Bonela los datos de los negocios y de quienes envían avisos o sugerencias."),
+  head: () => legalHead("Política de privacidad", "Cómo trata {app} los datos de los negocios y de quienes envían avisos o sugerencias."),
   loader: () => getLegalOwner(),
   // Sin caché al salir: al volver nunca se muestra un titular anterior.
   gcTime: 0,

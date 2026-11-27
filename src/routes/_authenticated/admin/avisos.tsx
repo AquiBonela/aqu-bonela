@@ -5,13 +5,14 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { adminReportsQuery, fmtDate } from "@/lib/admin";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/_authenticated/admin/avisos")({
   head: () => ({
     meta: [
-      { title: "Avisos · Administración Aquí Bonela" },
-      { name: "description", content: "Avisos «¿Algo no es correcto?» del directorio Aquí Bonela." },
-      { property: "og:title", content: "Avisos · Administración Aquí Bonela" },
+      { title: brand("Avisos · Administración {app}") },
+      { name: "description", content: brand("Avisos «¿Algo no es correcto?» del directorio {app}.") },
+      { property: "og:title", content: brand("Avisos · Administración {app}") },
       { property: "og:description", content: "Bandeja de avisos del directorio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -34,7 +34,7 @@ export function SuggestionForm({ business = false }: { business?: boolean }) {
         {state === "sent" ? (
           <div className="mt-8 border bg-secondary/40 p-5">
             <p className="font-display text-lg font-bold"><Text text="Gracias por tu aportación" /></p>
-            <p className="mt-2 text-sm"><Text text="La revisaremos y, si encaja, la publicaremos en Aquí Bonela." /></p>
+            <p className="mt-2 text-sm"><Text text="La revisaremos y, si encaja, la publicaremos en {app}." /></p>
           </div>
         ) : (
           <form onSubmit={send} className="mt-6 grid gap-4">

@@ -5,12 +5,12 @@ import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
 import { SiteBanner } from "@/components/SiteBanner";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
-import { getMunicipality } from "@/config/municipality";
+import { getInstanceContent, getMunicipality } from "@/config/municipality";
 
 const menuItems = (t: ReturnType<typeof useI18n>["t"], tr: ReturnType<typeof useI18n>["tr"], onSend: () => void): HeaderItem[] => [
   { to: "/", label: getMunicipality().appName, activeOptions: { exact: true } },
   { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
-  { to: "/descubre", label: t("menu.descubre") },
+  ...(getInstanceContent().discover ? [{ to: "/descubre" as const, label: t("menu.descubre") }] : []),
   { label: t("menu.actualidad"), soon: true },
   { label: t("menu.clasificados"), soon: true },
   { to: "/servicios-publicos", label: t("menu.servicios") },

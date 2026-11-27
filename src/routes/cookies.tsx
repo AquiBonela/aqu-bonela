@@ -1,9 +1,10 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage, legalHead } from "@/components/LegalPage";
+import { getMunicipality } from "@/config/municipality";
 
 export const Route = createFileRoute("/cookies")({
-  head: () => legalHead("Política de cookies", "Aquí Bonela no usa cookies de analítica ni de publicidad."),
+  head: () => legalHead("Política de cookies", "{app} no usa cookies de analítica ni de publicidad."),
   component: Cookies,
 });
 
@@ -12,7 +13,7 @@ function Cookies() {
   return (
     <LegalPage title={tr("Política de cookies")}>
       <p>
-        Aquí Bonela <strong><Text text="no utiliza cookies de analítica, publicidad ni seguimiento" /></strong><Text text=", por eso no te mostramos ningún aviso para aceptarlas." /> </p>
+        {getMunicipality().appName} <strong><Text text="no utiliza cookies de analítica, publicidad ni seguimiento" /></strong><Text text=", por eso no te mostramos ningún aviso para aceptarlas." /> </p>
 
       <h2><Text text="Almacenamiento técnico" /></h2>
       <p>

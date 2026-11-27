@@ -1,4 +1,5 @@
 /** Utilidades puras del flujo de revisión por enlace privado. */
+import { brand } from "@/config/municipality";
 
 export const TOKEN_RE = /^[A-Za-z0-9_-]{40,90}$/;
 
@@ -88,7 +89,7 @@ export function reviewMessage(ownerName: string | null, url: string, template?: 
     const t = template.includes("{enlace}") ? template : `${template} {enlace}`;
     return t.replace(/\s*\{nombre\}/g, ownerName ? ` ${ownerName}` : "").replace(/\{enlace\}/g, url);
   }
-  return `Hola${ownerName ? ` ${ownerName}` : ""}: este es tu enlace privado para revisar y autorizar la publicación de tu ficha en Aquí Bonela (válido 30 días): ${url}`;
+  return brand(`Hola${ownerName ? ` ${ownerName}` : ""}: este es tu enlace privado para revisar y autorizar la publicación de tu ficha en {app} (válido 30 días): ${url}`);
 }
 
 export function whatsappShareUrl(message: string, phone?: string | null) {

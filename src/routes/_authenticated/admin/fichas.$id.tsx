@@ -24,13 +24,14 @@ import { ContentLanguages } from '@/components/admin/ContentLanguages';
 import { useContentTranslations } from '@/components/admin/useContentTranslations';
 import { TranslationSaveDialog } from '@/components/admin/TranslationSaveDialog';
 import { catalogContent, editTranslation, languagesToGenerate, readTranslations, sourceChanged, type Translations } from '@/lib/content-translations';
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/_authenticated/admin/fichas/$id")({
   head: () => ({
     meta: [
-      { title: "Editar ficha · Administración Aquí Bonela" },
+      { title: brand("Editar ficha · Administración {app}") },
       { name: "description", content: "Alta y edición de fichas del directorio." },
-      { property: "og:title", content: "Editar ficha · Administración Aquí Bonela" },
+      { property: "og:title", content: brand("Editar ficha · Administración {app}") },
       { property: "og:description", content: "Alta y edición de fichas del directorio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -337,7 +338,7 @@ function EditPage() {
           <Input type="url" inputMode="url" placeholder="https://…" value={f.website} onChange={(e) => set("website", e.target.value)} />
         </Field>
         <Toggle label={tr("Servicio a domicilio")} checked={f.home_service} onChange={(v) => set("home_service", v)} hint={tr("Se desplaza a casa del cliente.")} />
-        <Field label={tr("Zona de servicio")} hint={tr("Opcional. Ej.: Casarabonela y alrededores")}>
+        <Field label={tr("Zona de servicio")} hint={tr("Opcional. Ej.: {municipio} y alrededores")}>
           <Input value={f.service_area} onChange={(e) => set("service_area", e.target.value)} />
         </Field>
         <Field label={tr("Etiquetas destacadas")} hint={tr("Hasta 3, separadas por comas. Ej.: Pan de leña, Encargos")}>

@@ -3,144 +3,31 @@
  * Datos públicos, sin secretos. Seguro para SSR y navegador (solo lee VITE_MUNICIPALITY_ID).
  * Los datos operativos editables (avisos, titular legal, contacto) siguen en site_settings.
  */
-import casarabonelaLogoHome from "@/assets/logo-menu.webp";
-import casarabonelaLogoAdmin from "@/assets/logo-2.webp";
-import casarabonelaLogoText from "@/assets/logo-texto.webp";
-import casarabonelaHero from "@/assets/hero-casarabonela.jpg";
+// La instancia se elige al compilar: ver instances/select.ts.
+import instance from "@instance";
+import content from "@instance-content";
+import type {
+  InstanceContent,
+  MunicipalityConfig,
+  MunicipalityDarkTokens,
+  MunicipalityLightTokens,
+  MunicipalityTheme,
+} from "../../instances/schema";
+import { DEFAULT_MUNICIPALITY_ID } from "../../instances/schema";
 
-export interface MunicipalityConfig {
-  id: string;
-  name: string;
-  appName: string;
-  demonym: { masculine: string; feminine: string };
-  province: string;
-  region: string;
-  autonomousCommunity: string;
-  siteUrl: string;
-  coordinates: { lat: number; lng: number; timezone: string };
-  institutional: {
-    townHallName: string;
-    address: string;
-    phone: string;
-    website: string;
-  };
-  assets: MunicipalityAssets;
-  theme: MunicipalityTheme;
-}
+export { DEFAULT_MUNICIPALITY_ID };
+export type {
+  InstanceContent,
+  MunicipalityAssets,
+  MunicipalityConfig,
+  MunicipalityDarkTokens,
+  MunicipalityLightTokens,
+  MunicipalityTheme,
+} from "../../instances/schema";
 
-/**
- * Recursos gráficos del municipio. Los de src/assets son URLs resueltas por Vite;
- * los de public/ son rutas absolutas servidas tal cual.
- */
-export interface MunicipalityAssets {
-  /** Logo claro para la portada, sobre la foto principal. */
-  logoHome: string;
-  /** Logo del panel de administración. */
-  logoAdmin: string;
-  /** Logo solo tipográfico. */
-  logoText: string;
-  /** Imagen principal del municipio. */
-  heroImage: string;
-  favicon: string;
-  appleTouchIcon: string;
-  pwaIcons: { icon192: string; icon512: string };
-}
-
-/** Tokens de identidad en modo claro (valores OKLCH). */
-export interface MunicipalityLightTokens {
-  primary: string;
-  primaryForeground: string;
-  ring: string;
-  accentForeground: string;
-  terracotta: string;
-  terracottaForeground: string;
-  sand: string;
-  beige: string;
-  chart1: string;
-  sidebarPrimary: string;
-  sidebarPrimaryForeground: string;
-  sidebarRing: string;
-}
-
-/** Tokens de identidad en modo oscuro (valores OKLCH). */
-export interface MunicipalityDarkTokens {
-  primary: string;
-  primaryForeground: string;
-  ring: string;
-  accentForeground: string;
-  chart1: string;
-  sidebarPrimary: string;
-  sidebarPrimaryForeground: string;
-  sidebarRing: string;
-}
-
-export interface MunicipalityTheme {
-  /** Color hexadecimal #rrggbb para <meta name="theme-color">. */
-  themeColor: string;
-  light: MunicipalityLightTokens;
-  dark: MunicipalityDarkTokens;
-}
-
-export const DEFAULT_MUNICIPALITY_ID = "casarabonela";
-
-const casarabonela: MunicipalityConfig = {
-  id: "casarabonela",
-  name: "Casarabonela",
-  appName: "Aquí Bonela",
-  demonym: { masculine: "morisco", feminine: "morisca" },
-  province: "Málaga",
-  region: "Sierra de las Nieves",
-  autonomousCommunity: "Andalucía",
-  siteUrl: "https://bonela-local-finds.lovable.app",
-  coordinates: { lat: 36.786, lng: -4.843, timezone: "Europe/Madrid" },
-  institutional: {
-    townHallName: "Ayuntamiento de Casarabonela",
-    address: "Plaza de Buenavista, 1, 29566 Casarabonela (Málaga)",
-    phone: "952456561",
-    website: "https://www.casarabonela.es/",
-  },
-  assets: {
-    logoHome: casarabonelaLogoHome,
-    logoAdmin: casarabonelaLogoAdmin,
-    logoText: casarabonelaLogoText,
-    heroImage: casarabonelaHero,
-    favicon: "/favicon.png",
-    appleTouchIcon: "/apple-touch-icon.png",
-    pwaIcons: { icon192: "/icon-192.png", icon512: "/icon-512.png" },
-  },
-  // Valores idénticos a :root y .dark de src/styles.css (lo comprueba municipality.test.ts).
-  theme: {
-    themeColor: "#faf6ee",
-    light: {
-      primary: "oklch(0.493 0.052 127.4)",
-      primaryForeground: "oklch(1 0 0)",
-      ring: "oklch(0.493 0.052 127.4)",
-      accentForeground: "oklch(0.564 0.106 42.4)",
-      terracotta: "oklch(0.564 0.106 42.4)",
-      terracottaForeground: "oklch(1 0 0)",
-      sand: "oklch(0.953 0.012 95)",
-      beige: "oklch(0.93 0.03 84)",
-      chart1: "oklch(0.493 0.052 127.4)",
-      sidebarPrimary: "oklch(0.493 0.052 127.4)",
-      sidebarPrimaryForeground: "oklch(1 0 0)",
-      sidebarRing: "oklch(0.493 0.052 127.4)",
-    },
-    dark: {
-      primary: "oklch(0.929 0.013 255.508)",
-      primaryForeground: "oklch(0.208 0.042 265.755)",
-      ring: "oklch(0.551 0.027 264.364)",
-      accentForeground: "oklch(0.984 0.003 247.858)",
-      chart1: "oklch(0.488 0.243 264.376)",
-      sidebarPrimary: "oklch(0.488 0.243 264.376)",
-      sidebarPrimaryForeground: "oklch(0.984 0.003 247.858)",
-      sidebarRing: "oklch(0.551 0.027 264.364)",
-    },
-  },
-};
-
-/** Registro de municipios. Añadir uno nuevo = añadir una entrada aquí. */
+/** Solo la instancia compilada: el resultado no incluye datos de otros municipios. */
 export const MUNICIPALITIES: Readonly<Record<string, MunicipalityConfig>> = Object.freeze({
-  [casarabonela.id]: casarabonela,
+  [instance.id]: instance,
 });
 
 export class UnknownMunicipalityError extends Error {
@@ -163,9 +50,48 @@ export function resolveMunicipality(
   return found;
 }
 
-/** Configuración de la instalación actual. */
+/** Configuración de la instalación actual (la instancia compilada). */
 export function getMunicipality(): MunicipalityConfig {
-  return resolveMunicipality(import.meta.env["VITE_MUNICIPALITY_ID"] as string | undefined);
+  return instance;
+}
+
+/** Contenido estable de la instalación actual. */
+export function getInstanceContent(): InstanceContent {
+  return content;
+}
+
+/** Valores de {app}, {municipio}, {nombreCorto} y {provincia} en los textos. */
+export function brandParams(m: MunicipalityConfig = instance): Record<string, string> {
+  return { app: m.appName, municipio: m.name, nombreCorto: m.shortName, provincia: m.province };
+}
+
+/** Sustituye las variables de marca en textos que no pasan por las traducciones (p. ej. metadatos). */
+export function brand(text: string, m: MunicipalityConfig = instance): string {
+  const params = brandParams(m);
+  return text.replace(/\{(app|municipio|nombreCorto|provincia)\}/g, (match, name: string) => params[name] ?? match);
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Inverso de brand(): vuelve a las variables a partir de los valores de la instancia,
+ * para localizar en los catálogos un texto ya personalizado.
+ */
+export function unbrand(text: string, m: MunicipalityConfig = instance): string {
+  const pairs: [string, string][] = [
+    [`${m.name} (${m.province})`, "{municipio} ({provincia})"],
+    [m.appName, "{app}"],
+    [m.name, "{municipio}"],
+    [m.shortName, "{nombreCorto}"],
+  ];
+  let out = text;
+  for (const [value, token] of pairs) {
+    if (!value) continue;
+    out = out.replace(new RegExp(`(?<![\\p{L}\\p{N}{])${escapeRegExp(value)}(?![\\p{L}\\p{N}}])`, "gu"), token);
+  }
+  return out;
 }
 
 

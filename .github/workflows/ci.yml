@@ -45,6 +45,48 @@ jobs:
           SUPABASE_PUBLISHABLE_KEY: ci-placeholder
       - name: Comprobación de tipos
         run: bunx tsc --noEmit
+      - name: Selección de instancia en el build
+        # Con una sola instancia no se notaría si "@instance" dejara de depender de la variable:
+        # se compila una copia temporal con una marca única, que no se versiona.
+        run: |
+          set -euo pipefail
+          marca="marca-instancia-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          cp -r instances/casarabonela instances/zz-prueba
+          sed -i "s/id: \"casarabonela\"/id: \"zz-prueba\"/; s/appName: \"Aquí Bonela\"/appName: \"$marca\"/" instances/zz-prueba/config.ts
+          grep -q "$marca" instances/zz-prueba/config.ts
+          echo "$marca" > instances/zz-prueba/public/marca-publica.txt
+          VITE_MUNICIPALITY_ID=zz-prueba bun run build
+          # Los archivos de instances/<id>/public deben llegar a la salida del build.
+          if ! grep -r -q -x -F "$marca" . --include=marca-publica.txt --exclude-dir=node_modules --exclude-dir=instances --exclude-dir=.git; then
+            echo "::error::El build no copió los archivos públicos de la instancia."
+            exit 1
+          fi
+          if ! grep -r -q "$marca" . --exclude-dir=node_modules --exclude-dir=instances --exclude-dir=.git; then
+            echo "::error::El build no usó la instancia indicada en VITE_MUNICIPALITY_ID."
+            exit 1
+          fi
+          rm -rf instances/zz-prueba
+          if VITE_MUNICIPALITY_ID=no-existe bun run build > build-no-existe.log 2>&1; then
+            echo "::error::Un identificador inexistente no hizo fallar el build."
+            exit 1
+          fi
+          grep -q 'no existe la instancia "no-existe"' build-no-existe.log || { cat build-no-existe.log; exit 1; }
+      - name: Demo sin datos del municipio piloto
+        # Compila la demo como servidor Node, la arranca con un Supabase simulado
+        # (listas vacías, sin base real) y busca términos del piloto en sus páginas.
+        run: |
+          bun run build
+          node scripts/check-demo-leaks.mjs
+        env:
+          VITE_MUNICIPALITY_ID: demo
+          NITRO_PRESET: node-server
+          VITE_SUPABASE_URL: http://127.0.0.1:54321
+          VITE_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder
+          RATE_LIMIT_SECRET: ci-placeholder-not-a-secret-ci-placeholder
+          TURNSTILE_SITE_KEY: ci-placeholder
 
   lint:
     name: Lint (informativo, no bloquea)

@@ -10,14 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { siteSettingsQuery, withSettingsDefaults, type SiteSettings } from "@/lib/admin";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/_authenticated/admin/configuracion")({
   head: () => ({
     meta: [
-      { title: "Configuración · Administración Aquí Bonela" },
-      { name: "description", content: "Datos generales y ajustes del directorio Aquí Bonela." },
-      { property: "og:title", content: "Configuración · Administración Aquí Bonela" },
-      { property: "og:description", content: "Ajustes del directorio Aquí Bonela." },
+      { title: brand("Configuración · Administración {app}") },
+      { name: "description", content: brand("Datos generales y ajustes del directorio {app}.") },
+      { property: "og:title", content: brand("Configuración · Administración {app}") },
+      { property: "og:description", content: brand("Ajustes del directorio {app}.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -62,7 +63,7 @@ function GeneralSettings() {
         <h2 className="font-display text-lg font-bold"><Text text="Portada" /></h2>
         <label className={lbl}><Text text="Título de la portada" /> <Input value={f.hero_title} onChange={(e) => set("hero_title", e.target.value)} />
         </label>
-        <label className={lbl}><Text text="Subtítulo o lema" /> <Input value={f.hero_subtitle} onChange={(e) => set("hero_subtitle", e.target.value)} placeholder={tr("Apoya al comercio local de Casarabonela")} />
+        <label className={lbl}><Text text="Subtítulo o lema" /> <Input value={f.hero_subtitle} onChange={(e) => set("hero_subtitle", e.target.value)} placeholder={tr("Apoya al comercio local de {municipio}")} />
         </label>
         <label className="flex items-center gap-3 text-sm font-medium">
           <Switch checked={f.banner_enabled} onCheckedChange={(v) => set("banner_enabled", v)} />

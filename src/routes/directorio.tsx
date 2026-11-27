@@ -10,7 +10,7 @@ import { activitiesFor, dailyShuffle, directoryQuery, filterListings, isFeatured
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { ListingCard } from "@/components/ListingCard";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getMunicipality } from "@/config/municipality";
+import { brand, getMunicipality } from "@/config/municipality";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -27,13 +27,13 @@ export const Route = createFileRoute("/directorio")({
   loader: ({ context }) => context.queryClient.ensureQueryData(directoryQuery),
   head: () => ({
     meta: [
-      { title: "Directorio local — Aquí Bonela, Casarabonela" },
+      { title: brand("Directorio local — {app}, {municipio}") },
       {
         name: "description",
-        content: "Encuentra y contacta con comercios y profesionales de Casarabonela: llama o escribe por WhatsApp en un toque.",
+        content: brand("Encuentra y contacta con comercios y profesionales de {municipio}: llama o escribe por WhatsApp en un toque."),
       },
-      { property: "og:title", content: "Directorio local — Aquí Bonela, Casarabonela" },
-      { property: "og:description", content: "El directorio local de Casarabonela, pensado para el móvil." },
+      { property: "og:title", content: brand("Directorio local — {app}, {municipio}") },
+      { property: "og:description", content: brand("El directorio local de {municipio}, pensado para el móvil.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -80,16 +80,18 @@ function Index() {
       <SiteHeader />
 
       <section className="relative w-full overflow-hidden">
-        <div className="relative h-[24rem] w-full sm:h-[30rem]">
-          <img
-            src={getMunicipality().assets.heroImage}
-            alt={tr("Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves")}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
+        <div className={getMunicipality().assets.heroImage ? "relative h-[24rem] w-full sm:h-[30rem]" : "relative h-[24rem] w-full bg-primary sm:h-[30rem]"}>
+          {getMunicipality().assets.heroImage && (
+            <img
+              src={getMunicipality().assets.heroImage}
+              alt={tr("Panorámica del pueblo blanco de {municipio} y la Sierra de las Nieves")}
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+          )}
+          {getMunicipality().assets.heroImage && <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />}
           <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
             <h1 className="max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
-              {tr(data.heroTitle)}
+              {tr(data.heroTitle || "¿Qué buscas en {municipio}?")}
             </h1>
             {data.heroSubtitle && (
               <p className="mt-3 max-w-xl text-base text-primary-foreground/85 sm:text-lg">{tr(data.heroSubtitle)}</p>

@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { publicProceduresQuery } from '@/lib/public-procedures';
 import { Hero, TramiteCard } from "@/components/TramitesUI";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/tramites/$categoria/")({
   loader: async ({ params, context }) => {
@@ -15,9 +16,9 @@ export const Route = createFileRoute("/tramites/$categoria/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.title ?? "Trámites"} — Guía de trámites | Aquí Bonela` },
-      { name: "description", content: loaderData?.text ?? "Guía de trámites de Aquí Bonela." },
-      { property: "og:title", content: `${loaderData?.title ?? "Trámites"} — Aquí Bonela` },
+      { title: brand(`${loaderData?.title ?? "Trámites"} — Guía de trámites | {app}`) },
+      { name: "description", content: loaderData?.text ?? brand("Guía de trámites de {app}.") },
+      { property: "og:title", content: brand(`${loaderData?.title ?? "Trámites"} — {app}`) },
       { property: "og:description", content: loaderData?.text ?? "Guía de trámites." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

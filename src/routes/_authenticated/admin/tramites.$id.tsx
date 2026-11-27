@@ -28,11 +28,12 @@ import { adminProceduresQuery, procedureCategoriesQuery, procedureDeletionMarker
 import { PROCEDURE_SECTIONS, editableContent, existingProcedure, procedureContentSchema, readVisibility, sourceKey, translateContent, visibleContent, isDeletedProcedure, matchesProcedureSource } from "@/lib/procedure-editor";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/_authenticated/admin/tramites/$id")({
   head: () => ({ meta: [
-    { title: "Editar trámite · Administración Aquí Bonela" }, { name: "description", content: "Editor de guías, pasos y visibilidad de trámites." },
-    { property: "og:title", content: "Editar trámite · Administración Aquí Bonela" }, { property: "og:description", content: "Editor de trámites de Aquí Bonela." },
+    { title: brand("Editar trámite · Administración {app}") }, { name: "description", content: "Editor de guías, pasos y visibilidad de trámites." },
+    { property: "og:title", content: brand("Editar trámite · Administración {app}") }, { property: "og:description", content: brand("Editor de trámites de {app}.") },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" },
   ] }),
   component: () => { const { id } = Route.useParams(); return <AdminShell><Suspense fallback={<Loading />}><EditorLoader key={id} id={id} /></Suspense></AdminShell>; },

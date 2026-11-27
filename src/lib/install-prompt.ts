@@ -1,6 +1,8 @@
+import { getMunicipality } from "@/config/municipality";
+
 export const INSTALL_DELAY_MS = 12_000;
 export const INSTALL_DISMISS_MS = 30 * 24 * 60 * 60 * 1000;
-export const INSTALL_STORAGE_KEY = "aquibonela-install-dismissed";
+export const INSTALL_STORAGE_KEY = `${getMunicipality().storagePrefix}-install-dismissed`;
 
 export function installPlatform(userAgent: string, touchPoints = 0): "ios" | "android" | null {
   if (/iPhone|iPad|iPod/i.test(userAgent) || (/Macintosh/i.test(userAgent) && touchPoints > 1)) return "ios";

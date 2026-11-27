@@ -6,10 +6,10 @@ import { getMunicipality } from "@/config/municipality";
 
 type Weather = { temp: number; code: number };
 
-// Coordenadas y zona horaria del municipio configurado
-const { lat, lng, timezone } = getMunicipality().coordinates;
-const PLACE = `latitude=${lat}&longitude=${lng}`;
-const TZ = encodeURIComponent(timezone);
+// Coordenadas y zona horaria del municipio configurado; sin ellas no se muestra el tiempo.
+const coordinates = getMunicipality().coordinates;
+const PLACE = coordinates ? `latitude=${coordinates.lat}&longitude=${coordinates.lng}` : "";
+const TZ = coordinates ? encodeURIComponent(coordinates.timezone) : "";
 const URL =
   `https://api.open-meteo.com/v1/forecast?${PLACE}&current=temperature_2m,weather_code&timezone=${TZ}`;
 
@@ -24,12 +24,13 @@ function iconFor(code: number): { Icon: LucideIcon; label: string } {
   return { Icon: CloudLightning, label: "Tormenta" };
 }
 
-/** Tiempo actual en Casarabonela (Open-Meteo, sin claves ni cookies). */
+/** Tiempo actual en el municipio (Open-Meteo, sin claves ni cookies). */
 export function WeatherNow() {
   const { tr, locale } = useI18n();
   const [w, setW] = useState<Weather | null>(null);
 
   useEffect(() => {
+    if (!coordinates) return;
     let alive = true;
     const load = () =>
       fetch(URL)
@@ -52,7 +53,7 @@ export function WeatherNow() {
     <Popover>
       <PopoverTrigger
         className="inline-flex min-h-11 min-w-0 items-center gap-1 text-sm font-semibold"
-        aria-label={`${tr("Ahora en Casarabonela")}: ${tr(label)}, ${w.temp}°. ${tr("Ver pronóstico")}`}
+        aria-label={`${tr("Ahora en {municipio}")}: ${tr(label)}, ${w.temp}°. ${tr("Ver pronóstico")}`}
       >
         <Icon className="h-4 w-4 shrink-0 text-accent-foreground/80 sm:h-5 sm:w-5" aria-hidden />
         <span className="flex min-w-0 items-center gap-1.5 leading-tight">
@@ -61,7 +62,7 @@ export function WeatherNow() {
         </span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-80 rounded-none">
-        <p className="text-base font-semibold"><Text text="Tiempo en Casarabonela" /></p>
+        <p className="text-base font-semibold"><Text text="Tiempo en {municipio}" /></p>
         <p className="mb-2 text-sm text-muted-foreground"><Text text="Ahora:" /> {tr(label)}, {w.temp}°</p>
         <Forecast />
         <p className="mt-2 text-xs text-muted-foreground"><Text text="Datos: Open-Meteo" /></p>

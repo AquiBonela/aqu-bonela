@@ -13,12 +13,13 @@ import { useI18n } from "@/lib/i18n";
 import { slugify } from "@/lib/admin";
 import { adminProceduresQuery, procedureCategoriesQuery, procedureList, type ProcedureCategory } from "@/lib/admin-procedures";
 import { supabase } from "@/integrations/supabase/client";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/_authenticated/admin/tramites/")({
   head: () => ({ meta: [
-    { title: "Trámites · Administración Aquí Bonela" },
-    { name: "description", content: "Administración de categorías y guías de trámites de Aquí Bonela." },
-    { property: "og:title", content: "Trámites · Administración Aquí Bonela" },
+    { title: brand("Trámites · Administración {app}") },
+    { name: "description", content: brand("Administración de categorías y guías de trámites de {app}.") },
+    { property: "og:title", content: brand("Trámites · Administración {app}") },
     { property: "og:description", content: "Gestión de categorías y guías de trámites." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" },
   ] }),

@@ -4,13 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { adminSuggestionsQuery, fmtDate } from "@/lib/admin";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/_authenticated/admin/sugerencias")({
   head: () => ({
     meta: [
-      { title: "Sugerencias · Administración Aquí Bonela" },
+      { title: brand("Sugerencias · Administración {app}") },
       { name: "description", content: "Sugerencias de comercios y profesionales enviadas por visitantes." },
-      { property: "og:title", content: "Sugerencias · Administración Aquí Bonela" },
+      { property: "og:title", content: brand("Sugerencias · Administración {app}") },
       { property: "og:description", content: "Bandeja de sugerencias del directorio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
