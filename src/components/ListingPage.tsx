@@ -28,7 +28,7 @@ import { whatsappUrl } from "@/lib/directory";
 import { groupHours, mapsUrl, websiteUrl, type ListingDetail } from "@/lib/listing-detail";
 import { TypeLabel, UrgentBadge } from "@/components/ListingCard";
 import { ReportDialog } from "@/components/ReportDialog";
-import { availabilityTags, hashtag, hoursHidden } from "@/lib/listing-availability";
+import { availabilityTags, hashtag, showsHours } from "@/lib/listing-availability";
 import { Switch } from "@/components/ui/switch";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MAX_GALLERY_PHOTOS } from "@/lib/listing-images";
@@ -89,9 +89,7 @@ export function ListingPage({
 }) {
   const { tr, locale, lang } = useI18n();
   const dim = (f: ReviewField) => (review && !review.show[f] ? "opacity-40 line-through" : "");
-  const showHours = review
-    ? listing.hours.length > 0
-    : listing.hours.length > 0 && !hoursHidden(listing.tags);
+  const showHours = showsHours(listing, Boolean(review));
   const hours = groupHours(listing.hours);
   const today = (new Date().getDay() + 6) % 7;
   const gallery: GalleryPhoto[] = [

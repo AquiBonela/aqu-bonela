@@ -119,6 +119,18 @@ describe("ficha pública", () => {
     expect(detail.hours).toEqual([]);
   });
 
+  it("con el horario oculto no lo pide, aunque una sesión de administrador lo recibiría", async () => {
+    mocks.rows = {
+      public_listings: { ...row, hours_hidden: true },
+      listing_hours: [{ weekday: 1, opens: "10:00", closes: "13:00" }],
+      listing_photos: [],
+    };
+    const detail = await load();
+    expect(mocks.tables).not.toContain("listing_hours");
+    expect(detail.hours).toEqual([]);
+    expect(detail.hours_hidden).toBe(true);
+  });
+
   it("sin categoría no la consulta", async () => {
     mocks.rows = {
       public_listings: { ...row, category_id: null },
