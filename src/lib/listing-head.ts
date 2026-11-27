@@ -1,13 +1,14 @@
 import { SITE_URL, listingPath, type ListingDetail } from "@/lib/listing-detail";
+import { brand } from "@/config/municipality";
 
 export function listingHead(loaderData: ListingDetail | undefined) {
   if (!loaderData) {
-    return { meta: [{ title: "Ficha no disponible — Aquí Bonela" }, { name: "description", content: "Esta ficha no está disponible." }, { property: "og:title", content: "Ficha no disponible — Aquí Bonela" }, { property: "og:description", content: "Esta ficha no está disponible." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] };
+    return { meta: [{ title: brand("Ficha no disponible — {app}") }, { name: "description", content: "Esta ficha no está disponible." }, { property: "og:title", content: brand("Ficha no disponible — {app}") }, { property: "og:description", content: "Esta ficha no está disponible." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] };
   }
   const l = loaderData;
   const url = SITE_URL + listingPath(l.type, l.slug);
-  const title = `${l.name}${l.categoryName ? ` · ${l.categoryName}` : ""} en Casarabonela — Aquí Bonela`;
-  const description = (l.description || `${l.name} en Casarabonela.`).slice(0, 155);
+  const title = `${l.name}${l.categoryName ? ` · ${l.categoryName}` : ""}${brand(" en {municipio} — {app}")}`;
+  const description = (l.description || `${l.name}${brand(" en {municipio}.")}`).slice(0, 155);
   const image = listingShareImage(l.cover_url);
   return {
     meta: [

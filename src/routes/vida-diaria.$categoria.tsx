@@ -3,6 +3,7 @@ import { CheckCircle2, Phone, ExternalLink, ArrowRight } from "lucide-react";
 import { dailyLifeCategories, dailyLifeItems, type DailyLifeItem } from "@/lib/vida-diaria";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
+import { brand, getMunicipality } from "@/config/municipality";
 
 export const Route = createFileRoute("/vida-diaria/$categoria")({
   loader: ({ params }) => {
@@ -11,9 +12,9 @@ export const Route = createFileRoute("/vida-diaria/$categoria")({
     return cat;
   },
   head: ({ params, loaderData }) => {
-    const t = loaderData ? `${loaderData.title} — Vida diaria en Casarabonela` : "Vida diaria en Casarabonela";
-    const d = loaderData?.text ?? "Información práctica de Casarabonela.";
-    const url = `https://bonela-local-finds.lovable.app/vida-diaria/${params.categoria}`;
+    const t = loaderData ? `${loaderData.title} — ${brand("Vida diaria en {municipio}")}` : brand("Vida diaria en {municipio}");
+    const d = loaderData?.text ?? brand("Información práctica de {municipio}.");
+    const url = `${getMunicipality().siteUrl}/vida-diaria/${params.categoria}`;
     return {
       meta: [{ title: t }, { name: "description", content: d }, { property: "og:title", content: t }, { property: "og:description", content: d }, { property: "og:type", content: "article" }, { property: "og:url", content: url }, { name: "twitter:card", content: "summary" }],
       links: [{ rel: "canonical", href: url }],

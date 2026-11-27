@@ -2,6 +2,7 @@ import { Text, useI18n } from "@/lib/i18n";
 import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { brand, getMunicipality } from "@/config/municipality";
 
 export const UPDATED = "30 de octubre de 2026";
 
@@ -56,10 +57,10 @@ export function LegalLoadError({ reset }: ErrorComponentProps) {
 export function legalHead(title: string, description: string) {
   return {
     meta: [
-      { title: `${title} — Aquí Bonela` },
-      { name: "description", content: description },
-      { property: "og:title", content: `${title} — Aquí Bonela` },
-      { property: "og:description", content: description },
+      { title: `${title} — ${getMunicipality().appName}` },
+      { name: "description", content: brand(description) },
+      { property: "og:title", content: `${title} — ${getMunicipality().appName}` },
+      { property: "og:description", content: brand(description) },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

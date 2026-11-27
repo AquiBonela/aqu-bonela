@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import { brand } from "@/config/municipality";
 import { supabase } from "@/integrations/supabase/client";
 
 export type ListingType = "comercio" | "profesional" | "publico" | "asociacion";
@@ -69,7 +70,7 @@ export const directoryQuery = queryOptions({
       categories: cats.data as Category[],
       activities: (acts.data ?? []) as Activity[],
       listings,
-      heroTitle: settings.data?.hero_title || "¿Qué buscas en Casarabonela?",
+      heroTitle: settings.data?.hero_title || "¿Qué buscas en {municipio}?",
       heroSubtitle: settings.data?.hero_subtitle ?? "",
       banner: settings.data?.banner_enabled && settings.data.banner_text.trim() ? settings.data.banner_text.trim() : null,
     };
@@ -137,7 +138,7 @@ export function dailyShuffle<T extends { id: string }>(items: T[], now = new Dat
 }
 
 export function whatsappUrl(number: string, name?: string) {
-  const text = name ? `?text=${encodeURIComponent(`Hola, os encuentro en Aquí Bonela (${name}).`)}` : "";
+  const text = name ? `?text=${encodeURIComponent(brand(`Hola, os encuentro en {app} (${name}).`))}` : "";
   return `https://wa.me/${number.replace(/\D/g, "")}${text}`;
 }
 

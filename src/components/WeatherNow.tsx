@@ -53,7 +53,7 @@ export function WeatherNow() {
     <Popover>
       <PopoverTrigger
         className="inline-flex min-h-11 min-w-0 items-center gap-1 text-sm font-semibold"
-        aria-label={`${tr("Ahora en Casarabonela")}: ${tr(label)}, ${w.temp}°. ${tr("Ver pronóstico")}`}
+        aria-label={`${tr("Ahora en {municipio}")}: ${tr(label)}, ${w.temp}°. ${tr("Ver pronóstico")}`}
       >
         <Icon className="h-4 w-4 shrink-0 text-accent-foreground/80 sm:h-5 sm:w-5" aria-hidden />
         <span className="flex min-w-0 items-center gap-1.5 leading-tight">
@@ -62,7 +62,7 @@ export function WeatherNow() {
         </span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-80 rounded-none">
-        <p className="text-base font-semibold"><Text text="Tiempo en Casarabonela" /></p>
+        <p className="text-base font-semibold"><Text text="Tiempo en {municipio}" /></p>
         <p className="mb-2 text-sm text-muted-foreground"><Text text="Ahora:" /> {tr(label)}, {w.temp}°</p>
         <Forecast />
         <p className="mt-2 text-xs text-muted-foreground"><Text text="Datos: Open-Meteo" /></p>

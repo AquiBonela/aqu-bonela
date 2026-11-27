@@ -24,7 +24,7 @@ export function SiteFooter({ inMenu = false }: { inMenu?: boolean }) {
           <span aria-hidden>·</span>
           <Link to="/cookies" className="shrink-0 underline-offset-4 hover:underline">{t("footer.cookies")}</Link>
         </nav>
-        <p className="mt-4 font-semibold">Groundwork · Casarabonela · {new Date().getFullYear()} ®</p>
+        <p className="mt-4 font-semibold">Groundwork · {getMunicipality().name} · {new Date().getFullYear()} ®</p>
       </div>
     </footer>
   );

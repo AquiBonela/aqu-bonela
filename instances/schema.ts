@@ -127,6 +127,8 @@ export interface InstanceContent {
   /** Lista SOS completa. Sin ella solo se muestran los teléfonos nacionales. */
   emergencyGroups?: EmergencyGroup[];
   home?: {
+    /** Descripción de la portada para buscadores. */
+    metaDescription?: string;
     stats?: { value: string; label: TKey }[];
     /** Destino de «Cómo llegar» en Google Maps. */
     directionsQuery?: string;

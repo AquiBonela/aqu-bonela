@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { getInstanceContent } from "@/config/municipality";
+import { brand, getInstanceContent } from "@/config/municipality";
 import { ArrowLeft, ArrowRight, ExternalLink, CheckCircle2, LifeBuoy, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -23,8 +23,8 @@ export const Route = createFileRoute("/tramites/$categoria/$tramite")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.t.title ?? "Trámite"} — Aquí Bonela` },
-      { name: "description", content: loaderData ? procedureCardDescription(loaderData.t) : "Guía de trámites de Aquí Bonela." },
+      { title: brand(`${loaderData?.t.title ?? "Trámite"} — {app}`) },
+      { name: "description", content: loaderData ? procedureCardDescription(loaderData.t) : brand("Guía de trámites de {app}.") },
       { property: "og:title", content: loaderData?.t.title ?? "Trámite" },
       { property: "og:description", content: loaderData ? procedureCardDescription(loaderData.t) : "Guía de trámites." },
       { property: "og:type", content: "article" },
@@ -291,7 +291,7 @@ function TramiteBody({ t, c }: { t: Tramite; c: import('@/lib/tramites').Categor
             ))}
           </div>
         )}
-        <p className="mt-8 text-xs text-muted-foreground">{tr("Aquí Bonela es una guía de orientación. Los trámites se realizan siempre ante el organismo oficial correspondiente.")}</p>
+        <p className="mt-8 text-xs text-muted-foreground">{tr("{app} es una guía de orientación. Los trámites se realizan siempre ante el organismo oficial correspondiente.")}</p>
       </main>
     </div>
   );

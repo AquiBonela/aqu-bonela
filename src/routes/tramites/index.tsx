@@ -1,18 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Info } from "lucide-react";
+import { Text } from "@/lib/i18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TramitesSection } from "@/components/TramitesSection";
 import { Hero } from "@/components/TramitesUI";
 import { publicProceduresQuery } from "@/lib/public-procedures";
+import { brand } from "@/config/municipality";
 
 export const Route = createFileRoute("/tramites/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicProceduresQuery),
   head: () => ({
     meta: [
-      { title: "Guía de trámites — Aquí Bonela" },
-      { name: "description", content: "Encuentra guías de trámites y gestiones en Casarabonela: documentación personal, requisitos, pasos y enlaces oficiales." },
-      { property: "og:title", content: "Guía de trámites — Aquí Bonela" },
-      { property: "og:description", content: "Busca tu trámite y consulta sus requisitos, pasos y enlaces oficiales en la guía de Casarabonela." },
+      { title: brand("Guía de trámites — {app}") },
+      { name: "description", content: brand("Encuentra guías de trámites y gestiones en {municipio}: documentación personal, requisitos, pasos y enlaces oficiales.") },
+      { property: "og:title", content: brand("Guía de trámites — {app}") },
+      { property: "og:description", content: brand("Busca tu trámite y consulta sus requisitos, pasos y enlaces oficiales en la guía de {municipio}.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -29,7 +31,7 @@ function TramitesPage() {
         <div className="mx-auto max-w-5xl px-4 pt-6">
           <div className="flex max-w-2xl items-start gap-3 border-l-4 border-primary bg-muted p-4">
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-            <p className="text-sm">Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales.</p>
+            <p className="text-sm"><Text text="{app} no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales." /></p>
           </div>
         </div>
         <div className="mx-auto max-w-5xl px-4 py-10">

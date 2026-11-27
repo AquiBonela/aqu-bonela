@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Car, Footprints, Clock, CalendarDays, MessageCircle, Hourglass, Lightbulb, MapPin, type LucideIcon } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
-import { getInstanceContent } from "@/config/municipality";
+import { brand, getInstanceContent } from "@/config/municipality";
 
 // Guía turística propia de la instancia; sin ella la página no existe.
 const discover = getInstanceContent().discover;
@@ -14,13 +14,13 @@ export const Route = createFileRoute("/descubre")({
   },
   head: () => !discover ? {} : ({
     meta: [
-      { title: "Descubre Bonela — Guía para visitar Casarabonela" },
+      { title: brand("Descubre {nombreCorto} — Guía para visitar {municipio}") },
       {
         name: "description",
         content:
-          "Guía de Casarabonela: historia andalusí, Sierra de las Nieves, rincones, Fiesta de los Rondeles, gastronomía y consejos de vecino.",
+          brand("Guía de {municipio}: historia andalusí, Sierra de las Nieves, rincones, Fiesta de los Rondeles, gastronomía y consejos de vecino."),
       },
-      { property: "og:title", content: "Descubre Bonela — Guía de Casarabonela" },
+      { property: "og:title", content: brand("Descubre {nombreCorto} — Guía de {municipio}") },
       { property: "og:description", content: "Historia, naturaleza, rincones, fiestas, sabores y consejos para tu visita." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

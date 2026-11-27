@@ -14,6 +14,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { MAX_GALLERY_PHOTOS } from "@/lib/listing-images";
 import { FormattedText } from "@/components/FormattedText";
 import { listingText } from '@/lib/content-translations';
+import { getMunicipality } from "@/config/municipality";
 
 export type ReviewField = "address" | "phone" | "phone_2" | "whatsapp" | "email" | "linkedin" | "facebook" | "youtube" | "x_twitter" | "instagram" | "tiktok" | "hours";
 export type ReviewControls = { show: Record<ReviewField, boolean>; onToggle: (f: ReviewField, v: boolean) => void };
@@ -336,7 +337,7 @@ function ShareButton({ name }: { name: string }) {
   const { t, lang } = useI18n();
   const share = async () => {
     const url = window.location.href;
-    const text = `${name} ${lang === "en" ? "on" : "en"} Aquí Bonela`;
+    const text = `${name} ${lang === "en" ? "on" : "en"} ${getMunicipality().appName}`;
     if (navigator.share) {
       try {
         await navigator.share({ title: name, text, url });

@@ -64,7 +64,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <AppHeader
         admin
         navLabel={tr("Menú de administración")}
-        footnote={tr(`Administración del directorio ${getMunicipality().appName}`)}
+        footnote={tr("Administración del directorio {app}")}
         brand={
           <Link to="/admin" className="inline-flex min-w-0 items-center justify-center">
             {getMunicipality().assets.logoAdmin

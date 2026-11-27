@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
+import { getMunicipality } from "@/config/municipality";
 
 // Router owns metadata; keep its original value so a language switch is reversible.
 const originals = new WeakMap<Element, { source: string; rendered: string }>();
@@ -16,11 +17,12 @@ export function LocalizedHead() {
         const previous = originals.get(element);
         const source = previous?.rendered === current ? previous.source : current;
         let rendered = tr(source);
-        const suffix = " — Aquí Bonela";
+        const { appName, name } = getMunicipality();
+        const suffix = ` — ${appName}`;
+        const place = ` en ${name}`;
         if (lang !== "es" && rendered === source && source.endsWith(suffix)) {
           const base = source.slice(0, -suffix.length);
-          const listing = base.match(/^(.*) en Casarabonela$/);
-          rendered = `${listing ? `${tr(listing[1] ?? "")} ${tr("en Casarabonela")}` : tr(base)}${suffix}`;
+          rendered = `${base.endsWith(place) ? `${tr(base.slice(0, -place.length))} ${tr(place.trim())}` : tr(base)}${suffix}`;
         }
         originals.set(element, { source, rendered });
         if (current === rendered) return;

@@ -5,7 +5,7 @@ import { dailyLifeCategories } from "@/lib/vida-diaria";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { EmergencyPhonesList } from "@/components/EmergencyPhones";
-import { getInstanceContent } from "@/config/municipality";
+import { brand, getInstanceContent } from "@/config/municipality";
 import puntoVuelaLogo from "@/assets/punto-vuela-logo.svg";
 import { useQuery } from "@tanstack/react-query";
 import { listingDetailQuery } from "@/lib/listing-detail";
@@ -28,9 +28,9 @@ function PuntoVuelaInfo({ slug, fallbackAddress }: { slug: string; fallbackAddre
 export const Route = createFileRoute("/servicios-publicos")({
   head: () => ({
     meta: [
-      { title: "Servicios públicos de Casarabonela — Aquí Bonela" },
-      { name: "description", content: "Teléfonos útiles, trámites habituales, mercadillo, punto limpio, transporte y más: la chuleta práctica de Casarabonela." },
-      { property: "og:title", content: "Servicios públicos de Casarabonela" },
+      { title: brand("Servicios públicos de {municipio} — {app}") },
+      { name: "description", content: brand("Teléfonos útiles, trámites habituales, mercadillo, punto limpio, transporte y más: la chuleta práctica de {municipio}.") },
+      { property: "og:title", content: brand("Servicios públicos de {municipio}") },
       { property: "og:description", content: "Lo que necesitas resolver en el pueblo, a un toque." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -64,7 +64,7 @@ function ServiciosPublicos() {
           {services.heroImage && <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />}
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10">
             <h1 className="font-display text-4xl font-extrabold text-balance sm:text-5xl"><Text text="Servicios públicos" /></h1>
-            <p className="mt-3 max-w-2xl text-lg opacity-95"><Text text="Información práctica sobre servicios, gestiones y recursos de Casarabonela." /></p>
+            <p className="mt-3 max-w-2xl text-lg opacity-95"><Text text="Información práctica sobre servicios, gestiones y recursos de {municipio}." /></p>
           </div>
         </section>
 
@@ -186,7 +186,7 @@ function ServiciosPublicos() {
           <p className="max-w-2xl"><Text text="Consulta nuestras guías paso a paso para conocer los requisitos, la documentación necesaria, dónde realizar cada gestión y cómo solicitarla." /></p>
           <div className="mt-5 flex max-w-2xl items-start gap-3 border-l-4 border-primary bg-muted p-4">
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
-            <p className="text-sm"><Text text="Aquí Bonela no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales." /></p>
+            <p className="text-sm"><Text text="{app} no realiza trámites. Te explicamos cómo hacerlos y te facilitamos el acceso a los organismos oficiales." /></p>
           </div>
           <Button asChild className="mt-6 min-h-12">
             <Link to="/tramites"><Text text="Explorar guía de trámites" /><ArrowRight className="h-4 w-4" aria-hidden /></Link>

@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n, type TKey } from "@/lib/i18n";
-import { getInstanceContent, getMunicipality } from "@/config/municipality";
+import { brand, getInstanceContent, getMunicipality } from "@/config/municipality";
 import type { HomeSection } from "../../instances/schema";
 
 const { logoHome: logoWhite, heroImage: heroImg } = getMunicipality().assets;
@@ -18,10 +18,10 @@ const hasDiscover = Boolean(getInstanceContent().discover);
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aquí Bonela — Descubre, conoce y vive Casarabonela" },
-      { name: "description", content: "Busca comercios, profesionales y servicios de Casarabonela, y conoce la historia del pueblo blanco de la Sierra de las Nieves." },
-      { property: "og:title", content: "Aquí Bonela — Descubre, conoce y vive Casarabonela" },
-      { property: "og:description", content: "Todo lo que necesitas para descubrir, conocer y vivir Casarabonela." },
+      { title: brand("{app} — Descubre, conoce y vive {municipio}") },
+      { name: "description", content: brand(home.metaDescription ?? "Busca comercios, profesionales y servicios de {municipio}.") },
+      { property: "og:title", content: brand("{app} — Descubre, conoce y vive {municipio}") },
+      { property: "og:description", content: brand("Todo lo que necesitas para descubrir, conocer y vivir {municipio}.") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

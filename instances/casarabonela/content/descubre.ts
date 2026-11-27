@@ -11,6 +11,7 @@ import iglesia from "../assets/descubre/iglesia.jpg";
 import type { DiscoverContent, InstanceContent } from "../../schema";
 
 export const home: NonNullable<InstanceContent["home"]> = {
+  metaDescription: "Busca comercios, profesionales y servicios de {municipio}, y conoce la historia del pueblo blanco de la Sierra de las Nieves.",
   stats: [
     { value: "500", label: "home2.f1" },
     { value: "2.500", label: "home2.f2" },
