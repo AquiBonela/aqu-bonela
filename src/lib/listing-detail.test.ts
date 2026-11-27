@@ -102,6 +102,7 @@ describe("ficha pública", () => {
       "categories",
       "listing_hours",
       "listing_photos",
+      "listing_hour_periods",
     ]);
     expect(detail.categoryName).toBe("Alimentación");
     expect(detail.hours.map((h) => h.weekday)).toEqual([1, 2]);

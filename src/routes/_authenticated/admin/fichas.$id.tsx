@@ -7,10 +7,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { HourPeriodsEditor } from "@/components/admin/listing/HourPeriodsEditor";
-import {
-  listingReviewQuery,
-  ReviewStatusPanel,
-} from "@/components/admin/listing/ReviewStatusPanel";
+import { ReviewStatusPanel } from "@/components/admin/listing/ReviewStatusPanel";
+import { listingReviewQuery } from "@/lib/listing-review-query";
 import {
   composeAddress,
   normalizeWebsite,

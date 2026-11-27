@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,31 +18,11 @@ import {
   validateSource,
 } from "@/lib/site-assets";
 import { siteAssetUrl, type PageKey } from "@/lib/site-identity";
-
-const COLUMNS = "page_key,image_path,image_small_path,alt,focal_x,focal_y,updated_at";
-type Row = {
-  page_key: string;
-  image_path: string;
-  image_small_path: string;
-  alt: string;
-  focal_x: number;
-  focal_y: number;
-  updated_at: string;
-};
-
-export const pageHeaderQuery = (page: PageKey) =>
-  queryOptions({
-    queryKey: ["admin", "page-header", page],
-    queryFn: async (): Promise<Row | null> => {
-      const { data, error } = await supabase
-        .from("page_headers")
-        .select(COLUMNS)
-        .eq("page_key", page)
-        .maybeSingle();
-      if (error) throw new Error(error.message);
-      return data;
-    },
-  });
+import {
+  PAGE_HEADER_COLUMNS as COLUMNS,
+  pageHeaderQuery,
+  type PageHeaderRow as Row,
+} from "@/lib/page-header-query";
 
 const ALT_MAX = 200;
 const UNSAFE = /[<>{}]/;

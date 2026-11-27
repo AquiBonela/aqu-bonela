@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Listing } from "@/lib/directory";
 import { getMunicipality } from "@/config/municipality";
 import type { HourPeriod } from "./listing-details";
+import { CACHE } from "./cache-policy";
 
 /** URL pública de la instalación, leída en cada uso: puede cambiar desde /admin sin desplegar. */
 export function siteUrl(): string {
@@ -45,6 +46,7 @@ export type ListingDetail = Listing & {
 export const listingDetailQuery = (type: Listing["type"], slug: string) =>
   queryOptions({
     queryKey: ["listing", type, slug],
+    ...CACHE.listing,
     queryFn: async (): Promise<ListingDetail> => {
       const { data, error } = await supabase
         .from("public_listings")
