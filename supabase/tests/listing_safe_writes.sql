@@ -32,6 +32,8 @@ INSERT INTO public.approval_tokens (listing_id, token_hash, expires_at, used_at)
  ('5a000000-0000-4000-8000-000000000302', 'rls-sw-hash-show-hours', now() + interval '1 day', NULL),
  ('5a000000-0000-4000-8000-000000000304', 'rls-sw-hash-race', now() + interval '1 day', NULL),
  ('5a000000-0000-4000-8000-000000000305', 'rls-sw-hash-expired', now() - interval '1 day', NULL);
+-- La ficha 303 ya la aprobó su titular: la administración puede publicarla al guardar.
+INSERT INTO public.listing_events (listing_id, kind) VALUES ('5a000000-0000-4000-8000-000000000303', 'aprobacion');
 
 -- Failure injection, only for the fixture listing 301.
 CREATE FUNCTION pg_temp.rls_sw_fail() RETURNS trigger LANGUAGE plpgsql AS $f$

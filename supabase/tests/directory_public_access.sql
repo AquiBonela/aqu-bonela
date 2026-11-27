@@ -10,6 +10,10 @@ DO $$ BEGIN
  END IF;
 END $$;
 
+-- Esta prueba comprueba el acceso público, no la regla de publicación (la comprueba
+-- listing_review_flow.sql): las fichas de ejemplo se publican sin pasar por la aprobación.
+-- ALTER TABLE dentro de la transacción: el ROLLBACK final lo deja como estaba.
+ALTER TABLE public.listings DISABLE TRIGGER listings_publish_rule;
 INSERT INTO public.listings (id, slug, type, category_id, name, status, tags, featured, featured_until, translations) VALUES
  ('ad000000-0000-4000-8000-000000000201', 'rls-dir-visible', 'comercio', current_setting('test.dir_category')::uuid, 'Regression visible',
   'publicada', ARRAY['pan de leña'], true, now() + interval '1 day',
