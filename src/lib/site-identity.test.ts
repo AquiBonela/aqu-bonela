@@ -128,9 +128,9 @@ describe("mergeIdentity", () => {
 
 describe("script de configuración", () => {
   it("no permite cerrar el <script> ni romper la línea", () => {
-    const script = siteConfigScript({ identity: { appName: "</script><script>alert(1)</script> " } });
+    const script = siteConfigScript({ identity: { appName: "</script><script>alert(1)</script>\u2028" } });
     expect(script).not.toContain("</script>");
-    expect(script).not.toContain(" ");
+    expect(script).not.toContain("\u2028");
     expect(script.startsWith("window.__SITE_CONFIG__=")).toBe(true);
   });
 

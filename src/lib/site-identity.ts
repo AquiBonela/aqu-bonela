@@ -157,8 +157,8 @@ export function mergeIdentity(base: MunicipalityConfig, overrides: IdentityOverr
 export function siteConfigScript(config: SiteConfig): string {
   const json = JSON.stringify({ identity: config.identity ?? {} })
     .replace(/</g, "\\u003c")
-    .replace(/ /g, "\\u2028")
-    .replace(/ /g, "\\u2029");
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
   return `window.__SITE_CONFIG__=${json};`;
 }
 
