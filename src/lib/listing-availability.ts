@@ -12,6 +12,14 @@ export function hoursHidden(tags: string[]) {
 }
 
 /**
+ * Etiquetas que guarda el formulario de fichas: palabras de búsqueda, distinciones de
+ * disponibilidad y, si el horario no debe verse, la marca reservada de horario oculto.
+ */
+export function listingTags(keywords: string[], availability: string[], showHours: boolean) {
+  return withHoursVisibility(withAvailability(keywords, availability), showHours);
+}
+
+/**
  * Si la ficha muestra su horario. En la revisión se ve siempre, para que el titular decida.
  * En público nunca se muestra si el titular lo ocultó: la vista pública lo indica en
  * `hours_hidden` (sin la marca en `tags`) y una sesión de administrador sí recibe las filas.
