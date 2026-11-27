@@ -79,7 +79,7 @@ Sin esto los formularios de sugerencias y reportes no envían.
 `04_verify.sql` comprueba:
 - 17 tablas `public` + `private.form_rate_limits`, 179 columnas, 61 restricciones, RLS activo en todas.
 - Valores exactos de los 3 ENUM.
-- 39 políticas `public`, 8 de Storage, 8 funciones, 11 triggers.
+- 39 políticas `public`, 8 de Storage y una denegación explícita en `private.form_rate_limits`; 8 funciones y 11 triggers.
 - Buckets privados con sus límites y tipos MIME.
 - Permisos: anon no lee `admin_whatsapp`/`contact_email`, nadie salvo el servidor inserta sugerencias/reportes, solo `service_role` ejecuta `check_rate_limit`.
 - Pruebas reales simulando `anon`, `authenticated` sin rol, administrador y `service_role`: borradores ocultos, contactos privados, autoasignación de admin bloqueada, `has_role` no consulta a terceros, el trigger de contacto no publica datos no autorizados y el rate limit deniega el tercer intento.
@@ -97,4 +97,5 @@ Después, prueba en la web: inicio de sesión del administrador, alta de una fic
 ## 11. Riesgos pendientes
 - Los permisos ordinarios heredados siguen dependiendo de RLS; el permiso de vaciado `TRUNCATE` se ha retirado y se verifica expresamente.
 - La plantilla es una foto de producción a la fecha de generación: cada nueva migración en `supabase/migrations/` debe reflejarse también aquí.
-- Las pruebas se han ejecutado en un PostgreSQL 17 local con esquemas `auth`/`storage` simulados, no en un proyecto Supabase real; la primera instalación real debe pasar `04_verify.sql`.
+- Instalación real verificada el 27/11/2026 en la demo `wldwhbvjefvtkuxqbvpl`: `04_verify.sql` superado, 28 categorías, 155 actividades, 6 categorías de trámites, dos buckets privados y limpieza horaria activa. Sin fichas, contactos, trámites ni usuarios reales; acceso administrativo y formularios completos pendientes.
+- El asesor mantiene dos avisos previos sobre ejecución de funciones con privilegios elevados; no se cambiaron funciones previas ajenas a la instalación.

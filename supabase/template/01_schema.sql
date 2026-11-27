@@ -46,6 +46,7 @@ CREATE TABLE private.form_rate_limits (
 REVOKE ALL ON private.form_rate_limits FROM PUBLIC, anon, authenticated;
 GRANT ALL ON private.form_rate_limits TO service_role;
 ALTER TABLE private.form_rate_limits ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Browser roles denied rate limit rows" ON private.form_rate_limits AS RESTRICTIVE FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
 CREATE TABLE public.activities (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   category_id uuid NOT NULL,

@@ -37,7 +37,8 @@ No se deben confundir las pruebas simuladas con una validación de producción. 
 
 - [ ] Confirmar dónde está desplegado realmente el portal piloto (Vercel o Cloudflare) y documentar el proceso de despliegue, variables y dominios. **Estado:** Pendiente de comprobación — el README menciona Vercel, mientras que `vite.config.ts` usa la configuración de Lovable (destino Cloudflare por defecto) y no existe `vercel.json`; hay que comprobarlo en el servicio de alojamiento y alinear documentación y configuración.
 - [x] Plantilla de instalación limpia en `supabase/template` (esquema, semilla, configuración, verificación) probada en PostgreSQL local.
-- [ ] Instalar y verificar la plantilla segura en la demo conectada `wldwhbvjefvtkuxqbvpl`, sin datos locales de Casarabonela. **Estado:** En curso — almacenamiento por API y permisos de vaciado retirados; completar estructura, semilla, configuración y prueba SQL.
+- [x] Instalar y verificar la plantilla segura en la demo conectada `wldwhbvjefvtkuxqbvpl`, sin datos locales de Casarabonela. **Estado:** Verificado en instancia demo real — 04 superado, dos buckets privados, limpieza horaria, 28 categorías, 155 actividades y seis categorías de trámites; cero fichas/contactos/trámites/usuarios. 309 pruebas pasan y compilación correcta; portada/directorio leen exclusivamente la demo sin errores en móvil/escritorio. No certifica producción ni flujos administrativos.
+- [ ] Crear el primer administrador de la demo y completar sus datos legales antes de publicar. **Estado:** Bloqueado — falta usuario real y datos del titular; no se copian desde Casarabonela. La identidad visual local sigue en código y su adaptación pertenece a A1, Prioridad 4.
 - Las comprobaciones del Supabase y del entorno de producción de Casarabonela (migración de la fase 4, Turnstile y variables secretas) se siguen en el Bloque B, apartado B1 «Seguridad y formularios».
 
 ### Prioridad 2 — Corregir documentación y configuración técnica
