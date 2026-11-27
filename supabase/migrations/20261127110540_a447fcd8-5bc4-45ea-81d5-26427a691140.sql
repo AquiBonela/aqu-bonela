@@ -1,0 +1,1 @@
+CREATE POLICY "Browser roles denied rate limit rows" ON private.form_rate_limits AS RESTRICTIVE FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);
