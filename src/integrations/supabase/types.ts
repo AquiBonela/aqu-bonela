@@ -681,6 +681,72 @@ export type Database = {
           },
         ]
       }
+      site_identity: {
+        Row: {
+          app_name: string
+          autonomous_community: string
+          demonym_feminine: string
+          demonym_masculine: string
+          id: boolean
+          latitude: number | null
+          longitude: number | null
+          municipality_name: string
+          province: string
+          region: string
+          short_name: string
+          site_url: string
+          timezone: string
+          town_hall_address: string
+          town_hall_name: string
+          town_hall_phone: string
+          town_hall_website: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          app_name?: string
+          autonomous_community?: string
+          demonym_feminine?: string
+          demonym_masculine?: string
+          id?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          municipality_name?: string
+          province?: string
+          region?: string
+          short_name?: string
+          site_url?: string
+          timezone?: string
+          town_hall_address?: string
+          town_hall_name?: string
+          town_hall_phone?: string
+          town_hall_website?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          app_name?: string
+          autonomous_community?: string
+          demonym_feminine?: string
+          demonym_masculine?: string
+          id?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          municipality_name?: string
+          province?: string
+          region?: string
+          short_name?: string
+          site_url?: string
+          timezone?: string
+          town_hall_address?: string
+          town_hall_name?: string
+          town_hall_phone?: string
+          town_hall_website?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           admin_whatsapp: string
@@ -806,6 +872,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_identity: { Args: never; Returns: boolean }
       check_rate_limit: {
         Args: {
           p_key: string
@@ -821,6 +888,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      site_config: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin"
