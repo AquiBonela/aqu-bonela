@@ -92,13 +92,9 @@ jobs:
           TURNSTILE_SITE_KEY: ci-placeholder
 
   lint:
-    name: Lint (informativo, no bloquea)
+    name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Hoy el lint falla por formato (Prettier) en muchos archivos. Se deja
-    # informativo hasta formatear el repo en un cambio aparte; después, quitar
-    # la línea siguiente para que bloquee.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
