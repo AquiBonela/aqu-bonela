@@ -37,16 +37,16 @@ describe("selección de instancia", () => {
   });
 
   it("el build copia los archivos públicos de la instancia elegida", () => {
-    const saved = process.env.VITE_MUNICIPALITY_ID;
-    delete process.env.VITE_MUNICIPALITY_ID;
+    const saved = process.env["VITE_MUNICIPALITY_ID"];
+    delete process.env["VITE_MUNICIPALITY_ID"];
     try {
       const plugin = instanceSelection({ fallbackId: "otro-pueblo" });
       const config = (plugin.config as (c: UserConfig, e: ConfigEnv) => UserConfig)({ root }, { mode: "production", command: "build" });
       expect(config.publicDir).toBe(instancePublicDir(root, "otro-pueblo"));
       // Nitro pone copyPublicDir a false si no se indica: sin esto no se sirven favicon, manifest ni robots.txt.
-      expect(config.environments?.client?.build?.copyPublicDir).toBe(true);
+      expect(config.environments?.["client"]?.build?.copyPublicDir).toBe(true);
     } finally {
-      if (saved !== undefined) process.env.VITE_MUNICIPALITY_ID = saved;
+      if (saved !== undefined) process.env["VITE_MUNICIPALITY_ID"] = saved;
     }
   });
 
