@@ -4,6 +4,9 @@
 #   A) Instalación limpia: plantilla de esta rama + 04_verify + supabase/tests.
 #   B) Lo que se aplicará a una instalación existente: plantilla de la rama base + las
 #      migraciones nuevas de esta rama + 04_verify de esta rama + supabase/tests.
+#   C) Vuelta atrás: sobre B, los scripts de supabase/rollback/ de esas migraciones (en orden
+#      inverso) y el 04_verify de la rama base deben dejar la base como estaba.
+#      Cada migración nueva debe tener su script de vuelta atrás con el mismo nombre.
 # Variables: PGPASSWORD (obligatoria), BASE_REF (por defecto origin/main), PORT_A y PORT_B.
 set -euo pipefail
 
@@ -79,4 +82,18 @@ run "$PORT_B" -f supabase/template/04_verify.sql
 admin "$PORT_B"
 sql_tests "$PORT_B"
 
-echo "Base de datos correcta en los dos escenarios."
+echo "### C. Vuelta atrás de las migraciones nuevas"
+for (( i=${#new_migrations[@]}-1; i>=0; i-- )); do
+  rollback="supabase/rollback/$(basename "${new_migrations[$i]}")"
+  if [ ! -f "$rollback" ]; then
+    echo "::error::Falta $rollback: cada migración nueva necesita su script de vuelta atrás."
+    exit 1
+  fi
+  echo "   vuelta atrás: $rollback"
+  run "$PORT_B" -f "$rollback"
+done
+git show "$BASE_REF:supabase/template/04_verify.sql" > "$base_dir/04_verify.sql"
+echo "   04_verify ($BASE_REF)"
+run "$PORT_B" -f "$base_dir/04_verify.sql"
+
+echo "Base de datos correcta en los tres escenarios."

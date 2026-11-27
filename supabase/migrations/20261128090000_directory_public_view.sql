@@ -112,3 +112,6 @@ CREATE POLICY "Public reads photos of published listings" ON storage.objects AS 
     )
   );
 -- <<< directory_public_view
+
+-- La API (PostgREST) recarga su esquema para ofrecer la vista nueva sin esperar.
+NOTIFY pgrst, 'reload schema';
