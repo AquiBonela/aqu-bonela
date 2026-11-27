@@ -1,5 +1,7 @@
 -- Solo para CI: piezas que en Supabase crean los servicios de Auth y Storage y que la imagen
 -- de Postgres no trae. Cada una se crea solo si falta; nunca se ejecuta en una base real.
+-- Se ejecuta como supabase_admin. Las tablas simuladas de Storage pasan a ser de postgres para que la
+-- plantilla (que se ejecuta como postgres, igual que SQL Editor) pueda crear sus políticas.
 CREATE SCHEMA IF NOT EXISTS auth;
 CREATE SCHEMA IF NOT EXISTS storage;
 DO $g$ BEGIN
@@ -79,3 +81,6 @@ CREATE TABLE IF NOT EXISTS storage.objects (
 ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE storage.buckets ENABLE ROW LEVEL SECURITY;
 GRANT ALL ON storage.objects, storage.buckets TO anon, authenticated, service_role;
+ALTER TABLE storage.objects OWNER TO postgres;
+ALTER TABLE storage.buckets OWNER TO postgres;
+GRANT ALL ON auth.users TO postgres;
