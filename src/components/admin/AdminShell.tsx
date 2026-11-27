@@ -67,7 +67,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
         footnote={tr(`Administración del directorio ${getMunicipality().appName}`)}
         brand={
           <Link to="/admin" className="inline-flex min-w-0 items-center justify-center">
-            <img src={getMunicipality().assets.logoAdmin} alt={getMunicipality().appName} className="h-9 max-w-full object-contain brightness-0" />
+            {getMunicipality().assets.logoAdmin
+              ? <img src={getMunicipality().assets.logoAdmin} alt={getMunicipality().appName} className="h-9 max-w-full object-contain brightness-0" />
+              : <span className="truncate font-display text-lg font-extrabold">{getMunicipality().appName}</span>}
           </Link>
         }
         items={items.map((item) => ({ ...item, label: tr(item.label) }))}

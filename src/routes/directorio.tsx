@@ -80,13 +80,15 @@ function Index() {
       <SiteHeader />
 
       <section className="relative w-full overflow-hidden">
-        <div className="relative h-[24rem] w-full sm:h-[30rem]">
-          <img
-            src={getMunicipality().assets.heroImage}
-            alt={tr("Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves")}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
+        <div className={getMunicipality().assets.heroImage ? "relative h-[24rem] w-full sm:h-[30rem]" : "relative h-[24rem] w-full bg-primary sm:h-[30rem]"}>
+          {getMunicipality().assets.heroImage && (
+            <img
+              src={getMunicipality().assets.heroImage}
+              alt={tr("Panorámica del pueblo blanco de Casarabonela y la Sierra de las Nieves")}
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+          )}
+          {getMunicipality().assets.heroImage && <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />}
           <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
             <h1 className="max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
               {tr(data.heroTitle)}

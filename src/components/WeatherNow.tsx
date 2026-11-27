@@ -6,10 +6,10 @@ import { getMunicipality } from "@/config/municipality";
 
 type Weather = { temp: number; code: number };
 
-// Coordenadas y zona horaria del municipio configurado
-const { lat, lng, timezone } = getMunicipality().coordinates;
-const PLACE = `latitude=${lat}&longitude=${lng}`;
-const TZ = encodeURIComponent(timezone);
+// Coordenadas y zona horaria del municipio configurado; sin ellas no se muestra el tiempo.
+const coordinates = getMunicipality().coordinates;
+const PLACE = coordinates ? `latitude=${coordinates.lat}&longitude=${coordinates.lng}` : "";
+const TZ = coordinates ? encodeURIComponent(coordinates.timezone) : "";
 const URL =
   `https://api.open-meteo.com/v1/forecast?${PLACE}&current=temperature_2m,weather_code&timezone=${TZ}`;
 
@@ -24,12 +24,13 @@ function iconFor(code: number): { Icon: LucideIcon; label: string } {
   return { Icon: CloudLightning, label: "Tormenta" };
 }
 
-/** Tiempo actual en Casarabonela (Open-Meteo, sin claves ni cookies). */
+/** Tiempo actual en el municipio (Open-Meteo, sin claves ni cookies). */
 export function WeatherNow() {
   const { tr, locale } = useI18n();
   const [w, setW] = useState<Weather | null>(null);
 
   useEffect(() => {
+    if (!coordinates) return;
     let alive = true;
     const load = () =>
       fetch(URL)

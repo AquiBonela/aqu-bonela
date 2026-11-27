@@ -72,11 +72,13 @@ function Home() {
       <div className="relative z-10">
         <SiteHeader overlay />
 
-        <section className="relative">
-          <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/40 to-foreground/85" />
+        <section className={heroImg ? "relative" : "relative bg-primary"}>
+          {heroImg && <img src={heroImg} alt={t("home.heroAlt")} className="absolute inset-0 h-full w-full object-cover" />}
+          {heroImg && <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/40 to-foreground/85" />}
           <div className="relative mx-auto flex min-h-[36rem] max-w-3xl flex-col items-center justify-center px-4 pb-14 pt-24 text-center">
-            <img src={logoWhite} alt="Aquí Bonela" className="h-auto w-64 sm:w-80" />
+            {logoWhite
+              ? <img src={logoWhite} alt={getMunicipality().appName} className="h-auto w-64 sm:w-80" />
+              : <p className="font-display text-4xl font-extrabold leading-tight text-primary-foreground text-balance sm:text-5xl">{getMunicipality().appName}</p>}
             <h1 className="mt-6 font-display text-xl font-bold leading-snug text-primary-foreground sm:text-3xl">{t("home2.searchKicker")}</h1>
           <div className="relative mt-8 w-full">
           <form id="form-portada" onSubmit={submit} role="search" className="flex w-full items-center gap-1 rounded-soft bg-card p-1.5 shadow-lg">

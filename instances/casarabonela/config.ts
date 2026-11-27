@@ -9,6 +9,8 @@ const instance: MunicipalityConfig = {
   id: "casarabonela",
   name: "Casarabonela",
   appName: "Aquí Bonela",
+  shortName: "Bonela",
+  storagePrefix: "aquibonela",
   demonym: { masculine: "morisco", feminine: "morisca" },
   province: "Málaga",
   region: "Sierra de las Nieves",

@@ -8,6 +8,7 @@ import ukText from "@/lib/locales/uk.json";
 import enSupplement from "@/lib/locales/en-supplement.json";
 import corrections from "@/lib/locales/corrections.json";
 import { reviewedTranslations } from "@/lib/i18n-overrides";
+import { getMunicipality } from "@/config/municipality";
 import spanishFlag from "@/assets/flags/es.svg";
 import englishFlag from "@/assets/flags/en.svg";
 import germanFlag from "@/assets/flags/de.svg";
@@ -456,7 +457,7 @@ const en: Partial<Record<TKey, string>> = {
   "descubre.endBtn": "Explore the directory",
 };
 
-const STORAGE_KEY = "aquibonela-lang";
+const STORAGE_KEY = `${getMunicipality().storagePrefix}-lang`;
 
 const normalizedText = (text: string) => text.replace(/\s+/g, " ").trim();
 const originalEnglish = Object.fromEntries(Object.entries(es).map(([key, value]) => [value, en[key as TKey] ?? value]));
