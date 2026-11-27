@@ -5,7 +5,7 @@ Crea una instalación nueva de la plataforma en un proyecto Supabase **vacío**,
 
 | Archivo | Qué hace | ¿Repetible? |
 |---|---|---|
-| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 18 tablas, restricciones, índices, 8 funciones, 11 triggers, permisos de tabla/columna/función, RLS, 39 políticas `public`, 2 buckets privados y 8 políticas de Storage, limpieza programada del rate limiting | No: solo en un proyecto vacío |
+| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 18 tablas, restricciones, índices, 8 funciones, 11 triggers, permisos de tabla/columna/función, RLS, 39 políticas `public`, 8 políticas de Storage (buckets por API), limpieza programada del rate limiting | No: solo en un proyecto vacío |
 | `02_seed_universal.sql` | 28 categorías, 155 actividades (con sinónimos), 6 categorías de trámites | Sí |
 | `03_init_instance.sql` | Configuración de la instalación (`site_settings`) y, opcionalmente, primer administrador | Sí |
 | `04_verify.sql` | Comprueba estructura, seguridad y datos con pruebas reales por rol; no deja datos | Sí |
@@ -28,7 +28,7 @@ El esquema se ha generado desde el **catálogo de PostgreSQL de producción** (n
   Sin limpieza el rate limiting sigue funcionando; solo acumula filas caducadas.
 
 ## 3. Orden de ejecución
-1. `01_schema.sql` (una vez).
+1. Crear mediante Storage API los buckets privados `listing-photos` (5 MB, sin restricción MIME) y `procedure-images` (8 MB, solo `image/webp`); después ejecutar `01_schema.sql` (una vez).
 2. `02_seed_universal.sql`.
 3. Crear el primer administrador en Authentication (apartado 4).
 4. Editar el bloque `DECLARE` de `03_init_instance.sql` y ejecutarlo.
@@ -90,10 +90,11 @@ Después, prueba en la web: inicio de sesión del administrador, alta de una fic
 - `site_settings.hero_subtitle` y `whatsapp_template`: valores por defecto neutros (en producción mencionan Casarabonela/Aquí Bonela).
 - Categoría de trámites `municipales`: descripción sin nombre de municipio.
 - Privilegio `MAINTAIN` (solo PostgreSQL 17) no se concede, para que el script funcione también en PostgreSQL 15. No afecta a la aplicación.
+- No se concede `TRUNCATE` a `anon` ni `authenticated`: ese permiso elude RLS; el vaciado queda reservado al servidor/operador.
 - El trabajo de `pg_cron` se llama `cleanup-form-rate-limits` (en producción no tiene nombre).
 - No se incluyen fichas, trámites, contactos, sugerencias, reportes, usuarios ni archivos.
 
 ## 11. Riesgos pendientes
-- Permisos amplios heredados: igual que en producción, `anon`/`authenticated` tienen privilegios de tabla amplios y la protección depende de RLS. Se reproducen tal cual; endurecerlos es una decisión aparte.
+- Los permisos ordinarios heredados siguen dependiendo de RLS; el permiso de vaciado `TRUNCATE` se ha retirado y se verifica expresamente.
 - La plantilla es una foto de producción a la fecha de generación: cada nueva migración en `supabase/migrations/` debe reflejarse también aquí.
 - Las pruebas se han ejecutado en un PostgreSQL 17 local con esquemas `auth`/`storage` simulados, no en un proyecto Supabase real; la primera instalación real debe pasar `04_verify.sql`.

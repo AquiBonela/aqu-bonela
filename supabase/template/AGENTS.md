@@ -1,1 +1,3 @@
 - `supabase/template/` is a clean-install snapshot generated from the production catalog (schema, universal seed, per-instance init, role-based verify); `supabase/migrations/` stays Casarabonela's history. Any schema change must also be reflected in the template and pass `04_verify.sql`. Why: new municipalities must install from zero without inheriting local data or drifting from production security.
+
+- Create private buckets through Storage API, not schema SQL; never grant TRUNCATE to browser roles, and verify both roles are denied it. Why: installation tooling owns buckets and TRUNCATE bypasses RLS.

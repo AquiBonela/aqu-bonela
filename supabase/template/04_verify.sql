@@ -70,6 +70,13 @@ BEGIN
   OR has_table_privilege('anon', 'private.form_rate_limits', 'SELECT')
   THEN RAISE EXCEPTION 'FALLO: permisos de tabla/columna'; END IF;
 
+  -- Ni visitantes ni usuarios (incluidos admins) pueden vaciar tablas saltándose RLS.
+  SELECT count(*) INTO n FROM pg_tables t
+  WHERE t.schemaname IN ('public','private') AND
+    (has_table_privilege('anon', format('%I.%I',t.schemaname,t.tablename), 'TRUNCATE') OR
+     has_table_privilege('authenticated', format('%I.%I',t.schemaname,t.tablename), 'TRUNCATE'));
+  IF n <> 0 THEN RAISE EXCEPTION 'FALLO: vaciado de tablas accesible a visitantes/usuarios'; END IF;
+
   -- ---------- 6. Datos universales ----------
   IF (SELECT count(*) FROM public.categories) <> 28 OR (SELECT count(*) FROM public.activities) <> 155
   OR (SELECT count(*) FROM public.procedure_categories) <> 6
@@ -112,6 +119,9 @@ BEGIN
     BEGIN PERFORM 1 FROM private.form_rate_limits; RAISE EXCEPTION 'FALLO: anon lee rate limits';
     EXCEPTION WHEN insufficient_privilege THEN NULL; END;
 
+    BEGIN TRUNCATE TABLE public.listing_contacts; RAISE EXCEPTION 'FALLO: anon vacía contactos';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+
     -- Usuario autenticado sin rol
     PERFORM set_config('role', 'authenticated', true);
     PERFORM set_config('request.jwt.claims', json_build_object('sub', v_member, 'role', 'authenticated')::text, true);
@@ -122,6 +132,9 @@ BEGIN
     GET DIAGNOSTICS n = ROW_COUNT;
     IF n <> 0 THEN RAISE EXCEPTION 'FALLO: usuario sin rol edita fichas'; END IF;
     IF public.has_role(v_admin, 'admin') THEN RAISE EXCEPTION 'FALLO: has_role permite consultar a otros'; END IF;
+
+    BEGIN TRUNCATE TABLE public.listing_contacts; RAISE EXCEPTION 'FALLO: usuario vacía contactos';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
 
     -- Administrador
     PERFORM set_config('request.jwt.claims', json_build_object('sub', v_admin, 'role', 'authenticated')::text, true);

@@ -37,7 +37,7 @@ No se deben confundir las pruebas simuladas con una validación de producción. 
 
 - [ ] Confirmar dónde está desplegado realmente el portal piloto (Vercel o Cloudflare) y documentar el proceso de despliegue, variables y dominios. **Estado:** Pendiente de comprobación — el README menciona Vercel, mientras que `vite.config.ts` usa la configuración de Lovable (destino Cloudflare por defecto) y no existe `vercel.json`; hay que comprobarlo en el servicio de alojamiento y alinear documentación y configuración.
 - [x] Plantilla de instalación limpia en `supabase/template` (esquema, semilla, configuración, verificación) probada en PostgreSQL local.
-- [ ] Ejecutar la plantilla en un proyecto Supabase real nuevo y pasar `04_verify.sql`, resolviendo cualquier error. **Estado:** Bloqueado — pendiente de crear ese proyecto. Probado solo en entorno controlado (PostgreSQL 17 local con esquemas `auth`/`storage` simulados).
+- [ ] Instalar y verificar la plantilla segura en la demo conectada `wldwhbvjefvtkuxqbvpl`, sin datos locales de Casarabonela. **Estado:** En curso — almacenamiento por API y permisos de vaciado retirados; completar estructura, semilla, configuración y prueba SQL.
 - Las comprobaciones del Supabase y del entorno de producción de Casarabonela (migración de la fase 4, Turnstile y variables secretas) se siguen en el Bloque B, apartado B1 «Seguridad y formularios».
 
 ### Prioridad 2 — Corregir documentación y configuración técnica

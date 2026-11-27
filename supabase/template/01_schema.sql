@@ -43,6 +43,9 @@ CREATE TABLE private.form_rate_limits (
   expires_at timestamp with time zone NOT NULL,
   CONSTRAINT form_rate_limits_pkey PRIMARY KEY (key)
 );
+REVOKE ALL ON private.form_rate_limits FROM PUBLIC, anon, authenticated;
+GRANT ALL ON private.form_rate_limits TO service_role;
+ALTER TABLE private.form_rate_limits ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.activities (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   category_id uuid NOT NULL,
@@ -54,6 +57,10 @@ CREATE TABLE public.activities (
   CONSTRAINT activities_category_id_name_key UNIQUE (category_id, name),
   CONSTRAINT activities_pkey PRIMARY KEY (id)
 );
+REVOKE ALL ON public.activities FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.activities TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.activities TO anon, authenticated;
+ALTER TABLE public.activities ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.approval_tokens (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   listing_id uuid NOT NULL,
@@ -65,6 +72,10 @@ CREATE TABLE public.approval_tokens (
   CONSTRAINT approval_tokens_token_hash_key UNIQUE (token_hash),
   CONSTRAINT approval_tokens_pkey PRIMARY KEY (id)
 );
+REVOKE ALL ON public.approval_tokens FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.approval_tokens TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.approval_tokens TO anon, authenticated;
+ALTER TABLE public.approval_tokens ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.categories (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   name text NOT NULL,
@@ -77,6 +88,10 @@ CREATE TABLE public.categories (
   CONSTRAINT categories_slug_key UNIQUE (slug),
   CONSTRAINT categories_pkey PRIMARY KEY (id)
 );
+REVOKE ALL ON public.categories FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.categories TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.categories TO anon, authenticated;
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.consents (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   listing_id uuid NOT NULL,
@@ -90,6 +105,10 @@ CREATE TABLE public.consents (
   withdrawn_at timestamp with time zone,
   CONSTRAINT consents_pkey PRIMARY KEY (id)
 );
+REVOKE ALL ON public.consents FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.consents TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.consents TO anon, authenticated;
+ALTER TABLE public.consents ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.listing_activities (
   listing_id uuid NOT NULL,
   activity_id uuid NOT NULL,
@@ -97,6 +116,10 @@ CREATE TABLE public.listing_activities (
   created_at timestamp with time zone DEFAULT now() NOT NULL,
   CONSTRAINT listing_activities_pkey PRIMARY KEY (listing_id, activity_id)
 );
+REVOKE ALL ON public.listing_activities FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.listing_activities TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.listing_activities TO anon, authenticated;
+ALTER TABLE public.listing_activities ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.listing_contacts (
   listing_id uuid NOT NULL,
   phone text,
@@ -127,6 +150,10 @@ CREATE TABLE public.listing_contacts (
   show_tiktok boolean DEFAULT false NOT NULL,
   CONSTRAINT listing_contacts_pkey PRIMARY KEY (listing_id)
 );
+REVOKE ALL ON public.listing_contacts FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.listing_contacts TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.listing_contacts TO anon, authenticated;
+ALTER TABLE public.listing_contacts ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.listing_hours (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   listing_id uuid NOT NULL,
@@ -137,6 +164,10 @@ CREATE TABLE public.listing_hours (
   CONSTRAINT listing_hours_pkey PRIMARY KEY (id),
   CONSTRAINT listing_hours_weekday_check CHECK (((weekday >= 1) AND (weekday <= 7)))
 );
+REVOKE ALL ON public.listing_hours FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.listing_hours TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.listing_hours TO anon, authenticated;
+ALTER TABLE public.listing_hours ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.listing_photos (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   listing_id uuid NOT NULL,
@@ -146,6 +177,10 @@ CREATE TABLE public.listing_photos (
   created_at timestamp with time zone DEFAULT now() NOT NULL,
   CONSTRAINT listing_photos_pkey PRIMARY KEY (id)
 );
+REVOKE ALL ON public.listing_photos FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.listing_photos TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.listing_photos TO anon, authenticated;
+ALTER TABLE public.listing_photos ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.listing_reports (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   listing_id uuid NOT NULL,
@@ -157,6 +192,10 @@ CREATE TABLE public.listing_reports (
   CONSTRAINT listing_reports_contact_check CHECK (((contact IS NULL) OR (char_length(contact) <= 120))),
   CONSTRAINT listing_reports_message_check CHECK (((char_length(message) >= 5) AND (char_length(message) <= 1000)))
 );
+REVOKE ALL ON public.listing_reports FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.listing_reports TO service_role;
+GRANT SELECT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.listing_reports TO anon, authenticated;  -- sin INSERT: solo vía servidor
+ALTER TABLE public.listing_reports ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.listing_requests (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   listing_id uuid NOT NULL,
@@ -168,6 +207,10 @@ CREATE TABLE public.listing_requests (
   CONSTRAINT listing_requests_pkey PRIMARY KEY (id),
   CONSTRAINT listing_requests_status_check CHECK ((status = ANY (ARRAY['abierta'::text, 'aprobada'::text, 'rechazada'::text, 'devuelta'::text, 'retirada'::text])))
 );
+REVOKE ALL ON public.listing_requests FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.listing_requests TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.listing_requests TO anon, authenticated;
+ALTER TABLE public.listing_requests ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.listings (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   slug text NOT NULL,
@@ -209,6 +252,10 @@ CREATE TABLE public.listings (
   CONSTRAINT listings_gallery_max CHECK ((cardinality(gallery_urls) <= 5)),
   CONSTRAINT listings_labels_max CHECK ((cardinality(labels) <= 3))
 );
+REVOKE ALL ON public.listings FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.listings TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.listings TO anon, authenticated;
+ALTER TABLE public.listings ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.procedure_categories (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   slug text NOT NULL,
@@ -225,6 +272,10 @@ CREATE TABLE public.procedure_categories (
   CONSTRAINT procedure_categories_slug_check CHECK ((slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text)),
   CONSTRAINT procedure_categories_title_check CHECK ((length(TRIM(BOTH FROM title)) > 0))
 );
+REVOKE ALL ON public.procedure_categories FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.procedure_categories TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.procedure_categories TO anon, authenticated;
+ALTER TABLE public.procedure_categories ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.procedures (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   category_id uuid NOT NULL,
@@ -250,6 +301,10 @@ CREATE TABLE public.procedures (
   CONSTRAINT procedures_title_check CHECK ((length(TRIM(BOTH FROM title)) > 0)),
   CONSTRAINT procedures_visibility_check CHECK ((jsonb_typeof(visibility) = 'object'::text))
 );
+REVOKE ALL ON public.procedures FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.procedures TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.procedures TO anon, authenticated;
+ALTER TABLE public.procedures ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.site_settings (
   id boolean DEFAULT true NOT NULL,
   hero_title text DEFAULT 'Todo lo que necesitas, en tu pueblo'::text NOT NULL,
@@ -270,6 +325,12 @@ CREATE TABLE public.site_settings (
   CONSTRAINT site_settings_collaborator_months_check CHECK (((collaborator_months >= 1) AND (collaborator_months <= 24))),
   CONSTRAINT site_settings_id_check CHECK (id)
 );
+REVOKE ALL ON public.site_settings FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.site_settings TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.site_settings TO authenticated;
+GRANT INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.site_settings TO anon;
+GRANT SELECT (id, hero_title, hero_subtitle, collaborator_months, updated_at, legal_name, legal_nif, legal_address, legal_email, banner_enabled, banner_text) ON public.site_settings TO anon;
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.suggestions (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   name text NOT NULL,
@@ -282,6 +343,10 @@ CREATE TABLE public.suggestions (
   CONSTRAINT suggestions_message_check CHECK (((length(TRIM(BOTH FROM message)) >= 5) AND (length(TRIM(BOTH FROM message)) <= 1000))),
   CONSTRAINT suggestions_name_check CHECK (((length(TRIM(BOTH FROM name)) >= 2) AND (length(TRIM(BOTH FROM name)) <= 120)))
 );
+REVOKE ALL ON public.suggestions FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.suggestions TO service_role;
+GRANT SELECT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.suggestions TO anon, authenticated;  -- sin INSERT: solo vía servidor
+ALTER TABLE public.suggestions ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.translation_gateway_state (
   id boolean DEFAULT true NOT NULL,
   blocked boolean DEFAULT false NOT NULL,
@@ -290,6 +355,10 @@ CREATE TABLE public.translation_gateway_state (
   CONSTRAINT translation_gateway_state_pkey PRIMARY KEY (id),
   CONSTRAINT translation_gateway_state_id_check CHECK (id)
 );
+REVOKE ALL ON public.translation_gateway_state FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.translation_gateway_state TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.translation_gateway_state TO anon, authenticated;
+ALTER TABLE public.translation_gateway_state ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.user_roles (
   id uuid DEFAULT gen_random_uuid() NOT NULL,
   user_id uuid NOT NULL,
@@ -297,6 +366,10 @@ CREATE TABLE public.user_roles (
   CONSTRAINT user_roles_user_id_role_key UNIQUE (user_id, role),
   CONSTRAINT user_roles_pkey PRIMARY KEY (id)
 );
+REVOKE ALL ON public.user_roles FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.user_roles TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON public.user_roles TO anon, authenticated;
+ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 
 -- 4. CLAVES FORÁNEAS ---------------------------------------------------------
 ALTER TABLE public.activities ADD CONSTRAINT activities_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id) ON DELETE CASCADE;
@@ -497,85 +570,6 @@ CREATE TRIGGER procedures_updated BEFORE UPDATE ON public.procedures FOR EACH RO
 CREATE TRIGGER site_settings_updated BEFORE UPDATE ON public.site_settings FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 CREATE TRIGGER translation_state_updated BEFORE UPDATE ON public.translation_gateway_state FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
--- 8. PERMISOS DE TABLA Y COLUMNA (idénticos a producción) -------------------
--- Supabase ya no concede privilegios por defecto en public: se declaran todos.
-REVOKE ALL ON public.activities FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.activities TO service_role;
-GRANT ALL ON public.activities TO anon, authenticated;
-REVOKE ALL ON public.approval_tokens FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.approval_tokens TO service_role;
-GRANT ALL ON public.approval_tokens TO anon, authenticated;
-REVOKE ALL ON public.categories FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.categories TO service_role;
-GRANT ALL ON public.categories TO anon, authenticated;
-REVOKE ALL ON public.consents FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.consents TO service_role;
-GRANT ALL ON public.consents TO anon, authenticated;
-REVOKE ALL ON public.listing_activities FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.listing_activities TO service_role;
-GRANT ALL ON public.listing_activities TO anon, authenticated;
-REVOKE ALL ON public.listing_contacts FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.listing_contacts TO service_role;
-GRANT ALL ON public.listing_contacts TO anon, authenticated;
-REVOKE ALL ON public.listing_hours FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.listing_hours TO service_role;
-GRANT ALL ON public.listing_hours TO anon, authenticated;
-REVOKE ALL ON public.listing_photos FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.listing_photos TO service_role;
-GRANT ALL ON public.listing_photos TO anon, authenticated;
-REVOKE ALL ON public.listing_reports FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.listing_reports TO service_role;
-GRANT SELECT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.listing_reports TO anon, authenticated;  -- sin INSERT: solo vía servidor
-REVOKE ALL ON public.listing_requests FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.listing_requests TO service_role;
-GRANT ALL ON public.listing_requests TO anon, authenticated;
-REVOKE ALL ON public.listings FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.listings TO service_role;
-GRANT ALL ON public.listings TO anon, authenticated;
-REVOKE ALL ON public.procedure_categories FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.procedure_categories TO service_role;
-GRANT ALL ON public.procedure_categories TO anon, authenticated;
-REVOKE ALL ON public.procedures FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.procedures TO service_role;
-GRANT ALL ON public.procedures TO anon, authenticated;
-REVOKE ALL ON public.site_settings FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.site_settings TO service_role;
-GRANT ALL ON public.site_settings TO authenticated;
-GRANT INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.site_settings TO anon;
--- anon solo lee columnas públicas: nunca admin_whatsapp, contact_email, whatsapp_template ni common_labels
-GRANT SELECT (id, hero_title, hero_subtitle, collaborator_months, updated_at, legal_name, legal_nif, legal_address, legal_email, banner_enabled, banner_text) ON public.site_settings TO anon;
-REVOKE ALL ON public.suggestions FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.suggestions TO service_role;
-GRANT SELECT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.suggestions TO anon, authenticated;  -- sin INSERT: solo vía servidor
-REVOKE ALL ON public.translation_gateway_state FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.translation_gateway_state TO service_role;
-GRANT ALL ON public.translation_gateway_state TO anon, authenticated;
-REVOKE ALL ON public.user_roles FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.user_roles TO service_role;
-GRANT ALL ON public.user_roles TO anon, authenticated;
-REVOKE ALL ON private.form_rate_limits FROM PUBLIC, anon, authenticated;
-GRANT ALL ON private.form_rate_limits TO service_role;
-
--- 9. ROW LEVEL SECURITY -----------------------------------------------------
-ALTER TABLE private.form_rate_limits ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.activities ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.approval_tokens ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.consents ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.listing_activities ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.listing_contacts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.listing_hours ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.listing_photos ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.listing_reports ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.listing_requests ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.listings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.procedure_categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.procedures ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.suggestions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.translation_gateway_state ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
-
 -- 10. POLÍTICAS RLS (39 public) ----------------------------------------------
 CREATE POLICY "Admins manage activities" ON public.activities AS PERMISSIVE FOR ALL TO authenticated
   USING (has_role(auth.uid(), 'admin'::app_role))
@@ -684,12 +678,8 @@ CREATE POLICY "Admins manage roles" ON public.user_roles AS PERMISSIVE FOR ALL T
 CREATE POLICY "Users read own roles" ON public.user_roles AS PERMISSIVE FOR SELECT TO authenticated
   USING ((user_id = auth.uid()));
 
--- 11. STORAGE: BUCKETS PRIVADOS Y POLÍTICAS (8) -----------------------------
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types) VALUES
-  ('listing-photos',   'listing-photos',   false, 5242880, NULL),
-  ('procedure-images', 'procedure-images', false, 8388608, ARRAY['image/webp'])
-ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public,
-  file_size_limit = EXCLUDED.file_size_limit, allowed_mime_types = EXCLUDED.allowed_mime_types;
+-- 11. STORAGE: POLÍTICAS PARA BUCKETS PRIVADOS (8) -----------------------------
+-- Crear los dos buckets privados mediante Storage API antes de 04 (ver README).
 
 CREATE POLICY "Admins delete listing photos" ON storage.objects AS PERMISSIVE FOR DELETE TO authenticated
   USING (((bucket_id = 'listing-photos'::text) AND has_role(auth.uid(), 'admin'::app_role)));
