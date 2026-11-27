@@ -19,6 +19,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Sin proyectos ni claves de Supabase escritos en el código
+        # Cada instalación toma su Supabase de variables de entorno. Solo se listan nombres de archivo.
+        run: |
+          if git grep -l -E 'https://[a-z0-9]{20}\.supabase\.co|sb_(publishable|secret)_[A-Za-z0-9_-]{10,}|eyJ[A-Za-z0-9_-]{30,}\.' -- src; then
+            echo "::error::Hay una URL o clave de Supabase escrita en src/. Debe leerse de las variables de entorno."
+            exit 1
+          fi
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.5
