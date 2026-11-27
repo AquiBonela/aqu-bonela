@@ -1,18 +1,29 @@
 # Conecta tu Pueblo
 
-**Plataforma digital municipal desarrollada y operada por Groundwork.**
+**Plataforma digital municipal desarrollada por Groundwork.**
 
 Conecta tu Pueblo es un producto tecnológico orientado a mejorar el acceso a la información, los servicios y la actividad de los municipios. Su objetivo es facilitar la conexión entre vecinos, visitantes, comercios, profesionales, asociaciones y administraciones locales.
 
-Cada municipio podrá disponer de un portal con identidad visual, dominio y configuración propios, utilizando una base tecnológica común.
+El objetivo es que cada municipio disponga de un portal con identidad visual, dominio y configuración propios sobre una base tecnológica común. **La replicación a otros municipios todavía no se ha probado**: hoy solo existe una implantación.
 
-## 1. Producto
+> **Nombres en uso.** Producto: *Conecta tu Pueblo*. Repositorio: `daflagel/conecta_tu_pueblo`. Paquete npm: `groundwork-municipal-platform`. Proyecto en Lovable y URL provisional del piloto: `bonela-local-finds`. Los tres se refieren a este mismo código.
 
-Conecta tu Pueblo se concibe como una plataforma replicable y adaptable a diferentes municipios.
+## 1. Producto y municipio piloto
 
-Groundwork desarrolla, implanta y mantiene la solución, incluyendo la organización de contenidos, la gestión de información y el soporte técnico.
+| | Qué es |
+|---|---|
+| **Conecta tu Pueblo** | Producto común: código, funcionalidades, esquema de base de datos y plantilla de instalación. Lo desarrolla y mantiene Groundwork. |
+| **Aquí Bonela** | Portal de **Casarabonela** (Málaga), primer municipio piloto. Es hoy la única entrada registrada en `src/config/municipality.ts`. |
 
-El Ayuntamiento participa como colaborador institucional, facilitando información oficial y validando los contenidos que correspondan a sus competencias.
+Gran parte del repositorio sigue siendo específica del piloto:
+
+- `supabase/migrations/` es el **historial de la base de datos de Casarabonela**, no una instalación genérica (ver apartado 6).
+- Recursos de `src/assets/` y `public/` (logos, imágenes, favicon, manifiesto PWA).
+- Contenido escrito en el código: guías de trámites, servicios públicos, teléfonos, páginas Descubre y Sobre, textos legales y parte de los diccionarios de traducción.
+
+Separar este contenido del código común es trabajo pendiente ([roadmap.md](roadmap.md), Bloque A, Prioridad 4).
+
+**Titularidad.** Groundwork desarrolla y mantiene el producto. Quién es el titular legal de cada portal se define en cada instalación y **todavía no está resuelto**: el aviso legal actual de Aquí Bonela lo describe como una iniciativa privada gestionada por una persona física, y la plantilla de instalación no presupone que el titular sea Groundwork ni el Ayuntamiento. El modelo debe revisarse con asesoramiento legal antes de comercializar el servicio (roadmap, Bloque A, Prioridad 4). Ningún portal es una web oficial del Ayuntamiento.
 
 ## 2. Objetivos
 
@@ -20,111 +31,166 @@ El Ayuntamiento participa como colaborador institucional, facilitando informaci�
 - Facilitar el descubrimiento de comercios y profesionales locales.
 - Mejorar el acceso a servicios públicos y recursos municipales.
 - Dar visibilidad a asociaciones, actividades y acontecimientos.
-- Facilitar la comunicación entre la comunidad local y su entorno.
 - Mantener información organizada, accesible y actualizada.
 
-## 3. Arquitectura y modelo de implantación
+## 3. Tecnología
 
-El producto sigue un enfoque de tecnología común y configuración municipal independiente.
+| Ámbito | Tecnología |
+|---|---|
+| Framework | **TanStack Start** (React 19, SSR, rutas por archivos en `src/routes/`, funciones de servidor con `createServerFn`) |
+| Datos en cliente | TanStack Query |
+| Interfaz | Tailwind CSS 4, componentes Radix (estilo shadcn en `src/components/ui/`) |
+| Validación | Zod |
+| Base de datos, autenticación y archivos | Supabase (PostgreSQL con RLS, Auth, Storage con buckets privados) |
+| Pruebas | Vitest + Testing Library |
+| Gestor de paquetes | Bun (CI con 1.4.5 y lockfile congelado) |
+| Build | `@lovable.dev/vite-tanstack-config` sobre Vite; incluye Nitro con Cloudflare como destino por defecto |
+| Desarrollo asistido | Lovable (sincronizado con este repositorio, ver apartado 8) |
 
-Principios de diseño:
+**Idiomas públicos:** español (origen), inglés, alemán, neerlandés, francés y ucraniano. Las traducciones se sirven desde catálogos guardados en `src/lib/locales/` y desde la base de datos; las visitas no generan llamadas de traducción. El panel de administración está solo en español.
 
-- Código y funcionalidades compartidos.
-- Identidad visual y dominio propios para cada municipio.
-- Configuración y contenidos específicos de cada implantación.
-- Separación de datos entre municipios.
-- Gestión centralizada del producto por Groundwork.
-- Posibilidad de ampliar funcionalidades sin reconstruir cada portal desde cero.
+**Servicios externos de los que depende el producto:**
 
-La arquitectura definitiva de operación mult municipal y administración central se desarrollará progresivamente y deberá validarse mediante pruebas técnicas antes de considerarse completada.
+- **Supabase:** crítico; sin él no funciona nada.
+- **Cloudflare Turnstile:** obligatorio para los formularios públicos (sugerencias y avisos). Sin configurarlo, los formularios no envían.
+- **Pasarela de IA de Lovable** (`ai.gateway.lovable.dev`): opcional; solo la usa la traducción asistida del panel. Eliminar esta dependencia está pendiente (roadmap, Prioridad 5).
+- **Open-Meteo:** el clima de la cabecera.
 
-## 4. Tecnología
+### Despliegue: pendiente de confirmar
 
-Tecnologías y servicios utilizados:
+**No está confirmado dónde se despliega el piloto.** La documentación anterior indicaba Vercel, y el código contempla Vercel para obtener la IP del visitante (`src/lib/antispam.server.ts`). Sin embargo, la configuración de build usa Cloudflare como destino por defecto, no existe `vercel.json` y `siteUrl` apunta todavía a la URL provisional de Lovable. Hasta confirmarlo (roadmap, Bloque A, Prioridad 1), no hay un procedimiento de despliegue documentado.
 
-- **Frontend:** React y tecnologías asociadas al proyecto.
-- **Base de datos y servicios backend:** Supabase.
-- **Control de versiones:** Git y GitHub.
-- **Desarrollo asistido:** Lovable y herramientas de desarrollo local.
-- **Despliegue:** Vercel.
+## 4. Estructura del repositorio
 
-La configuración pública necesaria para el funcionamiento de la aplicación se gestiona mediante variables de entorno y mecanismos de configuración del servidor.
+| Ruta | Contenido |
+|---|---|
+| `src/routes/` | Páginas (rutas por archivos). `_authenticated/admin/` es el panel de administración. |
+| `src/components/` | Componentes compartidos; `admin/` para el panel y `ui/` para la base de interfaz. |
+| `src/lib/` | Lógica de dominio, funciones de servidor (`*.functions.ts`, `*.server.ts`) e i18n. |
+| `src/config/municipality.ts` | Registro de municipios: nombre, coordenadas, URL, datos institucionales, recursos gráficos y tema. |
+| `src/integrations/supabase/` | Clientes de Supabase (navegador y servidor) y tipos generados. |
+| `supabase/migrations/` | Historial de migraciones de **Casarabonela**. |
+| `supabase/template/` | Plantilla de instalación limpia para un proyecto Supabase nuevo. |
+| `supabase/tests/` | Pruebas SQL de permisos por rol que se deshacen con rollback. |
+| `.github/workflows/ci.yml` | Integración continua. |
 
-Las credenciales privadas y secretos no deben incorporarse al repositorio.
+## 5. Desarrollo local
 
-## 5. Seguridad y privacidad
+Requisitos: Bun (el CI usa la versión 1.4.5) y acceso a un proyecto Supabase.
 
-La seguridad forma parte de los requisitos fundamentales del producto.
+Scripts definidos en `package.json`:
 
-Criterios de desarrollo:
+```sh
+bun install --frozen-lockfile   # dependencias (igual que en CI)
+bun run dev                     # servidor de desarrollo
+bun run test                    # pruebas (Vitest)
+bun run build                   # build de producción
+bun run lint                    # ESLint + Prettier (hoy falla por formato)
+```
 
-- Row Level Security (RLS) en las tablas que contienen información protegida.
-- Separación de permisos según el tipo de usuario.
-- Validación de datos recibidos mediante formularios.
-- Protección de operaciones administrativas.
-- Gestión segura de variables de entorno.
-- Protección contra envíos automatizados y abuso de formularios.
-- Publicación responsable de información personal y datos de contacto.
+**Variables de entorno.** `.env.example` solo incluye las variables de Supabase; completarlo está pendiente (roadmap, Prioridad 2). Las variables que lee el código son:
 
-La seguridad debe verificarse mediante pruebas y auditorías periódicas. La existencia de una implementación no implica que todos sus controles hayan sido auditados.
+| Variable | Tipo | Uso |
+|---|---|---|
+| `VITE_MUNICIPALITY_ID` | Pública | Municipio de la instalación; si está vacía se usa `casarabonela`, y un valor desconocido produce un error. |
+| `VITE_SUPABASE_URL`, `SUPABASE_URL` | Pública | URL del proyecto Supabase. |
+| `VITE_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PUBLISHABLE_KEY` | Pública | Clave publicable. |
+| `VITE_SUPABASE_PROJECT_ID` | Pública | Referencia del proyecto. |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Secreta** | Operaciones de servidor (formularios, revisión por enlace). |
+| `RATE_LIMIT_SECRET` | **Secreta** | Firma de la sesión de formularios. |
+| `TURNSTILE_SITE_KEY` | Pública | Widget de Turnstile. |
+| `TURNSTILE_SECRET_KEY` | **Secreta** | Verificación de Turnstile. |
+| `TURNSTILE_ALLOWED_HOSTNAMES` | Servidor | Dominios permitidos, separados por comas. |
+| `TRUSTED_CLIENT_IP_HEADER` | Opcional | Cabecera de IP de confianza si hay otro proxy delante. |
+| `LOVABLE_API_KEY` | Secreta, opcional | Traducción asistida del panel. |
 
-## 6. Calidad y automatización
+Nunca se incorporan secretos al repositorio: `.env` y `.env.*` están en `.gitignore`, salvo `.env.example`.
 
-El repositorio incorpora un flujo de integración continua mediante GitHub Actions.
+## 6. Incorporar un municipio nuevo
 
-Archivo:
+> **Estado: procedimiento documentado pero no probado.** No se ha implantado ningún segundo municipio, y la plantilla solo se ha ejecutado en un PostgreSQL local con esquemas `auth`/`storage` simulados, no en un proyecto Supabase real.
 
-`.github/workflows/ci.yml`
+El procedimiento detallado está en **[supabase/template/README.md](supabase/template/README.md)**. Resumen:
 
-El flujo contempla:
+1. Registrar el municipio en `src/config/municipality.ts`: nombre, coordenadas, `siteUrl`, datos institucionales, recursos y tema. El tema se valida y lo comprueba `municipality.test.ts`.
+2. Crear un proyecto Supabase vacío y ejecutar `01_schema.sql` y `02_seed_universal.sql`.
+3. Crear el primer administrador en Supabase Auth y ejecutar `03_init_instance.sql`, que incluye los datos `legal_*` del titular.
+4. Ejecutar `04_verify.sql`, que debe terminar con `VERIFICACIÓN SUPERADA`.
+5. Configurar las variables del apartado 5, el dominio y un widget de Turnstile para ese dominio.
 
-1. Instalación de dependencias con Bun y lockfile congelado.
-2. Ejecución de pruebas.
-3. Construcción de producción (build).
-4. Ejecución de lint.
+**Limitaciones actuales** (roadmap, Bloque A, Prioridad 4). Sin modificar código, un municipio nuevo todavía hereda:
 
-El lint permanece temporalmente como comprobación informativa y no bloqueante, hasta abordar los problemas de formato existentes.
+- los archivos de `public/` (favicon, iconos y un manifiesto PWA que identifica a Aquí Bonela);
+- el contenido de Casarabonela escrito en rutas y componentes;
+- los textos legales del piloto;
+- la referencia de `supabase/config.toml` al proyecto de Casarabonela.
 
-En la primera Pull Request de integración del CI, las pruebas y el build finalizaron correctamente. El lint devolvió errores de formato, sin bloquear la integración.
+Tampoco hay todavía una política de versiones por municipio ni una administración central.
 
-El flujo se ejecuta en las Pull Requests y en los cambios enviados a la rama principal `main`.
+**Mantenimiento de la plantilla:** cada migración nueva en `supabase/migrations/` debe reflejarse también en `supabase/template/` y pasar `04_verify.sql`. Hoy esta comprobación es manual.
 
-## 7. Estado del desarrollo
+## 7. Seguridad y privacidad
 
-El producto se encuentra en desarrollo progresivo.
+Criterios aplicados en el código:
 
-Se consideran áreas de trabajo:
+- **RLS** en todas las tablas `public`; los visitantes solo leen contenido publicado.
+- **Datos privados separados:** los contactos de cada ficha viven en `listing_contacts`, solo para administración, y un trigger copia a `listings` únicamente los campos autorizados.
+- **Rol de administrador** comprobado en base de datos con `public.has_role`.
+- **Formularios públicos** procesados solo en servidor: validación Zod, honeypot, límite de envíos atómico, Turnstile e inserción con la clave de servicio.
+- **Archivos** en buckets privados con URLs firmadas.
+- **Revisión por enlace:** token aleatorio guardado como hash, de un solo uso y con caducidad.
 
-- Consolidación de la arquitectura común.
-- Separación de configuración y contenidos municipales.
-- Replicación controlada de portales.
-- Seguridad y validación de datos.
-- Automatización de pruebas y despliegues.
-- Herramientas para carga y actualización de información.
-- Evolución hacia una administración centralizada del producto.
+Las reglas detalladas y sus motivos están en los AGENTS.md (apartado 9).
 
-Las funcionalidades se considerarán terminadas únicamente después de su implementación y verificación.
+Riesgos conocidos:
 
-## 8. Principios de desarrollo
+- `anon` y `authenticated` conservan privilegios de tabla amplios, por lo que la protección depende de RLS (roadmap, Prioridad 5).
+- Varias medidas están implementadas en código pero su aplicación en producción no está verificada, como la retirada de las inserciones públicas directas en formularios (roadmap, Bloque B, B1).
 
-- Evitar reconstrucciones innecesarias.
-- Mantener una base tecnológica común.
-- No introducir cambios visuales o funcionales fuera del alcance aprobado.
+Que una medida exista en el código no implica que esté desplegada ni auditada.
+
+## 8. Calidad, CI y flujo de trabajo
+
+**CI** (`.github/workflows/ci.yml`) se ejecuta en cada Pull Request y en cada push a `main`:
+
+1. Instalación con Bun y lockfile congelado.
+2. Pruebas (`bun run test`).
+3. Build de producción, con **valores ficticios de Supabase**.
+4. Lint, en un trabajo aparte **informativo y no bloqueante** hasta corregir los errores de formato existentes.
+
+**Lo que el CI no valida:**
+
+- la base de datos: no ejecuta `supabase/tests/` ni `04_verify.sql`;
+- el entorno de producción;
+- el comportamiento con un Supabase real.
+
+Que las pruebas pasen no equivale a una validación en producción. Incorporar las pruebas SQL al CI está pendiente (roadmap, Prioridad 3).
+
+**Sincronización con Lovable.** El proyecto está conectado a Lovable:
+
+- Los commits enviados a la rama conectada se sincronizan con el editor de Lovable, así que esa rama debe quedar siempre en un estado funcional.
+- **No se debe reescribir historial publicado** (force push, ni rebase, amend o squash de commits ya enviados), porque se perdería el historial del proyecto en Lovable.
+- Algunos archivos los mantiene Lovable, como `.lovable/` y `src/routeTree.gen.ts` (generado automáticamente).
+
+**Principios de desarrollo:**
+
+- Trabajar en ramas y Pull Requests.
+- No introducir cambios fuera del alcance aprobado.
 - Proteger los datos y la independencia de cada municipio.
 - Priorizar soluciones sencillas de mantener.
-- Documentar los cambios relevantes.
-- Trabajar mediante ramas y Pull Requests cuando corresponda.
-- Verificar los cambios antes de incorporarlos a producción.
+- Considerar terminada una funcionalidad solo cuando esté implementada **y verificada** en el entorno que corresponda.
 
-## 9. Propiedad y mantenimiento
+## 9. Documentación relacionada
 
-El producto es desarrollado y mantenido por Groundwork.
-
-Repositorio principal:
-
-`daflagel/conecta_tu_pueblo`
-
-La evolución del código, la infraestructura y las funcionalidades se gestiona de forma progresiva, procurando mantener la independencia tecnológica y el control del producto.
+- **[roadmap.md](roadmap.md):** hoja de ruta maestra, con el estado real de cada tarea (Bloque A, producto; Bloque B, piloto Aquí Bonela).
+- **[supabase/template/README.md](supabase/template/README.md):** instalación limpia de un municipio nuevo.
+- **AGENTS.md** con reglas de datos, seguridad y convenciones y su justificación:
+  - [AGENTS.md](AGENTS.md): reglas generales y de datos. Su descripción de los formularios está desactualizada (roadmap, Prioridad 2); prevalece [src/lib/AGENTS.md](src/lib/AGENTS.md).
+  - [src/lib/AGENTS.md](src/lib/AGENTS.md): formularios y anti-spam, traducciones, trámites y configuración pública.
+  - [src/components/admin/AGENTS.md](src/components/admin/AGENTS.md): panel de administración.
+  - [src/routes/tramites/AGENTS.md](src/routes/tramites/AGENTS.md): páginas públicas de trámites.
+  - [supabase/template/AGENTS.md](supabase/template/AGENTS.md): mantenimiento de la plantilla.
+- [src/routes/README.md](src/routes/README.md): convenciones de rutas de TanStack Start.
 
 ---
 
