@@ -70,7 +70,8 @@ export const directoryQuery = queryOptions({
       categories: cats.data as Category[],
       activities: (acts.data ?? []) as Activity[],
       listings,
-      heroTitle: settings.data?.hero_title || "¿Qué buscas en {municipio}?",
+      // El texto por defecto se pone al mostrarlo: los datos viajan en el HTML sin sustituir variables.
+      heroTitle: settings.data?.hero_title || "",
       heroSubtitle: settings.data?.hero_subtitle ?? "",
       banner: settings.data?.banner_enabled && settings.data.banner_text.trim() ? settings.data.banner_text.trim() : null,
     };

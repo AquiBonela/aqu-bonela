@@ -2,8 +2,10 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import instance from "@instance";
+import type { ConfigEnv, UserConfig } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { availableInstances, resolveInstanceId } from "../../instances/resolve";
+import { availableInstances, instancePublicDir, resolveInstanceId } from "../../instances/resolve";
+import { instanceSelection } from "../../instances/select";
 
 let root: string;
 
@@ -32,6 +34,20 @@ describe("selección de instancia", () => {
 
   it("no admite rutas como identificador", () => {
     expect(() => resolveInstanceId("../instances/casarabonela", root)).toThrow();
+  });
+
+  it("el build copia los archivos públicos de la instancia elegida", () => {
+    const saved = process.env.VITE_MUNICIPALITY_ID;
+    delete process.env.VITE_MUNICIPALITY_ID;
+    try {
+      const plugin = instanceSelection({ fallbackId: "otro-pueblo" });
+      const config = (plugin.config as (c: UserConfig, e: ConfigEnv) => UserConfig)({ root }, { mode: "production", command: "build" });
+      expect(config.publicDir).toBe(instancePublicDir(root, "otro-pueblo"));
+      // Nitro pone copyPublicDir a false si no se indica: sin esto no se sirven favicon, manifest ni robots.txt.
+      expect(config.environments?.client?.build?.copyPublicDir).toBe(true);
+    } finally {
+      if (saved !== undefined) process.env.VITE_MUNICIPALITY_ID = saved;
+    }
   });
 
   it("en las pruebas el alias @instance apunta a casarabonela", () => {

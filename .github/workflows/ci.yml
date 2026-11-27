@@ -54,7 +54,13 @@ jobs:
           cp -r instances/casarabonela instances/zz-prueba
           sed -i "s/id: \"casarabonela\"/id: \"zz-prueba\"/; s/appName: \"Aquí Bonela\"/appName: \"$marca\"/" instances/zz-prueba/config.ts
           grep -q "$marca" instances/zz-prueba/config.ts
+          echo "$marca" > instances/zz-prueba/public/marca-publica.txt
           VITE_MUNICIPALITY_ID=zz-prueba bun run build
+          # Los archivos de instances/<id>/public deben llegar a la salida del build.
+          if ! grep -r -q -x -F "$marca" . --include=marca-publica.txt --exclude-dir=node_modules --exclude-dir=instances --exclude-dir=.git; then
+            echo "::error::El build no copió los archivos públicos de la instancia."
+            exit 1
+          fi
           if ! grep -r -q "$marca" . --exclude-dir=node_modules --exclude-dir=instances --exclude-dir=.git; then
             echo "::error::El build no usó la instancia indicada en VITE_MUNICIPALITY_ID."
             exit 1

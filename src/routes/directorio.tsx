@@ -91,7 +91,7 @@ function Index() {
           {getMunicipality().assets.heroImage && <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />}
           <div className="relative mx-auto flex h-full max-w-5xl flex-col items-center justify-end px-4 pb-16 text-center">
             <h1 className="max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-primary-foreground sm:text-6xl">
-              {tr(data.heroTitle)}
+              {tr(data.heroTitle || "¿Qué buscas en {municipio}?")}
             </h1>
             {data.heroSubtitle && (
               <p className="mt-3 max-w-xl text-base text-primary-foreground/85 sm:text-lg">{tr(data.heroSubtitle)}</p>

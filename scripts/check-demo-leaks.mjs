@@ -65,6 +65,14 @@ try {
     if (leaks.length) errors.push(`${path}: ${leaks.join(", ")}`);
     if (raw.length) errors.push(`${path}: variables sin sustituir ${raw.join(", ")}`);
   }
+  // Archivos públicos de la instancia (favicon, iconos, manifest, robots.txt): deben servirse tal cual.
+  const PUBLIC_DIR = "instances/demo/public";
+  for (const file of readdirSync(PUBLIC_DIR)) {
+    const res = await fetch(`${BASE}/${file}`);
+    const same = Buffer.from(await res.arrayBuffer()).equals(readFileSync(join(PUBLIC_DIR, file)));
+    console.log(`${res.status} /${file} (archivo público)${same ? "" : " | distinto del de " + PUBLIC_DIR}`);
+    if (res.status !== 200 || !same) errors.push(`/${file}: no se sirve el archivo de ${PUBLIC_DIR}`);
+  }
   for (const path of NOT_FOUND) {
     const res = await fetch(BASE + path);
     const body = await res.text();

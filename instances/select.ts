@@ -13,6 +13,9 @@ export function instanceSelection(options: { fallbackId?: string } = {}): Plugin
       const id = resolveInstanceId(raw, root);
       return {
         publicDir: instancePublicDir(root, id),
+        // Nitro desactiva la copia de publicDir y solo copia public/ de la raíz;
+        // así Vite copia los archivos de la instancia en la salida del cliente.
+        environments: { client: { build: { copyPublicDir: true } } },
         resolve: {
           alias: {
             "@instance": instanceConfigPath(root, id),
