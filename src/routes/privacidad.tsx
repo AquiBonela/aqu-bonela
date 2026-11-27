@@ -1,15 +1,20 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPage, useOwner, legalHead } from "@/components/LegalPage";
+import { LegalPage, LegalLoadError, legalHead } from "@/components/LegalPage";
+import { getLegalOwner } from "@/lib/legal-owner.functions";
 
 export const Route = createFileRoute("/privacidad")({
   head: () => legalHead("Política de privacidad", "Cómo trata Aquí Bonela los datos de los negocios y de quienes envían avisos o sugerencias."),
+  loader: () => getLegalOwner(),
+  // Sin caché al salir: al volver nunca se muestra un titular anterior.
+  gcTime: 0,
   component: Privacidad,
+  errorComponent: LegalLoadError,
 });
 
 function Privacidad() {
   const { tr, locale } = useI18n();
-  const OWNER = useOwner();
+  const OWNER = Route.useLoaderData();
   return (
     <LegalPage title={tr("Política de privacidad")}>
       <h2><Text text="Responsable del tratamiento" /></h2>
