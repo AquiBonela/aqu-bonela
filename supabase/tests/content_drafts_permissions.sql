@@ -157,9 +157,6 @@ BEGIN
  OR public.site_config() #>> '{identity,primary_color}' <> '#1f4e79' THEN
   RAISE EXCEPTION 'Publishing the identity must apply the draft';
  END IF;
- IF (SELECT updated_by::text FROM public.site_identity) IS DISTINCT FROM current_setting('test.cd_admin') THEN
-  RAISE EXCEPTION 'The identity must record the admin who published';
- END IF;
  v_at := (public.save_content_draft('identidad', '{"primary_color":"red"}'::jsonb) ->> 'updated_at')::timestamptz;
  BEGIN PERFORM public.publish_content_draft('identidad', v_at, true);
   RAISE EXCEPTION 'An invalid identity draft must be rejected';
@@ -195,4 +192,10 @@ BEGIN
  END IF;
 END $$;
 RESET ROLE;
+-- updated_by no es legible desde el navegador: se comprueba como propietario de la tabla.
+DO $$ BEGIN
+ IF (SELECT updated_by::text FROM public.site_identity) IS DISTINCT FROM current_setting('test.cd_admin') THEN
+  RAISE EXCEPTION 'The identity must record the admin who published';
+ END IF;
+END $$;
 ROLLBACK;
