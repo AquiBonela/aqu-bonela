@@ -121,6 +121,38 @@ El procedimiento detallado está en **[supabase/template/README.md](supabase/tem
 
 **Identidad en tiempo de ejecución.** Nombres, provincia, región, gentilicio, URL, Ayuntamiento y coordenadas se leen de `public.site_identity` (función `public.site_config()`) del Supabase de cada instalación. Un cambio llega a los visitantes en un minuto como máximo, sin desplegar. Un campo vacío usa el valor de la instancia compilada; si Supabase no responde (corte a 1,5 s), se usa el último valor bueno durante 24 h y, si no lo hay, el compilado.
 
+**Estructura de la web y publicación con borradores (etapa 2A).**
+
+> **Estado:** implementada en el PR #18, que **todavía no está fusionado**. Su migración (`20261202090000_site_structure`) está aplicada **solo en la Demo**. Todavía no hay pantallas para gestionarla: llegan con el PR 2B.
+
+- **Estructura común:** `src/lib/site-structure.ts` define las cinco páginas principales (Portada, Directorio, Servicios públicos, Actualidad y Descubre), las entradas del menú y las secciones de cada página, con diez en Descubre.
+  - Cada instalación publica en su Supabase qué activa, desactiva y ordena (`site_menu`, `page_sections`), y sus accesos directos adicionales (`home_shortcuts`).
+  - La web lo lee con `site_config()`. Sin datos, se usan los valores por defecto del producto.
+- **Visibilidad:** algo se ve solo si está activo y disponible, es decir, implementado y con contenido (`src/lib/site-availability.ts`). Una página o sección oculta responde 404, igual que sus rutas dependientes.
+- **Elementos permanentes:** Portada y Directorio van siempre primero en el menú, y el Directorio es siempre el primer acceso directo. La sección Accesos directos de la portada no se puede desactivar.
+- **Menú:** la Guía de trámites es una entrada propia, visible por defecto, que se puede ocultar sin afectar a `/tramites`.
+- **Otros cambios de la web:**
+  - el Directorio público ya no muestra las fichas de tipo «Servicio público»;
+  - se han retirado Clasificados y los elementos «próximamente»;
+  - el enlace «Enviar información» pasa a llamarse «Sugerir o corregir»;
+  - el aviso legal ya no tiene el apartado de anuncios y clasificados.
+- **Borradores del contenido municipal:**
+  - **Funciones:** `save_content_draft`, `publish_content_draft`, `discard_content_draft` y `content_draft_state`, con un borrador por pantalla en `content_drafts`.
+  - **Pantallas que cubren:** identidad, cabeceras, portada, aviso de cabecera, datos legales, menú, secciones y accesos.
+  - **Publicar** exige el rol de administrador y la confirmación de conformidad municipal, y deja constancia en `content_publications` de usuario, fecha, hora y nota.
+  - **Una publicación se rechaza, sin aplicar nada,** si el contenido está mal formado, si falta alguna imagen en `site-assets` o si lo publicado cambió desde que se empezó el borrador. El borrador se conserva.
+  - **Los borradores nunca llegan a la web.**
+- **El Directorio no usa estos borradores:** sus fichas se publican cuando el titular las acepta.
+
+**Pendiente de la etapa 2 y siguientes** (no implementado todavía):
+
+- **Pantallas del panel** para gestionar páginas, secciones, accesos y borradores, con el diálogo de conformidad (PR 2B). Hasta entonces, el panel actual sigue guardando identidad, ajustes y cabeceras directamente, es decir, publicando al guardar.
+- **Migración de cierre del PR 2B,** que retirará la escritura directa del navegador en las columnas de contenido público. Hasta entonces, un formulario de Configuración abierto antes de una publicación podría deshacerla al guardarse.
+- **Correcciones de fichas publicadas,** retenidas hasta la aceptación del titular: un PR propio del Directorio, después del 2B.
+- **Historial de versiones, restauración y vista previa** (etapa 3 y siguientes).
+- **Contenidos de Vida cotidiana, Transporte y movilidad, Actualidad y Descubre** (etapas 4 a 6). Mientras falten, esas secciones no están disponibles.
+- **Aquí Bonela:** no tiene esta migración ni las del PR #17.
+
 **Limitaciones actuales** (roadmap, Bloque A, Prioridad 4). Iconos, manifiesto, contenido local y nombres ya son propios de cada instancia, y una sección sin datos se oculta. Todavía:
 
 - tema, logotipos, imágenes, favicon, manifiesto y `robots.txt` siguen en `instances/<id>/` (fases siguientes);
@@ -131,7 +163,9 @@ El procedimiento detallado está en **[supabase/template/README.md](supabase/tem
 
 Tampoco hay todavía una política de versiones por municipio ni una administración central.
 
-**Mantenimiento de la plantilla:** cada migración nueva en `supabase/migrations/` debe reflejarse también en `supabase/template/` y pasar `04_verify.sql`. Hoy esta comprobación es manual.
+**Mantenimiento de la plantilla:** cada migración nueva en `supabase/migrations/` debe reflejarse también en `supabase/template/`, con su bloque idéntico (lo comprueba `src/lib/product-migrations-sql.test.ts`), tener su vuelta atrás en `supabase/rollback/` y pasar `04_verify.sql`, que el CI ejecuta.
+
+**Versiones de las migraciones:** las migraciones escritas a mano usan una fecha por migración, adelantada si hace falta, para que cada una ordene siempre detrás de la anterior. La última es `20261202090000`, así que la siguiente necesita una versión mayor. Una versión generada con la fecha y la hora reales quedaría delante en el orden hasta el 02-12-2026. Contra la Demo no se usa `supabase db push`: su historial no refleja cómo se instaló.
 
 ## 7. Seguridad y privacidad
 
@@ -158,17 +192,20 @@ Que una medida exista en el código no implica que esté desplegada ni auditada.
 **CI** (`.github/workflows/ci.yml`) se ejecuta en cada Pull Request y en cada push a `main`:
 
 1. Instalación con Bun y lockfile congelado.
-2. Pruebas (`bun run test`).
-3. Build de producción, con **valores ficticios de Supabase**.
-4. Lint, en un trabajo aparte **informativo y no bloqueante** hasta corregir los errores de formato existentes.
+2. Pruebas (`bun run test`) y build de producción, con **valores ficticios de Supabase**.
+3. Comprobación «Demo sin datos del municipio piloto»: arranca la demo con un Supabase simulado en cuatro escenarios (sin identidad, con otra identidad, con Supabase caído y con una estructura publicada) y revisa las páginas.
+4. **Base de datos** en PostgreSQL de Supabase desechable, en tres escenarios:
+   - plantilla limpia con `04_verify.sql`, las pruebas de `supabase/tests/` y la prueba de concurrencia con dos sesiones;
+   - plantilla de `main` más las migraciones nuevas de la rama;
+   - vuelta atrás de esas migraciones.
+5. Lint, en un trabajo aparte.
 
 **Lo que el CI no valida:**
 
-- la base de datos: no ejecuta `supabase/tests/` ni `04_verify.sql`;
 - el entorno de producción;
-- el comportamiento con un Supabase real.
+- el comportamiento con un Supabase real, por ejemplo los permisos propios de Supabase sobre `storage.objects`, que el CI simula.
 
-Que las pruebas pasen no equivale a una validación en producción. Incorporar las pruebas SQL al CI está pendiente (roadmap, Prioridad 3).
+Que las pruebas pasen no equivale a una validación en producción.
 
 **Sincronización con Lovable.** El proyecto está conectado a Lovable:
 
