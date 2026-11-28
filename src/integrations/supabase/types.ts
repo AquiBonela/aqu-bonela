@@ -727,6 +727,156 @@ export type Database = {
         };
         Relationships: [];
       };
+      content_drafts: {
+        Row: {
+          base_version: string;
+          content: Json;
+          created_at: string;
+          created_by: string | null;
+          draft_key: string;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          base_version: string;
+          content: Json;
+          created_at?: string;
+          created_by?: string | null;
+          draft_key: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          base_version?: string;
+          content?: Json;
+          created_at?: string;
+          created_by?: string | null;
+          draft_key?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
+      };
+      content_publications: {
+        Row: {
+          conformity: boolean;
+          draft_key: string;
+          id: number;
+          note: string;
+          published_at: string;
+          published_by: string | null;
+        };
+        Insert: {
+          conformity: boolean;
+          draft_key: string;
+          id?: number;
+          note?: string;
+          published_at?: string;
+          published_by?: string | null;
+        };
+        Update: {
+          conformity?: boolean;
+          draft_key?: string;
+          id?: number;
+          note?: string;
+          published_at?: string;
+          published_by?: string | null;
+        };
+        Relationships: [];
+      };
+      home_shortcuts: {
+        Row: {
+          created_at: string;
+          description: string;
+          href: string;
+          id: string;
+          image_alt: string;
+          image_path: string;
+          sort_order: number;
+          title: string;
+          updated_at: string;
+          updated_by: string | null;
+          visible: boolean;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string;
+          href: string;
+          id?: string;
+          image_alt?: string;
+          image_path: string;
+          sort_order?: number;
+          title: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          visible?: boolean;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          href?: string;
+          id?: string;
+          image_alt?: string;
+          image_path?: string;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          visible?: boolean;
+        };
+        Relationships: [];
+      };
+      page_sections: {
+        Row: {
+          enabled: boolean;
+          page_key: string;
+          section_key: string;
+          sort_order: number;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          enabled?: boolean;
+          page_key: string;
+          section_key: string;
+          sort_order?: number;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          enabled?: boolean;
+          page_key?: string;
+          section_key?: string;
+          sort_order?: number;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
+      };
+      site_menu: {
+        Row: {
+          enabled: boolean;
+          entry_key: string;
+          sort_order: number;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          enabled?: boolean;
+          entry_key: string;
+          sort_order?: number;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          enabled?: boolean;
+          entry_key?: string;
+          sort_order?: number;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
+      };
       procedure_categories: {
         Row: {
           created_at: string;
@@ -1126,6 +1276,27 @@ export type Database = {
         Returns: Json;
       };
       site_config: { Args: never; Returns: Json };
+      content_draft_state: {
+        Args: { p_key: string };
+        Returns: Json;
+      };
+      discard_content_draft: {
+        Args: { p_expected_updated_at: string; p_key: string };
+        Returns: Json;
+      };
+      publish_content_draft: {
+        Args: {
+          p_conformity: boolean;
+          p_expected_updated_at: string;
+          p_key: string;
+          p_note?: string;
+        };
+        Returns: Json;
+      };
+      save_content_draft: {
+        Args: { p_content: Json; p_expected_updated_at?: string; p_key: string };
+        Returns: Json;
+      };
       withdraw_listing_consent: {
         Args: { p_listing_id: string; p_note?: string };
         Returns: Json;

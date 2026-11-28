@@ -9,6 +9,7 @@ const MIGRATIONS = [
   { file: "20261201090000_identity_branding.sql", block: "identity_branding" },
   { file: "20261201091000_listing_details.sql", block: "listing_details" },
   { file: "20261201092000_listing_review_flow.sql", block: "listing_review_flow" },
+  { file: "20261202090000_site_structure.sql", block: "site_structure" },
 ] as const;
 const TEMPLATE = "supabase/template/01_schema.sql";
 
@@ -58,6 +59,7 @@ describe("garantías de las migraciones", () => {
   const identity = block(`supabase/migrations/${MIGRATIONS[0].file}`, "identity_branding");
   const details = block(`supabase/migrations/${MIGRATIONS[1].file}`, "listing_details");
   const review = block(`supabase/migrations/${MIGRATIONS[2].file}`, "listing_review_flow");
+  const structure = block(`supabase/migrations/${MIGRATIONS[3].file}`, "site_structure");
 
   it("los visitantes solo leen los archivos que la identidad o una cabecera usan", () => {
     expect(identity).toContain(
@@ -112,5 +114,47 @@ describe("garantías de las migraciones", () => {
     expect(review).toContain(
       "REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON public.consents, public.listing_requests FROM anon, authenticated;",
     );
+  });
+
+  it("el Directorio y los accesos directos de la portada no se pueden configurar", () => {
+    expect(structure).toContain(
+      "CHECK (entry_key IN ('servicios-publicos', 'actualidad', 'descubre', 'guia-tramites'))",
+    );
+    expect(structure).not.toMatch(/page_key = '(inicio|directorio)'/);
+  });
+
+  it("las tablas nuevas no admiten escritura directa desde el navegador", () => {
+    for (const table of [
+      "site_menu",
+      "page_sections",
+      "home_shortcuts",
+      "content_drafts",
+      "content_publications",
+    ])
+      expect(structure).not.toMatch(
+        new RegExp(
+          `GRANT (INSERT|UPDATE|DELETE|ALL)[^;]*public\\.${table}[^;]*(anon|authenticated)`,
+        ),
+      );
+  });
+
+  it("publicar exige la conformidad municipal y lo publicado sin cambios", () => {
+    const publish = structure.slice(
+      structure.indexOf("CREATE OR REPLACE FUNCTION public.publish_content_draft"),
+    );
+    expect(publish).toContain("IF p_conformity IS NOT TRUE THEN");
+    expect(publish).toContain("HINT = 'published_changed'");
+    expect(publish.indexOf("p_conformity IS NOT TRUE")).toBeLessThan(
+      publish.indexOf("DELETE FROM public.site_menu"),
+    );
+    expect(structure).toContain("CONSTRAINT content_publications_conformity CHECK (conformity)");
+  });
+
+  it("la web solo recibe lo publicado y visible", () => {
+    const config = structure.slice(
+      structure.indexOf("CREATE OR REPLACE FUNCTION public.site_config()"),
+    );
+    expect(config).not.toContain("content_drafts");
+    expect(config).toContain("WHERE h.visible");
   });
 });
