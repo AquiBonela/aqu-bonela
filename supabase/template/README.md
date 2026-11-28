@@ -5,7 +5,7 @@ Crea una instalación nueva de la plataforma en un proyecto Supabase **vacío**,
 
 | Archivo | Qué hace | ¿Repetible? |
 |---|---|---|
-| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 26 tablas `public` y 1 privada, restricciones, índices, 28 funciones, 20 triggers, permisos de tabla/columna/función, RLS, 53 políticas `public`, 10 políticas de Storage (buckets por API), limpieza programada del rate limiting | No: solo en un proyecto vacío |
+| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 27 tablas `public` y 1 privada, restricciones, índices, 36 funciones, 41 triggers, permisos de tabla/columna/función, RLS, 50 políticas `public`, 10 políticas de Storage (buckets por API), limpieza programada del rate limiting | No: solo en un proyecto vacío |
 | `02_seed_universal.sql` | 28 categorías, 155 actividades (con sinónimos), 6 categorías de trámites | Sí |
 | `03_init_instance.sql` | Configuración de la instalación (`site_settings`), identidad pública (`site_identity`) y, opcionalmente, primer administrador | Sí |
 | `04_verify.sql` | Comprueba estructura, seguridad y datos con pruebas reales por rol; no deja datos | Sí |
@@ -77,15 +77,16 @@ Sin esto los formularios de sugerencias y reportes no envían.
 
 ## 9. Verificación
 `04_verify.sql` comprueba:
-- 26 tablas `public` + `private.form_rate_limits`, 282 columnas, 121 restricciones, RLS activo en todas.
+- 27 tablas `public` + `private.form_rate_limits`, 307 columnas, 133 restricciones, RLS activo en todas.
 - Regla de publicación (una ficha no se publica sin la aprobación de su titular salvo los servicios públicos), registro de eventos, cabeceras de página, colores y rutas de recursos, ubicación aproximada y permisos de la web.
 - Valores exactos de los 3 ENUM.
-- 39 políticas `public`, 8 de Storage y una denegación explícita en `private.form_rate_limits`; 8 funciones y 11 triggers.
+- 50 políticas `public`, 10 de Storage y una denegación explícita en `private.form_rate_limits`; 36 funciones y 41 triggers; toda función `SECURITY DEFINER` con `search_path` vacío.
 - Buckets privados con sus límites y tipos MIME.
 - Permisos: anon no lee `admin_whatsapp`/`contact_email`, nadie salvo el servidor inserta sugerencias/reportes, solo `service_role` ejecuta `check_rate_limit`.
 - Pruebas reales simulando `anon`, `authenticated` sin rol, administrador y `service_role`: borradores ocultos, contactos privados, autoasignación de admin bloqueada, `has_role` no consulta a terceros, el trigger de contacto no publica datos no autorizados y el rate limit deniega el tercer intento.
 - Semilla universal y fila de configuración.
-- Identidad (`site_identity`): lectura pública por `site_config()` sin el autor del cambio, escritura solo de administradores, valores no válidos rechazados y autor registrado.
+- Identidad (`site_identity`): lectura pública por `site_config()` sin el autor del cambio, valores no válidos rechazados y autor registrado.
+- Circuito de publicación municipal: nadie escribe directamente identidad, cabeceras ni textos públicos (solo se publican borradores presentados al Ayuntamiento y con la conformidad registrada); los ajustes internos se guardan al momento; cada operación queda en `admin_audit_log` sin valores; los visitantes no escriben en ninguna tabla ni leen las privadas.
 Después, prueba en la web: inicio de sesión del administrador, alta de una ficha con foto, envío de una sugerencia.
 
 ## 10. Diferencias conocidas respecto a producción

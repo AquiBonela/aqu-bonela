@@ -46,6 +46,42 @@ export type Database = {
           },
         ];
       };
+      admin_audit_log: {
+        Row: {
+          actor: string | null;
+          actor_role: string;
+          changed_columns: string[];
+          id: number;
+          occurred_at: string;
+          operation: string;
+          record_key: string;
+          state: string | null;
+          table_name: string;
+        };
+        Insert: {
+          actor?: string | null;
+          actor_role: string;
+          changed_columns?: string[];
+          id?: number;
+          occurred_at?: string;
+          operation: string;
+          record_key: string;
+          state?: string | null;
+          table_name: string;
+        };
+        Update: {
+          actor?: string | null;
+          actor_role?: string;
+          changed_columns?: string[];
+          id?: number;
+          occurred_at?: string;
+          operation?: string;
+          record_key?: string;
+          state?: string | null;
+          table_name?: string;
+        };
+        Relationships: [];
+      };
       approval_tokens: {
         Row: {
           created_at: string;
@@ -730,28 +766,55 @@ export type Database = {
       content_drafts: {
         Row: {
           base_version: string;
+          conformity_by: string | null;
+          conformity_channel: string | null;
+          conformity_on: string | null;
+          conformity_recorded_at: string | null;
+          conformity_recorded_by: string | null;
+          conformity_reference: string | null;
           content: Json;
           created_at: string;
           created_by: string | null;
           draft_key: string;
+          status: string;
+          submitted_at: string | null;
+          submitted_by: string | null;
           updated_at: string;
           updated_by: string | null;
         };
         Insert: {
           base_version: string;
+          conformity_by?: string | null;
+          conformity_channel?: string | null;
+          conformity_on?: string | null;
+          conformity_recorded_at?: string | null;
+          conformity_recorded_by?: string | null;
+          conformity_reference?: string | null;
           content: Json;
           created_at?: string;
           created_by?: string | null;
           draft_key: string;
+          status?: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
           updated_at?: string;
           updated_by?: string | null;
         };
         Update: {
           base_version?: string;
+          conformity_by?: string | null;
+          conformity_channel?: string | null;
+          conformity_on?: string | null;
+          conformity_recorded_at?: string | null;
+          conformity_recorded_by?: string | null;
+          conformity_reference?: string | null;
           content?: Json;
           created_at?: string;
           created_by?: string | null;
           draft_key?: string;
+          status?: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
           updated_at?: string;
           updated_by?: string | null;
         };
@@ -760,27 +823,48 @@ export type Database = {
       content_publications: {
         Row: {
           conformity: boolean;
+          conformity_by: string | null;
+          conformity_channel: string | null;
+          conformity_on: string | null;
+          conformity_reference: string | null;
+          content: Json | null;
           draft_key: string;
           id: number;
           note: string;
+          previous_content: Json | null;
           published_at: string;
           published_by: string | null;
+          submitted_at: string | null;
         };
         Insert: {
           conformity: boolean;
+          conformity_by?: string | null;
+          conformity_channel?: string | null;
+          conformity_on?: string | null;
+          conformity_reference?: string | null;
+          content?: Json | null;
           draft_key: string;
           id?: number;
           note?: string;
+          previous_content?: Json | null;
           published_at?: string;
           published_by?: string | null;
+          submitted_at?: string | null;
         };
         Update: {
           conformity?: boolean;
+          conformity_by?: string | null;
+          conformity_channel?: string | null;
+          conformity_on?: string | null;
+          conformity_reference?: string | null;
+          content?: Json | null;
           draft_key?: string;
           id?: number;
           note?: string;
+          previous_content?: Json | null;
           published_at?: string;
           published_by?: string | null;
+          submitted_at?: string | null;
         };
         Relationships: [];
       };
@@ -1295,6 +1379,25 @@ export type Database = {
       };
       save_content_draft: {
         Args: { p_content: Json; p_expected_updated_at?: string; p_key: string };
+        Returns: Json;
+      };
+      submit_content_draft: {
+        Args: { p_expected_updated_at: string; p_key: string };
+        Returns: Json;
+      };
+      record_content_conformity: {
+        Args: {
+          p_by: string;
+          p_channel: string;
+          p_expected_updated_at: string;
+          p_key: string;
+          p_on: string;
+          p_reference?: string;
+        };
+        Returns: Json;
+      };
+      return_content_draft: {
+        Args: { p_expected_updated_at: string; p_key: string };
         Returns: Json;
       };
       withdraw_listing_consent: {
