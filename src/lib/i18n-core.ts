@@ -48,9 +48,8 @@ const es = {
   "menu.servicios": "Servicios públicos",
   "menu.descubre": "Descubre {nombreCorto}",
   "menu.actualidad": "Actualidad",
-  "menu.clasificados": "Clasificados",
   "menu.sobre": "Sobre {app}",
-  "menu.enviar": "Enviar información",
+  "menu.enviar": "Sugerir o corregir",
   "menu.enviarDesc": "Envíanos un negocio, un lugar, un evento\no una corrección para {app}.",
   "lang.label": "Idioma",
   "feedback.reportSent": "Aviso recibido, muchas gracias.",
@@ -79,7 +78,6 @@ const es = {
   "home.descText": "Patrimonio, rincones con encanto, naturaleza y consejos de vecino.",
   "home.servTitle": "Servicios públicos",
   "home.servText": "Ayuntamiento, salud, dependencias y teléfonos útiles.",
-  "home.soon": "Próximamente",
   "home.enter": "Entrar",
   "home.urgTitle": "¿Una urgencia?",
   "home.urg112": "Emergencias · 112",
@@ -125,7 +123,6 @@ const es = {
   "home2.f3": "km de Málaga",
   "home2.sectionsTitle": "Todo en {app}",
   "home2.actText": "Noticias, eventos y avisos del pueblo.",
-  "home2.clasText": "Compra, venta y anuncios entre vecinos.",
   "home2.sobreText": "Quiénes somos y por qué existe esta plataforma.",
   "home2.enviarText": "Cuéntanos de un negocio, un error o algo nuevo.",
   "sobre.title": "Sobre {app}",
@@ -149,7 +146,7 @@ const es = {
   "sobre.how2":
     "El objetivo es que no tengas que buscar en diferentes páginas, redes sociales o grupos para encontrar información sobre {municipio}: {app} trabaja para reunirla y organizarla en un espacio común.",
   "sobre.how3":
-    "Estamos empezando por el directorio de comercios, profesionales y servicios públicos. Poco a poco, en los próximos meses, se irán sumando lugares de interés, actividades y eventos, noticias y clasificados.",
+    "Estamos empezando por el directorio de comercios, profesionales y servicios públicos. Poco a poco, en los próximos meses, se irán sumando lugares de interés, actividades, eventos y noticias.",
   "sobre.how4":
     "La información se organiza para facilitar las búsquedas y permitir que cualquier persona acceda sin registros ni complicaciones.",
   "sobre.how5":
@@ -308,9 +305,8 @@ const en: Partial<Record<TKey, string>> = {
   "menu.servicios": "Public services",
   "menu.descubre": "Discover {nombreCorto}",
   "menu.actualidad": "News",
-  "menu.clasificados": "Classifieds",
   "menu.sobre": "About {app}",
-  "menu.enviar": "Send information",
+  "menu.enviar": "Suggest or correct",
   "menu.enviarDesc": "Send us a business, a place, an event\nor a correction for {app}.",
   "lang.label": "Language",
   "feedback.reportSent": "Report received, thank you.",
@@ -339,7 +335,6 @@ const en: Partial<Record<TKey, string>> = {
   "home.descText": "Heritage, charming corners, nature and tips from locals.",
   "home.servTitle": "Public services",
   "home.servText": "Town hall, health, public offices and useful phone numbers.",
-  "home.soon": "Coming soon",
   "home.enter": "Enter",
   "home.urgTitle": "An emergency?",
   "home.urg112": "Emergencies · 112",
@@ -385,7 +380,6 @@ const en: Partial<Record<TKey, string>> = {
   "home2.f3": "km from Málaga",
   "home2.sectionsTitle": "Everything in {app}",
   "home2.actText": "News, events and announcements from the village.",
-  "home2.clasText": "Buy, sell and local notices between neighbours.",
   "home2.sobreText": "Who we are and why this platform exists.",
   "home2.enviarText": "Tell us about a business, a mistake or something new.",
   "sobre.title": "About {app}",
@@ -409,7 +403,7 @@ const en: Partial<Record<TKey, string>> = {
   "sobre.how2":
     "The aim is that you don't have to search across different pages, social networks or groups to find information about {municipio}: {app} works to gather and organise it in one shared space.",
   "sobre.how3":
-    "We are starting with the directory of shops, professionals and public services. Little by little, over the coming months, places of interest, activities and events, news and classifieds will be added.",
+    "We are starting with the directory of shops, professionals and public services. Little by little, over the coming months, places of interest, activities, events and news will be added.",
   "sobre.how4":
     "Information is organised to make searching easier and to let anyone access it without registrations or complications.",
   "sobre.how5":

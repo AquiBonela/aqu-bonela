@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { sectionVisible } from "@/lib/site-availability";
 import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
@@ -9,6 +10,10 @@ import { brand } from "@/config/municipality";
 import { pageHeaderImage } from "@/lib/page-headers";
 
 export const Route = createFileRoute("/tramites/$categoria/")({
+  // Sin su página o su sección en la configuración publicada, la ruta no existe.
+  beforeLoad: () => {
+    if (!sectionVisible("servicios-publicos", "tramites")) throw notFound();
+  },
   loader: async ({ params, context }) => {
     const data = await context.queryClient.ensureQueryData(publicProceduresQuery);
     const c = data.categories.find((c) => c.slug === params.categoria);

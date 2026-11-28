@@ -10,24 +10,25 @@ DECLARE
   n integer;
   v_admin uuid := gen_random_uuid();
   v_member uuid := gen_random_uuid();
-  v_cat uuid; v_pub uuid; v_draft uuid; v_ok boolean;
+  v_cat uuid; v_pub uuid; v_draft uuid; v_ok boolean; v_at timestamptz;
 BEGIN
   -- ---------- 1. Estructura ----------
   SELECT count(*) INTO n FROM pg_tables WHERE schemaname = 'public' AND tablename IN
     ('activities','approval_tokens','categories','consents','listing_activities','listing_contacts',
      'listing_hours','listing_photos','listing_reports','listing_requests','listings',
      'procedure_categories','procedures','site_identity','site_settings','suggestions','translation_gateway_state','user_roles',
-     'page_headers','listing_hour_periods','listing_events');
-  IF n <> 21 THEN RAISE EXCEPTION 'FALLO: tablas public = % (esperado 21)', n; END IF;
+     'page_headers','listing_hour_periods','listing_events',
+     'site_menu','page_sections','home_shortcuts','content_drafts','content_publications');
+  IF n <> 26 THEN RAISE EXCEPTION 'FALLO: tablas public = % (esperado 26)', n; END IF;
   IF to_regclass('private.form_rate_limits') IS NULL THEN RAISE EXCEPTION 'FALLO: falta private.form_rate_limits'; END IF;
   SELECT count(*) INTO n FROM pg_class c JOIN pg_namespace s ON s.oid = c.relnamespace
     WHERE s.nspname IN ('public','private') AND c.relkind = 'r' AND NOT c.relrowsecurity;
   IF n <> 0 THEN RAISE EXCEPTION 'FALLO: % tablas sin RLS', n; END IF;
   SELECT count(*) INTO n FROM information_schema.columns WHERE table_schema IN ('public','private')
     AND table_name IN (SELECT tablename FROM pg_tables WHERE schemaname IN ('public','private'));
-  IF n <> 247 THEN RAISE EXCEPTION 'FALLO: columnas = % (esperado 247)', n; END IF;
+  IF n <> 282 THEN RAISE EXCEPTION 'FALLO: columnas = % (esperado 282)', n; END IF;
   SELECT count(*) INTO n FROM pg_constraint co JOIN pg_namespace s ON s.oid = co.connamespace WHERE s.nspname IN ('public','private');
-  IF n <> 95 THEN RAISE EXCEPTION 'FALLO: restricciones = % (esperado 95)', n; END IF;
+  IF n <> 121 THEN RAISE EXCEPTION 'FALLO: restricciones = % (esperado 121)', n; END IF;
 
   -- ---------- 2. ENUM ----------
   IF (SELECT string_agg(enumlabel, ',' ORDER BY enumsortorder) FROM pg_enum WHERE enumtypid = 'public.app_role'::regtype) <> 'admin'
@@ -37,7 +38,7 @@ BEGIN
 
   -- ---------- 3. Políticas, funciones, triggers ----------
   SELECT count(*) INTO n FROM pg_policies WHERE schemaname = 'public';
-  IF n <> 47 THEN RAISE EXCEPTION 'FALLO: políticas public = % (esperado 47)', n; END IF;
+  IF n <> 53 THEN RAISE EXCEPTION 'FALLO: políticas public = % (esperado 53)', n; END IF;
   SELECT count(*) INTO n FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects'
     AND (coalesce(qual,'') || coalesce(with_check,'')) ~ '(listing-photos|procedure-images)';
   IF n <> 8 THEN RAISE EXCEPTION 'FALLO: políticas de Storage = % (esperado 8)', n; END IF;
@@ -52,11 +53,14 @@ BEGIN
       ('public','save_listing'),('public','approve_listing_review'),
       ('private','page_headers_stamp'),('public','listing_review_state'),('private','listings_publish_rule'),
       ('private','listings_status_log'),('private','approval_tokens_issue'),
-      ('public','request_listing_corrections'),('public','withdraw_listing_consent'));
-  IF n <> 20 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 20)', n; END IF;
+      ('public','request_listing_corrections'),('public','withdraw_listing_consent'),
+      ('private','site_structure_stamp'),('private','published_content'),('public','save_content_draft'),
+      ('public','discard_content_draft'),('public','content_draft_state'),('public','publish_content_draft'),
+      ('private','draft_keys'),('private','validate_draft_content'));
+  IF n <> 28 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 28)', n; END IF;
   SELECT count(*) INTO n FROM pg_trigger t JOIN pg_class c ON c.oid = t.tgrelid JOIN pg_namespace s ON s.oid = c.relnamespace
     WHERE s.nspname = 'public' AND NOT t.tgisinternal;
-  IF n <> 16 THEN RAISE EXCEPTION 'FALLO: triggers = % (esperado 16)', n; END IF;
+  IF n <> 20 THEN RAISE EXCEPTION 'FALLO: triggers = % (esperado 20)', n; END IF;
   IF has_function_privilege('anon', 'public.check_rate_limit(text,integer,integer)', 'EXECUTE')
   OR has_function_privilege('authenticated', 'public.check_rate_limit(text,integer,integer)', 'EXECUTE')
   OR NOT has_function_privilege('service_role', 'public.check_rate_limit(text,integer,integer)', 'EXECUTE')
@@ -78,6 +82,12 @@ BEGIN
   OR has_function_privilege('anon', 'public.withdraw_listing_consent(uuid,text)', 'EXECUTE')
   OR has_function_privilege('anon', 'public.listing_review_state(uuid)', 'EXECUTE')
   THEN RAISE EXCEPTION 'FALLO: permisos de las funciones de revisión'; END IF;
+  IF has_function_privilege('anon', 'public.save_content_draft(text,jsonb,timestamp with time zone)', 'EXECUTE')
+  OR has_function_privilege('anon', 'public.publish_content_draft(text,timestamp with time zone,boolean,text)', 'EXECUTE')
+  OR has_function_privilege('anon', 'public.discard_content_draft(text,timestamp with time zone)', 'EXECUTE')
+  OR has_function_privilege('anon', 'public.content_draft_state(text)', 'EXECUTE')
+  OR NOT has_function_privilege('authenticated', 'public.publish_content_draft(text,timestamp with time zone,boolean,text)', 'EXECUTE')
+  THEN RAISE EXCEPTION 'FALLO: permisos de las funciones de borradores'; END IF;
 
   -- ---------- 4. Storage ----------
   SELECT count(*) INTO n FROM storage.buckets WHERE NOT public AND
@@ -125,6 +135,18 @@ BEGIN
   OR has_table_privilege('authenticated', 'public.consents', 'INSERT') OR has_table_privilege('authenticated', 'public.consents', 'UPDATE')
   OR has_table_privilege('authenticated', 'public.listing_requests', 'INSERT')
   OR has_column_privilege('anon', 'public.site_settings', 'publish_on_owner_approval', 'SELECT')
+  OR NOT has_column_privilege('anon', 'public.site_menu', 'enabled', 'SELECT')
+  OR has_column_privilege('anon', 'public.site_menu', 'updated_by', 'SELECT')
+  OR has_column_privilege('anon', 'public.home_shortcuts', 'updated_by', 'SELECT')
+  OR has_table_privilege('authenticated', 'public.site_menu', 'INSERT') OR has_table_privilege('authenticated', 'public.site_menu', 'UPDATE')
+  OR has_table_privilege('authenticated', 'public.page_sections', 'INSERT') OR has_table_privilege('authenticated', 'public.page_sections', 'DELETE')
+  OR has_table_privilege('authenticated', 'public.home_shortcuts', 'INSERT') OR has_table_privilege('authenticated', 'public.home_shortcuts', 'UPDATE')
+  OR has_table_privilege('authenticated', 'public.content_drafts', 'INSERT') OR has_table_privilege('authenticated', 'public.content_drafts', 'UPDATE')
+  OR has_table_privilege('authenticated', 'public.content_drafts', 'DELETE')
+  OR has_table_privilege('authenticated', 'public.content_publications', 'INSERT')
+  OR has_table_privilege('authenticated', 'public.content_publications', 'UPDATE')
+  OR has_table_privilege('authenticated', 'public.content_publications', 'DELETE')
+  OR has_table_privilege('anon', 'public.content_drafts', 'SELECT') OR has_table_privilege('anon', 'public.content_publications', 'SELECT')
   THEN RAISE EXCEPTION 'FALLO: permisos de tabla/columna'; END IF;
 
   -- Ni visitantes ni usuarios (incluidos admins) pueden vaciar tablas saltándose RLS.
@@ -224,6 +246,10 @@ BEGIN
     IF public.site_config() -> 'identity' IS NULL OR jsonb_typeof(public.site_config() -> 'identity') <> 'object'
     THEN RAISE EXCEPTION 'FALLO: anon no lee site_config'; END IF;
     IF public.site_config() -> 'identity' ? 'updated_by' THEN RAISE EXCEPTION 'FALLO: site_config expone updated_by'; END IF;
+    IF jsonb_typeof(public.site_config() -> 'menu') <> 'object' OR jsonb_typeof(public.site_config() -> 'sections') <> 'object'
+    OR jsonb_typeof(public.site_config() -> 'shortcuts') <> 'array' THEN RAISE EXCEPTION 'FALLO: site_config sin estructura'; END IF;
+    BEGIN PERFORM public.save_content_draft('menu', '{}'::jsonb); RAISE EXCEPTION 'FALLO: anon guarda borradores';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
     BEGIN UPDATE public.site_identity SET app_name = 'x' WHERE id; RAISE EXCEPTION 'FALLO: anon edita la identidad';
     EXCEPTION WHEN insufficient_privilege THEN NULL; END;
 
@@ -242,6 +268,8 @@ BEGIN
     BEGIN DELETE FROM public.site_identity; RAISE EXCEPTION 'FALLO: usuario borra la identidad';
     EXCEPTION WHEN insufficient_privilege THEN NULL; END;
     IF public.has_role(v_admin, 'admin') THEN RAISE EXCEPTION 'FALLO: has_role permite consultar a otros'; END IF;
+    BEGIN PERFORM public.save_content_draft('menu', '{}'::jsonb); RAISE EXCEPTION 'FALLO: usuario sin rol guarda borradores';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
 
     BEGIN TRUNCATE TABLE public.listing_contacts; RAISE EXCEPTION 'FALLO: usuario vacía contactos';
     EXCEPTION WHEN insufficient_privilege THEN NULL; END;
@@ -285,10 +313,33 @@ BEGIN
     PERFORM set_config('role', 'postgres', true);
     IF (SELECT updated_by FROM public.site_identity) IS DISTINCT FROM v_admin THEN RAISE EXCEPTION 'FALLO: updated_by no registra al autor'; END IF;
 
+    -- Borradores: guardar no cambia lo publicado; publicar exige conformidad y queda registrado.
+    PERFORM set_config('role', 'authenticated', true);
+    v_at := (public.save_content_draft('menu', '{"entries":[{"key":"guia-tramites","enabled":false,"sort_order":1}]}'::jsonb) ->> 'updated_at')::timestamptz;
+    IF public.site_config() -> 'menu' ? 'guia-tramites' THEN RAISE EXCEPTION 'FALLO: un borrador llega a la web'; END IF;
+    BEGIN PERFORM public.publish_content_draft('menu', v_at, false); RAISE EXCEPTION 'FALLO: se publica sin conformidad';
+    EXCEPTION WHEN SQLSTATE 'PT422' THEN NULL; END;
+    PERFORM public.publish_content_draft('menu', v_at, true, 'Correo del Ayuntamiento');
+    IF (public.site_config() #>> '{menu,guia-tramites,enabled}')::boolean IS NOT FALSE THEN RAISE EXCEPTION 'FALLO: la publicación no llega a la web'; END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.content_publications WHERE draft_key = 'menu' AND conformity AND published_by = v_admin
+      AND note = 'Correo del Ayuntamiento') THEN RAISE EXCEPTION 'FALLO: la publicación no queda registrada'; END IF;
+    v_at := (public.save_content_draft('menu', '{"entries":[{"key":"directorio","enabled":false,"sort_order":0}]}'::jsonb) ->> 'updated_at')::timestamptz;
+    BEGIN PERFORM public.publish_content_draft('menu', v_at, true); RAISE EXCEPTION 'FALLO: el Directorio se puede desactivar';
+    EXCEPTION WHEN check_violation THEN NULL; END;
+    PERFORM public.discard_content_draft('menu', v_at);
+    -- Lo publicado cambia por otra vía: el borrador ya no se puede publicar.
+    v_at := (public.save_content_draft('portada', '{"hero_title":"Borrador","hero_subtitle":"Subtítulo"}'::jsonb) ->> 'updated_at')::timestamptz;
+    UPDATE public.site_settings SET hero_title = 'Cambio directo' WHERE id;
+    BEGIN PERFORM public.publish_content_draft('portada', v_at, true); RAISE EXCEPTION 'FALLO: se publica sobre una versión cambiada';
+    EXCEPTION WHEN SQLSTATE 'PT409' THEN NULL; END;
+    BEGIN INSERT INTO public.site_menu (entry_key) VALUES ('actualidad'); RAISE EXCEPTION 'FALLO: el navegador escribe en el menú';
+    EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+    PERFORM set_config('role', 'postgres', true);
+
     RAISE EXCEPTION USING ERRCODE = 'PZ001', MESSAGE = 'rollback';
   EXCEPTION WHEN SQLSTATE 'PZ001' THEN NULL;
   END;
 
-  RAISE NOTICE 'VERIFICACIÓN SUPERADA: estructura, ENUM, políticas, funciones, triggers, Storage, permisos, rate limiting, identidad, cabeceras, fichas, revisión y semilla.';
+  RAISE NOTICE 'VERIFICACIÓN SUPERADA: estructura, ENUM, políticas, funciones, triggers, Storage, permisos, rate limiting, identidad, cabeceras, fichas, revisión, estructura de la web, borradores y semilla.';
 END
 $verify$;

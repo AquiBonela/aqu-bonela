@@ -7,6 +7,7 @@ import { z } from "zod";
 import type { MunicipalityConfig } from "../../instances/schema";
 import { hasControlCharacter } from "./control-characters";
 import { themeFromColors } from "./brand-palette";
+import { EMPTY_STRUCTURE, parseSiteStructure, type SiteStructure } from "./site-structure";
 
 /** Campos que la base de datos puede sustituir. Las claves técnicas siguen en el build. */
 export type IdentityOverrides = Partial<
@@ -64,12 +65,15 @@ export interface SiteConfig {
   identity: IdentityOverrides;
   branding?: Branding;
   pageHeaders?: PageHeaders;
+  /** Menú, secciones y accesos directos publicados; sin ellos, los valores por defecto del producto. */
+  structure?: SiteStructure;
 }
 
 export const EMPTY_SITE_CONFIG: SiteConfig = Object.freeze({
   identity: Object.freeze({}),
   branding: Object.freeze({}),
   pageHeaders: Object.freeze({}),
+  structure: EMPTY_STRUCTURE,
 }) as SiteConfig;
 
 /** Dirección pública (en el propio dominio de la instalación) de un archivo de site-assets. */
@@ -92,9 +96,13 @@ export function pageHeaderPaths(page: PageKey) {
   };
 }
 
+/** Imagen de un acceso directo adicional de la portada. */
+export const SHORTCUT_IMAGE_PATH = /^accesos\/[0-9a-f-]{36}\.webp$/;
+
 /** Rutas que la web sirve desde /marca/: solo las que el panel puede generar. */
 export function isServableAssetPath(path: string): boolean {
   if (Object.values(ASSET_PATHS).some((re) => re.test(path))) return true;
+  if (SHORTCUT_IMAGE_PATH.test(path)) return true;
   return PAGE_KEYS.some((page) => {
     const p = pageHeaderPaths(page);
     return p.image.test(path) || p.small.test(path);
@@ -194,8 +202,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  */
 export function parseSiteConfig(raw: unknown): SiteConfig {
   const pageHeaders = parsePageHeaders(isRecord(raw) ? raw["page_headers"] : undefined);
+  const structure = parseSiteStructure(raw);
   const row = isRecord(raw) && isRecord(raw["identity"]) ? raw["identity"] : null;
-  if (!row) return { identity: {}, branding: {}, pageHeaders };
+  if (!row) return { identity: {}, branding: {}, pageHeaders, structure };
 
   const rejected: string[] = [];
   const read = (name: FieldName): string => {
@@ -280,7 +289,7 @@ export function parseSiteConfig(raw: unknown): SiteConfig {
 
   if (rejected.length)
     console.warn(`[site-identity] Valores no válidos descartados: ${rejected.join(", ")}`);
-  return { identity, branding, pageHeaders };
+  return { identity, branding, pageHeaders, structure };
 }
 
 const POSTAL_CODE = /^[0-9]{5}$/;
@@ -368,6 +377,7 @@ export function siteConfigScript(config: SiteConfig): string {
     identity: config.identity ?? {},
     branding: config.branding ?? {},
     pageHeaders: config.pageHeaders ?? {},
+    structure: config.structure ?? EMPTY_STRUCTURE,
   })
     .replace(/</g, "\\u003c")
     .replace(/\u2028/g, "\\u2028")
@@ -384,5 +394,18 @@ export function readBrowserSiteConfig(): SiteConfig | undefined {
     identity: value["identity"] as IdentityOverrides,
     branding: isRecord(value["branding"]) ? (value["branding"] as Branding) : {},
     pageHeaders: isRecord(value["pageHeaders"]) ? (value["pageHeaders"] as PageHeaders) : {},
+    structure: readBrowserStructure(value["structure"]),
   };
+}
+
+/** Estructura recibida en el HTML (ya validada en el servidor); si falta o no tiene forma, la vacía. */
+function readBrowserStructure(value: unknown): SiteStructure {
+  if (
+    !isRecord(value) ||
+    !isRecord(value["menu"]) ||
+    !isRecord(value["sections"]) ||
+    !Array.isArray(value["shortcuts"])
+  )
+    return EMPTY_STRUCTURE;
+  return value as unknown as SiteStructure;
 }

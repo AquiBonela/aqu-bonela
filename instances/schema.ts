@@ -92,7 +92,8 @@ export interface MunicipalityTheme {
   dark: MunicipalityDarkTokens;
 }
 
-export type HomeSection = "directorio" | "descubre" | "servicios" | "actualidad" | "clasificados";
+/** Tarjetas de la portada que pueden llevar imagen compilada de respaldo. */
+export type HomeSection = "directorio" | "descubre" | "servicios" | "actualidad";
 
 export interface PublicServicesContent {
   heroImage?: string;

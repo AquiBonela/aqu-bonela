@@ -378,6 +378,7 @@ export const englishText: Record<string, string> = {
   "Dónde está, a qué se dedica, horarios, teléfono, cualquier detalle…":
     "Location, what it offers, opening hours, phone number, any details…",
   "Enviar información": "Send information",
+  "Sugerir o corregir": "Suggest or correct",
   "¿Conoces algo que debería estar en {app}?": "Know something that should be on {app}?",
   "Puedes enviarnos información sobre comercios, profesionales, lugares de interés, eventos, noticias o cualquier otro contenido que consideres útil para {municipio}.":
     "You can send us information about shops, professionals, places of interest, events, news or anything else you think would be useful for {municipio}.",
@@ -800,16 +801,7 @@ export const englishText: Record<string, string> = {
     "{app} does not participate in commercial or professional relationships between users and listed businesses, nor does it guarantee the quality, availability, prices or results of third-party products and services.",
   "La información publicada deberá entenderse como orientativa y podrá estar sujeta a cambios.":
     "Published information is provided for guidance and may be subject to change.",
-  "7. Anuncios y clasificados": "7. Notices and classifieds",
-  "Los anuncios de compraventa, alquileres, empleo y otros servicios publicados en {app} son facilitados por terceros.":
-    "Buying, selling, rental, employment and other service notices published on {app} are supplied by third parties.",
-  "{app} actúa como espacio de difusión de dichos anuncios y no interviene en las operaciones, negociaciones, pagos o acuerdos que puedan establecerse entre las partes.":
-    "{app} provides a space for sharing these notices and does not take part in transactions, negotiations, payments or agreements between the parties.",
-  "Los usuarios deberán comprobar por sus propios medios la veracidad de la información, la identidad de los anunciantes y las condiciones de cualquier operación antes de llegar a un acuerdo.":
-    "Users must independently verify the accuracy of the information, the advertiser's identity and the terms of any transaction before reaching an agreement.",
-  "La publicación de un anuncio no supone que {app} certifique su autenticidad o garantice la operación.":
-    "Publication of a notice does not mean that {app} certifies its authenticity or guarantees the transaction.",
-  "8. Propiedad intelectual e industrial": "8. Intellectual and industrial property",
+  "7. Propiedad intelectual e industrial": "7. Intellectual and industrial property",
   "El diseño, la estructura, los elementos gráficos propios, los textos originales y demás contenidos creados específicamente para {app} están protegidos por la normativa de propiedad intelectual e industrial.":
     "The design, structure, original graphic elements, original texts and other content created specifically for {app} are protected by intellectual and industrial property legislation.",
   "Queda prohibida su reproducción, distribución o utilización sin la autorización correspondiente, salvo en los casos permitidos legalmente.":
@@ -818,14 +810,14 @@ export const englishText: Record<string, string> = {
     "Trade names, trademarks, photographs, logos, posters and other third-party materials remain subject to their respective owners' rights.",
   "Su publicación en {app} no implica la adquisición de dichos derechos por parte de la plataforma.":
     "Publication on {app} does not transfer those rights to the platform.",
-  "9. Enlaces externos": "9. External links",
+  "8. Enlaces externos": "8. External links",
   "{app} puede incluir enlaces a páginas web, servicios o plataformas de terceros con el propósito de facilitar información adicional.":
     "{app} may include links to third-party websites, services or platforms to provide additional information.",
   "El titular no controla dichos sitios externos ni se responsabiliza de sus contenidos, disponibilidad, políticas o condiciones de uso.":
     "The owner does not control these external sites and is not responsible for their content, availability, policies or terms of use.",
   "La inclusión de un enlace no implica necesariamente una relación, colaboración o recomendación por parte de {app}.":
     "Including a link does not necessarily imply a relationship, partnership or recommendation by {app}.",
-  "10. Disponibilidad y responsabilidad": "10. Availability and liability",
+  "9. Disponibilidad y responsabilidad": "9. Availability and liability",
   "El titular realizará esfuerzos razonables para mantener la plataforma disponible y sus contenidos actualizados.":
     "The owner will make reasonable efforts to keep the platform available and its content up to date.",
   "No obstante, no garantiza la disponibilidad permanente del servicio ni la ausencia de errores, interrupciones o incidencias técnicas.":
@@ -834,17 +826,17 @@ export const englishText: Record<string, string> = {
     "The owner may make changes, suspend features or temporarily interrupt the service for technical, maintenance or other reasons.",
   "Nada de lo dispuesto en este aviso limita las responsabilidades que legalmente no puedan excluirse.":
     "Nothing in this notice limits any liability that cannot legally be excluded.",
-  "11. Comunicaciones e incidencias": "11. Communications and reports",
+  "10. Comunicaciones e incidencias": "10. Communications and reports",
   "Cualquier persona que detecte información incorrecta, contenido presuntamente ilícito, una vulneración de derechos o cualquier otra incidencia relacionada con la plataforma podrá comunicarlo a través del correo electrónico de contacto o de los formularios habilitados en {app}.":
     "Anyone who identifies incorrect information, potentially unlawful content, a rights infringement or any other platform-related issue may report it using the contact email address or the forms provided on {app}.",
   "Las comunicaciones serán revisadas y se adoptarán las medidas que correspondan conforme a la legislación aplicable.":
     "Reports will be reviewed and appropriate measures taken in accordance with applicable law.",
-  "12. Protección de datos personales": "12. Personal data protection",
+  "11. Protección de datos personales": "11. Personal data protection",
   "El tratamiento de los datos personales facilitados a través de la plataforma se regula en la correspondiente":
     "The processing of personal data supplied through the platform is governed by the corresponding",
   ", donde se informa sobre el responsable, las finalidades, las bases jurídicas, los destinatarios y los derechos de las personas interesadas.":
     ", which explains the controller, purposes, legal bases, recipients and data subjects' rights.",
-  "13. Legislación aplicable": "13. Applicable law",
+  "12. Legislación aplicable": "12. Applicable law",
   "Este aviso legal se rige por la legislación española y europea que resulte aplicable.":
     "This legal notice is governed by applicable Spanish and European law.",
   "Para cualquier controversia se estará a lo dispuesto en las normas sobre jurisdicción y competencia que correspondan legalmente.":

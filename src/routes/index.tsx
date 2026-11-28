@@ -14,21 +14,14 @@ import {
   getSiteConfigSnapshot,
 } from "@/config/municipality";
 import { PageHeaderImage } from "@/components/PageHeaderImage";
-import { pageHeaderImage } from "@/lib/page-headers";
-import type { PageKey } from "@/lib/site-identity";
+import { pageHeaderImage, type HeaderImage } from "@/lib/page-headers";
+import { siteAssetUrl, type PageKey } from "@/lib/site-identity";
+import { homeAutomaticShortcuts, homeExtraShortcuts } from "@/lib/site-availability";
+import { isExternalHref, type ConfigurablePage } from "@/lib/site-structure";
 import type { HomeSection, InstanceContent } from "../../instances/schema";
 
 // Cifras, «Cómo llegar» y fotos de las tarjetas solo si la instancia las aporta.
 const home: NonNullable<InstanceContent["home"]> = getInstanceContent().home ?? {};
-/** Cada tarjeta de la portada usa la cabecera de su página. */
-const SECTION_PAGE: Record<HomeSection, PageKey> = {
-  directorio: "directorio",
-  descubre: "descubre",
-  servicios: "servicios-publicos",
-  actualidad: "actualidad",
-  clasificados: "tablon",
-};
-const hasDiscover = Boolean(getInstanceContent().discover);
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,30 +45,112 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-type Section = {
+type PageCard = {
   key: TKey;
   text: TKey;
+  /** Imagen compilada de respaldo de la tarjeta. */
   section: HomeSection;
-  to?: "/directorio" | "/descubre" | "/servicios-publicos";
+  /** Cabecera de la página, que es la imagen de su tarjeta. */
+  page: PageKey;
+  to: "/directorio" | "/descubre" | "/servicios-publicos";
 };
-const SECTIONS: Section[] = [
-  { key: "menu.directorio", text: "home.dirText", section: "directorio", to: "/directorio" },
-  ...(hasDiscover
-    ? [
-        {
-          key: "menu.descubre",
-          text: "home.descText",
-          section: "descubre",
-          to: "/descubre",
-        } as const,
-      ]
-    : []),
-  { key: "menu.servicios", text: "home.servText", section: "servicios", to: "/servicios-publicos" },
-  { key: "menu.actualidad", text: "home2.actText", section: "actualidad" },
-  { key: "menu.clasificados", text: "home2.clasText", section: "clasificados" },
-];
+
+/**
+ * Tarjeta de cada página principal. Actualidad aún no tiene página (etapa 5): sin tarjeta, aunque
+ * nunca llega aquí porque no está disponible.
+ */
+const PAGE_CARDS: Record<"directorio" | ConfigurablePage, PageCard | null> = {
+  directorio: {
+    key: "menu.directorio",
+    text: "home.dirText",
+    section: "directorio",
+    page: "directorio",
+    to: "/directorio",
+  },
+  "servicios-publicos": {
+    key: "menu.servicios",
+    text: "home.servText",
+    section: "servicios",
+    page: "servicios-publicos",
+    to: "/servicios-publicos",
+  },
+  descubre: {
+    key: "menu.descubre",
+    text: "home.descText",
+    section: "descubre",
+    page: "descubre",
+    to: "/descubre",
+  },
+  actualidad: null,
+};
+
+const CARD_OVERLAY =
+  "absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent";
+
+function CardText({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="absolute inset-x-0 bottom-0 p-5">
+      <p className="font-display text-2xl font-extrabold text-primary-foreground">{title}</p>
+      {text && <p className="mt-1 max-w-sm text-sm text-primary-foreground/85">{text}</p>}
+    </div>
+  );
+}
+
+function CardImage({ image }: { image: HeaderImage | null }) {
+  if (!image) return null;
+  return (
+    <PageHeaderImage
+      image={image}
+      decorative
+      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+    />
+  );
+}
+
+type Card = {
+  id: string;
+  title: string;
+  text: string;
+  image: HeaderImage | null;
+  to?: PageCard["to"];
+  href?: string;
+  external?: boolean;
+};
+
+/**
+ * Accesos directos de la portada: el Directorio siempre primero, después las páginas principales
+ * visibles en el orden del menú y, al final, los accesos adicionales publicados.
+ */
+function useHomeCards(): Card[] {
+  const { t } = useI18n();
+  const automatic = homeAutomaticShortcuts()
+    .map((key) => PAGE_CARDS[key])
+    .filter((card): card is PageCard => card !== null)
+    .map((card) => ({
+      id: card.page,
+      title: t(card.key),
+      text: t(card.text),
+      image: pageHeaderImage(card.page, { src: home.sectionImages?.[card.section] }),
+      to: card.to,
+    }));
+  const extra = homeExtraShortcuts().map((s) => ({
+    id: s.id,
+    title: s.title,
+    text: s.description,
+    image: {
+      src: siteAssetUrl(s.imagePath),
+      alt: s.imageAlt,
+      position: "50% 50%",
+      configured: true,
+    },
+    href: s.href,
+    external: isExternalHref(s.href),
+  }));
+  return [...automatic, ...extra];
+}
 
 function Home() {
+  const cards = useHomeCards();
   const navigate = useNavigate();
   const { t, tr } = useI18n();
   const [text, setText] = useState("");
@@ -290,49 +365,33 @@ function Home() {
           className="mx-auto max-w-5xl px-4 pb-16 pt-6 sm:pt-8"
         >
           <ul className="grid gap-4 sm:grid-cols-2">
-            {SECTIONS.map(({ key, text, section, to }, i) => {
-              const inactive = !to;
-              const img = pageHeaderImage(SECTION_PAGE[section], {
-                src: home.sectionImages?.[section],
-              });
+            {cards.map((card, i) => {
+              const cls = `group relative block overflow-hidden rounded-soft${card.image ? "" : " bg-primary"} ${i === 0 ? "aspect-[4/3] sm:col-span-2 sm:aspect-[21/9]" : "aspect-[4/3]"}`;
               const inner = (
                 <>
-                  {img && (
-                    <PageHeaderImage
-                      image={img}
-                      decorative
-                      className={`absolute inset-0 h-full w-full object-cover ${inactive ? "grayscale" : "transition-transform duration-700 group-hover:scale-105"}`}
-                    />
-                  )}
-                  <div
-                    aria-hidden
-                    className={`absolute inset-0 ${inactive ? "bg-gradient-to-t from-foreground/85 via-foreground/40 to-foreground/10" : "bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent"}`}
-                  />
-                  {inactive && (
-                    <span className="absolute right-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-muted-foreground">
-                      {t("home.soon")}
-                    </span>
-                  )}
-                  <div className="absolute inset-x-0 bottom-0 p-5">
-                    <p className="font-display text-2xl font-extrabold text-primary-foreground">
-                      {t(key)}
-                    </p>
-                    <p className="mt-1 max-w-sm text-sm text-primary-foreground/85">{t(text)}</p>
-                  </div>
+                  <CardImage image={card.image} />
+                  <div aria-hidden className={CARD_OVERLAY} />
+                  <CardText title={card.title} text={card.text} />
                 </>
               );
-              const background = img ? "" : inactive ? " bg-muted-foreground" : " bg-primary";
-              const cls = `group relative block overflow-hidden rounded-soft${background} ${i === 0 ? "aspect-[4/3] sm:col-span-2 sm:aspect-[21/9]" : "aspect-[4/3]"}`;
               return (
-                <li key={key} className={i === 0 ? "sm:col-span-2" : ""}>
-                  {to ? (
-                    <Link to={to} className={cls}>
+                <li key={card.id} className={i === 0 ? "sm:col-span-2" : ""}>
+                  {card.to ? (
+                    <Link
+                      to={card.to}
+                      {...(card.to === "/directorio" ? { search: { q: "", cat: "", of: "" } } : {})}
+                      className={cls}
+                    >
                       {inner}
                     </Link>
                   ) : (
-                    <div className={cls} aria-disabled="true">
+                    <a
+                      href={card.href}
+                      className={cls}
+                      {...(card.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    >
                       {inner}
-                    </div>
+                    </a>
                   )}
                 </li>
               );

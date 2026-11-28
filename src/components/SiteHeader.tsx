@@ -5,22 +5,32 @@ import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
 import { SiteBanner } from "@/components/SiteBanner";
 import { BusinessSignupDialog } from "@/components/BusinessSignupDialog";
-import { getInstanceContent, getMunicipality } from "@/config/municipality";
+import { getMunicipality } from "@/config/municipality";
+import { menuEntries } from "@/lib/site-availability";
+import type { MenuEntryKey } from "@/lib/site-structure";
 
-const menuItems = (
-  t: ReturnType<typeof useI18n>["t"],
-  tr: ReturnType<typeof useI18n>["tr"],
-  onSend: () => void,
-): HeaderItem[] => [
+type Translate = ReturnType<typeof useI18n>["t"];
+type TranslateText = ReturnType<typeof useI18n>["tr"];
+
+/** Enlace de cada entrada configurable. Actualidad aún no tiene página: no está disponible. */
+function entryItem(key: MenuEntryKey, t: Translate, tr: TranslateText): HeaderItem | null {
+  if (key === "servicios-publicos")
+    return { to: "/servicios-publicos", label: t("menu.servicios") };
+  if (key === "guia-tramites") return { to: "/tramites", label: tr("Guía de trámites") };
+  if (key === "descubre") return { to: "/descubre", label: t("menu.descubre") };
+  return null;
+}
+
+/**
+ * Menú público: Portada y Directorio siempre primero; después, las entradas que la instalación
+ * tiene activas y disponibles, en su orden; «Sobre» y «Sugerir o corregir» en su sitio de siempre.
+ */
+const menuItems = (t: Translate, tr: TranslateText, onSend: () => void): HeaderItem[] => [
   { to: "/", label: getMunicipality().appName, activeOptions: { exact: true } },
   { to: "/directorio", search: { q: "", cat: "", of: "" }, label: t("menu.directorio") },
-  ...(getInstanceContent().discover
-    ? [{ to: "/descubre" as const, label: t("menu.descubre") }]
-    : []),
-  { label: t("menu.actualidad"), soon: true },
-  { label: t("menu.clasificados"), soon: true },
-  { to: "/servicios-publicos", label: t("menu.servicios") },
-  { to: "/tramites", label: tr("Guía de trámites") },
+  ...menuEntries()
+    .map((key) => entryItem(key, t, tr))
+    .filter((item): item is HeaderItem => item !== null),
   { to: "/sobre", label: t("menu.sobre") },
 
   {

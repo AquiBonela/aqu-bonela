@@ -9,6 +9,7 @@ const MIGRATIONS = [
   { file: "20261201090000_identity_branding.sql", block: "identity_branding" },
   { file: "20261201091000_listing_details.sql", block: "listing_details" },
   { file: "20261201092000_listing_review_flow.sql", block: "listing_review_flow" },
+  { file: "20261202090000_site_structure.sql", block: "site_structure" },
 ] as const;
 const TEMPLATE = "supabase/template/01_schema.sql";
 
@@ -58,6 +59,7 @@ describe("garantías de las migraciones", () => {
   const identity = block(`supabase/migrations/${MIGRATIONS[0].file}`, "identity_branding");
   const details = block(`supabase/migrations/${MIGRATIONS[1].file}`, "listing_details");
   const review = block(`supabase/migrations/${MIGRATIONS[2].file}`, "listing_review_flow");
+  const structure = block(`supabase/migrations/${MIGRATIONS[3].file}`, "site_structure");
 
   it("los visitantes solo leen los archivos que la identidad o una cabecera usan", () => {
     expect(identity).toContain(
@@ -112,5 +114,70 @@ describe("garantías de las migraciones", () => {
     expect(review).toContain(
       "REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON public.consents, public.listing_requests FROM anon, authenticated;",
     );
+  });
+
+  it("el Directorio y los accesos directos de la portada no se pueden configurar", () => {
+    expect(structure).toContain(
+      "CHECK (entry_key IN ('servicios-publicos', 'actualidad', 'descubre', 'guia-tramites'))",
+    );
+    expect(structure).not.toMatch(/page_key = '(inicio|directorio)'/);
+  });
+
+  it("las tablas nuevas no admiten escritura directa desde el navegador", () => {
+    for (const table of [
+      "site_menu",
+      "page_sections",
+      "home_shortcuts",
+      "content_drafts",
+      "content_publications",
+    ])
+      expect(structure).not.toMatch(
+        new RegExp(
+          `GRANT (INSERT|UPDATE|DELETE|ALL)[^;]*public\\.${table}[^;]*(anon|authenticated)`,
+        ),
+      );
+  });
+
+  it("publicar exige la conformidad municipal y lo publicado sin cambios", () => {
+    const publish = structure.slice(
+      structure.indexOf("CREATE OR REPLACE FUNCTION public.publish_content_draft"),
+    );
+    expect(publish).toContain("IF p_conformity IS NOT TRUE THEN");
+    expect(publish).toContain("HINT = 'published_changed'");
+    expect(publish.indexOf("p_conformity IS NOT TRUE")).toBeLessThan(
+      publish.indexOf("DELETE FROM public.site_menu"),
+    );
+    expect(structure).toContain("CONSTRAINT content_publications_conformity CHECK (conformity)");
+  });
+
+  it("la web solo recibe lo publicado y visible", () => {
+    const config = structure.slice(
+      structure.indexOf("CREATE OR REPLACE FUNCTION public.site_config()"),
+    );
+    expect(config).not.toContain("content_drafts");
+    expect(config).toContain("WHERE h.visible");
+  });
+
+  it("publicar bloquea, comprueba la versión y valida contenido y archivos antes de escribir", () => {
+    const publish = structure.slice(
+      structure.indexOf("CREATE OR REPLACE FUNCTION public.publish_content_draft"),
+    );
+    const lock = publish.indexOf("LOCK TABLE public.site_menu IN SHARE ROW EXCLUSIVE MODE");
+    const version = publish.indexOf("d.base_version <> md5(");
+    const validate = publish.indexOf("private.validate_draft_content(p_key, c)");
+    const assets = publish.indexOf("HINT = 'missing_asset'");
+    const firstWrite = publish.indexOf("DELETE FROM public.site_menu");
+    expect(lock).toBeGreaterThan(0);
+    expect(lock).toBeLessThan(version);
+    expect(version).toBeLessThan(validate);
+    expect(validate).toBeLessThan(assets);
+    expect(assets).toBeLessThan(firstWrite);
+    expect(publish).toContain("PERFORM 1 FROM public.site_settings AS s WHERE s.id FOR UPDATE;");
+    expect(publish).toContain("PERFORM 1 FROM public.site_identity AS i WHERE i.id FOR UPDATE;");
+  });
+
+  it("una lista ausente o mal escrita nunca se publica como vacía", () => {
+    expect(structure).not.toMatch(/coalesce\(c -> '(entries|sections|shortcuts)'/);
+    expect(structure).toContain("WHERE NOT k = ANY (p_required || p_optional)");
   });
 });

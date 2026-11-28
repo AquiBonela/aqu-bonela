@@ -2,10 +2,15 @@ import { Text, useI18n } from "@/lib/i18n";
 import { CheckCircle2, Phone, ExternalLink, ArrowRight } from "lucide-react";
 import { dailyLifeCategories, dailyLifeItems, type DailyLifeItem } from "@/lib/vida-diaria";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { sectionVisible } from "@/lib/site-availability";
 import { SiteHeader } from "@/components/SiteHeader";
 import { brand, getMunicipality } from "@/config/municipality";
 
 export const Route = createFileRoute("/vida-diaria/$categoria")({
+  // Sin su página o su sección en la configuración publicada, la ruta no existe.
+  beforeLoad: () => {
+    if (!sectionVisible("servicios-publicos", "vida-cotidiana")) throw notFound();
+  },
   loader: ({ params }) => {
     const cat = dailyLifeCategories().find((c) => c.id === params.categoria);
     if (!cat) throw notFound();

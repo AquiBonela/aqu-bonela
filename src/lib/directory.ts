@@ -71,6 +71,8 @@ export const directoryQuery = queryOptions({
         .select(
           "id,slug,type,name,description,short_description,translations,category_id,featured,tags,public_phone,public_whatsapp,public_address,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h",
         )
+        // Las fichas de servicios públicos no forman parte del Directorio: alimentan Servicios públicos.
+        .neq("type", "publico")
         .order("name"),
     ]);
     if (cats.error) throw new Error(cats.error.message);

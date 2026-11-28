@@ -5,7 +5,7 @@ Crea una instalación nueva de la plataforma en un proyecto Supabase **vacío**,
 
 | Archivo | Qué hace | ¿Repetible? |
 |---|---|---|
-| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 21 tablas `public` y 1 privada, restricciones, índices, 20 funciones, 16 triggers, permisos de tabla/columna/función, RLS, 47 políticas `public`, 10 políticas de Storage (buckets por API), limpieza programada del rate limiting | No: solo en un proyecto vacío |
+| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 26 tablas `public` y 1 privada, restricciones, índices, 28 funciones, 20 triggers, permisos de tabla/columna/función, RLS, 53 políticas `public`, 10 políticas de Storage (buckets por API), limpieza programada del rate limiting | No: solo en un proyecto vacío |
 | `02_seed_universal.sql` | 28 categorías, 155 actividades (con sinónimos), 6 categorías de trámites | Sí |
 | `03_init_instance.sql` | Configuración de la instalación (`site_settings`), identidad pública (`site_identity`) y, opcionalmente, primer administrador | Sí |
 | `04_verify.sql` | Comprueba estructura, seguridad y datos con pruebas reales por rol; no deja datos | Sí |
@@ -28,7 +28,7 @@ El esquema se ha generado desde el **catálogo de PostgreSQL de producción** (n
   Sin limpieza el rate limiting sigue funcionando; solo acumula filas caducadas.
 
 ## 3. Orden de ejecución
-1. Crear mediante Storage API los buckets privados `listing-photos` (5 MB, sin restricción MIME), `procedure-images` (8 MB, solo `image/webp`) y `site-assets` (5 MB, `image/webp` e `image/png`: logotipos, iconos y cabeceras de página); después ejecutar `01_schema.sql` (una vez).
+1. Crear mediante Storage API los buckets privados `listing-photos` (5 MB, sin restricción MIME), `procedure-images` (8 MB, solo `image/webp`) y `site-assets` (5 MB, `image/webp` e `image/png`: logotipos, iconos, cabeceras de página y accesos directos de la portada); después ejecutar `01_schema.sql` (una vez).
 2. `02_seed_universal.sql`.
 3. Crear el primer administrador en Authentication (apartado 4).
 4. Editar el bloque `DECLARE` de `03_init_instance.sql` y ejecutarlo.
@@ -77,7 +77,7 @@ Sin esto los formularios de sugerencias y reportes no envían.
 
 ## 9. Verificación
 `04_verify.sql` comprueba:
-- 21 tablas `public` + `private.form_rate_limits`, 247 columnas, 95 restricciones, RLS activo en todas.
+- 26 tablas `public` + `private.form_rate_limits`, 282 columnas, 121 restricciones, RLS activo en todas.
 - Regla de publicación (una ficha no se publica sin la aprobación de su titular salvo los servicios públicos), registro de eventos, cabeceras de página, colores y rutas de recursos, ubicación aproximada y permisos de la web.
 - Valores exactos de los 3 ENUM.
 - 39 políticas `public`, 8 de Storage y una denegación explícita en `private.form_rate_limits`; 8 funciones y 11 triggers.
