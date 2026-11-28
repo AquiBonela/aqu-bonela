@@ -222,13 +222,13 @@ describe("garantías de las migraciones", () => {
   });
 
   it("el registro de operaciones no guarda valores y solo anota estados no personales", () => {
-    const audit = workflow.slice(workflow.indexOf("CREATE OR REPLACE FUNCTION private.audit_change()"));
+    const audit = workflow.slice(
+      workflow.indexOf("CREATE OR REPLACE FUNCTION private.audit_change()"),
+    );
     expect(audit).toContain(
       "INSERT INTO public.admin_audit_log (actor, actor_role, operation, table_name, record_key, changed_columns, state)",
     );
-    const states = [...workflow.matchAll(/audit_change\('[^']+', '([a-z_]+)'\)/g)].map(
-      (m) => m[1],
-    );
+    const states = [...workflow.matchAll(/audit_change\('[^']+', '([a-z_]+)'\)/g)].map((m) => m[1]);
     expect(states.length).toBeGreaterThan(0);
     for (const state of states) expect(["status", "draft_key", "purpose"]).toContain(state);
     expect(workflow).not.toMatch(/GRANT (INSERT|UPDATE|DELETE|ALL)[^;]*admin_audit_log/);
@@ -239,6 +239,8 @@ describe("garantías de las migraciones", () => {
       "REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA public FROM anon;",
     );
     for (const table of ["listing_contacts", "user_roles", "approval_tokens", "consents"])
-      expect(workflow).toMatch(new RegExp(`REVOKE SELECT ON [^;]*public\\.${table}[^;]*FROM anon;`));
+      expect(workflow).toMatch(
+        new RegExp(`REVOKE SELECT ON [^;]*public\\.${table}[^;]*FROM anon;`),
+      );
   });
 });

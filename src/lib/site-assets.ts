@@ -70,6 +70,15 @@ export async function prepareHeader(file: File) {
   return { image, small };
 }
 
+/** Imagen de un acceso directo de la portada (tarjeta): hasta 1200 × 900 px en WebP. */
+export function prepareShortcutImage(file: File) {
+  return renderImage(file, { maxWidth: 1200, maxHeight: 900, type: "image/webp", quality: 0.8 });
+}
+
+export function shortcutAssetPath(id: string) {
+  return `accesos/${id}.webp`;
+}
+
 export async function uploadSiteAsset(path: string, blob: Blob): Promise<void> {
   const { error } = await supabase.storage.from(SITE_ASSETS_BUCKET).upload(path, blob, {
     contentType: path.endsWith(".png") ? "image/png" : "image/webp",
