@@ -1,8 +1,6 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Route as HomeRoute } from "./index";
-import { Route as SectionsRoute } from "./secciones";
-import { Route as ContentsRoute } from "./contenidos.index";
 
 type Result = { data?: unknown; isSuccess: boolean; isError: boolean };
 const loading: Result = { data: undefined, isSuccess: false, isError: false };
@@ -84,7 +82,7 @@ describe("Inicio del panel", () => {
     expect(value("Fichas publicadas")).toBe("1");
     expect(value("Pendientes de aprobación")).toBe("1");
     expect(value("Borradores")).toBe("1");
-    expect(value("Avisos sin resolver")).toBe("1");
+    expect(value("Correcciones sin resolver")).toBe("1");
     expect(value("Sugerencias sin atender")).toBe("0");
 
     const pending = screen
@@ -113,36 +111,122 @@ describe("Inicio del panel", () => {
     };
     renderRoute(HomeRoute);
     expect(screen.getByText("Fichas publicadas")).toBeInTheDocument();
-    expect(screen.queryByText("Avisos sin resolver")).not.toBeInTheDocument();
+    expect(screen.queryByText("Correcciones sin resolver")).not.toBeInTheDocument();
     expect(screen.getByText("Algunos indicadores no se pudieron cargar.")).toBeInTheDocument();
     // Sin todas las bandejas no se afirma que no haya tareas pendientes.
     expect(screen.queryByText("No hay tareas pendientes.")).not.toBeInTheDocument();
   });
 });
 
-describe("áreas pendientes de desarrollo", () => {
-  it.each([["Secciones y menús", SectionsRoute]])(
-    "%s se presenta como pendiente y sin controles",
-    (title, route) => {
-      const { container } = renderRoute(route);
-      expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
-      expect(screen.getByText("Módulo pendiente de desarrollo")).toBeInTheDocument();
-      expect(container.querySelectorAll("form, input, select, textarea, button")).toHaveLength(0);
-    },
-  );
-
-  it("Páginas y contenidos enlaza el editor de cada página y los trámites", () => {
-    renderRoute(ContentsRoute);
+describe("publicación municipal y actividad", () => {
+  it("cuenta los borradores por paso del circuito y enlaza cada uno a su pantalla", () => {
+    mocks.results = {
+      "admin/drafts": ok({
+        drafts: [
+          {
+            draft_key: "identidad",
+            status: "conforme",
+            updated_at: "2026-11-28T10:00:00Z",
+            submitted_at: "2026-11-27T10:00:00Z",
+          },
+          {
+            draft_key: "menu",
+            status: "presentado",
+            updated_at: "2026-11-28T09:00:00Z",
+            submitted_at: "2026-11-28T09:00:00Z",
+          },
+          {
+            draft_key: "cabecera:descubre",
+            status: "borrador",
+            updated_at: "2026-11-28T08:00:00Z",
+            submitted_at: null,
+          },
+        ],
+        lastPublication: null,
+      }),
+    };
+    renderRoute(HomeRoute);
+    const block = screen
+      .getByRole("heading", { name: "Publicación municipal" })
+      .closest("section")!;
+    const value = (label: string) =>
+      within(block).getByText(label).closest("div")?.querySelector("dd")?.textContent;
+    expect(value("En borrador")).toBe("1");
+    expect(value("Pendientes de conformidad municipal")).toBe("1");
+    expect(value("Pendientes de publicación por Groundwork")).toBe("1");
+    expect(within(block).getByRole("link", { name: /Identidad municipal/ })).toHaveAttribute(
+      "href",
+      "/admin/identidad",
+    );
+    expect(within(block).getByRole("link", { name: /Cabecera: Descubre/ })).toHaveAttribute(
+      "href",
+      "/admin/descubre",
+    );
     expect(
-      screen.getAllByRole("link", { name: /Trámites/ }).map((l) => l.getAttribute("href")),
-    ).toContain("/admin/tramites");
-    for (const page of [
-      "Portada",
-      "Directorio",
-      "Servicios públicos",
-      "Tablón",
-      "Actualidad y eventos",
-    ])
-      expect(screen.getByRole("link", { name: new RegExp(page) })).toBeInTheDocument();
+      within(block).getByText("Aún no se ha publicado nada con el circuito de conformidad."),
+    ).toBeInTheDocument();
+  });
+
+  it("muestra la actividad del registro sin las operaciones internas de una publicación", () => {
+    const at = "2026-11-28T10:00:00Z";
+    mocks.results = {
+      "admin/listings": ok(listings),
+      "admin/activity": ok([
+        {
+          id: 4,
+          occurred_at: at,
+          operation: "delete",
+          table_name: "content_drafts",
+          record_key: "portada",
+          changed_columns: [],
+          state: "conforme",
+          actor: "u1",
+          actor_role: "authenticated",
+        },
+        {
+          id: 3,
+          occurred_at: at,
+          operation: "insert",
+          table_name: "content_publications",
+          record_key: "9",
+          changed_columns: [],
+          state: "portada",
+          actor: "u1",
+          actor_role: "authenticated",
+        },
+        {
+          id: 2,
+          occurred_at: at,
+          operation: "update",
+          table_name: "site_settings",
+          record_key: "true",
+          changed_columns: ["hero_title"],
+          state: null,
+          actor: "u1",
+          actor_role: "authenticated",
+        },
+        {
+          id: 1,
+          occurred_at: "2026-11-27T10:00:00Z",
+          operation: "update",
+          table_name: "listings",
+          record_key: "b",
+          changed_columns: ["status"],
+          state: "publicada",
+          actor: null,
+          actor_role: "service_role",
+        },
+      ]),
+    };
+    renderRoute(HomeRoute);
+    const block = screen.getByRole("heading", { name: "Actividad reciente" }).closest("section")!;
+    expect(
+      within(block)
+        .getAllByRole("listitem")
+        .map((li) => li.textContent),
+    ).toEqual([
+      expect.stringContaining("Publicado: Directorio: textos de presentación"),
+      expect.stringContaining("Ficha publicada: Taller"),
+    ]);
   });
 });

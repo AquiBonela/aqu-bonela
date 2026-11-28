@@ -123,7 +123,7 @@ El procedimiento detallado está en **[supabase/template/README.md](supabase/tem
 
 **Estructura de la web y publicación con borradores (etapa 2A).**
 
-> **Estado:** implementada en el PR #18, que **todavía no está fusionado**. Su migración (`20261202090000_site_structure`) está aplicada **solo en la Demo**. Todavía no hay pantallas para gestionarla: llegan con el PR 2B.
+> **Estado:** fusionada (PR #18, 28-11-2026) y desplegada. Su migración (`20261202090000_site_structure`) está aplicada en el Supabase de la Demo, que también usa la producción de Vercel.
 
 - **Estructura común:** `src/lib/site-structure.ts` define las cinco páginas principales (Portada, Directorio, Servicios públicos, Actualidad y Descubre), las entradas del menú y las secciones de cada página, con diez en Descubre.
   - Cada instalación publica en su Supabase qué activa, desactiva y ordena (`site_menu`, `page_sections`), y sus accesos directos adicionales (`home_shortcuts`).
@@ -144,19 +144,32 @@ El procedimiento detallado está en **[supabase/template/README.md](supabase/tem
   - **Los borradores nunca llegan a la web.**
 - **El Directorio no usa estos borradores:** sus fichas se publican cuando el titular las acepta.
 
+**Panel de administración y circuito de conformidad (etapa 2B, PR 2B-1).**
+
+> **Estado:** en revisión en su PR, sin fusionar. Su migración (`20261203090000_content_workflow`) **no está aplicada en ningún Supabase**: hay que aplicarla antes de desplegar esta web, porque las pantallas nuevas usan sus funciones. Detalle en `docs/panel-administracion.md`; seguridad en `docs/seguridad.md`.
+
+- **Panel en ocho áreas:** Inicio, Identidad municipal, Portada, Directorio, Servicios públicos, Actualidad, Descubre y Configuración.
+  - **Inicio:** estado del portal con datos reales, borradores por paso del circuito y actividad reciente del registro de operaciones.
+- **Circuito municipal:** borrador → presentado al Ayuntamiento → conformidad registrada por Groundwork (quién, fecha, medio y referencia) → revisión final y publicación.
+  - **Cubre:** identidad (con logotipos, colores y vista previa), cabeceras de todas las páginas, aviso de la portada, accesos directos, menú, secciones, textos del Directorio y datos legales.
+  - **Cambiar el contenido** anula la conformidad.
+  - **Presentar** prueba el contenido antes de pedir conformidad.
+- **Escritura directa cerrada:** el navegador ya no escribe identidad, cabeceras ni textos públicos. Los ajustes internos de Groundwork se guardan al momento, solo en sus columnas.
+- **Registro de operaciones** (`admin_audit_log`): quién, cuándo y qué, sin valores. Solo lo leen los administradores.
+- **Permisos mínimos:** los visitantes no escriben en ninguna tabla ni leen las privadas. `supabase/tests/security_invariants.sql` lo comprueba en cada PR.
+
 **Pendiente de la etapa 2 y siguientes** (no implementado todavía):
 
-- **Pantallas del panel** para gestionar páginas, secciones, accesos y borradores, con el diálogo de conformidad (PR 2B). Hasta entonces, el panel actual sigue guardando identidad, ajustes y cabeceras directamente, es decir, publicando al guardar.
-- **Migración de cierre del PR 2B,** que retirará la escritura directa del navegador en las columnas de contenido público. Hasta entonces, un formulario de Configuración abierto antes de una publicación podría deshacerla al guardarse.
-- **Correcciones de fichas publicadas,** retenidas hasta la aceptación del titular: un PR propio del Directorio, después del 2B.
-- **Historial de versiones, restauración y vista previa** (etapa 3 y siguientes).
-- **Contenidos de Vida cotidiana, Transporte y movilidad, Actualidad y Descubre** (etapas 4 a 6). Mientras falten, esas secciones no están disponibles.
-- **Aquí Bonela:** no tiene esta migración ni las del PR #17.
+- **PR 2B-2 a 2B-4:** contenidos de Emergencias, Vida cotidiana, Transporte y movilidad (2B-2), Actualidad con caducidad automática de avisos (2B-3) y Descubre (2B-4). Mientras falten, esas secciones no están disponibles.
+- **PR 2B-5:** correcciones de fichas publicadas, retenidas hasta la aceptación del titular.
+- **Textos propios de la portada:** hoy son textos comunes del producto.
+- **Historial de versiones y restauración** (etapa 3). El registro de publicaciones ya guarda lo publicado y lo anterior.
+- **MFA para administradores** y limpieza de imágenes huérfanas de borradores descartados (ver `docs/seguridad.md`).
+- **Aquí Bonela:** no tiene estas migraciones ni las del PR #17.
 
 **Limitaciones actuales** (roadmap, Bloque A, Prioridad 4). Iconos, manifiesto, contenido local y nombres ya son propios de cada instancia, y una sección sin datos se oculta. Todavía:
 
 - tema, logotipos, imágenes, favicon, manifiesto y `robots.txt` siguen en `instances/<id>/` (fases siguientes);
-- la identidad aún no se edita desde `/admin`: se cambia con `03_init_instance.sql` o en SQL Editor;
 - los diccionarios comunes conservan textos de Casarabonela (Descubre, portada), que viajan en el JavaScript aunque no se muestren;
 - los textos legales son los del piloto, con el nombre de cada instancia, y necesitan revisión jurídica;
 - `supabase/config.toml` apunta a un proyecto concreto.
@@ -165,7 +178,7 @@ Tampoco hay todavía una política de versiones por municipio ni una administrac
 
 **Mantenimiento de la plantilla:** cada migración nueva en `supabase/migrations/` debe reflejarse también en `supabase/template/`, con su bloque idéntico (lo comprueba `src/lib/product-migrations-sql.test.ts`), tener su vuelta atrás en `supabase/rollback/` y pasar `04_verify.sql`, que el CI ejecuta.
 
-**Versiones de las migraciones:** las migraciones escritas a mano usan una fecha por migración, adelantada si hace falta, para que cada una ordene siempre detrás de la anterior. La última es `20261202090000`, así que la siguiente necesita una versión mayor. Una versión generada con la fecha y la hora reales quedaría delante en el orden hasta el 02-12-2026. Contra la Demo no se usa `supabase db push`: su historial no refleja cómo se instaló.
+**Versiones de las migraciones:** las migraciones escritas a mano usan una fecha por migración, adelantada si hace falta, para que cada una ordene siempre detrás de la anterior. La última es `20261203090000`, así que la siguiente necesita una versión mayor. Una versión generada con la fecha y la hora reales quedaría delante en el orden hasta el 03-12-2026. Contra la Demo no se usa `supabase db push`: su historial no refleja cómo se instaló.
 
 ## 7. Seguridad y privacidad
 

@@ -14,6 +14,9 @@ import {
 } from "@/lib/admin";
 import { isFeatured } from "@/lib/directory";
 import { Text, useI18n } from "@/lib/i18n";
+import { adminActivityQuery, adminDraftsQuery } from "@/lib/admin-overview";
+import { describeActivity } from "@/lib/admin-activity";
+import { draftScreen, STATUS_LABELS } from "@/lib/content-workflow";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => adminHead("Inicio", "Centro de gestión municipal de {app}."),
@@ -40,8 +43,10 @@ function AdminHome() {
       </p>
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <div className="grid min-w-0 content-start gap-6">
+          <MunicipalPublishing />
           <Indicators />
           <PendingWork />
+          <RecentActivity />
           <RecentListings />
         </div>
         <div className="grid min-w-0 content-start gap-6">
@@ -108,7 +113,7 @@ function Indicators() {
   }
   if (reports.isSuccess)
     items.push({
-      label: "Avisos sin resolver",
+      label: "Correcciones sin resolver",
       value: reports.data.filter((r) => !r.resolved).length,
     });
   if (suggestions.isSuccess)
@@ -154,7 +159,7 @@ function PendingWork() {
     },
     {
       to: "/admin/avisos",
-      label: "Avisos de visitantes sin resolver",
+      label: "Correcciones de fichas sin resolver",
       count: reports.data.filter((r) => !r.resolved).length,
     },
     {
@@ -246,14 +251,7 @@ function QuickAccess() {
               >
                 <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium">
-                    {tr(area.label)}
-                    {area.pending && (
-                      <span className="ml-2 text-xs font-normal text-muted-foreground">
-                        {tr("En desarrollo")}
-                      </span>
-                    )}
-                  </span>
+                  <span className="block text-sm font-medium">{tr(area.label)}</span>
                   <span className="block text-xs text-muted-foreground">
                     {tr(area.description)}
                   </span>
@@ -263,6 +261,125 @@ function QuickAccess() {
           );
         })}
       </ul>
+    </Block>
+  );
+}
+
+/**
+ * Circuito del contenido municipal: qué hay en borrador, qué espera la conformidad del Ayuntamiento
+ * y qué está listo para que Groundwork lo publique. Solo datos reales de content_drafts.
+ */
+function MunicipalPublishing() {
+  const { tr } = useI18n();
+  const { data, isSuccess, isError } = useQuery(adminDraftsQuery);
+  if (isError)
+    return (
+      <Block title="Publicación municipal">
+        <p role="status" className="mt-2 text-sm text-muted-foreground">
+          <Text text="No se pudo cargar el estado de los borradores." />
+        </p>
+      </Block>
+    );
+  if (!isSuccess) return null;
+  const groups = (["borrador", "presentado", "conforme"] as const).map((status) => ({
+    status,
+    drafts: data.drafts.filter((d) => d.status === status),
+  }));
+  const titles = {
+    borrador: "En borrador",
+    presentado: "Pendientes de conformidad municipal",
+    conforme: "Pendientes de publicación por Groundwork",
+  } as const;
+  return (
+    <Block title="Publicación municipal">
+      <dl className="mt-3 grid grid-cols-3 gap-2">
+        {groups.map((g) => (
+          <div key={g.status} className="border bg-background p-3">
+            <dt className="text-xs text-muted-foreground">
+              <Text text={titles[g.status]} />
+            </dt>
+            <dd className="font-display text-2xl font-bold">{g.drafts.length}</dd>
+          </div>
+        ))}
+      </dl>
+      {data.drafts.length > 0 && (
+        <ul className="mt-3 divide-y border">
+          {data.drafts.map((d) => {
+            const screen = draftScreen(d.draft_key);
+            return (
+              <li key={d.draft_key}>
+                <Link
+                  to={(screen?.to ?? "/admin") as never}
+                  className="flex items-center gap-3 p-3 hover:bg-secondary/50"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium">
+                      {tr(screen?.label ?? d.draft_key)}
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      {tr(STATUS_LABELS[d.status])} · {fmtDate(d.updated_at)}
+                    </span>
+                  </span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <p className="mt-3 text-xs text-muted-foreground">
+        {data.lastPublication ? (
+          <>
+            <Text text="Última publicación:" />{" "}
+            {tr(
+              draftScreen(data.lastPublication.draft_key)?.label ?? data.lastPublication.draft_key,
+            )}
+            , {fmtDate(data.lastPublication.published_at)}
+          </>
+        ) : (
+          <Text text="Aún no se ha publicado nada con el circuito de conformidad." />
+        )}
+      </p>
+    </Block>
+  );
+}
+
+/** Últimas operaciones del registro (sin valores), con enlace a su pantalla. */
+function RecentActivity() {
+  const { tr } = useI18n();
+  const activity = useQuery(adminActivityQuery);
+  const listings = useQuery(adminListingsQuery);
+  if (!activity.isSuccess) return null;
+  const names = new Map((listings.data ?? []).map((l) => [l.id, l.name]));
+  const items = describeActivity(activity.data, (id) => names.get(id)).slice(0, 10);
+  return (
+    <Block title="Actividad reciente">
+      {items.length === 0 ? (
+        <p className="mt-2 text-sm text-muted-foreground">
+          <Text text="Todavía no hay actividad registrada." />
+        </p>
+      ) : (
+        <ul className="mt-3 divide-y border">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-center gap-3 p-3 text-sm">
+              <span className="min-w-0 flex-1 break-words">
+                {item.to ? (
+                  <Link
+                    to={item.to as never}
+                    params={item.params as never}
+                    className="hover:underline"
+                  >
+                    {tr(item.text)}
+                  </Link>
+                ) : (
+                  tr(item.text)
+                )}
+              </span>
+              <span className="shrink-0 text-xs text-muted-foreground">{fmtDate(item.at)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </Block>
   );
 }

@@ -1,8 +1,10 @@
 import {
   Building2,
-  FileText,
+  Compass,
   House,
-  LayoutList,
+  Landmark,
+  LayoutTemplate,
+  Newspaper,
   Settings,
   Store,
   type LucideIcon,
@@ -12,14 +14,22 @@ import { brand } from "@/config/municipality";
 /** Rutas del panel a las que enlaza la navegación por áreas. */
 export type AdminRoute =
   | "/admin"
+  | "/admin/identidad"
+  | "/admin/portada"
+  | "/admin/portada/aviso"
+  | "/admin/portada/accesos"
   | "/admin/directorio"
+  | "/admin/directorio/presentacion"
   | "/admin/avisos"
   | "/admin/sugerencias"
-  | "/admin/identidad"
-  | "/admin/secciones"
-  | "/admin/contenidos"
+  | "/admin/servicios-publicos"
   | "/admin/tramites"
-  | "/admin/configuracion";
+  | "/admin/actualidad"
+  | "/admin/descubre"
+  | "/admin/configuracion"
+  | "/admin/configuracion/secciones"
+  | "/admin/configuracion/legal"
+  | "/admin/configuracion/ajustes";
 
 /** Bandejas con elementos sin atender, cuyo número se muestra junto al enlace. */
 export type AdminCounter = "reports" | "suggestions";
@@ -32,16 +42,24 @@ export type AdminSection = {
   counter?: AdminCounter;
 };
 
+export type AreaId =
+  | "inicio"
+  | "identidad"
+  | "portada"
+  | "directorio"
+  | "servicios-publicos"
+  | "actualidad"
+  | "descubre"
+  | "configuracion";
+
 export type AdminArea = {
-  id: "inicio" | "directorio" | "identidad" | "secciones" | "contenidos" | "configuracion";
+  id: AreaId;
   label: string;
   description: string;
   to: AdminRoute;
   icon: LucideIcon;
   /** Pestañas internas del área; solo se muestran si hay más de una. */
   sections: AdminSection[];
-  /** Módulo aún sin funciones propias: su pantalla solo lo presenta. */
-  pending?: boolean;
 };
 
 const HOME_SECTION: AdminSection = { to: "/admin", label: "Inicio" };
@@ -49,61 +67,92 @@ const HOME_SECTION: AdminSection = { to: "/admin", label: "Inicio" };
 const HOME_AREA: AdminArea = {
   id: "inicio",
   label: "Inicio",
-  description: "Resumen del municipio y tareas pendientes.",
+  description: "Estado del portal, publicación municipal y tareas pendientes.",
   to: "/admin",
   icon: House,
   sections: [HOME_SECTION],
 };
 
+/**
+ * Estructura del panel: ocho áreas con responsabilidades separadas. En las páginas públicas,
+ * «Configuración» organiza la página (secciones y cabecera) y las demás pestañas editan su
+ * contenido. El Directorio publica con la aceptación del titular; el resto del contenido
+ * municipal, con la conformidad del Ayuntamiento.
+ */
 export const ADMIN_AREAS: readonly AdminArea[] = [
   HOME_AREA,
   {
-    id: "directorio",
-    label: "Directorio",
-    description: "Fichas, avisos de visitantes y sugerencias.",
-    to: "/admin/directorio",
-    icon: Store,
-    sections: [
-      { to: "/admin/directorio", label: "Fichas", paths: ["/admin/fichas"] },
-      { to: "/admin/avisos", label: "Avisos", counter: "reports" },
-      { to: "/admin/sugerencias", label: "Sugerencias", counter: "suggestions" },
-    ],
-  },
-  {
     id: "identidad",
     label: "Identidad municipal",
-    description: "Nombre, datos institucionales y ubicación del municipio.",
+    description: "Nombre, datos institucionales, ubicación, logotipo y colores.",
     to: "/admin/identidad",
     icon: Building2,
     sections: [{ to: "/admin/identidad", label: "Identidad municipal" }],
   },
   {
-    id: "secciones",
-    label: "Secciones y menús",
-    description: "Secciones visibles de la web y orden de los menús.",
-    to: "/admin/secciones",
-    icon: LayoutList,
-    sections: [{ to: "/admin/secciones", label: "Secciones y menús" }],
-    pending: true,
+    id: "portada",
+    label: "Portada",
+    description: "Imagen de cabecera, aviso temporal y accesos directos de la página principal.",
+    to: "/admin/portada",
+    icon: LayoutTemplate,
+    sections: [
+      { to: "/admin/portada", label: "Presentación" },
+      { to: "/admin/portada/aviso", label: "Aviso" },
+      { to: "/admin/portada/accesos", label: "Accesos directos" },
+    ],
   },
   {
-    id: "contenidos",
-    label: "Páginas y contenidos",
-    description: "Páginas informativas y guías de trámites.",
-    to: "/admin/contenidos",
-    icon: FileText,
+    id: "directorio",
+    label: "Directorio",
+    description: "Fichas, revisión de titulares, correcciones y sugerencias.",
+    to: "/admin/directorio",
+    icon: Store,
     sections: [
-      { to: "/admin/contenidos", label: "General" },
-      { to: "/admin/tramites", label: "Trámites" },
+      { to: "/admin/directorio", label: "Fichas", paths: ["/admin/fichas"] },
+      { to: "/admin/avisos", label: "Correcciones", counter: "reports" },
+      { to: "/admin/sugerencias", label: "Sugerencias", counter: "suggestions" },
+      { to: "/admin/directorio/presentacion", label: "Presentación" },
     ],
+  },
+  {
+    id: "servicios-publicos",
+    label: "Servicios públicos",
+    description: "Secciones de la página y Guía de trámites.",
+    to: "/admin/servicios-publicos",
+    icon: Landmark,
+    sections: [
+      { to: "/admin/servicios-publicos", label: "Configuración" },
+      { to: "/admin/tramites", label: "Guía de trámites" },
+    ],
+  },
+  {
+    id: "actualidad",
+    label: "Actualidad",
+    description: "Secciones y cabecera de la página.",
+    to: "/admin/actualidad",
+    icon: Newspaper,
+    sections: [{ to: "/admin/actualidad", label: "Configuración" }],
+  },
+  {
+    id: "descubre",
+    label: "Descubre",
+    description: "Secciones y cabecera de la página.",
+    to: "/admin/descubre",
+    icon: Compass,
+    sections: [{ to: "/admin/descubre", label: "Configuración" }],
   },
   {
     id: "configuracion",
     label: "Configuración",
-    description: "Portada, datos legales, avisos y ajustes del panel.",
+    description: "Menú, secciones, datos legales y ajustes generales.",
     to: "/admin/configuracion",
     icon: Settings,
-    sections: [{ to: "/admin/configuracion", label: "Configuración" }],
+    sections: [
+      { to: "/admin/configuracion", label: "Menú" },
+      { to: "/admin/configuracion/secciones", label: "Secciones" },
+      { to: "/admin/configuracion/legal", label: "Datos legales" },
+      { to: "/admin/configuracion/ajustes", label: "Ajustes" },
+    ],
   },
 ];
 
@@ -115,17 +164,19 @@ function cleanPath(pathname: string) {
   return pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
 }
 
-/** Pestaña interna que corresponde a una ruta del panel, si la hay. */
+/** Pestaña interna que corresponde a una ruta del panel: la de prefijo más largo, si la hay. */
 export function adminSectionForPath(pathname: string): AdminSection | undefined {
   const path = cleanPath(pathname);
+  let best: { section: AdminSection; length: number } | undefined;
   for (const area of ADMIN_AREAS) {
     // Inicio es "/admin", prefijo de todo el panel: solo corresponde a esa ruta exacta.
     if (area === HOME_AREA) continue;
-    const section = area.sections.find((s) =>
-      [s.to, ...(s.paths ?? [])].some((prefix) => matches(path, prefix)),
-    );
-    if (section) return section;
+    for (const section of area.sections)
+      for (const prefix of [section.to, ...(section.paths ?? [])])
+        if (matches(path, prefix) && (!best || prefix.length > best.length))
+          best = { section, length: prefix.length };
   }
+  if (best) return best.section;
   return path === "/admin" ? HOME_SECTION : undefined;
 }
 

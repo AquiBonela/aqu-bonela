@@ -57,15 +57,17 @@ function openAt(pathname: string) {
 const areasNav = () => screen.getByRole("navigation", { name: "Áreas de administración" });
 
 describe("navegación del panel por áreas", () => {
-  it("enlaza las seis áreas desde cualquier pantalla", () => {
+  it("enlaza las ocho áreas desde cualquier pantalla", () => {
     openAt("/admin");
     const links = within(areasNav()).getAllByRole("link");
     expect(links.map((l) => [l.textContent, l.getAttribute("href")])).toEqual([
       ["Inicio", "/admin"],
-      ["Directorio", "/admin/directorio"],
       ["Identidad municipal", "/admin/identidad"],
-      ["Secciones y menús", "/admin/secciones"],
-      ["Páginas y contenidos", "/admin/contenidos"],
+      ["Portada", "/admin/portada"],
+      ["Directorio", "/admin/directorio"],
+      ["Servicios públicos", "/admin/servicios-publicos"],
+      ["Actualidad", "/admin/actualidad"],
+      ["Descubre", "/admin/descubre"],
       ["Configuración", "/admin/configuracion"],
     ]);
     expect(within(areasNav()).getByRole("link", { name: "Inicio" })).toHaveAttribute(
@@ -75,7 +77,7 @@ describe("navegación del panel por áreas", () => {
     expect(screen.getByText("Contenido de la pantalla")).toBeInTheDocument();
   });
 
-  it("mantiene Fichas, Avisos y Sugerencias dentro del Directorio al editar una ficha", () => {
+  it("mantiene Fichas, Correcciones y Sugerencias dentro del Directorio al editar una ficha", () => {
     mocks.reports = [{ resolved: false }, { resolved: true }];
     mocks.suggestions = [{ handled: false }, { handled: false }];
     openAt("/admin/fichas/3f2b");
@@ -88,10 +90,15 @@ describe("navegación del panel por áreas", () => {
       within(tabs)
         .getAllByRole("link")
         .map((l) => l.getAttribute("href")),
-    ).toEqual(["/admin/directorio", "/admin/avisos", "/admin/sugerencias"]);
+    ).toEqual([
+      "/admin/directorio",
+      "/admin/avisos",
+      "/admin/sugerencias",
+      "/admin/directorio/presentacion",
+    ]);
     // Los contadores se anuncian con su significado, no como un número suelto.
     expect(
-      within(tabs).getByRole("link", { name: /^Avisos\s*, 1 sin atender$/ }),
+      within(tabs).getByRole("link", { name: /^Correcciones\s*, 1 sin atender$/ }),
     ).toBeInTheDocument();
     expect(
       within(tabs).getByRole("link", { name: /^Sugerencias\s*, 2 sin atender$/ }),
@@ -109,24 +116,34 @@ describe("navegación del panel por áreas", () => {
       "true",
     );
     const tabs = screen.getByRole("navigation", { name: "Secciones de Directorio" });
-    expect(within(tabs).getByRole("link", { name: "Avisos" })).toHaveAttribute(
+    expect(within(tabs).getByRole("link", { name: "Correcciones" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     expect(within(tabs).getByRole("link", { name: "Fichas" })).not.toHaveAttribute("aria-current");
   });
 
-  it("agrupa los trámites en Páginas y contenidos", () => {
+  it("agrupa la Guía de trámites en Servicios públicos", () => {
     openAt("/admin/tramites/nuevo");
-    expect(within(areasNav()).getByRole("link", { name: "Páginas y contenidos" })).toHaveAttribute(
+    expect(within(areasNav()).getByRole("link", { name: "Servicios públicos" })).toHaveAttribute(
       "aria-current",
       "true",
     );
-    const tabs = screen.getByRole("navigation", { name: "Secciones de Páginas y contenidos" });
-    expect(within(tabs).getByRole("link", { name: "Trámites" })).toHaveAttribute(
+    const tabs = screen.getByRole("navigation", { name: "Secciones de Servicios públicos" });
+    expect(within(tabs).getByRole("link", { name: "Guía de trámites" })).toHaveAttribute(
       "aria-current",
       "true",
     );
+  });
+
+  it("en Configuración marca la pestaña más concreta, no la del menú", () => {
+    openAt("/admin/configuracion/secciones");
+    const tabs = screen.getByRole("navigation", { name: "Secciones de Configuración" });
+    expect(within(tabs).getByRole("link", { name: "Secciones" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(within(tabs).getByRole("link", { name: "Menú" })).not.toHaveAttribute("aria-current");
   });
 
   it("desplaza la lista móvil hasta el área actual", () => {

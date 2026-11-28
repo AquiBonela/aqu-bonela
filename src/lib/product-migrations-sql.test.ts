@@ -10,6 +10,7 @@ const MIGRATIONS = [
   { file: "20261201091000_listing_details.sql", block: "listing_details" },
   { file: "20261201092000_listing_review_flow.sql", block: "listing_review_flow" },
   { file: "20261202090000_site_structure.sql", block: "site_structure" },
+  { file: "20261203090000_content_workflow.sql", block: "content_workflow" },
 ] as const;
 const TEMPLATE = "supabase/template/01_schema.sql";
 
@@ -60,6 +61,7 @@ describe("garantías de las migraciones", () => {
   const details = block(`supabase/migrations/${MIGRATIONS[1].file}`, "listing_details");
   const review = block(`supabase/migrations/${MIGRATIONS[2].file}`, "listing_review_flow");
   const structure = block(`supabase/migrations/${MIGRATIONS[3].file}`, "site_structure");
+  const workflow = block(`supabase/migrations/${MIGRATIONS[4].file}`, "content_workflow");
 
   it("los visitantes solo leen los archivos que la identidad o una cabecera usan", () => {
     expect(identity).toContain(
@@ -179,5 +181,73 @@ describe("garantías de las migraciones", () => {
   it("una lista ausente o mal escrita nunca se publica como vacía", () => {
     expect(structure).not.toMatch(/coalesce\(c -> '(entries|sections|shortcuts)'/);
     expect(structure).toContain("WHERE NOT k = ANY (p_required || p_optional)");
+  });
+
+  it("publicar exige la conformidad registrada y la revisión final antes de escribir", () => {
+    const publish = workflow.slice(
+      workflow.indexOf("CREATE OR REPLACE FUNCTION public.publish_content_draft"),
+    );
+    const review = publish.indexOf("IF p_conformity IS NOT TRUE THEN");
+    const conformity = publish.indexOf("IF d.status <> 'conforme' THEN");
+    const lock = publish.indexOf("PERFORM private.lock_published_content(p_key);");
+    const version = publish.indexOf("d.base_version <> md5(v_previous::text)");
+    const apply = publish.indexOf("PERFORM private.apply_content_draft(p_key, d.content);");
+    expect(review).toBeGreaterThan(0);
+    expect(review).toBeLessThan(conformity);
+    expect(conformity).toBeLessThan(lock);
+    expect(lock).toBeLessThan(version);
+    expect(version).toBeLessThan(apply);
+  });
+
+  it("presentar prueba el contenido y lo deshace; cambiarlo anula la conformidad", () => {
+    const submit = workflow.slice(
+      workflow.indexOf("CREATE OR REPLACE FUNCTION public.submit_content_draft"),
+    );
+    expect(submit).toContain("RAISE EXCEPTION USING ERRCODE = 'PZ002'");
+    expect(submit.indexOf("PERFORM private.apply_content_draft")).toBeLessThan(
+      submit.indexOf("SET status = 'presentado'"),
+    );
+    expect(workflow).toContain("IF NEW.content IS DISTINCT FROM OLD.content THEN");
+    expect(workflow).toContain("BEFORE UPDATE OF content ON public.content_drafts");
+  });
+
+  it("el navegador ya no escribe lo publicado; los ajustes internos sí, solo sus columnas", () => {
+    expect(workflow).toContain(
+      "REVOKE INSERT, UPDATE, DELETE ON public.site_identity, public.page_headers FROM authenticated;",
+    );
+    // Los privilegios por columna se retiran por columna, expresamente.
+    expect(workflow).toMatch(
+      /REVOKE UPDATE \(app_name,[^;]*icon_small_path\) ON public\.site_identity FROM authenticated;/,
+    );
+    expect(workflow).toMatch(
+      /REVOKE INSERT \(page_key, image_path, image_small_path, alt, focal_x, focal_y\),\s+UPDATE \(image_path, image_small_path, alt, focal_x, focal_y\) ON public\.page_headers FROM authenticated;/,
+    );
+    const internal = workflow.slice(workflow.indexOf("GRANT UPDATE (contact_email"));
+    const columns = internal.slice(0, internal.indexOf(")"));
+    for (const field of ["hero_title", "banner_text", "legal_name", "legal_nif"])
+      expect(columns).not.toContain(field);
+  });
+
+  it("el registro de operaciones no guarda valores y solo anota estados no personales", () => {
+    const audit = workflow.slice(
+      workflow.indexOf("CREATE OR REPLACE FUNCTION private.audit_change()"),
+    );
+    expect(audit).toContain(
+      "INSERT INTO public.admin_audit_log (actor, actor_role, operation, table_name, record_key, changed_columns, state)",
+    );
+    const states = [...workflow.matchAll(/audit_change\('[^']+', '([a-z_]+)'\)/g)].map((m) => m[1]);
+    expect(states.length).toBeGreaterThan(0);
+    for (const state of states) expect(["status", "draft_key", "purpose"]).toContain(state);
+    expect(workflow).not.toMatch(/GRANT (INSERT|UPDATE|DELETE|ALL)[^;]*admin_audit_log/);
+  });
+
+  it("los visitantes pierden la escritura en todas las tablas y la lectura de las privadas", () => {
+    expect(workflow).toContain(
+      "REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA public FROM anon;",
+    );
+    for (const table of ["listing_contacts", "user_roles", "approval_tokens", "consents"])
+      expect(workflow).toMatch(
+        new RegExp(`REVOKE SELECT ON [^;]*public\\.${table}[^;]*FROM anon;`),
+      );
   });
 });

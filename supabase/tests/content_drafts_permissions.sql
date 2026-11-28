@@ -1,8 +1,21 @@
--- Rollback-only regression for 20261202090000_site_structure (drafts): a draft never reaches the
--- public web; publishing requires the admin role and the municipal conformity confirmation, applies
--- the whole screen at once, records who, when and the note, and refuses stale drafts, malformed
--- content and missing images. A refused publication changes nothing and keeps the draft.
+-- Rollback-only regression for 20261202090000_site_structure and 20261203090000_content_workflow
+-- (drafts): a draft never reaches the public web; publishing requires the admin role, the municipal
+-- conformity recorded on a submitted draft and Groundwork's final review, applies the whole screen
+-- at once, records who, when and the note, and refuses stale drafts, malformed content and missing
+-- images (already when submitting). A refusal changes nothing and keeps the draft.
 BEGIN;
+-- Submits a draft and records a test conformity; returns the new version of the draft.
+CREATE FUNCTION pg_temp.conform(p_key text, p_at timestamptz) RETURNS timestamptz LANGUAGE plpgsql AS $f$
+DECLARE v timestamptz;
+BEGIN
+ v := (public.submit_content_draft(p_key, p_at) ->> 'updated_at')::timestamptz;
+ RETURN (public.record_content_conformity(p_key, v, 'Alcaldía (prueba)', current_date, 'correo', 'Prueba')
+   ->> 'updated_at')::timestamptz;
+END $f$;
+-- Changes the published banner the way another publication would (as the owner).
+CREATE FUNCTION pg_temp.change_banner() RETURNS void LANGUAGE sql SECURITY DEFINER SET search_path = '' AS $f$
+ UPDATE public.site_settings SET banner_text = 'Cambio publicado por otra vía' WHERE id;
+$f$;
 SELECT set_config('test.cd_admin', (SELECT user_id::text FROM public.user_roles WHERE role = 'admin' LIMIT 1), true);
 DO $$ BEGIN
  IF coalesce(current_setting('test.cd_admin', true), '') = '' THEN
@@ -72,9 +85,13 @@ BEGIN
   RAISE EXCEPTION 'content_draft_state must report a fresh draft';
  END IF;
 
- -- Publishing needs the conformity confirmation and the loaded version of the draft.
+ -- Publishing needs the recorded conformity, the final review and the loaded version of the draft.
+ BEGIN PERFORM public.publish_content_draft('portada', v_at, true);
+  RAISE EXCEPTION 'Publishing a draft without recorded conformity must be rejected';
+ EXCEPTION WHEN SQLSTATE 'PT422' THEN NULL; END;
+ v_at := pg_temp.conform('portada', v_at);
  BEGIN PERFORM public.publish_content_draft('portada', v_at, false);
-  RAISE EXCEPTION 'Publishing without conformity must be rejected';
+  RAISE EXCEPTION 'Publishing without the final review must be rejected';
  EXCEPTION WHEN SQLSTATE 'PT422' THEN NULL; END;
  BEGIN PERFORM public.publish_content_draft('portada', v_at, NULL);
   RAISE EXCEPTION 'Publishing with an unanswered conformity must be rejected';
@@ -92,25 +109,30 @@ BEGIN
  END IF;
  IF NOT EXISTS (SELECT 1 FROM public.content_publications WHERE draft_key = 'portada' AND conformity
    AND published_by::text = current_setting('test.cd_admin')
-   AND note = 'Correo del Ayuntamiento del 3 de diciembre confirmado' AND published_at IS NOT NULL) THEN
-  RAISE EXCEPTION 'The publication must record user, date and the normalised note';
+   AND note = 'Correo del Ayuntamiento del 3 de diciembre confirmado' AND published_at IS NOT NULL
+   AND conformity_by = 'Alcaldía (prueba)' AND conformity_channel = 'correo' AND conformity_on = current_date
+   AND submitted_at IS NOT NULL AND content ->> 'hero_title' = 'Nuevo título' AND previous_content ? 'hero_title') THEN
+  RAISE EXCEPTION 'The publication must record user, date, the normalised note, the conformity and the content';
  END IF;
 
- -- A draft whose published base changed (old panel, SQL...) cannot be published.
+ -- A draft whose published base changed (another publication, SQL...) is neither submitted nor published.
  v_at := (public.save_content_draft('aviso-cabecera', '{"banner_enabled":true,"banner_text":"Corte de agua"}'::jsonb)
    ->> 'updated_at')::timestamptz;
- UPDATE public.site_settings SET banner_text = 'Cambio directo del panel actual' WHERE id;
+ BEGIN UPDATE public.site_settings SET banner_text = 'Cambio directo' WHERE id;
+  RAISE EXCEPTION 'Admin must not change the published banner directly';
+ EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+ PERFORM pg_temp.change_banner();
  IF (public.content_draft_state('aviso-cabecera') ->> 'stale')::boolean IS NOT TRUE THEN
   RAISE EXCEPTION 'content_draft_state must report a stale draft';
  END IF;
- BEGIN PERFORM public.publish_content_draft('aviso-cabecera', v_at, true);
-  RAISE EXCEPTION 'A stale draft must not be published';
+ BEGIN PERFORM public.submit_content_draft('aviso-cabecera', v_at);
+  RAISE EXCEPTION 'A stale draft must not be submitted';
  EXCEPTION WHEN SQLSTATE 'PT409' THEN NULL; END;
  IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = 'aviso-cabecera') THEN
   RAISE EXCEPTION 'A refused publication must keep the draft';
  END IF;
  PERFORM public.discard_content_draft('aviso-cabecera', v_at);
- IF (SELECT banner_text FROM public.site_settings WHERE id) <> 'Cambio directo del panel actual' THEN
+ IF (SELECT banner_text FROM public.site_settings WHERE id) <> 'Cambio publicado por otra vía' THEN
   RAISE EXCEPTION 'Discarding must not touch the published content';
  END IF;
 
@@ -118,13 +140,14 @@ BEGIN
  v_at := (public.save_content_draft('menu',
    '{"entries":[{"key":"actualidad","enabled":false,"sort_order":2},{"key":"directorio","enabled":false,"sort_order":0}]}'::jsonb)
    ->> 'updated_at')::timestamptz;
- BEGIN PERFORM public.publish_content_draft('menu', v_at, true);
+ BEGIN PERFORM public.submit_content_draft('menu', v_at);
   RAISE EXCEPTION 'A draft that disables the Directory must be rejected';
- EXCEPTION WHEN check_violation THEN NULL; END;
+ EXCEPTION WHEN SQLSTATE 'PT422' THEN NULL; END;
  IF EXISTS (SELECT 1 FROM public.site_menu) THEN RAISE EXCEPTION 'A rejected publication must apply nothing'; END IF;
  v_at := (public.save_content_draft('menu',
    '{"entries":[{"key":"actualidad","enabled":false,"sort_order":2},{"key":"guia-tramites","enabled":false,"sort_order":1}]}'::jsonb,
    v_at) ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('menu', v_at);
  PERFORM public.publish_content_draft('menu', v_at, true);
  IF (public.site_config() #>> '{menu,guia-tramites,enabled}')::boolean IS NOT FALSE
  OR (SELECT count(*) FROM public.site_menu) <> 2 THEN
@@ -134,6 +157,7 @@ BEGIN
  v_at := (public.save_content_draft('secciones:descubre',
    '{"sections":[{"key":"entorno","enabled":false,"sort_order":0},{"key":"rutas-senderos","enabled":true,"sort_order":1}]}'::jsonb)
    ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('secciones:descubre', v_at);
  PERFORM public.publish_content_draft('secciones:descubre', v_at, true);
  IF (public.site_config() #>> '{sections,descubre,entorno,enabled}')::boolean IS NOT FALSE THEN
   RAISE EXCEPTION 'The published sections must be the draft';
@@ -148,6 +172,7 @@ BEGIN
     "visible":true,"sort_order":1},
    {"title":"Feria","image_path":"accesos/bb000000-0000-4000-8000-000000000002.webp","href":"https://example.org/feria",
     "visible":false,"sort_order":2}]}'::jsonb) ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('accesos', v_at);
  PERFORM public.publish_content_draft('accesos', v_at, true);
  IF (SELECT count(*) FROM public.home_shortcuts) <> 2
  OR jsonb_array_length(public.site_config() -> 'shortcuts') <> 1 THEN
@@ -157,6 +182,7 @@ BEGIN
    {"id":"bb000000-0000-4000-8000-000000000001","title":"Piscina municipal",
     "image_path":"accesos/bb000000-0000-4000-8000-000000000001.webp","href":"/servicios-publicos","sort_order":1}]}'::jsonb)
    ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('accesos', v_at);
  PERFORM public.publish_content_draft('accesos', v_at, true);
  IF (SELECT string_agg(title, ',') FROM public.home_shortcuts) <> 'Piscina municipal' THEN
   RAISE EXCEPTION 'Publishing shortcuts must update kept ones and delete removed ones';
@@ -165,17 +191,18 @@ BEGIN
  -- Identity, legal data and headers.
  v_at := (public.save_content_draft('identidad', (public.content_draft_state('identidad') -> 'published')
    || '{"app_name":"Conecta Prueba","primary_color":"#1f4e79"}'::jsonb) ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('identidad', v_at);
  PERFORM public.publish_content_draft('identidad', v_at, true);
  IF public.site_config() #>> '{identity,app_name}' <> 'Conecta Prueba'
  OR public.site_config() #>> '{identity,primary_color}' <> '#1f4e79' THEN
   RAISE EXCEPTION 'Publishing the identity must apply the draft';
  END IF;
- -- Right shape, value rejected by the table rules: nothing applied, draft kept.
+ -- Right shape, value rejected by the table rules: refused when submitting, nothing applied, draft kept.
  v_at := (public.save_content_draft('identidad', (public.content_draft_state('identidad') -> 'published')
    || '{"primary_color":"red"}'::jsonb) ->> 'updated_at')::timestamptz;
- BEGIN PERFORM public.publish_content_draft('identidad', v_at, true);
+ BEGIN PERFORM public.submit_content_draft('identidad', v_at);
   RAISE EXCEPTION 'An invalid identity value must be rejected';
- EXCEPTION WHEN check_violation THEN NULL; END;
+ EXCEPTION WHEN SQLSTATE 'PT422' THEN NULL; END;
  IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = 'identidad')
  OR public.site_config() #>> '{identity,primary_color}' <> '#1f4e79' THEN
   RAISE EXCEPTION 'A rejected publication must keep the draft and the published identity';
@@ -184,6 +211,7 @@ BEGIN
 
  v_at := (public.save_content_draft('datos-legales', '{"legal_name":"Titular de prueba","legal_nif":"",
    "legal_address":"","legal_email":"titular@example.org"}'::jsonb) ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('datos-legales', v_at);
  PERFORM public.publish_content_draft('datos-legales', v_at, true);
  IF (SELECT legal_name FROM public.site_settings WHERE id) <> 'Titular de prueba' THEN
   RAISE EXCEPTION 'Publishing legal data must apply the draft';
@@ -192,11 +220,13 @@ BEGIN
  v_at := (public.save_content_draft('cabecera:inicio', '{"image_path":"cabeceras/inicio/cc000000-0000-4000-8000-000000000001.webp",
    "image_small_path":"cabeceras/inicio/cc000000-0000-4000-8000-000000000001-movil.webp","alt":"Plaza","focal_x":40,"focal_y":60}'::jsonb)
    ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('cabecera:inicio', v_at);
  PERFORM public.publish_content_draft('cabecera:inicio', v_at, true);
  IF public.site_config() #>> '{page_headers,inicio,alt}' <> 'Plaza' THEN
   RAISE EXCEPTION 'Publishing a header must apply the draft';
  END IF;
  v_at := (public.save_content_draft('cabecera:inicio', '{"remove":true}'::jsonb) ->> 'updated_at')::timestamptz;
+ v_at := pg_temp.conform('cabecera:inicio', v_at);
  PERFORM public.publish_content_draft('cabecera:inicio', v_at, true);
  IF public.site_config() -> 'page_headers' ? 'inicio' THEN
   RAISE EXCEPTION 'Publishing a header removal must delete it';
@@ -211,7 +241,7 @@ BEGIN
  END IF;
 END $$;
 
--- Malformed content: every refusal leaves the published content untouched and keeps the draft.
+-- Malformed content: refused when submitting; nothing published changes and the draft is kept.
 DO $$
 DECLARE
  v_at timestamptz;
@@ -253,8 +283,8 @@ BEGIN
  ) AS t(draft_key, content, hint) LOOP
   v_at := (public.save_content_draft(v_case.draft_key, v_case.content::jsonb) ->> 'updated_at')::timestamptz;
   BEGIN
-   PERFORM public.publish_content_draft(v_case.draft_key, v_at, true);
-   RAISE EXCEPTION 'Malformed draft published: % %', v_case.draft_key, v_case.content;
+   PERFORM public.submit_content_draft(v_case.draft_key, v_at);
+   RAISE EXCEPTION 'Malformed draft submitted: % %', v_case.draft_key, v_case.content;
   EXCEPTION WHEN SQLSTATE 'PT422' THEN
    DECLARE v_hint text; BEGIN
     GET STACKED DIAGNOSTICS v_hint = PG_EXCEPTION_HINT;
@@ -263,7 +293,8 @@ BEGIN
     END IF;
    END;
   END;
-  IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = v_case.draft_key AND updated_at = v_at) THEN
+  IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = v_case.draft_key AND updated_at = v_at
+    AND status = 'borrador') THEN
    RAISE EXCEPTION 'A refused publication must keep the draft: %', v_case.draft_key;
   END IF;
   PERFORM public.discard_content_draft(v_case.draft_key, v_at);
