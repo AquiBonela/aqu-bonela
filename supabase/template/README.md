@@ -5,7 +5,7 @@ Crea una instalación nueva de la plataforma en un proyecto Supabase **vacío**,
 
 | Archivo | Qué hace | ¿Repetible? |
 |---|---|---|
-| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 26 tablas `public` y 1 privada, restricciones, índices, 26 funciones, 20 triggers, permisos de tabla/columna/función, RLS, 53 políticas `public`, 10 políticas de Storage (buckets por API), limpieza programada del rate limiting | No: solo en un proyecto vacío |
+| `01_schema.sql` | Esquemas, extensiones, 3 ENUM, 26 tablas `public` y 1 privada, restricciones, índices, 28 funciones, 20 triggers, permisos de tabla/columna/función, RLS, 53 políticas `public`, 10 políticas de Storage (buckets por API), limpieza programada del rate limiting | No: solo en un proyecto vacío |
 | `02_seed_universal.sql` | 28 categorías, 155 actividades (con sinónimos), 6 categorías de trámites | Sí |
 | `03_init_instance.sql` | Configuración de la instalación (`site_settings`), identidad pública (`site_identity`) y, opcionalmente, primer administrador | Sí |
 | `04_verify.sql` | Comprueba estructura, seguridad y datos con pruebas reales por rol; no deja datos | Sí |

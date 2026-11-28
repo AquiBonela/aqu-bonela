@@ -55,6 +55,8 @@ DROP FUNCTION IF EXISTS public.content_draft_state(text);
 DROP FUNCTION IF EXISTS public.discard_content_draft(text, timestamptz);
 DROP FUNCTION IF EXISTS public.save_content_draft(text, jsonb, timestamptz);
 DROP FUNCTION IF EXISTS private.published_content(text);
+DROP FUNCTION IF EXISTS private.validate_draft_content(text, jsonb);
+DROP FUNCTION IF EXISTS private.draft_keys(jsonb, text[], text[], text);
 
 DROP TABLE IF EXISTS public.content_publications;
 DROP TABLE IF EXISTS public.content_drafts;

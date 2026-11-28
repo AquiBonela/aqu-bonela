@@ -1,6 +1,7 @@
 -- Rollback-only regression for 20261202090000_site_structure (drafts): a draft never reaches the
 -- public web; publishing requires the admin role and the municipal conformity confirmation, applies
--- the whole screen at once, records who, when and the note, and refuses stale drafts.
+-- the whole screen at once, records who, when and the note, and refuses stale drafts, malformed
+-- content and missing images. A refused publication changes nothing and keeps the draft.
 BEGIN;
 SELECT set_config('test.cd_admin', (SELECT user_id::text FROM public.user_roles WHERE role = 'admin' LIMIT 1), true);
 DO $$ BEGIN
@@ -9,10 +10,17 @@ DO $$ BEGIN
  END IF;
 END $$;
 
+-- Files that exist in site-assets (written as the owner). bb…99 and cc…99 are never uploaded.
+INSERT INTO storage.objects (bucket_id, name) VALUES
+ ('site-assets', 'accesos/bb000000-0000-4000-8000-000000000001.webp'),
+ ('site-assets', 'accesos/bb000000-0000-4000-8000-000000000002.webp'),
+ ('site-assets', 'cabeceras/inicio/cc000000-0000-4000-8000-000000000001.webp'),
+ ('site-assets', 'cabeceras/inicio/cc000000-0000-4000-8000-000000000001-movil.webp');
+
 -- Visitors and ordinary users cannot use drafts at all.
 SET LOCAL ROLE anon;
 DO $$ BEGIN
- BEGIN PERFORM public.save_content_draft('portada', '{"hero_title":"x"}'::jsonb);
+ BEGIN PERFORM public.save_content_draft('portada', '{"hero_title":"x","hero_subtitle":"y"}'::jsonb);
   RAISE EXCEPTION 'Visitors must not save drafts';
  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
  BEGIN PERFORM 1 FROM public.content_drafts; RAISE EXCEPTION 'Visitors must not read drafts';
@@ -24,7 +32,7 @@ RESET ROLE;
 SELECT set_config('request.jwt.claim.sub', 'ad000000-0000-4000-8000-000000000095', true);
 SET LOCAL ROLE authenticated;
 DO $$ BEGIN
- BEGIN PERFORM public.save_content_draft('portada', '{"hero_title":"x"}'::jsonb);
+ BEGIN PERFORM public.save_content_draft('portada', '{"hero_title":"x","hero_subtitle":"y"}'::jsonb);
   RAISE EXCEPTION 'Ordinary users must not save drafts';
  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
  BEGIN PERFORM public.content_draft_state('portada'); RAISE EXCEPTION 'Ordinary users must not read draft state';
@@ -42,6 +50,7 @@ DO $$
 DECLARE
  v_at timestamptz;
  v_before text;
+ v_objects bigint := (SELECT count(*) FROM storage.objects WHERE bucket_id = 'site-assets');
 BEGIN
  SELECT hero_title INTO v_before FROM public.site_settings WHERE id;
 
@@ -51,7 +60,7 @@ BEGIN
  IF (SELECT hero_title FROM public.site_settings WHERE id) <> v_before THEN
   RAISE EXCEPTION 'A saved draft must not change the published content';
  END IF;
- BEGIN PERFORM public.save_content_draft('portada', '{"hero_title":"Otro"}'::jsonb);
+ BEGIN PERFORM public.save_content_draft('portada', '{"hero_title":"Otro","hero_subtitle":"Otro"}'::jsonb);
   RAISE EXCEPTION 'A second draft of the same screen must be rejected';
  EXCEPTION WHEN SQLSTATE 'PT409' THEN NULL; END;
  BEGIN UPDATE public.content_drafts SET content = '{}'; RAISE EXCEPTION 'Admin must not write drafts directly';
@@ -73,7 +82,8 @@ BEGIN
  BEGIN PERFORM public.publish_content_draft('portada', v_at - interval '1 second', true);
   RAISE EXCEPTION 'Publishing an outdated copy of the draft must be rejected';
  EXCEPTION WHEN SQLSTATE 'PT409' THEN NULL; END;
- PERFORM public.publish_content_draft('portada', v_at, true, '  Correo del Ayuntamiento del 3 de diciembre  ');
+ -- Line breaks and other control characters in the note become spaces.
+ PERFORM public.publish_content_draft('portada', v_at, true, E'  Correo del Ayuntamiento\r\ndel 3 de diciembre\tconfirmado  ');
  IF (SELECT hero_title FROM public.site_settings WHERE id) <> 'Nuevo título' THEN
   RAISE EXCEPTION 'Publishing must apply the draft';
  END IF;
@@ -81,9 +91,9 @@ BEGIN
   RAISE EXCEPTION 'Publishing must remove the draft';
  END IF;
  IF NOT EXISTS (SELECT 1 FROM public.content_publications WHERE draft_key = 'portada' AND conformity
-   AND published_by::text = current_setting('test.cd_admin') AND note = 'Correo del Ayuntamiento del 3 de diciembre'
-   AND published_at IS NOT NULL) THEN
-  RAISE EXCEPTION 'The publication must record user, date and note';
+   AND published_by::text = current_setting('test.cd_admin')
+   AND note = 'Correo del Ayuntamiento del 3 de diciembre confirmado' AND published_at IS NOT NULL) THEN
+  RAISE EXCEPTION 'The publication must record user, date and the normalised note';
  END IF;
 
  -- A draft whose published base changed (old panel, SQL...) cannot be published.
@@ -96,6 +106,9 @@ BEGIN
  BEGIN PERFORM public.publish_content_draft('aviso-cabecera', v_at, true);
   RAISE EXCEPTION 'A stale draft must not be published';
  EXCEPTION WHEN SQLSTATE 'PT409' THEN NULL; END;
+ IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = 'aviso-cabecera') THEN
+  RAISE EXCEPTION 'A refused publication must keep the draft';
+ END IF;
  PERFORM public.discard_content_draft('aviso-cabecera', v_at);
  IF (SELECT banner_text FROM public.site_settings WHERE id) <> 'Cambio directo del panel actual' THEN
   RAISE EXCEPTION 'Discarding must not touch the published content';
@@ -157,17 +170,20 @@ BEGIN
  OR public.site_config() #>> '{identity,primary_color}' <> '#1f4e79' THEN
   RAISE EXCEPTION 'Publishing the identity must apply the draft';
  END IF;
- v_at := (public.save_content_draft('identidad', '{"primary_color":"red"}'::jsonb) ->> 'updated_at')::timestamptz;
+ -- Right shape, value rejected by the table rules: nothing applied, draft kept.
+ v_at := (public.save_content_draft('identidad', (public.content_draft_state('identidad') -> 'published')
+   || '{"primary_color":"red"}'::jsonb) ->> 'updated_at')::timestamptz;
  BEGIN PERFORM public.publish_content_draft('identidad', v_at, true);
-  RAISE EXCEPTION 'An invalid identity draft must be rejected';
+  RAISE EXCEPTION 'An invalid identity value must be rejected';
  EXCEPTION WHEN check_violation THEN NULL; END;
- IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = 'identidad') THEN
-  RAISE EXCEPTION 'A rejected publication must keep the draft';
+ IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = 'identidad')
+ OR public.site_config() #>> '{identity,primary_color}' <> '#1f4e79' THEN
+  RAISE EXCEPTION 'A rejected publication must keep the draft and the published identity';
  END IF;
  PERFORM public.discard_content_draft('identidad', v_at);
 
- v_at := (public.save_content_draft('datos-legales', '{"legal_name":"Titular de prueba","legal_email":"titular@example.org"}'::jsonb)
-   ->> 'updated_at')::timestamptz;
+ v_at := (public.save_content_draft('datos-legales', '{"legal_name":"Titular de prueba","legal_nif":"",
+   "legal_address":"","legal_email":"titular@example.org"}'::jsonb) ->> 'updated_at')::timestamptz;
  PERFORM public.publish_content_draft('datos-legales', v_at, true);
  IF (SELECT legal_name FROM public.site_settings WHERE id) <> 'Titular de prueba' THEN
   RAISE EXCEPTION 'Publishing legal data must apply the draft';
@@ -190,8 +206,83 @@ BEGIN
  IF (SELECT count(*) FROM public.content_publications) <> 9 THEN
   RAISE EXCEPTION 'Every publication must be recorded once';
  END IF;
+ IF (SELECT count(*) FROM storage.objects WHERE bucket_id = 'site-assets') <> v_objects THEN
+  RAISE EXCEPTION 'Publishing must never add or remove files';
+ END IF;
+END $$;
+
+-- Malformed content: every refusal leaves the published content untouched and keeps the draft.
+DO $$
+DECLARE
+ v_at timestamptz;
+ v_case record;
+ v_menu jsonb := (SELECT coalesce(jsonb_agg(jsonb_build_array(m.entry_key, m.enabled, m.sort_order) ORDER BY m.entry_key), '[]') FROM public.site_menu AS m);
+ v_shortcuts jsonb := (SELECT coalesce(jsonb_agg(h.title ORDER BY h.id), '[]') FROM public.home_shortcuts AS h);
+ v_settings jsonb := (SELECT to_jsonb(s) FROM public.site_settings AS s WHERE s.id);
+ v_identity jsonb := (public.content_draft_state('identidad') -> 'published');
+ v_headers jsonb := (SELECT coalesce(jsonb_agg(jsonb_build_array(h.page_key, h.image_path, h.image_small_path, h.alt, h.focal_x, h.focal_y)), '[]') FROM public.page_headers AS h);
+ v_objects bigint := (SELECT count(*) FROM storage.objects WHERE bucket_id = 'site-assets');
+ v_publications bigint := (SELECT count(*) FROM public.content_publications);
+BEGIN
+ FOR v_case IN SELECT * FROM (VALUES
+   ('menu', '{"entrys":[{"key":"actualidad","enabled":true,"sort_order":0}]}', 'invalid_content'),
+   ('menu', '{}', 'invalid_content'),
+   ('menu', '{"entries":{"key":"actualidad"}}', 'invalid_content'),
+   ('menu', '{"entries":[{"key":"actualidad","enabled":"sí","sort_order":0}]}', 'invalid_content'),
+   ('menu', '{"entries":[{"key":"actualidad","enabled":true,"sort_order":0,"extra":1}]}', 'invalid_content'),
+   ('menu', '{"entries":[{"key":"actualidad","enabled":true,"sort_order":0},{"key":"actualidad","enabled":false,"sort_order":1}]}', 'invalid_content'),
+   ('menu', '{"entries":[],"otra":true}', 'invalid_content'),
+   ('secciones:descubre', '{"sectons":[]}', 'invalid_content'),
+   ('secciones:descubre', '{"sections":[{"key":"entorno","enabled":true}]}', 'invalid_content'),
+   ('accesos', '{"shortcut":[]}', 'invalid_content'),
+   ('accesos', '{}', 'invalid_content'),
+   ('accesos', '{"shortcuts":[{"title":"Sin destino","image_path":"accesos/bb000000-0000-4000-8000-000000000001.webp"}]}', 'invalid_content'),
+   ('accesos', '{"shortcuts":[{"title":"X","image_path":"accesos/bb000000-0000-4000-8000-000000000001.webp","href":"/x","color":"rojo"}]}', 'invalid_content'),
+   ('accesos', '{"shortcuts":[{"title":"X","image_path":"accesos/bb000000-0000-4000-8000-000000000099.webp","href":"/x"}]}', 'missing_asset'),
+   ('portada', '{"hero_titel":"Error","hero_subtitle":"x"}', 'invalid_content'),
+   ('portada', '{"hero_title":"Solo título"}', 'invalid_content'),
+   ('portada', '{"hero_title":1,"hero_subtitle":"x"}', 'invalid_content'),
+   ('aviso-cabecera', '{"banner_enabled":"sí","banner_text":"x"}', 'invalid_content'),
+   ('datos-legales', '{"legal_name":"x"}', 'invalid_content'),
+   ('identidad', '{"primary_color":"#000000"}', 'invalid_content'),
+   ('cabecera:inicio', '{"image_path":"cabeceras/inicio/cc000000-0000-4000-8000-000000000001.webp"}', 'invalid_content'),
+   ('cabecera:inicio', '{"remove":false}', 'invalid_content'),
+   ('cabecera:inicio', '{"remove":true,"alt":"x"}', 'invalid_content'),
+   ('cabecera:inicio', '{"image_path":"cabeceras/inicio/cc000000-0000-4000-8000-000000000099.webp",
+     "image_small_path":"cabeceras/inicio/cc000000-0000-4000-8000-000000000099-movil.webp","alt":"x","focal_x":50,"focal_y":50}', 'missing_asset')
+ ) AS t(draft_key, content, hint) LOOP
+  v_at := (public.save_content_draft(v_case.draft_key, v_case.content::jsonb) ->> 'updated_at')::timestamptz;
+  BEGIN
+   PERFORM public.publish_content_draft(v_case.draft_key, v_at, true);
+   RAISE EXCEPTION 'Malformed draft published: % %', v_case.draft_key, v_case.content;
+  EXCEPTION WHEN SQLSTATE 'PT422' THEN
+   DECLARE v_hint text; BEGIN
+    GET STACKED DIAGNOSTICS v_hint = PG_EXCEPTION_HINT;
+    IF v_hint <> v_case.hint THEN
+     RAISE EXCEPTION 'Wrong refusal for % %: % (expected %)', v_case.draft_key, v_case.content, v_hint, v_case.hint;
+    END IF;
+   END;
+  END;
+  IF NOT EXISTS (SELECT 1 FROM public.content_drafts WHERE draft_key = v_case.draft_key AND updated_at = v_at) THEN
+   RAISE EXCEPTION 'A refused publication must keep the draft: %', v_case.draft_key;
+  END IF;
+  PERFORM public.discard_content_draft(v_case.draft_key, v_at);
+ END LOOP;
+
+ IF (SELECT coalesce(jsonb_agg(jsonb_build_array(m.entry_key, m.enabled, m.sort_order) ORDER BY m.entry_key), '[]') FROM public.site_menu AS m) <> v_menu
+ OR (SELECT coalesce(jsonb_agg(h.title ORDER BY h.id), '[]') FROM public.home_shortcuts AS h) <> v_shortcuts
+ OR (SELECT to_jsonb(s) FROM public.site_settings AS s WHERE s.id) <> v_settings
+ OR (public.content_draft_state('identidad') -> 'published') <> v_identity
+ OR (SELECT coalesce(jsonb_agg(jsonb_build_array(h.page_key, h.image_path, h.image_small_path, h.alt, h.focal_x, h.focal_y)), '[]') FROM public.page_headers AS h) <> v_headers THEN
+  RAISE EXCEPTION 'Refused publications must leave the published content untouched';
+ END IF;
+ IF (SELECT count(*) FROM storage.objects WHERE bucket_id = 'site-assets') <> v_objects
+ OR (SELECT count(*) FROM public.content_publications) <> v_publications THEN
+  RAISE EXCEPTION 'Refused publications must not touch files nor the publication log';
+ END IF;
 END $$;
 RESET ROLE;
+
 -- updated_by no es legible desde el navegador: se comprueba como propietario de la tabla.
 DO $$ BEGIN
  IF (SELECT updated_by::text FROM public.site_identity) IS DISTINCT FROM current_setting('test.cd_admin') THEN

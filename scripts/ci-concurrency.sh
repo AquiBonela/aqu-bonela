@@ -6,6 +6,8 @@
 #   2. Groundwork guarda primero y el titular aprueba a la vez: la aprobación espera y se
 #      aplica encima; se conservan los cambios de ambos.
 #   3. El mismo enlace se envía dos veces a la vez: solo cuenta una aprobación.
+#   4. El panel actual guarda la portada mientras se publica un borrador: la publicación espera,
+#      ve que lo publicado cambió y se rechaza sin pisar el guardado ni perder el borrador.
 # Uso: bash scripts/ci-concurrency.sh <puerto>. Necesita PGPASSWORD y el administrador de CI.
 set -euo pipefail
 PORT="${1:-5432}"
@@ -108,5 +110,51 @@ grep -qx ok /tmp/ci-approve-3.txt || fail "La primera aprobación no terminó bi
 [ "$second" = used ] || fail "El segundo envío del enlace no se rechazó (devolvió '$second')"
 [ "$(value "select count(*) from public.consents where listing_id = '$L3'")" = 1 ] || fail "Se registró más de un consentimiento"
 
+echo "   4. Guardado directo del panel actual en curso y publicación de un borrador a la vez"
+# El borrador parte de la portada publicada antes del guardado.
+DRAFT_AT=$(run -tA <<SQL
+BEGIN;
+SET LOCAL "request.jwt.claim.sub" = '$ADMIN';
+SET LOCAL ROLE authenticated;
+SELECT public.save_content_draft('portada', '{"hero_title":"Título del borrador","hero_subtitle":"Subtítulo del borrador"}') ->> 'updated_at';
+COMMIT;
+SQL
+)
+panel_save() { # [pausa antes de confirmar]
+  run -v hold="${1:-0}" <<SQL
+BEGIN;
+SET LOCAL "request.jwt.claim.sub" = '$ADMIN';
+SET LOCAL ROLE authenticated;
+UPDATE public.site_settings SET hero_title = 'Título guardado por el panel actual' WHERE id;
+SELECT pg_sleep(:hold);
+COMMIT;
+SQL
+}
+publish_draft() { # versión del borrador
+  run -tA -v at="$1" <<SQL
+BEGIN;
+SET LOCAL "request.jwt.claim.sub" = '$ADMIN';
+SET LOCAL ROLE authenticated;
+SELECT public.publish_content_draft('portada', :'at', true, 'CI') ->> 'draft_key';
+COMMIT;
+SQL
+}
+panel_save "$HOLD" > /dev/null &
+PANEL=$!
+wait_holding
+start=$(date +%s%N)
+if publish_draft "$DRAFT_AT" > /dev/null 2> /tmp/ci-publish-4.txt; then
+  fail "La publicación pisó un guardado del panel actual en curso"
+fi
+elapsed_ms=$(( ($(date +%s%N) - start) / 1000000 ))
+wait "$PANEL" || fail "El guardado del panel actual falló"
+grep -q "Lo publicado cambió" /tmp/ci-publish-4.txt || { cat /tmp/ci-publish-4.txt; fail "La publicación no detectó el guardado en curso"; }
+[ "$elapsed_ms" -ge 1000 ] || fail "La publicación no esperó al guardado en curso (${elapsed_ms} ms)"
+[ "$(value "select hero_title from public.site_settings where id")" = "Título guardado por el panel actual" ] \
+  || fail "Se perdió el guardado del panel actual"
+[ "$(value "select count(*) from public.content_drafts where draft_key = 'portada'")" = 1 ] \
+  || fail "La publicación rechazada perdió el borrador"
+
+run -c "delete from public.content_drafts where draft_key = 'portada';"
 run -c "delete from public.listings where id in ('$L1', '$L2', '$L3');"
 echo "   concurrencia correcta"

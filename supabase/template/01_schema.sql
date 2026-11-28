@@ -2157,6 +2157,163 @@ END;
 $$;
 REVOKE ALL ON FUNCTION private.published_content(text) FROM PUBLIC, anon, authenticated;
 
+-- Comprueba que un objeto del borrador tiene exactamente las claves esperadas: todas las
+-- obligatorias y ninguna desconocida. Una lista ausente o mal escrita nunca cuenta como vacía.
+CREATE OR REPLACE FUNCTION private.draft_keys(p_value jsonb, p_required text[], p_optional text[], p_label text)
+RETURNS void
+LANGUAGE plpgsql
+IMMUTABLE
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+DECLARE
+  v_missing text;
+  v_unknown text;
+BEGIN
+  IF p_value IS NULL OR jsonb_typeof(p_value) <> 'object' THEN
+    RAISE EXCEPTION 'Contenido no válido en %: se esperaba un objeto', p_label
+      USING ERRCODE = 'PT422', HINT = 'invalid_content';
+  END IF;
+  SELECT string_agg(k, ', ') INTO v_missing FROM unnest(p_required) AS k WHERE NOT p_value ? k;
+  IF v_missing IS NOT NULL THEN
+    RAISE EXCEPTION 'Contenido no válido en %: faltan %', p_label, v_missing
+      USING ERRCODE = 'PT422', HINT = 'invalid_content';
+  END IF;
+  SELECT string_agg(k, ', ') INTO v_unknown FROM jsonb_object_keys(p_value) AS k
+  WHERE NOT k = ANY (p_required || p_optional);
+  IF v_unknown IS NOT NULL THEN
+    RAISE EXCEPTION 'Contenido no válido en %: claves desconocidas %', p_label, v_unknown
+      USING ERRCODE = 'PT422', HINT = 'invalid_content';
+  END IF;
+END;
+$$;
+REVOKE ALL ON FUNCTION private.draft_keys(jsonb, text[], text[], text) FROM PUBLIC, anon, authenticated;
+
+-- Valida la forma y los tipos del borrador de una pantalla (las restricciones de las tablas validan
+-- después los valores) y devuelve las rutas de site-assets que usa, para comprobar que existen.
+CREATE OR REPLACE FUNCTION private.validate_draft_content(p_key text, c jsonb)
+RETURNS text[]
+LANGUAGE plpgsql
+IMMUTABLE
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+DECLARE
+  e jsonb;
+  v_list text;
+  v_paths text[] := '{}';
+  v_field text;
+  v_identity_text text[] := ARRAY['app_name', 'short_name', 'municipality_name', 'province', 'region',
+    'autonomous_community', 'demonym_masculine', 'demonym_feminine', 'site_url', 'town_hall_name',
+    'town_hall_address', 'town_hall_phone', 'town_hall_website', 'timezone', 'postal_code', 'primary_color',
+    'accent_color', 'logo_path', 'logo_light_path', 'icon_path', 'icon_small_path'];
+  v_bad boolean;
+BEGIN
+  IF p_key = 'menu' OR p_key LIKE 'secciones:%' THEN
+    v_list := CASE WHEN p_key = 'menu' THEN 'entries' ELSE 'sections' END;
+    PERFORM private.draft_keys(c, ARRAY[v_list], '{}', p_key);
+    IF jsonb_typeof(c -> v_list) <> 'array' THEN
+      RAISE EXCEPTION 'Contenido no válido en %: % debe ser una lista', p_key, v_list
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+    FOR e IN SELECT x.value FROM jsonb_array_elements(c -> v_list) AS x LOOP
+      PERFORM private.draft_keys(e, ARRAY['key', 'enabled', 'sort_order'], '{}', p_key);
+      IF jsonb_typeof(e -> 'key') <> 'string' OR jsonb_typeof(e -> 'enabled') <> 'boolean'
+        OR jsonb_typeof(e -> 'sort_order') <> 'number' OR (e ->> 'sort_order') !~ '^[0-9]{1,2}$' THEN
+        RAISE EXCEPTION 'Contenido no válido en %: entrada con tipos incorrectos', p_key
+          USING ERRCODE = 'PT422', HINT = 'invalid_content';
+      END IF;
+    END LOOP;
+    IF (SELECT count(*) <> count(DISTINCT x.value ->> 'key') FROM jsonb_array_elements(c -> v_list) AS x) THEN
+      RAISE EXCEPTION 'Contenido no válido en %: claves repetidas', p_key
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+  ELSIF p_key = 'accesos' THEN
+    PERFORM private.draft_keys(c, ARRAY['shortcuts'], '{}', p_key);
+    IF jsonb_typeof(c -> 'shortcuts') <> 'array' THEN
+      RAISE EXCEPTION 'Contenido no válido en accesos: shortcuts debe ser una lista'
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+    FOR e IN SELECT x.value FROM jsonb_array_elements(c -> 'shortcuts') AS x LOOP
+      PERFORM private.draft_keys(e, ARRAY['title', 'image_path', 'href'],
+        ARRAY['id', 'description', 'image_alt', 'visible', 'sort_order'], 'acceso directo');
+      v_bad := jsonb_typeof(e -> 'title') <> 'string' OR jsonb_typeof(e -> 'image_path') <> 'string'
+        OR jsonb_typeof(e -> 'href') <> 'string'
+        OR (e ? 'id' AND (jsonb_typeof(e -> 'id') <> 'string' OR (e ->> 'id') !~ '^[0-9a-f-]{36}$'))
+        OR (e ? 'description' AND jsonb_typeof(e -> 'description') <> 'string')
+        OR (e ? 'image_alt' AND jsonb_typeof(e -> 'image_alt') <> 'string')
+        OR (e ? 'visible' AND jsonb_typeof(e -> 'visible') <> 'boolean')
+        OR (e ? 'sort_order' AND (jsonb_typeof(e -> 'sort_order') <> 'number' OR (e ->> 'sort_order') !~ '^[0-9]{1,3}$'));
+      IF v_bad THEN
+        RAISE EXCEPTION 'Contenido no válido en accesos: acceso con tipos incorrectos'
+          USING ERRCODE = 'PT422', HINT = 'invalid_content';
+      END IF;
+      v_paths := v_paths || (e ->> 'image_path');
+    END LOOP;
+    IF (SELECT count(x.value -> 'id') <> count(DISTINCT x.value ->> 'id')
+        FROM jsonb_array_elements(c -> 'shortcuts') AS x) THEN
+      RAISE EXCEPTION 'Contenido no válido en accesos: identificadores repetidos'
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+  ELSIF p_key = 'portada' THEN
+    PERFORM private.draft_keys(c, ARRAY['hero_title', 'hero_subtitle'], '{}', p_key);
+    IF jsonb_typeof(c -> 'hero_title') <> 'string' OR jsonb_typeof(c -> 'hero_subtitle') <> 'string' THEN
+      RAISE EXCEPTION 'Contenido no válido en portada: se esperaban textos'
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+  ELSIF p_key = 'aviso-cabecera' THEN
+    PERFORM private.draft_keys(c, ARRAY['banner_enabled', 'banner_text'], '{}', p_key);
+    IF jsonb_typeof(c -> 'banner_enabled') <> 'boolean' OR jsonb_typeof(c -> 'banner_text') <> 'string' THEN
+      RAISE EXCEPTION 'Contenido no válido en aviso-cabecera: tipos incorrectos'
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+  ELSIF p_key = 'datos-legales' THEN
+    PERFORM private.draft_keys(c, ARRAY['legal_name', 'legal_nif', 'legal_address', 'legal_email'], '{}', p_key);
+    IF EXISTS (SELECT 1 FROM jsonb_each(c) AS x WHERE jsonb_typeof(x.value) <> 'string') THEN
+      RAISE EXCEPTION 'Contenido no válido en datos-legales: se esperaban textos'
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+  ELSIF p_key = 'identidad' THEN
+    PERFORM private.draft_keys(c, v_identity_text || ARRAY['latitude', 'longitude'], '{}', p_key);
+    FOREACH v_field IN ARRAY v_identity_text LOOP
+      IF jsonb_typeof(c -> v_field) <> 'string' THEN
+        RAISE EXCEPTION 'Contenido no válido en identidad: % debe ser un texto', v_field
+          USING ERRCODE = 'PT422', HINT = 'invalid_content';
+      END IF;
+    END LOOP;
+    IF jsonb_typeof(c -> 'latitude') NOT IN ('number', 'null') OR jsonb_typeof(c -> 'longitude') NOT IN ('number', 'null') THEN
+      RAISE EXCEPTION 'Contenido no válido en identidad: coordenadas con tipos incorrectos'
+        USING ERRCODE = 'PT422', HINT = 'invalid_content';
+    END IF;
+    SELECT coalesce(array_agg(p), '{}') INTO v_paths
+    FROM unnest(ARRAY[c ->> 'logo_path', c ->> 'logo_light_path', c ->> 'icon_path', c ->> 'icon_small_path']) AS p
+    WHERE p <> '';
+  ELSIF p_key LIKE 'cabecera:%' THEN
+    IF c ? 'remove' THEN
+      PERFORM private.draft_keys(c, ARRAY['remove'], '{}', p_key);
+      IF c -> 'remove' <> 'true'::jsonb THEN
+        RAISE EXCEPTION 'Contenido no válido en %: remove solo admite true', p_key
+          USING ERRCODE = 'PT422', HINT = 'invalid_content';
+      END IF;
+    ELSE
+      PERFORM private.draft_keys(c, ARRAY['image_path', 'image_small_path', 'alt', 'focal_x', 'focal_y'], '{}', p_key);
+      IF jsonb_typeof(c -> 'image_path') <> 'string' OR jsonb_typeof(c -> 'image_small_path') <> 'string'
+        OR jsonb_typeof(c -> 'alt') <> 'string'
+        OR jsonb_typeof(c -> 'focal_x') <> 'number' OR (c ->> 'focal_x') !~ '^[0-9]{1,3}$'
+        OR jsonb_typeof(c -> 'focal_y') <> 'number' OR (c ->> 'focal_y') !~ '^[0-9]{1,3}$' THEN
+        RAISE EXCEPTION 'Contenido no válido en %: tipos incorrectos', p_key
+          USING ERRCODE = 'PT422', HINT = 'invalid_content';
+      END IF;
+      v_paths := ARRAY[c ->> 'image_path', c ->> 'image_small_path'];
+    END IF;
+  ELSE
+    RAISE EXCEPTION 'Pantalla de contenido desconocida: %', p_key USING ERRCODE = '22023';
+  END IF;
+  RETURN v_paths;
+END;
+$$;
+REVOKE ALL ON FUNCTION private.validate_draft_content(text, jsonb) FROM PUBLIC, anon, authenticated;
+
 -- Guarda el borrador de una pantalla. Sin versión esperada crea uno nuevo; con ella, lo actualiza
 -- solo si nadie lo cambió desde que se cargó. No toca nada publicado.
 CREATE OR REPLACE FUNCTION public.save_content_draft(
@@ -2257,8 +2414,11 @@ DECLARE
   c jsonb;
   v_page text := split_part(p_key, ':', 2);
   v_ident public.site_identity;
-  v_note text := btrim(coalesce(p_note, ''));
+  -- Saltos de línea y demás caracteres de control de la nota pasan a ser espacios.
+  v_note text := btrim(regexp_replace(coalesce(p_note, ''), '[[:cntrl:]]+', ' ', 'g'));
   v_at timestamptz;
+  v_paths text[];
+  v_missing text;
 BEGIN
   IF NOT public.has_role(auth.uid(), 'admin') THEN
     RAISE EXCEPTION 'Solo la administración puede publicar' USING ERRCODE = '42501';
@@ -2270,31 +2430,55 @@ BEGIN
   IF NOT FOUND OR d.updated_at IS DISTINCT FROM p_expected_updated_at THEN
     RAISE EXCEPTION 'El borrador ha cambiado desde que se abrió' USING ERRCODE = 'PT409', HINT = 'draft_changed';
   END IF;
+
+  -- Bloquea lo publicado de esta pantalla antes de comprobar su versión: una escritura directa en
+  -- curso (panel actual) termina antes y se detecta; una posterior espera a que acabe la publicación.
+  IF p_key = 'menu' THEN
+    LOCK TABLE public.site_menu IN SHARE ROW EXCLUSIVE MODE;
+  ELSIF p_key LIKE 'secciones:%' THEN
+    LOCK TABLE public.page_sections IN SHARE ROW EXCLUSIVE MODE;
+  ELSIF p_key = 'accesos' THEN
+    LOCK TABLE public.home_shortcuts IN SHARE ROW EXCLUSIVE MODE;
+  ELSIF p_key IN ('portada', 'aviso-cabecera', 'datos-legales') THEN
+    PERFORM 1 FROM public.site_settings AS s WHERE s.id FOR UPDATE;
+  ELSIF p_key = 'identidad' THEN
+    PERFORM 1 FROM public.site_identity AS i WHERE i.id FOR UPDATE;
+  ELSIF p_key LIKE 'cabecera:%' THEN
+    LOCK TABLE public.page_headers IN SHARE ROW EXCLUSIVE MODE;
+  END IF;
   IF d.base_version <> md5(private.published_content(p_key)::text) THEN
     RAISE EXCEPTION 'Lo publicado cambió después de empezar el borrador' USING ERRCODE = 'PT409', HINT = 'published_changed';
   END IF;
   c := d.content;
 
+  -- Forma y tipos del contenido, y archivos que usa: nada se aplica si algo no cuadra.
+  v_paths := private.validate_draft_content(p_key, c);
+  SELECT string_agg(p, ', ') INTO v_missing FROM unnest(v_paths) AS p
+  WHERE NOT EXISTS (SELECT 1 FROM storage.objects AS o WHERE o.bucket_id = 'site-assets' AND o.name = p);
+  IF v_missing IS NOT NULL THEN
+    RAISE EXCEPTION 'Faltan archivos en site-assets: %', v_missing USING ERRCODE = 'PT422', HINT = 'missing_asset';
+  END IF;
+
   IF p_key = 'menu' THEN
     DELETE FROM public.site_menu AS m WHERE true;
     INSERT INTO public.site_menu (entry_key, enabled, sort_order)
     SELECT e.key, coalesce(e.enabled, true), coalesce(e.sort_order, 0)
-    FROM jsonb_to_recordset(coalesce(c -> 'entries', '[]'::jsonb)) AS e(key text, enabled boolean, sort_order smallint);
+    FROM jsonb_to_recordset(c -> 'entries') AS e(key text, enabled boolean, sort_order smallint);
   ELSIF p_key LIKE 'secciones:%' THEN
     DELETE FROM public.page_sections AS s WHERE s.page_key = v_page;
     INSERT INTO public.page_sections (page_key, section_key, enabled, sort_order)
     SELECT v_page, e.key, coalesce(e.enabled, true), coalesce(e.sort_order, 0)
-    FROM jsonb_to_recordset(coalesce(c -> 'sections', '[]'::jsonb)) AS e(key text, enabled boolean, sort_order smallint);
+    FROM jsonb_to_recordset(c -> 'sections') AS e(key text, enabled boolean, sort_order smallint);
   ELSIF p_key = 'accesos' THEN
     -- Los accesos que ya no están en el borrador se borran; los demás se crean o actualizan.
     DELETE FROM public.home_shortcuts AS h
     WHERE h.id NOT IN (
-      SELECT (e ->> 'id')::uuid FROM jsonb_array_elements(coalesce(c -> 'shortcuts', '[]'::jsonb)) AS e
+      SELECT (e ->> 'id')::uuid FROM jsonb_array_elements(c -> 'shortcuts') AS e
       WHERE e ->> 'id' IS NOT NULL);
     INSERT INTO public.home_shortcuts AS h (id, title, description, image_path, image_alt, href, visible, sort_order)
     SELECT coalesce(e.id, gen_random_uuid()), e.title, coalesce(e.description, ''), e.image_path,
       coalesce(e.image_alt, ''), e.href, coalesce(e.visible, true), coalesce(e.sort_order, 0)
-    FROM jsonb_to_recordset(coalesce(c -> 'shortcuts', '[]'::jsonb)) AS e(id uuid, title text, description text,
+    FROM jsonb_to_recordset(c -> 'shortcuts') AS e(id uuid, title text, description text,
       image_path text, image_alt text, href text, visible boolean, sort_order smallint)
     ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description,
       image_path = EXCLUDED.image_path, image_alt = EXCLUDED.image_alt, href = EXCLUDED.href,

@@ -157,4 +157,27 @@ describe("garantías de las migraciones", () => {
     expect(config).not.toContain("content_drafts");
     expect(config).toContain("WHERE h.visible");
   });
+
+  it("publicar bloquea, comprueba la versión y valida contenido y archivos antes de escribir", () => {
+    const publish = structure.slice(
+      structure.indexOf("CREATE OR REPLACE FUNCTION public.publish_content_draft"),
+    );
+    const lock = publish.indexOf("LOCK TABLE public.site_menu IN SHARE ROW EXCLUSIVE MODE");
+    const version = publish.indexOf("d.base_version <> md5(");
+    const validate = publish.indexOf("private.validate_draft_content(p_key, c)");
+    const assets = publish.indexOf("HINT = 'missing_asset'");
+    const firstWrite = publish.indexOf("DELETE FROM public.site_menu");
+    expect(lock).toBeGreaterThan(0);
+    expect(lock).toBeLessThan(version);
+    expect(version).toBeLessThan(validate);
+    expect(validate).toBeLessThan(assets);
+    expect(assets).toBeLessThan(firstWrite);
+    expect(publish).toContain("PERFORM 1 FROM public.site_settings AS s WHERE s.id FOR UPDATE;");
+    expect(publish).toContain("PERFORM 1 FROM public.site_identity AS i WHERE i.id FOR UPDATE;");
+  });
+
+  it("una lista ausente o mal escrita nunca se publica como vacía", () => {
+    expect(structure).not.toMatch(/coalesce\(c -> '(entries|sections|shortcuts)'/);
+    expect(structure).toContain("WHERE NOT k = ANY (p_required || p_optional)");
+  });
 });

@@ -55,8 +55,9 @@ BEGIN
       ('private','listings_status_log'),('private','approval_tokens_issue'),
       ('public','request_listing_corrections'),('public','withdraw_listing_consent'),
       ('private','site_structure_stamp'),('private','published_content'),('public','save_content_draft'),
-      ('public','discard_content_draft'),('public','content_draft_state'),('public','publish_content_draft'));
-  IF n <> 26 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 26)', n; END IF;
+      ('public','discard_content_draft'),('public','content_draft_state'),('public','publish_content_draft'),
+      ('private','draft_keys'),('private','validate_draft_content'));
+  IF n <> 28 THEN RAISE EXCEPTION 'FALLO: funciones = % (esperado 28)', n; END IF;
   SELECT count(*) INTO n FROM pg_trigger t JOIN pg_class c ON c.oid = t.tgrelid JOIN pg_namespace s ON s.oid = c.relnamespace
     WHERE s.nspname = 'public' AND NOT t.tgisinternal;
   IF n <> 20 THEN RAISE EXCEPTION 'FALLO: triggers = % (esperado 20)', n; END IF;
@@ -327,7 +328,7 @@ BEGIN
     EXCEPTION WHEN check_violation THEN NULL; END;
     PERFORM public.discard_content_draft('menu', v_at);
     -- Lo publicado cambia por otra vía: el borrador ya no se puede publicar.
-    v_at := (public.save_content_draft('portada', '{"hero_title":"Borrador"}'::jsonb) ->> 'updated_at')::timestamptz;
+    v_at := (public.save_content_draft('portada', '{"hero_title":"Borrador","hero_subtitle":"Subtítulo"}'::jsonb) ->> 'updated_at')::timestamptz;
     UPDATE public.site_settings SET hero_title = 'Cambio directo' WHERE id;
     BEGIN PERFORM public.publish_content_draft('portada', v_at, true); RAISE EXCEPTION 'FALLO: se publica sobre una versión cambiada';
     EXCEPTION WHEN SQLSTATE 'PT409' THEN NULL; END;
