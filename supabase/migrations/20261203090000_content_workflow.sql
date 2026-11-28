@@ -479,6 +479,14 @@ DROP POLICY IF EXISTS "Admins insert page headers" ON public.page_headers;
 DROP POLICY IF EXISTS "Admins update page headers" ON public.page_headers;
 DROP POLICY IF EXISTS "Admins delete page headers" ON public.page_headers;
 REVOKE INSERT, UPDATE, DELETE ON public.site_identity, public.page_headers FROM authenticated;
+-- Los privilegios concedidos por columna se retiran también por columna, de forma expresa: no se
+-- depende de que el REVOKE de tabla los arrastre.
+REVOKE UPDATE (app_name, short_name, municipality_name, province, region, autonomous_community,
+  demonym_masculine, demonym_feminine, site_url, town_hall_name, town_hall_address, town_hall_phone,
+  town_hall_website, latitude, longitude, timezone, postal_code, primary_color, accent_color, logo_path,
+  logo_light_path, icon_path, icon_small_path) ON public.site_identity FROM authenticated;
+REVOKE INSERT (page_key, image_path, image_small_path, alt, focal_x, focal_y),
+  UPDATE (image_path, image_small_path, alt, focal_x, focal_y) ON public.page_headers FROM authenticated;
 REVOKE INSERT, UPDATE, DELETE ON public.site_settings FROM authenticated;
 GRANT UPDATE (contact_email, admin_whatsapp, collaborator_months, whatsapp_template, common_labels,
   publish_on_owner_approval) ON public.site_settings TO authenticated;

@@ -215,6 +215,13 @@ describe("garantías de las migraciones", () => {
     expect(workflow).toContain(
       "REVOKE INSERT, UPDATE, DELETE ON public.site_identity, public.page_headers FROM authenticated;",
     );
+    // Los privilegios por columna se retiran por columna, expresamente.
+    expect(workflow).toMatch(
+      /REVOKE UPDATE \(app_name,[^;]*icon_small_path\) ON public\.site_identity FROM authenticated;/,
+    );
+    expect(workflow).toMatch(
+      /REVOKE INSERT \(page_key, image_path, image_small_path, alt, focal_x, focal_y\),\s+UPDATE \(image_path, image_small_path, alt, focal_x, focal_y\) ON public\.page_headers FROM authenticated;/,
+    );
     const internal = workflow.slice(workflow.indexOf("GRANT UPDATE (contact_email"));
     const columns = internal.slice(0, internal.indexOf(")"));
     for (const field of ["hero_title", "banner_text", "legal_name", "legal_nif"])

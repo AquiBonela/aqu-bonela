@@ -10,6 +10,25 @@ DO $$ BEGIN
  END IF;
 END $$;
 
+-- No column-level write privilege survives on the published identity or page headers, for any
+-- browser role: neither INSERT nor UPDATE on any column (a table-level REVOKE is not relied upon).
+DO $$
+DECLARE v_bad text;
+BEGIN
+ SELECT string_agg(format('%s.%s (%s, %s)', c.table_name, c.column_name, r.role, p.priv), ', ') INTO v_bad
+ FROM information_schema.columns AS c
+ CROSS JOIN unnest(ARRAY['authenticated', 'anon']) AS r(role)
+ CROSS JOIN unnest(ARRAY['INSERT', 'UPDATE']) AS p(priv)
+ WHERE c.table_schema = 'public' AND c.table_name IN ('site_identity', 'page_headers')
+   AND has_column_privilege(r.role, format('public.%I', c.table_name), c.column_name, p.priv);
+ IF v_bad IS NOT NULL THEN RAISE EXCEPTION 'Column write privileges remain: %', v_bad; END IF;
+ IF EXISTS (SELECT 1 FROM information_schema.column_privileges
+   WHERE table_schema = 'public' AND table_name IN ('site_identity', 'page_headers')
+     AND grantee IN ('authenticated', 'anon') AND privilege_type IN ('INSERT', 'UPDATE')) THEN
+  RAISE EXCEPTION 'Column write grants remain in the catalog for site_identity or page_headers';
+ END IF;
+END $$;
+
 -- Visitors and ordinary users can neither move drafts through the circuit nor read the log.
 SET LOCAL ROLE anon;
 DO $$ BEGIN
