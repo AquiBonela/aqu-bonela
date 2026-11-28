@@ -134,6 +134,10 @@ describe("identidad visual desde Supabase", () => {
       },
     };
     new Function(siteConfigScript(config))();
-    expect(readBrowserSiteConfig()).toEqual(config);
+    // La estructura viaja también; sin ella en la configuración, la vacía.
+    expect(readBrowserSiteConfig()).toEqual({
+      ...config,
+      structure: { menu: {}, sections: {}, shortcuts: [] },
+    });
   });
 });

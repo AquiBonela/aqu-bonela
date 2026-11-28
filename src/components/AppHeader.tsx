@@ -26,8 +26,6 @@ export type HeaderItem = {
   search?: { q: string; cat: string; of: string };
   activeOptions?: { exact?: boolean };
   onClick?: () => void | Promise<void>;
-  /** Sección prevista pero aún no disponible: se muestra atenuada y sin enlace. */
-  soon?: boolean;
   /** Texto breve que acompaña al enlace, debajo del rótulo. */
   description?: string;
 };
@@ -106,14 +104,7 @@ export function AppHeader({
   }, [open]);
 
   const renderItem = (item: HeaderItem, big: boolean) =>
-    item.soon ? (
-      <span
-        aria-disabled="true"
-        className="block cursor-default font-display text-3xl font-extrabold tracking-tight opacity-40"
-      >
-        {item.label}
-      </span>
-    ) : item.to ? (
+    item.to ? (
       <Link
         key={item.label}
         to={item.to}

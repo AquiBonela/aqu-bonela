@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { sectionVisible } from "@/lib/site-availability";
 import { brand, getInstanceContent } from "@/config/municipality";
 import {
   ArrowLeft,
@@ -31,6 +32,10 @@ import {
 } from "@/lib/procedure-display";
 
 export const Route = createFileRoute("/tramites/$categoria/$tramite")({
+  // Sin su página o su sección en la configuración publicada, la ruta no existe.
+  beforeLoad: () => {
+    if (!sectionVisible("servicios-publicos", "tramites")) throw notFound();
+  },
   loader: async ({ params, context }) => {
     const data = await context.queryClient.ensureQueryData(publicProceduresQuery);
     const t = data.procedures.find((t) => t.cat === params.categoria && t.slug === params.tramite);

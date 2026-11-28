@@ -6,6 +6,8 @@
 //   vacio     (por defecto) site_config() sin datos: valores compilados de la demo.
 //   identidad site_config() devuelve otra identidad: debe verse sin desplegar.
 //   caido     site_config() no responde: páginas en tiempo razonable con los valores compilados.
+//   estructura site_config() publica Servicios públicos desactivado y un acceso directo adicional:
+//             sus rutas dan 404, el Directorio sigue y el acceso aparece en la portada.
 import { spawn } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
@@ -15,7 +17,7 @@ const SERVER_ENTRY = ".output/server/index.mjs";
 const CLIENT_DIR = ".output/public";
 const SUPABASE_PORT = 54321;
 const SCENARIO = process.env.LEAK_SCENARIO || "vacio";
-const APP_PORT = { vacio: 3999, identidad: 3998, caido: 3997 }[SCENARIO];
+const APP_PORT = { vacio: 3999, identidad: 3998, caido: 3997, estructura: 3996 }[SCENARIO];
 const BASE = `http://127.0.0.1:${APP_PORT}`;
 
 /** Términos del piloto. Mantener alineado con src/config/demo-instance.test.ts. */
@@ -54,6 +56,29 @@ const EMPTY_IDENTITY = Object.fromEntries(
   ]),
 );
 
+/** Estructura publicada en el escenario «estructura». */
+const TEST_SHORTCUT = {
+  id: "aa000000-0000-4000-8000-000000000001",
+  title: "Acceso de ensayo",
+  description: "Descripción de ensayo",
+  image_path: "accesos/aa000000-0000-4000-8000-000000000001.webp",
+  image_alt: "Imagen de ensayo",
+  href: "https://example.org/ensayo",
+};
+const TEST_STRUCTURE = {
+  // El Directorio no se puede desactivar: esta entrada debe ignorarse.
+  menu: {
+    "servicios-publicos": { enabled: false, sort_order: 0 },
+    directorio: { enabled: false, sort_order: 1 },
+  },
+  sections: {},
+  shortcuts: [TEST_SHORTCUT],
+};
+/** Rutas que dependen de Servicios públicos: con la página desactivada no existen. */
+const SERVICES_ROUTES = ["/servicios-publicos", "/tramites", "/servicios/no-existe"];
+/** Fuera del alcance inicial: no deben aparecer en ninguna página. */
+const OUT_OF_SCOPE = /clasificados|pr[oó]ximamente/gi;
+
 const PAGES = [
   "/",
   "/directorio",
@@ -66,11 +91,21 @@ const PAGES = [
   "/cookies",
   "/auth",
   `/revision/${"a".repeat(50)}`,
-  "/vida-diaria",
   "/manifest.webmanifest",
   "/robots.txt",
 ];
-const NOT_FOUND = ["/descubre", "/vida-diaria/transporte", "/punto-vuela", "/comercios/no-existe"];
+// La demo no tiene contenido de Vida cotidiana: la sección no está disponible y sus rutas no existen.
+const NOT_FOUND = [
+  "/descubre",
+  "/vida-diaria",
+  "/vida-diaria/transporte",
+  "/punto-vuela",
+  "/comercios/no-existe",
+];
+if (SCENARIO === "estructura") {
+  PAGES.splice(0, PAGES.length, ...PAGES.filter((p) => !SERVICES_ROUTES.includes(p)));
+  NOT_FOUND.push(...SERVICES_ROUTES);
+}
 /** Con Supabase caído cada página debe responder sin esperar indefinidamente (corte de 1,5 s). */
 const MAX_PAGE_MS = 4_000;
 
@@ -100,6 +135,8 @@ const supabase = createServer((req, res) => {
       return void setTimeout(() => {
         if (!res.writableEnded && !res.destroyed) json(200, { identity: TEST_IDENTITY });
       }, 10_000);
+    if (SCENARIO === "estructura")
+      return json(200, { identity: EMPTY_IDENTITY, ...TEST_STRUCTURE });
     return json(200, { identity: SCENARIO === "identidad" ? TEST_IDENTITY : EMPTY_IDENTITY });
   }
   if (/^\/rest\/v1\/listings(\?|\/|$)/.test(req.url ?? "")) listingsTableRequests.push(req.url);
@@ -156,7 +193,19 @@ function identityErrors(path, body) {
       errors.push(`${path}: sigue mostrando valores compilados (${stale.join(", ")})`);
     return errors;
   }
-  // vacio y caido: se usan los valores compilados de la demo.
+  if (SCENARIO === "estructura" && path === "/") {
+    const errors = [];
+    if (!visible.includes(TEST_SHORTCUT.title) || !visible.includes(`href="${TEST_SHORTCUT.href}"`))
+      errors.push("/: no muestra el acceso directo adicional publicado");
+    if (visible.includes('href="/servicios-publicos"'))
+      errors.push("/: enlaza Servicios públicos aunque está desactivado");
+    if (!visible.includes('href="/directorio'))
+      errors.push("/: falta el acceso directo del Directorio, que es permanente");
+    if (!visible.includes(DEMO_VALUES[0]))
+      errors.push("/: no muestra el nombre compilado de la demo");
+    return errors;
+  }
+  // vacio, caido y estructura: se usan los valores compilados de la demo.
   return visible.includes(DEMO_VALUES[0])
     ? []
     : [`${path}: no muestra el nombre compilado de la demo`];
@@ -175,6 +224,10 @@ try {
     const raw = findings(body, RAW_VARIABLES);
     const html = (res.headers.get("content-type") ?? "").includes("text/html");
     const identity = html ? identityErrors(path, body) : [];
+    const outOfScope = html
+      ? findings(body.replace(/<script\b[\s\S]*?<\/script>/gi, ""), OUT_OF_SCOPE)
+      : [];
+    if (outOfScope.length) identity.push(`${path}: muestra ${outOfScope.join(", ")}`);
     console.log(
       `${res.status} ${path} ${ms} ms${leaks.length ? ` | piloto: ${leaks.join(", ")}` : ""}${raw.length ? ` | sin sustituir: ${raw.join(", ")}` : ""}${identity.length ? ` | ${identity.join("; ")}` : ""}`,
     );

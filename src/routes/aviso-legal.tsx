@@ -165,23 +165,7 @@ function AvisoLegal() {
       </p>
 
       <h2>
-        <Text text="7. Anuncios y clasificados" />
-      </h2>
-      <p>
-        <Text text="Los anuncios de compraventa, alquileres, empleo y otros servicios publicados en {app} son facilitados por terceros." />{" "}
-      </p>
-      <p>
-        <Text text="{app} actúa como espacio de difusión de dichos anuncios y no interviene en las operaciones, negociaciones, pagos o acuerdos que puedan establecerse entre las partes." />{" "}
-      </p>
-      <p>
-        <Text text="Los usuarios deberán comprobar por sus propios medios la veracidad de la información, la identidad de los anunciantes y las condiciones de cualquier operación antes de llegar a un acuerdo." />{" "}
-      </p>
-      <p>
-        <Text text="La publicación de un anuncio no supone que {app} certifique su autenticidad o garantice la operación." />
-      </p>
-
-      <h2>
-        <Text text="8. Propiedad intelectual e industrial" />
+        <Text text="7. Propiedad intelectual e industrial" />
       </h2>
       <p>
         <Text text="El diseño, la estructura, los elementos gráficos propios, los textos originales y demás contenidos creados específicamente para {app} están protegidos por la normativa de propiedad intelectual e industrial." />{" "}
@@ -197,7 +181,7 @@ function AvisoLegal() {
       </p>
 
       <h2>
-        <Text text="9. Enlaces externos" />
+        <Text text="8. Enlaces externos" />
       </h2>
       <p>
         <Text text="{app} puede incluir enlaces a páginas web, servicios o plataformas de terceros con el propósito de facilitar información adicional." />{" "}
@@ -210,7 +194,7 @@ function AvisoLegal() {
       </p>
 
       <h2>
-        <Text text="10. Disponibilidad y responsabilidad" />
+        <Text text="9. Disponibilidad y responsabilidad" />
       </h2>
       <p>
         <Text text="El titular realizará esfuerzos razonables para mantener la plataforma disponible y sus contenidos actualizados." />
@@ -226,7 +210,7 @@ function AvisoLegal() {
       </p>
 
       <h2>
-        <Text text="11. Comunicaciones e incidencias" />
+        <Text text="10. Comunicaciones e incidencias" />
       </h2>
       <p>
         <Text text="Cualquier persona que detecte información incorrecta, contenido presuntamente ilícito, una vulneración de derechos o cualquier otra incidencia relacionada con la plataforma podrá comunicarlo a través del correo electrónico de contacto o de los formularios habilitados en {app}." />{" "}
@@ -236,7 +220,7 @@ function AvisoLegal() {
       </p>
 
       <h2>
-        <Text text="12. Protección de datos personales" />
+        <Text text="11. Protección de datos personales" />
       </h2>
       <p>
         <Text text="El tratamiento de los datos personales facilitados a través de la plataforma se regula en la correspondiente" />{" "}
@@ -247,7 +231,7 @@ function AvisoLegal() {
       </p>
 
       <h2>
-        <Text text="13. Legislación aplicable" />
+        <Text text="12. Legislación aplicable" />
       </h2>
       <p>
         <Text text="Este aviso legal se rige por la legislación española y europea que resulte aplicable." />

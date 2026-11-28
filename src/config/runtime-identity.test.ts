@@ -28,6 +28,8 @@ describe("identidad en tiempo de ejecución", () => {
       identity: { appName: "Plataforma Prueba", name: "Villa de Prueba" },
       branding: {},
       pageHeaders: {},
+      // Sin estructura publicada en el HTML: los valores por defecto del producto.
+      structure: { menu: {}, sections: {}, shortcuts: [] },
     });
   });
 

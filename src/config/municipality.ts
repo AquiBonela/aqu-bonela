@@ -23,6 +23,7 @@ import {
   readBrowserSiteConfig,
   type SiteConfig,
 } from "@/lib/site-identity";
+import { EMPTY_STRUCTURE, type SiteStructure } from "@/lib/site-structure";
 
 export { DEFAULT_MUNICIPALITY_ID };
 export type {
@@ -79,6 +80,11 @@ function ensureBrowserConfig(): void {
 export function getSiteConfigSnapshot(): SiteConfig {
   ensureBrowserConfig();
   return siteConfig ?? EMPTY_SITE_CONFIG;
+}
+
+/** Menú, secciones y accesos directos publicados; vacío (valores por defecto) si no hay datos. */
+export function getSiteStructure(): SiteStructure {
+  return getSiteConfigSnapshot().structure ?? EMPTY_STRUCTURE;
 }
 
 /** Configuración de la instalación actual: identidad de Supabase sobre la instancia compilada. */

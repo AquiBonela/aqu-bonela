@@ -24,7 +24,6 @@ export const home: NonNullable<InstanceContent["home"]> = {
     descubre: castillo,
     servicios: fuentes,
     actualidad: molino,
-    clasificados: cactus,
   },
 };
 
