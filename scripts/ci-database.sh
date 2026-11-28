@@ -34,7 +34,8 @@ buckets() {
   run_superuser "$1" -f scripts/ci-database-stubs.sql
   run "$1" -c "insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) values
     ('listing-photos', 'listing-photos', false, 5242880, null),
-    ('procedure-images', 'procedure-images', false, 8388608, array['image/webp'])
+    ('procedure-images', 'procedure-images', false, 8388608, array['image/webp']),
+    ('site-assets', 'site-assets', false, 5242880, array['image/webp', 'image/png'])
     on conflict (id) do nothing;"
 }
 

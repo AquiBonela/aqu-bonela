@@ -1,11 +1,11 @@
 import { Text, useI18n } from "@/lib/i18n";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { adminReportsQuery, adminSuggestionsQuery, isAdminQuery } from "@/lib/admin";
 import { AppHeader, type HeaderItem } from "@/components/AppHeader";
-import { getMunicipality } from "@/config/municipality";
+import { getMunicipality, getSiteConfigSnapshot } from "@/config/municipality";
 import {
   ADMIN_AREAS,
   adminAreaForPath,
@@ -147,6 +147,7 @@ function AdminLayout({ children }: { children: ReactNode }) {
 export function AdminShell({ children }: { children: ReactNode }) {
   const { tr } = useI18n();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: isAdmin, isLoading } = useQuery(isAdminQuery);
 
   const items: HeaderItem[] = [
@@ -155,6 +156,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
       label: "Salir",
       onClick: async () => {
         await supabase.auth.signOut();
+        // Los datos del panel no se quedan en la memoria del navegador tras salir.
+        queryClient.removeQueries({ queryKey: ["admin"] });
         navigate({ to: "/auth" });
       },
     },
@@ -172,7 +175,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <img
                 src={getMunicipality().assets.logoAdmin}
                 alt={getMunicipality().appName}
-                className="h-9 max-w-full object-contain brightness-0"
+                // El logotipo compilado del piloto es blanco y se oscurece; uno subido se muestra tal cual.
+                className={`h-9 max-w-full object-contain ${getSiteConfigSnapshot().branding?.logoPath ? "" : "brightness-0"}`}
               />
             ) : (
               <span className="truncate font-display text-lg font-extrabold">

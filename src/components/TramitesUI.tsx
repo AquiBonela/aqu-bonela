@@ -21,6 +21,8 @@ import {
 } from "@/lib/tramites";
 
 import { procedureTranslationMap, type PublicProcedure } from "@/lib/public-procedures";
+import { PageHeaderImage } from "@/components/PageHeaderImage";
+import type { HeaderImage } from "@/lib/page-headers";
 
 const CAT_ICON: Record<Categoria["icon"], LucideIcon> = {
   doc: FileText,
@@ -92,7 +94,7 @@ export function Hero({
   kicker?: string;
   title: string;
   text: string;
-  image?: string;
+  image?: HeaderImage | null;
 }) {
   const { tr } = useI18n();
   return (
@@ -101,13 +103,9 @@ export function Hero({
     >
       {image && (
         <>
-          <img
-            src={image}
-            alt=""
-            aria-hidden
-            width={1220}
-            height={768}
-            fetchPriority="high"
+          <PageHeaderImage
+            image={image}
+            priority
             className="absolute inset-0 -z-20 h-full w-full object-cover"
           />
           <div aria-hidden className="absolute inset-0 -z-10 bg-foreground/65" />

@@ -1,3 +1,4 @@
+import type { HourPeriod } from "./listing-details";
 /** Utilidades puras del flujo de revisión por enlace privado. */
 import { brand } from "@/config/municipality";
 
@@ -26,6 +27,12 @@ export type ReviewListing = {
   public_website: string | null;
   category_id: string | null;
   photos: { url: string; alt: string }[];
+  home_service?: boolean;
+  service_area?: string;
+  show_service_area?: boolean;
+  cover_alt?: string;
+  hours_note?: string;
+  periods?: HourPeriod[];
 };
 
 export type ReviewContact = {
@@ -52,6 +59,13 @@ export type ReviewContact = {
   show_instagram: boolean;
   show_tiktok: boolean;
   owner_name: string | null;
+  website?: string | null;
+  show_website?: boolean;
+  street?: string | null;
+  street_number?: string | null;
+  postal_code?: string | null;
+  locality?: string | null;
+  show_approximate_location?: boolean;
 };
 
 export type ReviewVisibility = Pick<
@@ -67,7 +81,12 @@ export type ReviewVisibility = Pick<
   | "show_x_twitter"
   | "show_instagram"
   | "show_tiktok"
-> & { show_hours: boolean };
+> & {
+  show_hours: boolean;
+  show_website?: boolean;
+  show_service_area?: boolean;
+  show_approximate_location?: boolean;
+};
 
 /** Campos que quedan registrados en el consentimiento del titular. */
 export function authorizedContactFields(show: ReviewVisibility) {
@@ -84,6 +103,9 @@ export function authorizedContactFields(show: ReviewVisibility) {
     show.show_instagram ? "instagram" : null,
     show.show_tiktok ? "tiktok" : null,
     show.show_hours ? "horario" : null,
+    show.show_website ? "web" : null,
+    show.show_service_area ? "zona de servicio" : null,
+    !show.show_address && show.show_approximate_location ? "zona aproximada" : null,
   ].filter((field): field is string => field !== null);
 }
 
@@ -103,11 +125,14 @@ export type ReviewData =
  * aplicó nada. «error»: la base no completó la operación y no se aplicó ningún cambio.
  */
 export type SubmitResult =
-  | { ok: true; url: string | null }
-  | { ok: false; reason: "invalid" | "expired" | "used" | "error" };
+  | { ok: true; url: string | null; published?: boolean }
+  | { ok: false; reason: "invalid" | "expired" | "used" | "error" | "invalid_message" };
 
 /** Mensaje para el titular cuando su envío no se aplicó. */
-export function submitErrorMessage(reason: "invalid" | "expired" | "used" | "error") {
+export function submitErrorMessage(
+  reason: "invalid" | "expired" | "used" | "error" | "invalid_message",
+) {
+  if (reason === "invalid_message") return "Explica qué hay que corregir (al menos 5 caracteres).";
   if (reason === "expired") return "El enlace ha caducado.";
   if (reason === "used")
     return "Este enlace ya se usó y la ficha ya está autorizada. Si necesitas cambiar algo, contacta con el administrador.";

@@ -6,8 +6,9 @@
 import { z } from "zod";
 import type { MunicipalityConfig } from "../../instances/schema";
 import { hasControlCharacter } from "./control-characters";
+import { themeFromColors } from "./brand-palette";
 
-/** Campos que la base de datos puede sustituir. Tema, recursos y claves técnicas siguen en el build. */
+/** Campos que la base de datos puede sustituir. Las claves técnicas siguen en el build. */
 export type IdentityOverrides = Partial<
   Pick<
     MunicipalityConfig,
@@ -21,17 +22,84 @@ export type IdentityOverrides = Partial<
     | "demonym"
     | "institutional"
     | "coordinates"
+    | "postalCode"
   >
 >;
 
-/** Configuración pública de la web. Las fases siguientes añaden claves (tema, secciones, menú). */
+/** Colores y recursos gráficos guardados en Supabase (rutas dentro del bucket site-assets). */
+export interface Branding {
+  primaryColor?: string;
+  accentColor?: string;
+  logoPath?: string;
+  logoLightPath?: string;
+  iconPath?: string;
+  iconSmallPath?: string;
+}
+
+/** Páginas públicas comunes cuya cabecera se gestiona desde su editor. */
+export const PAGE_KEYS = [
+  "inicio",
+  "directorio",
+  "servicios-publicos",
+  "tramites",
+  "descubre",
+  "tablon",
+  "actualidad",
+] as const;
+export type PageKey = (typeof PAGE_KEYS)[number];
+
+export interface PageHeader {
+  imagePath: string;
+  imageSmallPath: string;
+  alt: string;
+  /** Punto de encuadre en porcentaje (0–100): se mantiene visible al recortar. */
+  focalX: number;
+  focalY: number;
+}
+
+export type PageHeaders = Partial<Record<PageKey, PageHeader>>;
+
+/** Configuración pública de la web. */
 export interface SiteConfig {
   identity: IdentityOverrides;
+  branding?: Branding;
+  pageHeaders?: PageHeaders;
 }
 
 export const EMPTY_SITE_CONFIG: SiteConfig = Object.freeze({
   identity: Object.freeze({}),
+  branding: Object.freeze({}),
+  pageHeaders: Object.freeze({}),
 }) as SiteConfig;
+
+/** Dirección pública (en el propio dominio de la instalación) de un archivo de site-assets. */
+export function siteAssetUrl(path: string): string {
+  return `/marca/${path}`;
+}
+
+/** Rutas que el panel genera; las mismas que admite la base de datos. */
+export const ASSET_PATHS = {
+  logoPath: /^identidad\/[0-9a-f-]{36}\/logo\.webp$/,
+  logoLightPath: /^identidad\/[0-9a-f-]{36}\/logo-claro\.webp$/,
+  iconPath: /^identidad\/[0-9a-f-]{36}\/icono-512\.png$/,
+  iconSmallPath: /^identidad\/[0-9a-f-]{36}\/icono-192\.png$/,
+} as const;
+
+export function pageHeaderPaths(page: PageKey) {
+  return {
+    image: new RegExp(`^cabeceras/${page}/[0-9a-f-]{36}\\.webp$`),
+    small: new RegExp(`^cabeceras/${page}/[0-9a-f-]{36}-movil\\.webp$`),
+  };
+}
+
+/** Rutas que la web sirve desde /marca/: solo las que el panel puede generar. */
+export function isServableAssetPath(path: string): boolean {
+  if (Object.values(ASSET_PATHS).some((re) => re.test(path))) return true;
+  return PAGE_KEYS.some((page) => {
+    const p = pageHeaderPaths(page);
+    return p.image.test(path) || p.small.test(path);
+  });
+}
 
 declare global {
   interface Window {
@@ -61,7 +129,10 @@ type FieldName =
   | "town_hall_address"
   | "town_hall_phone"
   | "town_hall_website"
-  | "timezone";
+  | "timezone"
+  | "postal_code"
+  | "primary_color"
+  | "accent_color";
 
 const safeText = (value: string) => !UNSAFE_SYMBOLS.test(value) && !hasControlCharacter(value);
 const text = (max: number) => z.string().trim().max(max).refine(safeText);
@@ -88,6 +159,9 @@ const FIELDS: Record<FieldName, z.ZodType<string>> = {
     .max(300)
     .refine((v) => v === "" || WEBSITE.test(v)),
   timezone: text(64),
+  postal_code: z.string().regex(/^([0-9]{5})?$/),
+  primary_color: z.string().regex(/^(#[0-9a-f]{6})?$/),
+  accent_color: z.string().regex(/^(#[0-9a-f]{6})?$/),
 };
 
 /** Campo de texto de public.site_identity. */
@@ -119,8 +193,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * Nunca lanza: un valor que no cumple las reglas se descarta y se avisa en el registro.
  */
 export function parseSiteConfig(raw: unknown): SiteConfig {
+  const pageHeaders = parsePageHeaders(isRecord(raw) ? raw["page_headers"] : undefined);
   const row = isRecord(raw) && isRecord(raw["identity"]) ? raw["identity"] : null;
-  if (!row) return { identity: {} };
+  if (!row) return { identity: {}, branding: {}, pageHeaders };
 
   const rejected: string[] = [];
   const read = (name: FieldName): string => {
@@ -177,9 +252,72 @@ export function parseSiteConfig(raw: unknown): SiteConfig {
   if (lat !== undefined && lng !== undefined && timezone)
     identity.coordinates = { lat, lng, timezone };
 
+  const postalCode = row["postal_code"];
+  if (typeof postalCode === "string" && postalCode !== "") {
+    if (POSTAL_CODE.test(postalCode)) identity.postalCode = postalCode;
+    else rejected.push("postal_code");
+  }
+
+  const branding: Branding = {};
+  const color = (name: "primary_color" | "accent_color", key: "primaryColor" | "accentColor") => {
+    const value = row[name];
+    if (typeof value !== "string" || value === "") return;
+    if (COLOR.test(value)) branding[key] = value;
+    else rejected.push(name);
+  };
+  color("primary_color", "primaryColor");
+  color("accent_color", "accentColor");
+  const asset = (name: string, key: keyof typeof ASSET_PATHS) => {
+    const value = row[name];
+    if (typeof value !== "string" || value === "") return;
+    if (ASSET_PATHS[key].test(value)) branding[key] = value;
+    else rejected.push(name);
+  };
+  asset("logo_path", "logoPath");
+  asset("logo_light_path", "logoLightPath");
+  asset("icon_path", "iconPath");
+  asset("icon_small_path", "iconSmallPath");
+
   if (rejected.length)
     console.warn(`[site-identity] Valores no válidos descartados: ${rejected.join(", ")}`);
-  return { identity };
+  return { identity, branding, pageHeaders };
+}
+
+const POSTAL_CODE = /^[0-9]{5}$/;
+const COLOR = /^#[0-9a-f]{6}$/;
+
+function parsePageHeaders(raw: unknown): PageHeaders {
+  const headers: PageHeaders = {};
+  if (!isRecord(raw)) return headers;
+  for (const page of PAGE_KEYS) {
+    const h = raw[page];
+    if (!isRecord(h)) continue;
+    const paths = pageHeaderPaths(page);
+    const imagePath = h["image_path"];
+    const imageSmallPath = h["image_small_path"];
+    const alt = typeof h["alt"] === "string" ? h["alt"] : "";
+    const focal = (v: unknown) =>
+      typeof v === "number" && Number.isInteger(v) && v >= 0 && v <= 100 ? v : 50;
+    if (
+      typeof imagePath !== "string" ||
+      typeof imageSmallPath !== "string" ||
+      !paths.image.test(imagePath) ||
+      !paths.small.test(imageSmallPath) ||
+      alt.length > 200 ||
+      !safeText(alt)
+    ) {
+      console.warn(`[site-identity] Cabecera no válida descartada: ${page}`);
+      continue;
+    }
+    headers[page] = {
+      imagePath,
+      imageSmallPath,
+      alt,
+      focalX: focal(h["focal_x"]),
+      focalY: focal(h["focal_y"]),
+    };
+  }
+  return headers;
 }
 
 /** Identidad efectiva: la de la base de datos donde exista, la compilada en el resto. */
@@ -190,9 +328,47 @@ export function mergeIdentity(
   return { ...base, ...overrides };
 }
 
+/**
+ * Configuración efectiva completa: la identidad, los recursos gráficos servidos desde /marca/ y el
+ * tema calculado con los colores. Lo que no está en Supabase sigue siendo lo compilado.
+ */
+export function mergeSiteConfig(base: MunicipalityConfig, config: SiteConfig): MunicipalityConfig {
+  const merged = mergeIdentity(base, config.identity ?? {});
+  const b = config.branding ?? {};
+  const assets = { ...base.assets };
+  if (b.logoPath) {
+    assets.logoAdmin = siteAssetUrl(b.logoPath);
+    assets.logoText = siteAssetUrl(b.logoPath);
+    // Sin versión clara subida no se usa la compilada: sería de otra identidad visual.
+    if (b.logoLightPath) assets.logoHome = siteAssetUrl(b.logoLightPath);
+    else delete assets.logoHome;
+  } else if (b.logoLightPath) {
+    assets.logoHome = siteAssetUrl(b.logoLightPath);
+  }
+  if (b.iconSmallPath) {
+    assets.favicon = siteAssetUrl(b.iconSmallPath);
+    assets.appleTouchIcon = siteAssetUrl(b.iconSmallPath);
+  }
+  if (b.iconPath || b.iconSmallPath) {
+    assets.pwaIcons = {
+      icon192: b.iconSmallPath ? siteAssetUrl(b.iconSmallPath) : base.assets.pwaIcons.icon192,
+      icon512: b.iconPath ? siteAssetUrl(b.iconPath) : base.assets.pwaIcons.icon512,
+    };
+  }
+  return {
+    ...merged,
+    assets,
+    theme: themeFromColors(base.theme, b.primaryColor, b.accentColor),
+  };
+}
+
 /** Script que entrega al navegador la misma configuración usada en el servidor. Escapa "<" y separadores de línea. */
 export function siteConfigScript(config: SiteConfig): string {
-  const json = JSON.stringify({ identity: config.identity ?? {} })
+  const json = JSON.stringify({
+    identity: config.identity ?? {},
+    branding: config.branding ?? {},
+    pageHeaders: config.pageHeaders ?? {},
+  })
     .replace(/</g, "\\u003c")
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
@@ -203,7 +379,10 @@ export function siteConfigScript(config: SiteConfig): string {
 export function readBrowserSiteConfig(): SiteConfig | undefined {
   if (typeof window === "undefined") return undefined;
   const value: unknown = window.__SITE_CONFIG__;
-  return isRecord(value) && isRecord(value["identity"])
-    ? (value as unknown as SiteConfig)
-    : undefined;
+  if (!isRecord(value) || !isRecord(value["identity"])) return undefined;
+  return {
+    identity: value["identity"] as IdentityOverrides,
+    branding: isRecord(value["branding"]) ? (value["branding"] as Branding) : {},
+    pageHeaders: isRecord(value["pageHeaders"]) ? (value["pageHeaders"] as PageHeaders) : {},
+  };
 }

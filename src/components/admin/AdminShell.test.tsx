@@ -25,6 +25,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 vi.mock("@tanstack/react-query", async (original) => ({
   ...(await original<typeof import("@tanstack/react-query")>()),
+  useQueryClient: () => ({ removeQueries: () => {} }),
   useQuery: ({ queryKey }: { queryKey: string[] }) => {
     const key = queryKey.join("/");
     if (key === "admin/is-admin") return { data: mocks.isAdmin, isLoading: false };

@@ -3,6 +3,8 @@ import { notFound } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import type { Listing } from "@/lib/directory";
 import { getMunicipality } from "@/config/municipality";
+import type { HourPeriod } from "./listing-details";
+import { CACHE } from "./cache-policy";
 
 /** URL pública de la instalación, leída en cada uso: puede cambiar desde /admin sin desplegar. */
 export function siteUrl(): string {
@@ -27,16 +29,29 @@ export type ListingDetail = Listing & {
   public_tiktok: string | null;
   /** El titular ocultó el horario (vista pública). */
   hours_hidden?: boolean;
+  /** Localidad publicada (dirección exacta o solo zona aproximada). */
+  public_locality?: string | null;
+  public_latitude?: number | null;
+  public_longitude?: number | null;
+  /** Solo se publica la zona, no la calle. */
+  public_location_approximate?: boolean | null;
+  public_home_service?: boolean | null;
+  public_service_area?: string | null;
+  cover_alt?: string | null;
+  hours_note?: string | null;
+  /** Cierres, vacaciones y temporadas (vacío si el horario está oculto). */
+  periods?: HourPeriod[];
 };
 
 export const listingDetailQuery = (type: Listing["type"], slug: string) =>
   queryOptions({
     queryKey: ["listing", type, slug],
+    ...CACHE.listing,
     queryFn: async (): Promise<ListingDetail> => {
       const { data, error } = await supabase
         .from("public_listings")
         .select(
-          "id,slug,type,name,short_description,description,translations,category_id,featured,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,hours_hidden",
+          "id,slug,type,name,short_description,description,translations,category_id,featured,tags,public_phone,public_phone_2,public_whatsapp,public_address,public_email,public_website,public_linkedin,public_facebook,public_youtube,public_x_twitter,public_instagram,public_tiktok,activity,labels,cover_url,cover_path,gallery_urls,urgent_24h,hours_hidden,public_locality,public_latitude,public_longitude,public_location_approximate,public_home_service,public_service_area,cover_alt,hours_note",
         )
         .eq("type", type)
         .eq("slug", slug)
@@ -46,19 +61,30 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
       const rest = data as unknown as Listing & Partial<ListingDetail>;
       // Categoría, horario visible y fotos, cada uno con su política pública.
       // El horario oculto ni se pide: una sesión de administrador en el navegador sí lo recibiría.
-      const [category, hoursResult, photosResult] = await Promise.all([
+      const [category, hoursResult, photosResult, periodsResult] = await Promise.all([
         rest.category_id
           ? supabase.from("categories").select("name,slug").eq("id", rest.category_id).maybeSingle()
           : null,
         rest.hours_hidden
           ? null
-          : supabase.from("listing_hours").select("weekday,opens,closes").eq("listing_id", rest.id),
+          : supabase
+              .from("listing_hours")
+              .select("weekday,opens,closes,period_id")
+              .eq("listing_id", rest.id),
         supabase
           .from("listing_photos")
           .select("storage_path,alt,sort_order")
           .eq("listing_id", rest.id),
+        rest.hours_hidden
+          ? null
+          : supabase
+              .from("listing_hour_periods")
+              .select("id,kind,starts_on,ends_on,label")
+              .eq("listing_id", rest.id)
+              .order("sort_order"),
       ]);
-      const relatedError = category?.error ?? hoursResult?.error ?? photosResult.error;
+      const relatedError =
+        category?.error ?? hoursResult?.error ?? photosResult.error ?? periodsResult?.error;
       if (relatedError) throw new Error(relatedError.message);
       const sorted = [...(photosResult.data ?? [])].sort((a, b) => a.sort_order - b.sort_order);
       let photos: ListingDetail["photos"] = [];
@@ -92,13 +118,24 @@ export const listingDetailQuery = (type: Listing["type"], slug: string) =>
         cover_url,
         categoryName: category?.data?.name ?? null,
         categorySlug: category?.data?.slug ?? null,
-        hours: [...(hoursResult?.data ?? [])].sort(
-          (a, b) => a.weekday - b.weekday || a.opens.localeCompare(b.opens),
-        ),
+        hours: sortHours((hoursResult?.data ?? []).filter((h) => !h.period_id)),
+        periods: (periodsResult?.data ?? []).map((p) => ({
+          kind: p.kind as HourPeriod["kind"],
+          starts_on: p.starts_on,
+          ends_on: p.ends_on,
+          label: p.label,
+          hours: sortHours((hoursResult?.data ?? []).filter((h) => h.period_id === p.id)),
+        })),
         photos,
       };
     },
   });
+
+function sortHours(hours: { weekday: number; opens: string; closes: string }[]): Hour[] {
+  return hours
+    .map(({ weekday, opens, closes }) => ({ weekday, opens, closes }))
+    .sort((a, b) => a.weekday - b.weekday || a.opens.localeCompare(b.opens));
+}
 
 export function groupHours(hours: Hour[]) {
   return WEEKDAYS.map((day, i) => ({

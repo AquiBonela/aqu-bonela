@@ -2,7 +2,8 @@ import { Text, useI18n } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, FolderCog, Search, X } from "lucide-react";
+import { Plus, FolderCog, ImageIcon, Search, X } from "lucide-react";
+import { PageHeaderEditor } from "@/components/admin/PageHeaderEditor";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ListingCategories } from "@/components/admin/ListingCategories";
 import { adminListingsQuery, categoriesQuery, STATUSES } from "@/lib/admin";
@@ -56,6 +57,7 @@ function ListBody() {
   const { data: categories = [] } = useQuery(categoriesQuery);
   const [filters, setFilters] = useState(emptyAdminFilters);
   const [showCategories, setShowCategories] = useState(false);
+  const [showHeader, setShowHeader] = useState(false);
   const rows = filterAdminListings(data, filters);
   const availableCategories = categories.filter((c) =>
     data.some((l) => l.category_id === c.id && (!filters.type || l.type === filters.type)),
@@ -87,6 +89,15 @@ function ListBody() {
             <Text text="Categorías" />
           </Button>
           <Button
+            variant="outline"
+            onClick={() => setShowHeader((v) => !v)}
+            aria-expanded={showHeader}
+            aria-controls="cabecera-directorio-editor"
+          >
+            <ImageIcon />
+            <Text text="Cabecera" />
+          </Button>
+          <Button
             asChild
             className="bg-terracotta text-terracotta-foreground hover:bg-terracotta/90"
           >
@@ -98,6 +109,11 @@ function ListBody() {
         </div>
       </div>
       {showCategories && <ListingCategories />}
+      {showHeader && (
+        <div id="cabecera-directorio-editor" className="mt-4">
+          <PageHeaderEditor page="directorio" />
+        </div>
+      )}
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

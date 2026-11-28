@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useState } from "react";
-import { Plus, FolderCog, Search, Pencil, Save, X } from "lucide-react";
+import { Plus, FolderCog, ImageIcon, Search, Pencil, Save, X } from "lucide-react";
+import { PageHeaderEditor } from "@/components/admin/PageHeaderEditor";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
@@ -73,6 +74,7 @@ function ProcedureList() {
   const [cat, setCat] = useState("");
   const [status, setStatus] = useState("");
   const [showCategories, setShowCategories] = useState(false);
+  const [showHeader, setShowHeader] = useState(false);
   const [editing, setEditing] = useState<ProcedureCategory | "new" | null>(null);
   const all = procedureList(rows, categories);
   const filtered = all.filter(
@@ -94,6 +96,14 @@ function ProcedureList() {
             <FolderCog />
             {tr("Categorías")}
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowHeader((v) => !v)}
+            aria-expanded={showHeader}
+          >
+            <ImageIcon />
+            {tr("Cabecera")}
+          </Button>
           <Button asChild>
             <Link to="/admin/tramites/$id" params={{ id: "nuevo" }}>
               <Plus />
@@ -105,6 +115,11 @@ function ProcedureList() {
       <p className="mt-4 border-l-4 border-terracotta bg-muted p-3 text-sm">
         {tr("Los cambios del panel aún no se muestran en la guía pública: conexión pendiente.")}
       </p>
+      {showHeader && (
+        <div className="mt-4">
+          <PageHeaderEditor page="tramites" />
+        </div>
+      )}
       {showCategories && (
         <section className="mt-5 border-y py-5">
           <div className="flex items-center justify-between gap-2">

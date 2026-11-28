@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { brand } from "@/config/municipality";
 import { supabase } from "@/integrations/supabase/client";
+import { CACHE } from "./cache-policy";
 
 export type ListingType = "comercio" | "profesional" | "publico" | "asociacion";
 /** Los cuatro tipos de ficha, en el orden en que se muestran. */
@@ -53,6 +54,7 @@ export type Listing = {
 
 export const directoryQuery = queryOptions({
   queryKey: ["directory"],
+  ...CACHE.directory,
   queryFn: async () => {
     const [cats, acts, settings, list] = await Promise.all([
       supabase.from("categories").select("id,name,slug,sort_order,type").order("sort_order"),

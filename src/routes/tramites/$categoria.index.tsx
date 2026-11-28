@@ -6,6 +6,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { publicProceduresQuery } from "@/lib/public-procedures";
 import { Hero, TramiteCard } from "@/components/TramitesUI";
 import { brand } from "@/config/municipality";
+import { pageHeaderImage } from "@/lib/page-headers";
 
 export const Route = createFileRoute("/tramites/$categoria/")({
   loader: async ({ params, context }) => {
@@ -52,7 +53,12 @@ function CategoriaPage() {
     <div className="min-h-dvh bg-background">
       <SiteHeader />
       <main>
-        <Hero kicker="Guía de trámites" title={c.title} text={c.text} />
+        <Hero
+          image={pageHeaderImage("tramites")}
+          kicker="Guía de trámites"
+          title={c.title}
+          text={c.text}
+        />
         <div className="mx-auto max-w-5xl px-4 py-10">
           <Link
             to="/tramites"

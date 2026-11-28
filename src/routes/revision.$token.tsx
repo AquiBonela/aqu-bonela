@@ -17,6 +17,8 @@ import {
 } from "@/lib/review";
 import { Textarea } from "@/components/ui/textarea";
 import { brand, getMunicipality } from "@/config/municipality";
+import { composeAddress } from "@/lib/listing-details";
+import { REVIEW_TERMS, REVIEW_TERMS_VERSION } from "@/lib/listing-review";
 
 export const Route = createFileRoute("/revision/$token")({
   head: () => ({
@@ -162,13 +164,26 @@ function ReviewForm({
     instagram: contact?.show_instagram ?? true,
     tiktok: contact?.show_tiktok ?? true,
     hours: !hoursHidden(listing.tags),
+    website: contact?.show_website ?? true,
+    service_area: listing.show_service_area ?? true,
   });
+  const exactAddress = composeAddress(contact ?? {});
+  const locality = [contact?.postal_code, contact?.locality].filter(Boolean).join(" ");
+  // Si no quiere publicar la dirección exacta, puede publicar solo la zona aproximada.
+  const [approximate, setApproximate] = useState(contact?.show_approximate_location ?? false);
   const preview: ListingDetail = {
     ...listing,
     public_phone: contact?.phone || null,
     public_phone_2: contact?.phone_2 || null,
     public_whatsapp: contact?.whatsapp || null,
-    public_address: contact?.address || null,
+    public_address: exactAddress || null,
+    public_locality: locality || null,
+    public_website: contact?.website || listing.public_website || null,
+    public_home_service: listing.home_service ?? false,
+    public_service_area: listing.service_area ?? "",
+    cover_alt: listing.cover_alt ?? "",
+    hours_note: listing.hours_note ?? "",
+    periods: listing.periods ?? [],
     public_email: contact?.email || null,
     public_linkedin: contact?.linkedin || null,
     public_facebook: contact?.facebook || null,
@@ -215,10 +230,20 @@ function ReviewForm({
           show_instagram: show.instagram,
           show_tiktok: show.tiktok,
           show_hours: show.hours,
+          show_website: show.website,
+          show_service_area: show.service_area,
+          show_approximate_location: !show.address && approximate,
+          accepted_terms: true,
         },
       });
       if (res.ok) {
-        toast.success(tr("Ficha autorizada y publicada"));
+        toast.success(
+          tr(
+            res.published === false
+              ? "Ficha autorizada. La publicaremos en breve."
+              : "Ficha autorizada y publicada",
+          ),
+        );
         onApproved(res.url);
       } else {
         toast.error(tr(submitErrorMessage(res.reason)));
@@ -269,6 +294,32 @@ function ReviewForm({
           <h2 className="font-display text-lg font-bold">
             <Text text="Si todo está correcto" />
           </h2>
+          {exactAddress && !show.address && locality && (
+            <label className="flex items-start gap-2 text-base">
+              <input
+                type="checkbox"
+                checked={approximate}
+                onChange={(e) => setApproximate(e.target.checked)}
+                className="mt-1 h-5 w-5"
+              />
+              <span>
+                <Text text="Mostrar solo la zona aproximada (localidad y un mapa con un kilómetro de margen), sin calle ni número." />
+              </span>
+            </label>
+          )}
+          <div className="rounded-lg bg-muted p-3 text-sm">
+            <p className="font-semibold">
+              <Text text="Condiciones de publicación" />
+            </p>
+            <ul className="mt-1 list-disc space-y-1 pl-5">
+              {REVIEW_TERMS.map((term) => (
+                <li key={term}>
+                  <Text text={term} />
+                </li>
+              ))}
+            </ul>
+            <p className="mt-1 text-xs text-muted-foreground">{`Versión ${REVIEW_TERMS_VERSION}`}</p>
+          </div>
           <label className="flex items-start gap-2 text-base">
             <input
               type="checkbox"
@@ -277,7 +328,7 @@ function ReviewForm({
               className="mt-1 h-5 w-5"
             />
             <span>
-              <Text text="Confirmo que soy el titular de este negocio y autorizo la publicación de los datos marcados en {app}." />
+              <Text text="Confirmo que soy el titular de este negocio, acepto las condiciones y autorizo la publicación de los datos marcados en {app}." />
             </span>
           </label>
           <button
@@ -295,7 +346,7 @@ function ReviewForm({
           </h2>
           {sent ? (
             <p className="text-base">
-              <Text text="Mensaje enviado. El administrador revisará los cambios y te avisará. Tu ficha sigue sin publicar." />
+              <Text text="Mensaje enviado. Corregiremos la ficha y te enviaremos un enlace nuevo para que la revises." />
             </p>
           ) : (
             <>
@@ -309,7 +360,7 @@ function ReviewForm({
               />
               <button
                 onClick={notify}
-                disabled={busy || !comment.trim()}
+                disabled={busy || comment.trim().length < 5}
                 className="h-12 w-full rounded-xl border bg-card text-base font-semibold disabled:opacity-60"
               >
                 <Text text="Avisar al administrador" />{" "}

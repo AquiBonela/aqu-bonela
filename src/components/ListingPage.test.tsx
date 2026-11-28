@@ -39,6 +39,8 @@ const listing: ListingDetail = {
 };
 
 const visible: Record<ReviewField, boolean> = {
+  website: true,
+  service_area: true,
   address: true,
   phone: true,
   phone_2: true,

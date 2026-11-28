@@ -6,6 +6,7 @@ import { TramitesSection } from "@/components/TramitesSection";
 import { Hero } from "@/components/TramitesUI";
 import { publicProceduresQuery } from "@/lib/public-procedures";
 import { brand } from "@/config/municipality";
+import { pageHeaderImage } from "@/lib/page-headers";
 
 export const Route = createFileRoute("/tramites/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicProceduresQuery),
@@ -38,6 +39,7 @@ function TramitesPage() {
       <SiteHeader />
       <main>
         <Hero
+          image={pageHeaderImage("tramites")}
           title="Guía de trámites"
           text="¿Necesitas realizar una gestión y no sabes por dónde empezar? Encuentra guías sencillas para conocer los requisitos, preparar la documentación y saber dónde y cómo solicitar cada trámite."
         />

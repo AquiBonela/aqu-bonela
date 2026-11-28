@@ -74,7 +74,8 @@ vi.mock("@tanstack/react-start", () => ({
   },
 }));
 
-import { getReview, submitReview } from "./review.functions";
+import { getReview, sendCorrection, submitReview } from "./review.functions";
+import { REVIEW_TERMS_VERSION } from "./listing-review";
 
 const TOKEN = "t".repeat(43);
 const visibility = {
@@ -93,7 +94,7 @@ const visibility = {
 type Result = { ok: boolean; url?: string | null; reason?: string };
 const submit = (data: Record<string, unknown>) =>
   (submitReview as unknown as (i: { data: unknown }) => Promise<Result>)({
-    data: { token: TOKEN, ...visibility, ...data },
+    data: { token: TOKEN, ...visibility, accepted_terms: true, ...data },
   });
 const review = () =>
   (getReview as unknown as (i: { data: unknown }) => Promise<{ ok: boolean; done?: boolean }>)({
@@ -127,13 +128,18 @@ beforeEach(() => {
 describe("aprobación por enlace", () => {
   it("envía la decisión completa del titular en una sola operación de la base", async () => {
     const res = await submit({ show_hours: false, comment: "Todo correcto" });
-    expect(res).toEqual({ ok: true, url: "/comercios/taller" });
+    expect(res).toEqual({ ok: true, url: "/comercios/taller", published: true });
     expect(db.rpcs).toHaveLength(1);
     const [call] = db.rpcs;
     expect(call?.fn).toBe("approve_listing_review");
     expect(call?.args).toEqual({
       p_token_hash: await sha256(TOKEN),
-      p_visibility: visibility,
+      p_visibility: {
+        ...visibility,
+        show_website: false,
+        show_service_area: false,
+        show_approximate_location: false,
+      },
       p_show_hours: false,
       p_authorized_fields: [
         "segundo teléfono",
@@ -148,6 +154,7 @@ describe("aprobación por enlace", () => {
         "tiktok",
       ],
       p_comment: "Todo correcto",
+      p_terms_version: REVIEW_TERMS_VERSION,
     });
     // Ninguna escritura suelta: o se aplica todo en la base o nada.
     expect(db.writes).toEqual([]);
@@ -186,10 +193,10 @@ describe("aprobación por enlace", () => {
     expect(await submit({})).toEqual({ ok: false, reason: "invalid" });
   });
 
-  // Antes era DEFECTO 3. Por decisión del 27-11-2026 no se cambia ahora: revisar desde un enlace
-  // nuevo una ficha ya publicada queda para la etapa 5 (roadmap.md). Esta prueba fija el
-  // comportamiento actual para que el cambio, cuando llegue, sea deliberado.
-  it("un enlace nuevo de una ficha ya publicada la muestra como autorizada (etapa 5)", async () => {
+  // Antes era DEFECTO 3 (fijado hasta la etapa 5): un enlace nuevo de una ficha ya publicada la
+  // daba por autorizada. Cambio deliberado: ahora solo cuenta si el enlace se usó, así el titular
+  // puede volver a revisar su ficha cuando cambian datos relevantes.
+  it("un enlace nuevo de una ficha ya publicada permite volver a revisarla", async () => {
     db.listing = {
       ...db.listing,
       status: "publicada",
@@ -198,6 +205,47 @@ describe("aprobación por enlace", () => {
     };
     const res = await review();
     expect(res.ok).toBe(true);
-    expect(res.done).toBe(true);
+    expect(res.done).toBe(false);
+  });
+
+  it("no autoriza sin aceptar expresamente las condiciones", async () => {
+    await expect(Promise.resolve().then(() => submit({ accepted_terms: false }))).rejects.toThrow();
+    expect(db.rpcs).toEqual([]);
+  });
+
+  it("si la publicación queda para la administración, no envía al titular a una ficha sin publicar", async () => {
+    db.rpcResult = {
+      data: { status: "ok", type: "comercio", slug: "taller", published: false },
+      error: null,
+    };
+    expect(await submit({})).toEqual({ ok: true, url: null, published: false });
+  });
+});
+
+describe("correcciones del titular", () => {
+  const correct = (comment: string) =>
+    (sendCorrection as unknown as (i: { data: unknown }) => Promise<Result>)({
+      data: { token: TOKEN, comment },
+    });
+
+  it("las pide en una sola operación de la base que gasta el enlace", async () => {
+    db.rpcResult = { data: { status: "ok" }, error: null };
+    expect(await correct("El teléfono ha cambiado")).toEqual({ ok: true, url: null });
+    expect(db.rpcs).toEqual([
+      {
+        fn: "request_listing_corrections",
+        args: { p_token_hash: await sha256(TOKEN), p_message: "El teléfono ha cambiado" },
+      },
+    ]);
+    expect(db.writes).toEqual([]);
+  });
+
+  it("explica por qué no se aplicó (mensaje corto, enlace usado o fallo)", async () => {
+    db.rpcResult = { data: { status: "invalid_message" }, error: null };
+    expect(await correct("no")).toEqual({ ok: false, reason: "invalid_message" });
+    db.rpcResult = { data: { status: "used" }, error: null };
+    expect(await correct("Otra corrección")).toEqual({ ok: false, reason: "used" });
+    db.rpcResult = { data: null, error: { code: "XX000", message: "fallo" } };
+    expect(await correct("Otra corrección")).toEqual({ ok: false, reason: "error" });
   });
 });

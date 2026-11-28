@@ -15,6 +15,8 @@ import {
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { brand, getInstanceContent } from "@/config/municipality";
+import { PageHeaderImage } from "@/components/PageHeaderImage";
+import { pageHeaderImage } from "@/lib/page-headers";
 
 // Guía turística propia de la instancia; sin ella la página no existe.
 const discover = getInstanceContent().discover;
@@ -148,13 +150,7 @@ function Descubre() {
       <main>
         {/* Introducción */}
         <section className="relative">
-          <img
-            src={images?.hero}
-            alt={t("descubre.heroAlt")}
-            width={1280}
-            height={864}
-            className="h-[64vh] min-h-80 w-full object-cover"
-          />
+          <DiscoverHero fallback={images?.hero} alt={t("descubre.heroAlt")} />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-4 pb-10 text-background">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] opacity-90">
@@ -408,6 +404,17 @@ function Descubre() {
           </div>
         </section>
       </main>
+    </div>
+  );
+}
+
+/** Cabecera de Descubre: la del editor de la página o, si no hay, la de la instalación. */
+function DiscoverHero({ fallback, alt }: { fallback: string | undefined; alt: string }) {
+  const hero = pageHeaderImage("descubre", { src: fallback, alt });
+  if (!hero) return <div aria-hidden className="h-[64vh] min-h-80 w-full bg-primary" />;
+  return (
+    <div className="relative h-[64vh] min-h-80 w-full">
+      <PageHeaderImage image={hero} priority />
     </div>
   );
 }

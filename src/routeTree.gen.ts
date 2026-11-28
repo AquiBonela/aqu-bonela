@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AppDotwebmanifestRouteImport } from './routes/app[.]webmanifest'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as CookiesRouteImport } from './routes/cookies'
@@ -24,6 +25,7 @@ import { Route as SugerirRouteImport } from './routes/sugerir'
 import { Route as VidaDiariaRouteImport } from './routes/vida-diaria'
 import { Route as AsociacionesSlugRouteImport } from './routes/asociaciones.$slug'
 import { Route as ComerciosSlugRouteImport } from './routes/comercios.$slug'
+import { Route as MarcaSplatRouteImport } from './routes/marca.$'
 import { Route as ProfesionalesSlugRouteImport } from './routes/profesionales.$slug'
 import { Route as RevisionTokenRouteImport } from './routes/revision.$token'
 import { Route as ServiciosSlugRouteImport } from './routes/servicios.$slug'
@@ -32,13 +34,14 @@ import { Route as VidaDiariaCategoriaRouteImport } from './routes/vida-diaria.$c
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAvisosRouteImport } from './routes/_authenticated/admin/avisos'
 import { Route as AuthenticatedAdminConfiguracionRouteImport } from './routes/_authenticated/admin/configuracion'
-import { Route as AuthenticatedAdminContenidosRouteImport } from './routes/_authenticated/admin/contenidos'
 import { Route as AuthenticatedAdminDirectorioRouteImport } from './routes/_authenticated/admin/directorio'
 import { Route as AuthenticatedAdminIdentidadRouteImport } from './routes/_authenticated/admin/identidad'
 import { Route as AuthenticatedAdminSeccionesRouteImport } from './routes/_authenticated/admin/secciones'
 import { Route as AuthenticatedAdminSugerenciasRouteImport } from './routes/_authenticated/admin/sugerencias'
 import { Route as TramitesCategoriaIndexRouteImport } from './routes/tramites/$categoria.index'
 import { Route as TramitesCategoriaTramiteRouteImport } from './routes/tramites/$categoria.$tramite'
+import { Route as AuthenticatedAdminContenidosIndexRouteImport } from './routes/_authenticated/admin/contenidos.index'
+import { Route as AuthenticatedAdminContenidosPaginaRouteImport } from './routes/_authenticated/admin/contenidos.$pagina'
 import { Route as AuthenticatedAdminFichasIdRouteImport } from './routes/_authenticated/admin/fichas.$id'
 import { Route as AuthenticatedAdminTramitesIndexRouteImport } from './routes/_authenticated/admin/tramites.index'
 import { Route as AuthenticatedAdminTramitesIdRouteImport } from './routes/_authenticated/admin/tramites.$id'
@@ -50,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppDotwebmanifestRoute = AppDotwebmanifestRouteImport.update({
+  id: '/app.webmanifest',
+  path: '/app.webmanifest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -117,6 +125,11 @@ const ComerciosSlugRoute = ComerciosSlugRouteImport.update({
   path: '/comercios/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarcaSplatRoute = MarcaSplatRouteImport.update({
+  id: '/marca/$',
+  path: '/marca/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfesionalesSlugRoute = ProfesionalesSlugRouteImport.update({
   id: '/profesionales/$slug',
   path: '/profesionales/$slug',
@@ -159,12 +172,6 @@ const AuthenticatedAdminConfiguracionRoute =
     path: '/admin/configuracion',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminContenidosRoute =
-  AuthenticatedAdminContenidosRouteImport.update({
-    id: '/admin/contenidos',
-    path: '/admin/contenidos',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminDirectorioRoute =
   AuthenticatedAdminDirectorioRouteImport.update({
     id: '/admin/directorio',
@@ -200,6 +207,18 @@ const TramitesCategoriaTramiteRoute =
     path: '/tramites/$categoria/$tramite',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedAdminContenidosIndexRoute =
+  AuthenticatedAdminContenidosIndexRouteImport.update({
+    id: '/admin/contenidos/',
+    path: '/admin/contenidos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminContenidosPaginaRoute =
+  AuthenticatedAdminContenidosPaginaRouteImport.update({
+    id: '/admin/contenidos/$pagina',
+    path: '/admin/contenidos/$pagina',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminFichasIdRoute =
   AuthenticatedAdminFichasIdRouteImport.update({
     id: '/admin/fichas/$id',
@@ -221,6 +240,7 @@ const AuthenticatedAdminTramitesIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app.webmanifest': typeof AppDotwebmanifestRoute
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
@@ -234,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
+  '/marca/$': typeof MarcaSplatRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
@@ -241,7 +262,6 @@ export interface FileRoutesByFullPath {
   '/tramites/': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
-  '/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
   '/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
   '/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
   '/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
@@ -249,12 +269,15 @@ export interface FileRoutesByFullPath {
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
+  '/admin/contenidos/$pagina': typeof AuthenticatedAdminContenidosPaginaRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
   '/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/admin/contenidos/': typeof AuthenticatedAdminContenidosIndexRoute
   '/admin/tramites/': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app.webmanifest': typeof AppDotwebmanifestRoute
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
@@ -268,6 +291,7 @@ export interface FileRoutesByTo {
   '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
+  '/marca/$': typeof MarcaSplatRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
@@ -275,7 +299,6 @@ export interface FileRoutesByTo {
   '/tramites': typeof TramitesIndexRoute
   '/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
-  '/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
   '/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
   '/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
   '/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
@@ -283,14 +306,17 @@ export interface FileRoutesByTo {
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria': typeof TramitesCategoriaIndexRoute
+  '/admin/contenidos/$pagina': typeof AuthenticatedAdminContenidosPaginaRoute
   '/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
   '/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/admin/contenidos': typeof AuthenticatedAdminContenidosIndexRoute
   '/admin/tramites': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/app.webmanifest': typeof AppDotwebmanifestRoute
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/cookies': typeof CookiesRoute
@@ -304,6 +330,7 @@ export interface FileRoutesById {
   '/vida-diaria': typeof VidaDiariaRouteWithChildren
   '/asociaciones/$slug': typeof AsociacionesSlugRoute
   '/comercios/$slug': typeof ComerciosSlugRoute
+  '/marca/$': typeof MarcaSplatRoute
   '/profesionales/$slug': typeof ProfesionalesSlugRoute
   '/revision/$token': typeof RevisionTokenRoute
   '/servicios/$slug': typeof ServiciosSlugRoute
@@ -311,7 +338,6 @@ export interface FileRoutesById {
   '/tramites/': typeof TramitesIndexRoute
   '/_authenticated/admin/avisos': typeof AuthenticatedAdminAvisosRoute
   '/_authenticated/admin/configuracion': typeof AuthenticatedAdminConfiguracionRoute
-  '/_authenticated/admin/contenidos': typeof AuthenticatedAdminContenidosRoute
   '/_authenticated/admin/directorio': typeof AuthenticatedAdminDirectorioRoute
   '/_authenticated/admin/identidad': typeof AuthenticatedAdminIdentidadRoute
   '/_authenticated/admin/secciones': typeof AuthenticatedAdminSeccionesRoute
@@ -319,14 +345,17 @@ export interface FileRoutesById {
   '/tramites/$categoria/$tramite': typeof TramitesCategoriaTramiteRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/tramites/$categoria/': typeof TramitesCategoriaIndexRoute
+  '/_authenticated/admin/contenidos/$pagina': typeof AuthenticatedAdminContenidosPaginaRoute
   '/_authenticated/admin/fichas/$id': typeof AuthenticatedAdminFichasIdRoute
   '/_authenticated/admin/tramites/$id': typeof AuthenticatedAdminTramitesIdRoute
+  '/_authenticated/admin/contenidos/': typeof AuthenticatedAdminContenidosIndexRoute
   '/_authenticated/admin/tramites/': typeof AuthenticatedAdminTramitesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app.webmanifest'
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
@@ -340,6 +369,7 @@ export interface FileRouteTypes {
     | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
+    | '/marca/$'
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
@@ -347,7 +377,6 @@ export interface FileRouteTypes {
     | '/tramites/'
     | '/admin/avisos'
     | '/admin/configuracion'
-    | '/admin/contenidos'
     | '/admin/directorio'
     | '/admin/identidad'
     | '/admin/secciones'
@@ -355,12 +384,15 @@ export interface FileRouteTypes {
     | '/tramites/$categoria/$tramite'
     | '/admin/'
     | '/tramites/$categoria/'
+    | '/admin/contenidos/$pagina'
     | '/admin/fichas/$id'
     | '/admin/tramites/$id'
+    | '/admin/contenidos/'
     | '/admin/tramites/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/app.webmanifest'
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
@@ -374,6 +406,7 @@ export interface FileRouteTypes {
     | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
+    | '/marca/$'
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
@@ -381,7 +414,6 @@ export interface FileRouteTypes {
     | '/tramites'
     | '/admin/avisos'
     | '/admin/configuracion'
-    | '/admin/contenidos'
     | '/admin/directorio'
     | '/admin/identidad'
     | '/admin/secciones'
@@ -389,13 +421,16 @@ export interface FileRouteTypes {
     | '/tramites/$categoria/$tramite'
     | '/admin'
     | '/tramites/$categoria'
+    | '/admin/contenidos/$pagina'
     | '/admin/fichas/$id'
     | '/admin/tramites/$id'
+    | '/admin/contenidos'
     | '/admin/tramites'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/app.webmanifest'
     | '/auth'
     | '/aviso-legal'
     | '/cookies'
@@ -409,6 +444,7 @@ export interface FileRouteTypes {
     | '/vida-diaria'
     | '/asociaciones/$slug'
     | '/comercios/$slug'
+    | '/marca/$'
     | '/profesionales/$slug'
     | '/revision/$token'
     | '/servicios/$slug'
@@ -416,7 +452,6 @@ export interface FileRouteTypes {
     | '/tramites/'
     | '/_authenticated/admin/avisos'
     | '/_authenticated/admin/configuracion'
-    | '/_authenticated/admin/contenidos'
     | '/_authenticated/admin/directorio'
     | '/_authenticated/admin/identidad'
     | '/_authenticated/admin/secciones'
@@ -424,14 +459,17 @@ export interface FileRouteTypes {
     | '/tramites/$categoria/$tramite'
     | '/_authenticated/admin/'
     | '/tramites/$categoria/'
+    | '/_authenticated/admin/contenidos/$pagina'
     | '/_authenticated/admin/fichas/$id'
     | '/_authenticated/admin/tramites/$id'
+    | '/_authenticated/admin/contenidos/'
     | '/_authenticated/admin/tramites/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AppDotwebmanifestRoute: typeof AppDotwebmanifestRoute
   AuthRoute: typeof AuthRoute
   AvisoLegalRoute: typeof AvisoLegalRoute
   CookiesRoute: typeof CookiesRoute
@@ -445,6 +483,7 @@ export interface RootRouteChildren {
   VidaDiariaRoute: typeof VidaDiariaRouteWithChildren
   AsociacionesSlugRoute: typeof AsociacionesSlugRoute
   ComerciosSlugRoute: typeof ComerciosSlugRoute
+  MarcaSplatRoute: typeof MarcaSplatRoute
   ProfesionalesSlugRoute: typeof ProfesionalesSlugRoute
   RevisionTokenRoute: typeof RevisionTokenRoute
   ServiciosSlugRoute: typeof ServiciosSlugRoute
@@ -467,6 +506,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app.webmanifest': {
+      id: '/app.webmanifest'
+      path: '/app.webmanifest'
+      fullPath: '/app.webmanifest'
+      preLoaderRoute: typeof AppDotwebmanifestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -560,6 +606,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComerciosSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marca/$': {
+      id: '/marca/$'
+      path: '/marca/$'
+      fullPath: '/marca/$'
+      preLoaderRoute: typeof MarcaSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profesionales/$slug': {
       id: '/profesionales/$slug'
       path: '/profesionales/$slug'
@@ -616,13 +669,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminConfiguracionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/contenidos': {
-      id: '/_authenticated/admin/contenidos'
-      path: '/admin/contenidos'
-      fullPath: '/admin/contenidos'
-      preLoaderRoute: typeof AuthenticatedAdminContenidosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/directorio': {
       id: '/_authenticated/admin/directorio'
       path: '/admin/directorio'
@@ -665,6 +711,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TramitesCategoriaTramiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/contenidos/': {
+      id: '/_authenticated/admin/contenidos/'
+      path: '/admin/contenidos'
+      fullPath: '/admin/contenidos/'
+      preLoaderRoute: typeof AuthenticatedAdminContenidosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/contenidos/$pagina': {
+      id: '/_authenticated/admin/contenidos/$pagina'
+      path: '/admin/contenidos/$pagina'
+      fullPath: '/admin/contenidos/$pagina'
+      preLoaderRoute: typeof AuthenticatedAdminContenidosPaginaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/fichas/$id': {
       id: '/_authenticated/admin/fichas/$id'
       path: '/admin/fichas/$id'
@@ -692,28 +752,32 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAvisosRoute: typeof AuthenticatedAdminAvisosRoute
   AuthenticatedAdminConfiguracionRoute: typeof AuthenticatedAdminConfiguracionRoute
-  AuthenticatedAdminContenidosRoute: typeof AuthenticatedAdminContenidosRoute
   AuthenticatedAdminDirectorioRoute: typeof AuthenticatedAdminDirectorioRoute
   AuthenticatedAdminIdentidadRoute: typeof AuthenticatedAdminIdentidadRoute
   AuthenticatedAdminSeccionesRoute: typeof AuthenticatedAdminSeccionesRoute
   AuthenticatedAdminSugerenciasRoute: typeof AuthenticatedAdminSugerenciasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminContenidosPaginaRoute: typeof AuthenticatedAdminContenidosPaginaRoute
   AuthenticatedAdminFichasIdRoute: typeof AuthenticatedAdminFichasIdRoute
   AuthenticatedAdminTramitesIdRoute: typeof AuthenticatedAdminTramitesIdRoute
+  AuthenticatedAdminContenidosIndexRoute: typeof AuthenticatedAdminContenidosIndexRoute
   AuthenticatedAdminTramitesIndexRoute: typeof AuthenticatedAdminTramitesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAvisosRoute: AuthenticatedAdminAvisosRoute,
   AuthenticatedAdminConfiguracionRoute: AuthenticatedAdminConfiguracionRoute,
-  AuthenticatedAdminContenidosRoute: AuthenticatedAdminContenidosRoute,
   AuthenticatedAdminDirectorioRoute: AuthenticatedAdminDirectorioRoute,
   AuthenticatedAdminIdentidadRoute: AuthenticatedAdminIdentidadRoute,
   AuthenticatedAdminSeccionesRoute: AuthenticatedAdminSeccionesRoute,
   AuthenticatedAdminSugerenciasRoute: AuthenticatedAdminSugerenciasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminContenidosPaginaRoute:
+    AuthenticatedAdminContenidosPaginaRoute,
   AuthenticatedAdminFichasIdRoute: AuthenticatedAdminFichasIdRoute,
   AuthenticatedAdminTramitesIdRoute: AuthenticatedAdminTramitesIdRoute,
+  AuthenticatedAdminContenidosIndexRoute:
+    AuthenticatedAdminContenidosIndexRoute,
   AuthenticatedAdminTramitesIndexRoute: AuthenticatedAdminTramitesIndexRoute,
 }
 
@@ -735,6 +799,7 @@ const VidaDiariaRouteWithChildren = VidaDiariaRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AppDotwebmanifestRoute: AppDotwebmanifestRoute,
   AuthRoute: AuthRoute,
   AvisoLegalRoute: AvisoLegalRoute,
   CookiesRoute: CookiesRoute,
@@ -748,6 +813,7 @@ const rootRouteChildren: RootRouteChildren = {
   VidaDiariaRoute: VidaDiariaRouteWithChildren,
   AsociacionesSlugRoute: AsociacionesSlugRoute,
   ComerciosSlugRoute: ComerciosSlugRoute,
+  MarcaSplatRoute: MarcaSplatRoute,
   ProfesionalesSlugRoute: ProfesionalesSlugRoute,
   RevisionTokenRoute: RevisionTokenRoute,
   ServiciosSlugRoute: ServiciosSlugRoute,

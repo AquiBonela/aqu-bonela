@@ -26,6 +26,8 @@ describe("identidad en tiempo de ejecución", () => {
     expect(getMunicipality().appName).toBe("Plataforma Prueba");
     expect(getSiteConfigSnapshot()).toEqual({
       identity: { appName: "Plataforma Prueba", name: "Villa de Prueba" },
+      branding: {},
+      pageHeaders: {},
     });
   });
 

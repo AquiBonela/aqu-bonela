@@ -11,6 +11,7 @@ import { readTranslations, translationMap, type Translations } from "./content-t
 import type { Lang } from "./i18n";
 import type { ProcedureCategory, ProcedureRow } from "./admin-procedures";
 import { alignedModuleContent } from "./procedure-sections";
+import { CACHE } from "./cache-policy";
 
 export type PublicProcedure = Tramite & { translations?: Translations };
 export function publicProcedureList(rows: ProcedureRow[], categories: ProcedureCategory[]) {
@@ -59,6 +60,7 @@ export function publicProcedureList(rows: ProcedureRow[], categories: ProcedureC
 }
 export const publicProceduresQuery = queryOptions({
   queryKey: ["public-procedures"],
+  ...CACHE.procedures,
   queryFn: async () => {
     const [categories, procedures] = await Promise.all([
       supabase.from("procedure_categories").select("*").eq("visible", true).order("sort_order"),
