@@ -89,6 +89,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "approval_tokens_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "approval_tokens_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
@@ -176,6 +183,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "consents_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "consents_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
@@ -183,6 +197,105 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      content_drafts: {
+        Row: {
+          base_version: string
+          content: Json
+          created_at: string
+          created_by: string | null
+          draft_key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          base_version: string
+          content: Json
+          created_at?: string
+          created_by?: string | null
+          draft_key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          base_version?: string
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          draft_key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      content_publications: {
+        Row: {
+          conformity: boolean
+          draft_key: string
+          id: number
+          note: string
+          published_at: string
+          published_by: string | null
+        }
+        Insert: {
+          conformity: boolean
+          draft_key: string
+          id?: never
+          note?: string
+          published_at?: string
+          published_by?: string | null
+        }
+        Update: {
+          conformity?: boolean
+          draft_key?: string
+          id?: never
+          note?: string
+          published_at?: string
+          published_by?: string | null
+        }
+        Relationships: []
+      }
+      home_shortcuts: {
+        Row: {
+          created_at: string
+          description: string
+          href: string
+          id: string
+          image_alt: string
+          image_path: string
+          sort_order: number
+          title: string
+          updated_at: string
+          updated_by: string | null
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          href: string
+          id?: string
+          image_alt?: string
+          image_path: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          href?: string
+          id?: string
+          image_alt?: string
+          image_path?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          visible?: boolean
+        }
+        Relationships: []
       }
       listing_activities: {
         Row: {
@@ -218,6 +331,13 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "listing_activities_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       listing_contacts: {
@@ -227,13 +347,18 @@ export type Database = {
           email: string | null
           facebook: string | null
           instagram: string | null
+          latitude: number | null
           linkedin: string | null
           listing_id: string
+          locality: string | null
+          longitude: number | null
           owner_contact: string | null
           owner_name: string | null
           phone: string | null
           phone_2: string | null
+          postal_code: string | null
           show_address: boolean
+          show_approximate_location: boolean
           show_email: boolean
           show_facebook: boolean
           show_instagram: boolean
@@ -241,11 +366,15 @@ export type Database = {
           show_phone: boolean
           show_phone_2: boolean
           show_tiktok: boolean
+          show_website: boolean
           show_whatsapp: boolean
           show_x_twitter: boolean
           show_youtube: boolean
+          street: string | null
+          street_number: string | null
           tiktok: string | null
           updated_at: string
+          website: string | null
           whatsapp: string | null
           x_twitter: string | null
           youtube: string | null
@@ -256,13 +385,18 @@ export type Database = {
           email?: string | null
           facebook?: string | null
           instagram?: string | null
+          latitude?: number | null
           linkedin?: string | null
           listing_id: string
+          locality?: string | null
+          longitude?: number | null
           owner_contact?: string | null
           owner_name?: string | null
           phone?: string | null
           phone_2?: string | null
+          postal_code?: string | null
           show_address?: boolean
+          show_approximate_location?: boolean
           show_email?: boolean
           show_facebook?: boolean
           show_instagram?: boolean
@@ -270,11 +404,15 @@ export type Database = {
           show_phone?: boolean
           show_phone_2?: boolean
           show_tiktok?: boolean
+          show_website?: boolean
           show_whatsapp?: boolean
           show_x_twitter?: boolean
           show_youtube?: boolean
+          street?: string | null
+          street_number?: string | null
           tiktok?: string | null
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
           x_twitter?: string | null
           youtube?: string | null
@@ -285,13 +423,18 @@ export type Database = {
           email?: string | null
           facebook?: string | null
           instagram?: string | null
+          latitude?: number | null
           linkedin?: string | null
           listing_id?: string
+          locality?: string | null
+          longitude?: number | null
           owner_contact?: string | null
           owner_name?: string | null
           phone?: string | null
           phone_2?: string | null
+          postal_code?: string | null
           show_address?: boolean
+          show_approximate_location?: boolean
           show_email?: boolean
           show_facebook?: boolean
           show_instagram?: boolean
@@ -299,11 +442,15 @@ export type Database = {
           show_phone?: boolean
           show_phone_2?: boolean
           show_tiktok?: boolean
+          show_website?: boolean
           show_whatsapp?: boolean
           show_x_twitter?: boolean
           show_youtube?: boolean
+          street?: string | null
+          street_number?: string | null
           tiktok?: string | null
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
           x_twitter?: string | null
           youtube?: string | null
@@ -316,6 +463,109 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "listing_contacts_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_events: {
+        Row: {
+          actor: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["listing_status"] | null
+          id: number
+          kind: string
+          listing_id: string
+          note: string
+          to_status: Database["public"]["Enums"]["listing_status"] | null
+        }
+        Insert: {
+          actor?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["listing_status"] | null
+          id?: never
+          kind: string
+          listing_id: string
+          note?: string
+          to_status?: Database["public"]["Enums"]["listing_status"] | null
+        }
+        Update: {
+          actor?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["listing_status"] | null
+          id?: never
+          kind?: string
+          listing_id?: string
+          note?: string
+          to_status?: Database["public"]["Enums"]["listing_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_events_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_events_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_hour_periods: {
+        Row: {
+          created_at: string
+          ends_on: string
+          id: string
+          kind: string
+          label: string
+          listing_id: string
+          sort_order: number
+          starts_on: string
+        }
+        Insert: {
+          created_at?: string
+          ends_on: string
+          id?: string
+          kind: string
+          label?: string
+          listing_id: string
+          sort_order?: number
+          starts_on: string
+        }
+        Update: {
+          created_at?: string
+          ends_on?: string
+          id?: string
+          kind?: string
+          label?: string
+          listing_id?: string
+          sort_order?: number
+          starts_on?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_hour_periods_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_hour_periods_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       listing_hours: {
@@ -325,6 +575,7 @@ export type Database = {
           id: string
           listing_id: string
           opens: string
+          period_id: string | null
           weekday: number
         }
         Insert: {
@@ -333,6 +584,7 @@ export type Database = {
           id?: string
           listing_id: string
           opens: string
+          period_id?: string | null
           weekday: number
         }
         Update: {
@@ -341,6 +593,7 @@ export type Database = {
           id?: string
           listing_id?: string
           opens?: string
+          period_id?: string | null
           weekday?: number
         }
         Relationships: [
@@ -350,6 +603,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "listings"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_hours_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_hours_period_fkey"
+            columns: ["period_id", "listing_id"]
+            isOneToOne: false
+            referencedRelation: "listing_hour_periods"
+            referencedColumns: ["id", "listing_id"]
           },
         ]
       }
@@ -386,6 +653,13 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "listing_photos_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       listing_reports: {
@@ -419,6 +693,13 @@ export type Database = {
             columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_reports_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
             referencedColumns: ["id"]
           },
         ]
@@ -459,12 +740,20 @@ export type Database = {
             referencedRelation: "listings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "listing_requests_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "public_listings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       listings: {
         Row: {
           activity: string | null
           category_id: string | null
+          cover_alt: string
           cover_path: string | null
           cover_url: string | null
           created_at: string
@@ -473,6 +762,7 @@ export type Database = {
           featured_until: string | null
           gallery_urls: string[]
           home_service: boolean
+          hours_note: string
           id: string
           labels: string[]
           name: string
@@ -480,7 +770,11 @@ export type Database = {
           public_email: string | null
           public_facebook: string | null
           public_instagram: string | null
+          public_latitude: number | null
           public_linkedin: string | null
+          public_locality: string | null
+          public_location_approximate: boolean
+          public_longitude: number | null
           public_phone: string | null
           public_phone_2: string | null
           public_tiktok: string | null
@@ -491,6 +785,7 @@ export type Database = {
           published_at: string | null
           service_area: string
           short_description: string
+          show_service_area: boolean
           slug: string
           status: Database["public"]["Enums"]["listing_status"]
           tags: string[]
@@ -502,6 +797,7 @@ export type Database = {
         Insert: {
           activity?: string | null
           category_id?: string | null
+          cover_alt?: string
           cover_path?: string | null
           cover_url?: string | null
           created_at?: string
@@ -510,6 +806,7 @@ export type Database = {
           featured_until?: string | null
           gallery_urls?: string[]
           home_service?: boolean
+          hours_note?: string
           id?: string
           labels?: string[]
           name: string
@@ -517,7 +814,11 @@ export type Database = {
           public_email?: string | null
           public_facebook?: string | null
           public_instagram?: string | null
+          public_latitude?: number | null
           public_linkedin?: string | null
+          public_locality?: string | null
+          public_location_approximate?: boolean
+          public_longitude?: number | null
           public_phone?: string | null
           public_phone_2?: string | null
           public_tiktok?: string | null
@@ -528,6 +829,7 @@ export type Database = {
           published_at?: string | null
           service_area?: string
           short_description?: string
+          show_service_area?: boolean
           slug: string
           status?: Database["public"]["Enums"]["listing_status"]
           tags?: string[]
@@ -539,6 +841,7 @@ export type Database = {
         Update: {
           activity?: string | null
           category_id?: string | null
+          cover_alt?: string
           cover_path?: string | null
           cover_url?: string | null
           created_at?: string
@@ -547,6 +850,7 @@ export type Database = {
           featured_until?: string | null
           gallery_urls?: string[]
           home_service?: boolean
+          hours_note?: string
           id?: string
           labels?: string[]
           name?: string
@@ -554,7 +858,11 @@ export type Database = {
           public_email?: string | null
           public_facebook?: string | null
           public_instagram?: string | null
+          public_latitude?: number | null
           public_linkedin?: string | null
+          public_locality?: string | null
+          public_location_approximate?: boolean
+          public_longitude?: number | null
           public_phone?: string | null
           public_phone_2?: string | null
           public_tiktok?: string | null
@@ -565,6 +873,7 @@ export type Database = {
           published_at?: string | null
           service_area?: string
           short_description?: string
+          show_service_area?: boolean
           slug?: string
           status?: Database["public"]["Enums"]["listing_status"]
           tags?: string[]
@@ -582,6 +891,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      page_headers: {
+        Row: {
+          alt: string
+          focal_x: number
+          focal_y: number
+          image_path: string
+          image_small_path: string
+          page_key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          alt?: string
+          focal_x?: number
+          focal_y?: number
+          image_path: string
+          image_small_path: string
+          page_key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          alt?: string
+          focal_x?: number
+          focal_y?: number
+          image_path?: string
+          image_small_path?: string
+          page_key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      page_sections: {
+        Row: {
+          enabled: boolean
+          page_key: string
+          section_key: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          enabled?: boolean
+          page_key: string
+          section_key: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          enabled?: boolean
+          page_key?: string
+          section_key?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       procedure_categories: {
         Row: {
@@ -681,6 +1050,117 @@ export type Database = {
           },
         ]
       }
+      site_identity: {
+        Row: {
+          accent_color: string
+          app_name: string
+          autonomous_community: string
+          demonym_feminine: string
+          demonym_masculine: string
+          icon_path: string
+          icon_small_path: string
+          id: boolean
+          latitude: number | null
+          logo_light_path: string
+          logo_path: string
+          longitude: number | null
+          municipality_name: string
+          postal_code: string
+          primary_color: string
+          province: string
+          region: string
+          short_name: string
+          site_url: string
+          timezone: string
+          town_hall_address: string
+          town_hall_name: string
+          town_hall_phone: string
+          town_hall_website: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent_color?: string
+          app_name?: string
+          autonomous_community?: string
+          demonym_feminine?: string
+          demonym_masculine?: string
+          icon_path?: string
+          icon_small_path?: string
+          id?: boolean
+          latitude?: number | null
+          logo_light_path?: string
+          logo_path?: string
+          longitude?: number | null
+          municipality_name?: string
+          postal_code?: string
+          primary_color?: string
+          province?: string
+          region?: string
+          short_name?: string
+          site_url?: string
+          timezone?: string
+          town_hall_address?: string
+          town_hall_name?: string
+          town_hall_phone?: string
+          town_hall_website?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent_color?: string
+          app_name?: string
+          autonomous_community?: string
+          demonym_feminine?: string
+          demonym_masculine?: string
+          icon_path?: string
+          icon_small_path?: string
+          id?: boolean
+          latitude?: number | null
+          logo_light_path?: string
+          logo_path?: string
+          longitude?: number | null
+          municipality_name?: string
+          postal_code?: string
+          primary_color?: string
+          province?: string
+          region?: string
+          short_name?: string
+          site_url?: string
+          timezone?: string
+          town_hall_address?: string
+          town_hall_name?: string
+          town_hall_phone?: string
+          town_hall_website?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      site_menu: {
+        Row: {
+          enabled: boolean
+          entry_key: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          enabled?: boolean
+          entry_key: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          enabled?: boolean
+          entry_key?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           admin_whatsapp: string
@@ -696,6 +1176,7 @@ export type Database = {
           legal_email: string
           legal_name: string
           legal_nif: string
+          publish_on_owner_approval: boolean
           updated_at: string
           whatsapp_template: string
         }
@@ -713,6 +1194,7 @@ export type Database = {
           legal_email?: string
           legal_name?: string
           legal_nif?: string
+          publish_on_owner_approval?: boolean
           updated_at?: string
           whatsapp_template?: string
         }
@@ -730,6 +1212,7 @@ export type Database = {
           legal_email?: string
           legal_name?: string
           legal_nif?: string
+          publish_on_owner_approval?: boolean
           updated_at?: string
           whatsapp_template?: string
         }
@@ -803,9 +1286,148 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_listings: {
+        Row: {
+          activity: string | null
+          category_id: string | null
+          cover_alt: string | null
+          cover_path: string | null
+          cover_url: string | null
+          description: string | null
+          featured: boolean | null
+          gallery_urls: string[] | null
+          hours_hidden: boolean | null
+          hours_note: string | null
+          id: string | null
+          labels: string[] | null
+          name: string | null
+          public_address: string | null
+          public_email: string | null
+          public_facebook: string | null
+          public_home_service: boolean | null
+          public_instagram: string | null
+          public_latitude: number | null
+          public_linkedin: string | null
+          public_locality: string | null
+          public_location_approximate: boolean | null
+          public_longitude: number | null
+          public_phone: string | null
+          public_phone_2: string | null
+          public_service_area: string | null
+          public_tiktok: string | null
+          public_website: string | null
+          public_whatsapp: string | null
+          public_x_twitter: string | null
+          public_youtube: string | null
+          short_description: string | null
+          slug: string | null
+          tags: string[] | null
+          translations: Json | null
+          type: Database["public"]["Enums"]["listing_type"] | null
+          urgent_24h: boolean | null
+        }
+        Insert: {
+          activity?: string | null
+          category_id?: string | null
+          cover_alt?: string | null
+          cover_path?: string | null
+          cover_url?: string | null
+          description?: string | null
+          featured?: never
+          gallery_urls?: string[] | null
+          hours_hidden?: never
+          hours_note?: never
+          id?: string | null
+          labels?: string[] | null
+          name?: string | null
+          public_address?: string | null
+          public_email?: string | null
+          public_facebook?: string | null
+          public_home_service?: never
+          public_instagram?: string | null
+          public_latitude?: number | null
+          public_linkedin?: string | null
+          public_locality?: string | null
+          public_location_approximate?: boolean | null
+          public_longitude?: number | null
+          public_phone?: string | null
+          public_phone_2?: string | null
+          public_service_area?: never
+          public_tiktok?: string | null
+          public_website?: string | null
+          public_whatsapp?: string | null
+          public_x_twitter?: string | null
+          public_youtube?: string | null
+          short_description?: string | null
+          slug?: string | null
+          tags?: never
+          translations?: never
+          type?: Database["public"]["Enums"]["listing_type"] | null
+          urgent_24h?: boolean | null
+        }
+        Update: {
+          activity?: string | null
+          category_id?: string | null
+          cover_alt?: string | null
+          cover_path?: string | null
+          cover_url?: string | null
+          description?: string | null
+          featured?: never
+          gallery_urls?: string[] | null
+          hours_hidden?: never
+          hours_note?: never
+          id?: string | null
+          labels?: string[] | null
+          name?: string | null
+          public_address?: string | null
+          public_email?: string | null
+          public_facebook?: string | null
+          public_home_service?: never
+          public_instagram?: string | null
+          public_latitude?: number | null
+          public_linkedin?: string | null
+          public_locality?: string | null
+          public_location_approximate?: boolean | null
+          public_longitude?: number | null
+          public_phone?: string | null
+          public_phone_2?: string | null
+          public_service_area?: never
+          public_tiktok?: string | null
+          public_website?: string | null
+          public_whatsapp?: string | null
+          public_x_twitter?: string | null
+          public_youtube?: string | null
+          short_description?: string | null
+          slug?: string | null
+          tags?: never
+          translations?: never
+          type?: Database["public"]["Enums"]["listing_type"] | null
+          urgent_24h?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      approve_listing_review: {
+        Args: {
+          p_authorized_fields: Json
+          p_comment?: string
+          p_show_hours: boolean
+          p_terms_version?: string
+          p_token_hash: string
+          p_visibility: Json
+        }
+        Returns: Json
+      }
+      can_manage_identity: { Args: never; Returns: boolean }
       check_rate_limit: {
         Args: {
           p_key: string
@@ -814,12 +1436,52 @@ export type Database = {
         }
         Returns: boolean
       }
+      content_draft_state: { Args: { p_key: string }; Returns: Json }
+      discard_content_draft: {
+        Args: { p_expected_updated_at: string; p_key: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      listing_review_state: { Args: { p_listing_id: string }; Returns: string }
+      publish_content_draft: {
+        Args: {
+          p_conformity: boolean
+          p_expected_updated_at: string
+          p_key: string
+          p_note?: string
+        }
+        Returns: Json
+      }
+      request_listing_corrections: {
+        Args: { p_message: string; p_token_hash: string }
+        Returns: Json
+      }
+      save_content_draft: {
+        Args: { p_content: Json; p_expected_updated_at?: string; p_key: string }
+        Returns: Json
+      }
+      save_listing: {
+        Args: {
+          p_activity_ids: string[]
+          p_contact: Json
+          p_expected_updated_at?: string
+          p_hours: Json
+          p_id?: string
+          p_listing: Json
+          p_periods?: Json
+        }
+        Returns: Json
+      }
+      site_config: { Args: never; Returns: Json }
+      withdraw_listing_consent: {
+        Args: { p_listing_id: string; p_note?: string }
+        Returns: Json
       }
     }
     Enums: {
